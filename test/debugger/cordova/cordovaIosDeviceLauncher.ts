@@ -1,7 +1,7 @@
 import * as mockery from 'mockery';
 
 // Used only for the type to allow mocking
-import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from '../../cordova/cordovaIosDeviceLauncher';
+import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from '../../../src/debugger/cordova/cordovaIosDeviceLauncher';
 
 let CordovaIosDeviceLauncher: typeof _CordovaIosDeviceLauncher;
 
@@ -12,7 +12,7 @@ describe('cordovaIosDeviceLauncher', function () {
     before(() => {
         mockery.enable({warnOnReplace: false, useCleanCache: true});
         mockery.registerAllowables([
-            '../../cordova/cordovaIosDeviceLauncher',
+            '../../../src/debugger/cordova/cordovaIosDeviceLauncher',
             'path',
             'q'
         ]);
@@ -21,7 +21,7 @@ describe('cordovaIosDeviceLauncher', function () {
 
         mockery.registerMock('fs', fsMock);
         mockery.registerMock('plist-with-patches', plistMock);
-        CordovaIosDeviceLauncher = require('../../cordova/cordovaIosDeviceLauncher').CordovaIosDeviceLauncher;
+        CordovaIosDeviceLauncher = require('../../../src/debugger/cordova/cordovaIosDeviceLauncher').CordovaIosDeviceLauncher;
     });
     after(() => {
         mockery.disable();

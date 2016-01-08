@@ -3,7 +3,6 @@
 .vscode/**
 typings/**
 debugger/testapp/**
-debugger/testCordovaApp/**
 test/**
 *.vsix
 gulpfile.js

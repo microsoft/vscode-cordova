@@ -1,9 +1,9 @@
 .DS_Store
 node_modules/
 out/
-debugger/testCordovaApp/plugins/
-debugger/testCordovaApp/platforms/
-debugger/testCordovaApp/.vscode/
+test/testDebuggerProject/plugins/
+test/testDebuggerProject/platforms/
+test/testDebuggerProject/.vscode/
 test/testProject/.vscode/
 test/testProject/platforms/
 test/testProject/plugins/

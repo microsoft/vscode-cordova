@@ -46,7 +46,7 @@
                         "typescriptreact"
                     ]
                 },
-                "program": "./out/debugger/cordova/debugCordova.js",
+                "program": "./out/src/debugger/cordova/debugCordova.js",
                 "runtime": "node",
                 "initialConfigurations": [
                     {
@@ -214,7 +214,7 @@
     "scripts": {
         "vscode:prepublish": "gulp",
         "compile": "gulp",
-        "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/"
+        "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "devDependencies": {
         "gulp": "^3.9.0",
