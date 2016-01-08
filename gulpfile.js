@@ -40,7 +40,6 @@ var sources = [
     'typings',
     'debugger/adapter',
     'debugger/common',
-    'debugger/cordova',
     'debugger/test',
     'debugger/webkit',
 ].map(function(tsFolder) { return tsFolder + '/**/*.ts'; });
@@ -79,7 +78,6 @@ var lintSources = [
     'debugger/test',
     'debugger/test',
     'debugger/webkit',
-    'debugger/cordova',
 ].map(function(tsFolder) { return tsFolder + '/**/*.ts'; });
 lintSources = lintSources.concat([
     'debugger/adapter/sourceMaps/sourceMapTransformer.ts',
@@ -96,7 +94,7 @@ gulp.task('tslint', function(){
 });
 
 function test() {
-    return gulp.src('out/debugger/test/**/*.js', { read: false })
+    return gulp.src('out/debugger/test/**/*.test.js', { read: false })
         .pipe(mocha({ ui: 'tdd' }))
         .on('error', function(e) {
             log(e ? e.toString() : 'error in test task!');

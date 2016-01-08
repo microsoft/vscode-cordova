@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for details.
+
 import * as mockery from 'mockery';
 
 // Used only for the type to allow mocking
-import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from '../../../src/debugger/cordova/cordovaIosDeviceLauncher';
+import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from '../../src/debugger/cordovaIosDeviceLauncher';
 
 let CordovaIosDeviceLauncher: typeof _CordovaIosDeviceLauncher;
 
@@ -12,7 +15,7 @@ describe('cordovaIosDeviceLauncher', function () {
     before(() => {
         mockery.enable({warnOnReplace: false, useCleanCache: true});
         mockery.registerAllowables([
-            '../../../src/debugger/cordova/cordovaIosDeviceLauncher',
+            '../../src/debugger/cordovaIosDeviceLauncher',
             'path',
             'q'
         ]);
@@ -21,7 +24,7 @@ describe('cordovaIosDeviceLauncher', function () {
 
         mockery.registerMock('fs', fsMock);
         mockery.registerMock('plist-with-patches', plistMock);
-        CordovaIosDeviceLauncher = require('../../../src/debugger/cordova/cordovaIosDeviceLauncher').CordovaIosDeviceLauncher;
+        CordovaIosDeviceLauncher = require('../../src/debugger/cordovaIosDeviceLauncher').CordovaIosDeviceLauncher;
     });
     after(() => {
         mockery.disable();

@@ -2,16 +2,16 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
-import {Response} from '../../../debugger/common/v8Protocol';
-import {DebugSession, ErrorDestination, OutputEvent} from '../../../debugger/common/debugSession';
+import {Response} from '../../debugger/common/v8Protocol';
+import {DebugSession, ErrorDestination, OutputEvent} from '../../debugger/common/debugSession';
 import {CordovaDebugAdapter} from './cordovaDebugAdapter';
 import {CordovaPathTransformer} from './cordovaPathTransformer';
-import {Logger} from '../../../debugger/webkit/utilities';
+import {Logger} from '../../debugger/webkit/utilities';
 
-import {AdapterProxy} from '../../../debugger/adapter/adapterProxy';
-import {LineNumberTransformer} from '../../../debugger/adapter/lineNumberTransformer';
+import {AdapterProxy} from '../../debugger/adapter/adapterProxy';
+import {LineNumberTransformer} from '../../debugger/adapter/lineNumberTransformer';
 
-import {SourceMapTransformer} from '../../../debugger/adapter/sourceMaps/sourceMapTransformer';
+import {SourceMapTransformer} from '../../debugger/adapter/sourceMaps/sourceMapTransformer';
 import * as Q from 'q';
 
 export class CordovaDebugSession extends DebugSession {

@@ -13,9 +13,9 @@ import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 
 import {cordovaRunCommand, execCommand} from './extension';
 
-import {WebKitDebugAdapter} from '../../../debugger/webkit/WebKitDebugAdapter';
+import {WebKitDebugAdapter} from '../../debugger/webkit/WebKitDebugAdapter';
 
-import {CordovaProjectHelper} from '../../utils/cordovaProjectHelper';
+import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private outputLogger: (message: string,  error?: boolean) => void;

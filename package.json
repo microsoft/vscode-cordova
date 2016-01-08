@@ -46,7 +46,7 @@
                         "typescriptreact"
                     ]
                 },
-                "program": "./out/src/debugger/cordova/debugCordova.js",
+                "program": "./out/src/debugger/debugCordova.js",
                 "runtime": "node",
                 "initialConfigurations": [
                     {

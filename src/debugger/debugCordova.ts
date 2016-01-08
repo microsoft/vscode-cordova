@@ -3,6 +3,6 @@
  *--------------------------------------------------------*/
 
 import {CordovaDebugSession} from './cordovaDebugSession';
-import {DebugSession} from '../../../debugger/common/debugSession';
+import {DebugSession} from '../../debugger/common/debugSession';
 
 DebugSession.run(CordovaDebugSession);

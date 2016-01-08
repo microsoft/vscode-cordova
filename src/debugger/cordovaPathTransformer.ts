@@ -2,7 +2,7 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
-import * as utils from '../../../debugger/webkit/utilities';
+import * as utils from '../../debugger/webkit/utilities';
 import * as path from 'path';
 import * as fs from 'fs';
 
