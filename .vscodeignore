@@ -2,7 +2,8 @@
 **/*.map
 .vscode/**
 typings/**
-testapp/**
+debugger/testapp/**
+debugger/testCordovaApp/**
 test/**
 *.vsix
 gulpfile.js
@@ -15,3 +16,8 @@ out/test/**
 node_modules/ws/node_modules/bufferutil/**
 node_modules/ws/node_modules/utf-8-validate/**
 node_modules/.bin/**
+
+out/test/**
+test/**
+src/**
+.gitignore

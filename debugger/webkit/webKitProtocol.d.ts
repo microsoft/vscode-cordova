@@ -50,8 +50,8 @@ declare namespace WebKitProtocol {
             callFrames: CallFrame[];
             // 'exception' or 'other'
             reason: string;
-            data: Runtime.RemoteObject;
-            hitBreakpoints: BreakpointId[];
+            data?: Runtime.RemoteObject;
+            hitBreakpoints?: BreakpointId[];
         }
 
         interface BreakpointResolvedParams {

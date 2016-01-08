@@ -300,7 +300,7 @@ class DefaultMockWebKitConnection {
     }
 
     public attach(port: number): Promise<void> {
-        return Promise.resolve<void>();
+        return Promise.resolve<void>(void 0);
     }
 }
 

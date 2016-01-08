@@ -1,0 +1,71 @@
+/**
+﻿ *******************************************************
+﻿ *                                                     *
+﻿ *   Copyright (C) Microsoft. All rights reserved.     *
+﻿ *                                                     *
+﻿ *******************************************************
+﻿ */
+/**
+﻿ *******************************************************
+﻿ *                                                     *
+﻿ *   Copyright (C) Microsoft. All rights reserved.     *
+﻿ *                                                     *
+﻿ *******************************************************
+﻿ */
+
+import * as child_process from 'child_process';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import * as Q from 'q';
+
+import {CordovaCommandHelper} from './../src/utils/CordovaCommandHelper';
+import {CordovaProjectHelper} from './../src/utils/CordovaProjectHelper';
+
+
+export function executeCordovaCommand(cwd: string, command: string): Q.Promise<any> {
+    let deferred = Q.defer<any>();
+    let cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
+    let commandToExecute = cordovaCmd + " " + command;
+	let process = child_process.exec(commandToExecute, {cwd: cwd});
+        
+    process.on("error", function(err: any): void {
+        // ENOENT error will be thrown if no Cordova.cmd is found
+        deferred.reject(err);
+    });
+    process.stdout.on("close", exitCode => {
+	   if (exitCode) {
+           deferred.reject("Cordova command failed with exit code " + exitCode);
+       } else {
+           deferred.resolve({});
+       }
+	});
+    
+    return deferred.promise;
+}
+
+export function createCordovaProject(cwd: string, projectName: string): Q.Promise<any> {
+    let cordovaCommandToRun = "create " + projectName;
+    return executeCordovaCommand(cwd, cordovaCommandToRun);
+}
+
+export function addCordovaComponents(componentName: string, projectRoot: string, componentsToAdd: string[]): Q.Promise<any> {
+    let cordovaCommandToRun = componentName + " add " + componentsToAdd.join(" ");
+    return executeCordovaCommand(projectRoot, cordovaCommandToRun);
+}
+
+export function removeCordovaComponents(componentName: string, projectRoot: string, componentsToRemove: string[]): Q.Promise<any> {
+    let cordovaCommandToRun = componentName + " remove " + componentsToRemove.join(" ");
+    return executeCordovaCommand(projectRoot, cordovaCommandToRun);
+}
+
+export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
+    let typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot);
+    
+    // look for all the type defs in the typings folder
+    if (!fs.existsSync(typeDefsFolder)) {
+        return [];
+    } else {
+        return fs.readdirSync(typeDefsFolder);
+    }
+}

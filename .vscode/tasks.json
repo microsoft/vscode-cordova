@@ -13,6 +13,15 @@
             ]
         },
         {
+            "taskName": "build",
+            "args": [],
+            "isBuildCommand": true,
+            "isWatching": false,
+            "problemMatcher": [
+                "$tsc"
+            ]
+        },
+        {
             "taskName": "watch-build-test",
             "isWatching": true,
             "isTestCommand": true

@@ -1,0 +1,244 @@
+{
+    "name": "vscode-cordova",
+    "displayName": "vscode-cordova",
+    "description": "VS Code Extension for Cordova applications",
+    "version": "0.0.1",
+    "publisher": "Microsoft",
+    "engines": {
+        "vscode": "^0.10.1"
+    },
+    "categories": [
+        "Debuggers",
+    "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:javascript",
+        "onLanguage:typescript",
+        "workspaceContains:config.xml"
+    ],
+    "main": "./out/src/cordova",
+    "contributes": {
+        "commands": [
+            {
+                "command": "cordova.build",
+                "title": "Cordova: Build"
+            },
+            {
+                "command": "cordova.run",
+                "title": "Cordova: Run"
+            },
+            {
+                "command": "cordova.runDevice",
+                "title": "Cordova: Run on a Device"
+            },
+            {
+                "command": "cordova.emulate",
+                "title": "Cordova: Run in an emulator"
+            }
+        ],
+        "debuggers": [
+            {
+                "type": "cordova",
+                "label": "Cordova",
+                "enableBreakpointsFor": {
+                    "languageIds": [
+                        "javascript",
+                        "typescriptreact"
+                    ]
+                },
+                "program": "./out/debugger/cordova/debugCordova.js",
+                "runtime": "node",
+                "initialConfigurations": [
+                    {
+                        "name": "Run Android on device",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "android",
+                        "target": "device",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Run iOS on device",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "ios",
+                        "target": "device",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Attach to running android on device",
+                        "type": "cordova",
+                        "request": "attach",
+                        "platform": "android",
+                        "target": "device",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Attach to running iOS on device",
+                        "type": "cordova",
+                        "request": "attach",
+                        "platform": "ios",
+                        "target": "device",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Run Android on emulator",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "android",
+                        "target": "emulator",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Run iOS on emulator",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "ios",
+                        "target": "emulator",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Attach to running android on emulator",
+                        "type": "cordova",
+                        "request": "attach",
+                        "platform": "android",
+                        "target": "emulator",
+                        "sourceMaps": true
+                    },
+                    {
+                        "name": "Attach to running iOS on emulator",
+                        "type": "cordova",
+                        "request": "attach",
+                        "platform": "ios",
+                        "target": "emulator",
+                        "sourceMaps": true
+                    }
+                ],
+                "configurationAttributes": {
+                    "launch": {
+                        "required": [
+                            "platform"
+                        ],
+                        "properties": {
+                            "platform": {
+                                "type": "string",
+                                "description": "The platform to run on"
+                            },
+                            "target": {
+                                "type": "string",
+                                "description": "either 'device', 'emulator', or identifier for a specific device / emulator",
+                                "default": "emulator"
+                            },
+                            "sourceMaps": {
+                                "type": "boolean",
+                                "description": "Use JavaScriptsource maps (if they exist)",
+                                "default": false
+                            },
+                            "port": {
+                                "type": "number",
+                                "description": "Port to forward through to the target for debugging",
+                                "default": 9222
+                            },
+                            "webkitRangeMin": {
+                                "type": "number",
+                                "description": "Start of port range to use for iOS device selection",
+                                "default": 9223
+                            },
+                            "webkitRangeMax": {
+                                "type": "number",
+                                "description": "End of port range to use for iOS device selection",
+                                "default": 9322
+                            },
+                            "attachAttempts": {
+                                "type": "number",
+                                "description": "Number of attempts to make when attaching to an iOS app",
+                                "default": 5
+                            },
+                            "attachDelay": {
+                                "type": "number",
+                                "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
+                                "default": 1000
+                            },
+                            "iosDebugProxyPort": {
+                                "type": "number",
+                                "description": "Port to use for connecting to iOS native debugger when launching app",
+                                "default": 9221
+                            },
+                            "appStepLaunchTimeout": {
+                                "type": "number",
+                                "description": "Timeout for individual steps when launching iOS app",
+                                "default": 5000
+                            }
+                        }
+                    },
+                    "attach": {
+                        "required": [],
+                        "properties": {
+                            "sourceMaps": {
+                                "type": "boolean",
+                                "description": "Use JavaScriptsource maps (if they exist)",
+                                "default": false
+                            },
+                            "port": {
+                                "type": "number",
+                                "description": "Port to use for remote debugging.",
+                                "default": 9222
+                            },
+                            "webkitRangeMin": {
+                                "type": "number",
+                                "description": "Start of port range to use for iOS device selection",
+                                "default": 9223
+                            },
+                            "webkitRangeMax": {
+                                "type": "number",
+                                "description": "End of port range to use for iOS device selection",
+                                "default": 9322
+                            },
+                            "attachAttempts": {
+                                "type": "number",
+                                "description": "Number of attempts to make when attaching to an iOS app",
+                                "default": 5
+                            },
+                            "attachDelay": {
+                                "type": "number",
+                                "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
+                                "default": 1000
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+
+    },
+    "scripts": {
+        "vscode:prepublish": "gulp",
+        "compile": "gulp",
+        "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/"
+    },
+    "devDependencies": {
+        "gulp": "^3.9.0",
+        "gulp-mocha": "^2.1.3",
+        "gulp-sourcemaps": "^1.5.2",
+        "gulp-tslint": "^3.3.1",
+        "gulp-typescript": "^2.8.0",
+        "gulp-util": "^3.0.5",
+        "mocha": "^2.3.3",
+        "mockery": "^1.4.0",
+        "should": "^4.6.5",
+        "sinon": "^1.17.2",
+        "tslint": "^2.5.1",
+        "rimraf": "^2.5.0",
+        "typescript": "^1.6.2",
+        "vscode": "0.10.x"
+    },
+    "dependencies": {
+        "elementtree": "^0.1.6",
+        "plist-with-patches": "^0.5.1",
+        "q": "^1.4.1",
+        "request": "^2.67.0",
+        "source-map": "^0.5.3",
+        "ws": "0.8.0",
+        "tsd": "^0.6.5"
+    }
+}
