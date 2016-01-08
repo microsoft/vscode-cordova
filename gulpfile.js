@@ -74,6 +74,8 @@ var lintSources = [
     'src/utils/cordovaCommandHelper.ts',
     'src/utils/cordovaProjectHelper.ts',
     'src/utils/tsdHelper.ts',
+    'src/debugger',
+    'test/debugger',
     'debugger/test',
     'debugger/test',
     'debugger/webkit',
