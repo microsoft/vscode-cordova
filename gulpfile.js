@@ -2,13 +2,37 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
+var child_process = require('child_process');
 var gulp = require('gulp');
-var path = require('path');
+var mocha = require('gulp-mocha');
+var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var log = require('gulp-util').log;
+var os = require('os');
+var path = require('path');
+var Q = require('q');
 var typescript = require('typescript');
-var sourcemaps = require('gulp-sourcemaps');
-var mocha = require('gulp-mocha');
+
+function executeCordovaCommand(cwd, command) {
+    var deferred = Q.defer();
+    var cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
+    var commandToExecute = cordovaCmd + " " + command;
+    var process = child_process.exec(commandToExecute, { cwd: cwd });
+    process.on("error", function (err) {
+        console.log("Executing cordova command failed with error: " + err);
+        deferred.reject(err);
+    });
+    process.stdout.on("close", function (exitCode) {
+        if (exitCode) {
+            console.log("Cordova command failed with exit code " + exitCode);
+            deferred.reject(exitCode);
+        }
+        else {
+            deferred.resolve({});
+        }
+    });
+    return deferred.promise;
+}
 
 var sources = [
     'src',
@@ -46,6 +70,11 @@ gulp.task('default', ['build']);
 
 // Don't lint code from tsd or common, and whitelist my files under adapter
 var lintSources = [
+    'src/cordova.ts',
+    'src/utils/cordovaCommandHelper.ts',
+    'src/utils/cordovaProjectHelper.ts',
+    'src/utils/tsdHelper.ts',
+    'debugger/test',
     'debugger/test',
     'debugger/webkit',
     'debugger/cordova',
@@ -75,6 +104,10 @@ function test() {
 
 gulp.task('build-test', ['build'], test);
 gulp.task('test', test);
+
+gulp.task('prepare-integration-tests', ['build'], function() {
+    return executeCordovaCommand(path.resolve(__dirname, "test", "testProject"), "plugin add cordova-plugin-camera");
+});
 
 gulp.task('watch-build-test', ['build', 'build-test'], function() {
     return gulp.watch(sources, ['build', 'build-test']);

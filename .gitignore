@@ -4,5 +4,6 @@ out/
 debugger/testCordovaApp/plugins/
 debugger/testCordovaApp/platforms/
 debugger/testCordovaApp/.vscode/
-test/testProject/.vscode
-test/testProject/platforms
+test/testProject/.vscode/
+test/testProject/platforms/
+test/testProject/plugins/

@@ -28,9 +28,8 @@ export function executeCordovaCommand(cwd: string, command: string): Q.Promise<a
     let cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
     let commandToExecute = cordovaCmd + " " + command;
 	let process = child_process.exec(commandToExecute, {cwd: cwd});
-        
+
     process.on("error", function(err: any): void {
-        // ENOENT error will be thrown if no Cordova.cmd is found
         deferred.reject(err);
     });
     process.stdout.on("close", exitCode => {
@@ -40,7 +39,7 @@ export function executeCordovaCommand(cwd: string, command: string): Q.Promise<a
            deferred.resolve({});
        }
 	});
-    
+
     return deferred.promise;
 }
 
@@ -61,7 +60,7 @@ export function removeCordovaComponents(componentName: string, projectRoot: stri
 
 export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
     let typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot);
-    
+
     // look for all the type defs in the typings folder
     if (!fs.existsSync(typeDefsFolder)) {
         return [];

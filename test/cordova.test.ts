@@ -28,6 +28,9 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
         if (fs.existsSync(vsCodeDir)) {
             rimraf.sync(vsCodeDir);
         }
+
+        // Remove the camera and whitelist plugins from the testProject
+        return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-camera", "cordova-plugin-whitelist"])
     });
 
     function checkTypeDefinitions(expectedTypedDefs: string[])

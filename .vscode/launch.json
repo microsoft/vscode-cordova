@@ -21,7 +21,7 @@
             "stopOnEntry": false,
             "sourceMaps": true,
             "outDir": "out/test",
-            "preLaunchTask": "build"
+            "preLaunchTask": "prepare-integration-tests"
         },
         {
             "name": "Launch debugger as server",
