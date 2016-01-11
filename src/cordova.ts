@@ -95,13 +95,8 @@ function getNewTypeDefinitions(installedPlugins: string[]): string[] {
         return;
     }
 
-    installedPlugins.forEach((pluginName: string) => {
-        if (pluginTypings[pluginName]) {
-            newTypeDefs.push(pluginTypings[pluginName].typingFile);
-        }
-    });
-
-    return newTypeDefs;
+    return installedPlugins.filter(pluginName => !!pluginTypings[pluginName])
+    .map(pluginName => pluginTypings[pluginName].typingFile);
 }
 
 function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: string[], tsdPath: string): void {

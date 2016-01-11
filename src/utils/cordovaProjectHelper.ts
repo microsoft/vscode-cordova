@@ -25,9 +25,7 @@ export class CordovaProjectHelper {
             fs.statSync(path);
             return true;
         } catch (error) {
-            if(error.code == "ENOENT") {
-                return false;
-            }
+            return false;
         }
     }
 
@@ -98,13 +96,6 @@ export class CordovaProjectHelper {
     }
 
     /**
-     *  Helper function to get the path of tsd.json file
-     */
-    public static getTsdJsonPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.TSD_SETTINGS_JSON_FILE);
-    }
-
-    /**
      *  Helper function to get the path to the Cordova type definitions folder
      */
     public static getCordovaTypeDefsPath(projectRoot: string): string {
@@ -112,9 +103,16 @@ export class CordovaProjectHelper {
     }
 
     /**
+     *  Helper function to get the path of tsd.json file
+     */
+    public static getTsdJsonPath(projectRoot: string): string {
+        return path.resolve(CordovaProjectHelper.getCordovaTypeDefsPath(projectRoot), CordovaProjectHelper.TSD_SETTINGS_JSON_FILE);
+    }
+
+    /**
      *  Helper function to get the path to the plugin type definitions folder
      */
     public static getCordovaPluginTypeDefsPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+        return path.resolve(CordovaProjectHelper.getCordovaTypeDefsPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
     }
 }
