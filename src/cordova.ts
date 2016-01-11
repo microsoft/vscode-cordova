@@ -1,10 +1,5 @@
-/**
-﻿ *******************************************************
-﻿ *                                                     *
-﻿ *   Copyright (C) Microsoft. All rights reserved.     *
-﻿ *                                                     *
-﻿ *******************************************************
-﻿ */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -18,7 +13,7 @@ import {CordovaCommandHelper} from './utils/CordovaCommandHelper';
 let PLUGIN_TYPE_DEFS_FILENAME =  "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
 let TSD_SETTINGS_JSON_FILE =  "tsd.json";
-let EXTENSION_CONF_FOLDERNAME =  "conf";
+let EXTENSION_SRC_FOLDERNAME =  "src";
 let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
 let TSD_JSON_INSTALLED_ATTR =  "installed";
 
@@ -35,7 +30,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // setup a file system watcher to watch changes to plugins in the Cordova project
     // Note that watching plugins/fetch.json file would suffice
 
-    let watcher = vscode.workspace.createFileSystemWatcher('**/plugins/fetch.json', false, false, false); //dispose in deactivate
+    let watcher = vscode.workspace.createFileSystemWatcher('**/plugins/fetch.json', false /*ignoreCreateEvents*/, false /*ignoreChangeEvents*/, false /*ignoreDeleteEvents*/);
     watcher.ignoreChangeEvents = false;
 
     watcher.onDidChange((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
@@ -68,16 +63,16 @@ function getTsdSettingsFilePath(cordovaProjectRoot: string): string {
     // Create the ".vscode" temp folder at the project root that will house the type definition files
     let typingsTargetPath = CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot);
 
-    let tsdJsonSrcPath = path.resolve(__dirname, "..", "..", EXTENSION_CONF_FOLDERNAME, TSD_SETTINGS_JSON_FILE);
+    let tsdJsonSrcPath = path.resolve(__dirname, "..", "..", EXTENSION_SRC_FOLDERNAME, TSD_SETTINGS_JSON_FILE);
     let tsdJsonDestPath = path.resolve(typingsTargetPath, TSD_SETTINGS_JSON_FILE);
 
     // Copy tsd.json only if the project does not have one already
-    if (fs.existsSync(tsdJsonSrcPath) && !fs.existsSync(tsdJsonDestPath)) {
+    if (CordovaProjectHelper.existsSync(tsdJsonSrcPath) && !CordovaProjectHelper.existsSync(tsdJsonDestPath)) {
         let tsdJsonContents = fs.readFileSync(tsdJsonSrcPath).toString();
         fs.writeFileSync(tsdJsonDestPath, tsdJsonContents);
     }
 
-    if (fs.existsSync(tsdJsonDestPath)) {
+    if (CordovaProjectHelper.existsSync(tsdJsonDestPath)) {
         return tsdJsonDestPath;
     } else {
         return null;
@@ -85,11 +80,11 @@ function getTsdSettingsFilePath(cordovaProjectRoot: string): string {
 }
 
 function getPluginTypingsJson() : any {
-    if (!fs.existsSync(PLUGIN_TYPE_DEFS_PATH)) {
+    if (CordovaProjectHelper.existsSync(PLUGIN_TYPE_DEFS_PATH)) {
+        return require(PLUGIN_TYPE_DEFS_PATH);
+    } else {
         console.error("Cordova plugin type declaration mapping file \"pluginTypings.json\" is missing from the extension folder.");
         return null;
-    } else {
-        return require(PLUGIN_TYPE_DEFS_PATH);
     }
 }
 
@@ -148,7 +143,7 @@ function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     let newTypeDefs = getNewTypeDefinitions(installedPlugins);
     let typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(cordovaProjectRoot);
 
-    if (!fs.existsSync(typeDefsFolder)) {
+    if (!CordovaProjectHelper.existsSync(typeDefsFolder)) {
         addPluginTypeDefinitions(installedPlugins, [], CordovaProjectHelper.getTsdJsonPath(cordovaProjectRoot));
         return;
     }

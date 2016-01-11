@@ -1,10 +1,5 @@
-/**
-﻿ *******************************************************
-﻿ *                                                     *
-﻿ *   Copyright (C) Microsoft. All rights reserved.     *
-﻿ *                                                     *
-﻿ *******************************************************
-﻿ */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as path from 'path';
 import * as Q from 'q';
@@ -21,7 +16,8 @@ export class TsdHelper {
         let query: tsd.Query;
         let options: tsd.Options;
 
-        tsdApi.readConfig(true).then(() => {
+        // We use default vales in the tsd.json config file for TypeScript Definition Manager
+        tsdApi.readConfig(true /*optional*/).then(() => {
             let opts: tsd.Options = new tsd.Options();
 
             let query = new tsd.Query();

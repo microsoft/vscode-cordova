@@ -1,10 +1,5 @@
-/**
-﻿ *******************************************************
-﻿ *                                                     *
-﻿ *   Copyright (C) Microsoft. All rights reserved.     *
-﻿ *                                                     *
-﻿ *******************************************************
-﻿ */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as assert from 'assert';
 import * as fs from 'fs';
@@ -25,7 +20,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     suiteTeardown(() => {
         // Cleanup the target folder for type definitions
-        if (fs.existsSync(vsCodeDir)) {
+        if (CordovaProjectHelper.existsSync(vsCodeDir)) {
             rimraf.sync(vsCodeDir);
         }
 
@@ -81,7 +76,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             return Q.delay(10000);
         }).then(res => {
             let appxPackagesParentPath = path.resolve(testProjectPath, "platforms", "windows", "AppPackages");
-            assert.ok(fs.existsSync(appxPackagesParentPath));
+            assert.ok(CordovaProjectHelper.existsSync(appxPackagesParentPath));
             return testUtils.removeCordovaComponents("platform", testProjectPath, ["windows"])
         });
     });

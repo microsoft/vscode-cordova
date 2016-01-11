@@ -1,17 +1,5 @@
-/**
-﻿ *******************************************************
-﻿ *                                                     *
-﻿ *   Copyright (C) Microsoft. All rights reserved.     *
-﻿ *                                                     *
-﻿ *******************************************************
-﻿ */
-/**
-﻿ *******************************************************
-﻿ *                                                     *
-﻿ *   Copyright (C) Microsoft. All rights reserved.     *
-﻿ *                                                     *
-﻿ *******************************************************
-﻿ */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as child_process from 'child_process';
 import * as fs from 'fs';
@@ -62,7 +50,7 @@ export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
     let typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot);
 
     // look for all the type defs in the typings folder
-    if (!fs.existsSync(typeDefsFolder)) {
+    if (!CordovaProjectHelper.existsSync(typeDefsFolder)) {
         return [];
     } else {
         return fs.readdirSync(typeDefsFolder);
