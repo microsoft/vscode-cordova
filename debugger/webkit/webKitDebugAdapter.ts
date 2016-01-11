@@ -235,6 +235,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
             reason = notification.hitBreakpoints.length ? 'breakpoint' : 'step';
         } else {
             reason = 'breakpoint'; // iOS webview is not specific about the cause of a debugger pause, so we default to breakpoint.
+
         }
 
         this.fireEvent(new StoppedEvent(reason, /*threadId=*/WebKitDebugAdapter.THREAD_ID, exceptionText));
