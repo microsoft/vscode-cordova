@@ -264,13 +264,13 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         return func().then(result => {
             if (condition(result)) {
                 return result;
-            } else {
-                if (iteration < maxRetries) {
-                    return Q.delay(delay).then(() => CordovaDebugAdapter.retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
-                } else {
-                    throw new Error(failure);
-                }
             }
+
+	    if (iteration < maxRetries) {
+                return Q.delay(delay).then(() => CordovaDebugAdapter.retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
+            }
+
+	    throw new Error(failure);
         });
     }
 
