@@ -1,9 +1,6 @@
 .DS_Store
 node_modules/
 out/
-test/testDebuggerProject/plugins/
-test/testDebuggerProject/platforms/
-test/testDebuggerProject/.vscode/
 test/testProject/.vscode/
 test/testProject/platforms/
 test/testProject/plugins/

@@ -44,10 +44,6 @@ export function activate(context: vscode.ExtensionContext): void {
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
-    context.subscriptions.push(vscode.commands.registerCommand('cordova.runDevice',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run --device")));
-    context.subscriptions.push(vscode.commands.registerCommand('cordova.emulate',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "emulate")));
 
     let tsdJsonPath = getTsdSettingsFilePath(cordovaProjectRoot);
 
@@ -74,18 +70,18 @@ function getTsdSettingsFilePath(cordovaProjectRoot: string): string {
 
     if (CordovaProjectHelper.existsSync(tsdJsonDestPath)) {
         return tsdJsonDestPath;
-    } else {
-        return null;
     }
+
+    return null;
 }
 
 function getPluginTypingsJson() : any {
     if (CordovaProjectHelper.existsSync(PLUGIN_TYPE_DEFS_PATH)) {
         return require(PLUGIN_TYPE_DEFS_PATH);
-    } else {
-        console.error("Cordova plugin type declaration mapping file \"pluginTypings.json\" is missing from the extension folder.");
-        return null;
     }
+
+    console.error("Cordova plugin type declaration mapping file \"pluginTypings.json\" is missing from the extension folder.");
+    return null;
 }
 
 function getNewTypeDefinitions(installedPlugins: string[]): string[] {
@@ -108,9 +104,9 @@ function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: s
     let typingsToAdd = installedPlugins.filter((pluginName: string) => {
         if (pluginTypings[pluginName]) {
             return currentTypeDefs.indexOf(pluginTypings[pluginName].typingFile) < 0;
-        } else {
-            return false;
         }
+
+        return false;
     }).map((pluginName: string) => {
         return pluginTypings[pluginName].queryString;
     });

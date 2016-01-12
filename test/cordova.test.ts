@@ -15,13 +15,12 @@ import {CordovaProjectHelper} from './../src/utils/CordovaProjectHelper';
 
 suite("VSCode Cordova extension - intellisense and command palette tests", () => {
     let testProjectPath: string = path.resolve(__dirname, "..", "..", "test", "testProject");
-    let vsCodeDir = path.resolve(testProjectPath, ".vscode");
-    let cordovaTypeDef: string = CordovaProjectHelper.getCordovaTypeDefsPath(testProjectPath);
+    let cordovaTypeDefDir: string = CordovaProjectHelper.getCordovaTypeDefsPath(testProjectPath);
 
     suiteTeardown(() => {
         // Cleanup the target folder for type definitions
-        if (CordovaProjectHelper.existsSync(vsCodeDir)) {
-            rimraf.sync(vsCodeDir);
+        if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
+            rimraf.sync(cordovaTypeDefDir);
         }
 
         // Remove the camera and whitelist plugins from the testProject
@@ -64,7 +63,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             let cordovaCmdsAvailable = results.filter((commandName: string) => {
                 return commandName.indexOf("cordova.") > -1
             });
-            assert.deepEqual(cordovaCmdsAvailable, ["cordova.build", "cordova.run", "cordova.runDevice", "cordova.emulate"])
+            assert.deepEqual(cordovaCmdsAvailable, ["cordova.build", "cordova.run"])
         });
     });
 

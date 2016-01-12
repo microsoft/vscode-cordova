@@ -26,14 +26,6 @@
             {
                 "command": "cordova.run",
                 "title": "Cordova: Run"
-            },
-            {
-                "command": "cordova.runDevice",
-                "title": "Cordova: Run on a Device"
-            },
-            {
-                "command": "cordova.emulate",
-                "title": "Cordova: Run in an emulator"
             }
         ],
         "debuggers": [

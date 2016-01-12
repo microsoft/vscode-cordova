@@ -37,14 +37,21 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
         console.log('Received Event: ' + id);
+    },
+
+    indexjsScript: function () {
+        console.log("Running script in index.js");
+    },
+
+    pluginScript: function () {
+        resolveLocalFileSystemURL('cdvfile://localhost/temporary/foo', function (entry) {
+            console.info(entry);
+        })
+    },
+
+    causeException: function () {
+        undefinedFunction();
     }
 };
 

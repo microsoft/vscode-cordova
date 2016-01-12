@@ -15,7 +15,7 @@ describe('CordovaPathTransformer', () => {
        let pathTransformer = new CordovaPathTransformer(logger);
 
        // __dirname is '/out/test/debugger' so we need to step up three levels to escape completely
-       let testapp = path.join(__dirname, '..', '..', '..', 'test', 'testDebuggerProject');
+       let testapp = path.join(__dirname, '..', '..', '..', 'test', 'testProject');
        pathTransformer.attach({cwd: testapp, platform: 'android', port: 1234});
 
        pathTransformer.getClientPath('file:///android_asset/www/js/index.js').toLowerCase().should.equal(path.resolve(testapp, 'www', 'js', 'index.js').toLowerCase());
