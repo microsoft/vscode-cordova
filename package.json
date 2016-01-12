@@ -4,6 +4,11 @@
     "description": "VS Code Extension for Cordova applications",
     "version": "0.0.1",
     "publisher": "Microsoft",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/vscode-cordova"
+    },
     "engines": {
         "vscode": "^0.10.1"
     },
