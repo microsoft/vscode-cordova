@@ -83,7 +83,7 @@
                         "sourceMaps": true
                     },
                     {
-                        "name": "Run iOS on emulator",
+                        "name": "Run iOS on simulator",
                         "type": "cordova",
                         "request": "launch",
                         "platform": "ios",
@@ -99,7 +99,7 @@
                         "sourceMaps": true
                     },
                     {
-                        "name": "Attach to running iOS on emulator",
+                        "name": "Attach to running iOS on simulator",
                         "type": "cordova",
                         "request": "attach",
                         "platform": "ios",
