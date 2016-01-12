@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import {TsdHelper} from './utils/tsdHelper';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/CordovaCommandHelper';
+import {Telemetry} from './utils/telemetry';
 
 let PLUGIN_TYPE_DEFS_FILENAME =  "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -17,6 +18,8 @@ let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
 let TSD_JSON_INSTALLED_ATTR =  "installed";
 
 export function activate(context: vscode.ExtensionContext): void {
+    // Asynchronously enable telemetry
+    Telemetry.init('vscode-cordova', require('./../../package.json').version, true);
     // Get the project root and check if it is a Cordova project
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 
@@ -105,6 +108,10 @@ function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: s
             return currentTypeDefs.indexOf(pluginTypings[pluginName].typingFile) < 0;
         }
 
+        // If we do not know the plugin, collect it anonymously for future prioritisation
+        let unknownPluginEvent = new Telemetry.TelemetryEvent('unknownPlugin');
+        unknownPluginEvent.setPiiProperty('plugin', pluginName);
+        Telemetry.send(unknownPluginEvent);
         return false;
     }).map((pluginName: string) => {
         return pluginTypings[pluginName].queryString;

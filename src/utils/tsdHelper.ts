@@ -4,6 +4,7 @@
 import * as path from 'path';
 import * as Q from 'q';
 import * as tsd from 'tsd';
+import {TelemetryHelper} from './telemetryHelper';
 
 export class TsdHelper {
    /**
@@ -12,28 +13,31 @@ export class TsdHelper {
     *   {queryStrings} - the name-pattern query strings for type definition files to be installed
     */
     public static installTypings(tsdJsonPath: string, queryStrings: string[]): void {
-        let tsdApi = tsd.getAPI(tsdJsonPath);
-        let query: tsd.Query;
-        let options: tsd.Options;
+        TelemetryHelper.generate('addTypings', (generator) => {
+            generator.add('addedQueryStrings', queryStrings, false);
+            let tsdApi = tsd.getAPI(tsdJsonPath);
+            let query: tsd.Query;
+            let options: tsd.Options;
 
-        // We use default vales in the tsd.json config file for TypeScript Definition Manager
-        tsdApi.readConfig(true /*optional*/).then(() => {
-            let opts: tsd.Options = new tsd.Options();
+            // We use default vales in the tsd.json config file for TypeScript Definition Manager
+            return tsdApi.readConfig(true /*optional*/).then(() => {
+                let opts: tsd.Options = new tsd.Options();
 
-            let query = new tsd.Query();
+                let query = new tsd.Query();
 
-            // Add each of the name pattern strings passed as a
-            // string array parameter to the query
-            queryStrings.forEach((namePattern: string) => {
-                query.addNamePattern(namePattern);
+                // Add each of the name pattern strings passed as a
+                // string array parameter to the query
+                queryStrings.forEach((namePattern: string) => {
+                    query.addNamePattern(namePattern);
+                });
+
+                query.versionMatcher = new tsd.VersionMatcher("latest");
+
+                return tsdApi.select(query, opts).then((selection: tsd.Selection) => {
+                    return tsdApi.install(selection, opts);
+                });
             });
-
-            query.versionMatcher = new tsd.VersionMatcher("latest");
-
-            return tsdApi.select(query, opts).then((selection: tsd.Selection) => {
-                return tsdApi.install(selection, opts);
-            });
-    	}).catch((err: Error): void => {
+        }).catch((err: Error): void => {
             // Catch all possible errors
             console.log(err);
         });

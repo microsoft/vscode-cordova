@@ -4,4 +4,10 @@
 import {CordovaDebugSession} from './cordovaDebugSession';
 import {DebugSession} from '../../debugger/common/debugSession';
 
-DebugSession.run(CordovaDebugSession);
+import {Telemetry} from '../utils/telemetry';
+import {TelemetryHelper} from '../utils/telemetryHelper';
+
+// Enable telemetry, forced on for now.
+Telemetry.init('vscode-cordova-debug-adapter', require('./../../../package.json').version, true).then(() => {
+    DebugSession.run(CordovaDebugSession);
+});
