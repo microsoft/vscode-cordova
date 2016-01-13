@@ -3,7 +3,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as rimraf from 'rimraf';
 import * as vscode from 'vscode';
 
 import {TsdHelper} from './utils/tsdHelper';
@@ -119,7 +118,7 @@ function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: strin
     currentTypeDefs.forEach((typeDef: string) => {
         if (newTypeDefs.indexOf(typeDef) < 0) {
             var fileToDelete = path.resolve(CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot), typeDef);
-            rimraf(fileToDelete, (err: Error) => {
+            fs.unlink(fileToDelete, (err: Error) => {
                 if (err) {
                     // Debug-only message
                     console.log("Failed to delete file " + fileToDelete);

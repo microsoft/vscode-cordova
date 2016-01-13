@@ -4,10 +4,10 @@
 
 import * as elementtree from 'elementtree';
 import * as fs from 'fs';
+import * as http from 'http';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
-import * as request from 'request';
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 
@@ -225,42 +225,55 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }
         }).then((packagePath) => {
             let devicePortDeferred = Q.defer<number>();
-            request.get(`http://localhost:${attachArgs.port}/json`, (err, response, body) => {
-                if (err) {
-                    this.outputLogger('Unable to communicate with ios_webkit_debug_proxy');
-                    devicePortDeferred.reject(err);
-                    return;
-                }
-                try {
-                    let endpointsList = JSON.parse(body);
-                    let devices = endpointsList.filter((entry) =>
-                        attachArgs.target.toLowerCase() === 'device' ? entry.deviceId !== 'SIMULATOR'
-                                                                     : entry.deviceId === 'SIMULATOR'
-                    );
-                    let device = devices[0];
-                    // device.url is of the form 'localhost:port'
-                    devicePortDeferred.resolve(parseInt(device.url.split(':')[1], 10));
-                } catch (e) {
-                    devicePortDeferred.reject('Unable to find iOS target device/simulator');
-                }
+            let findDeviceRequest = http.request(`http://localhost:${attachArgs.port}/json`, (res) => {
+                let responseContent = '';
+                res.on('data', (chunk) => {
+                    responseContent += chunk.toString();
+                });
+                res.on('end', () => {
+                    try {
+                        let endpointsList = JSON.parse(responseContent);
+                        let devices = endpointsList.filter((entry) =>
+                            attachArgs.target.toLowerCase() === 'device' ? entry.deviceId !== 'SIMULATOR'
+                                                                        : entry.deviceId === 'SIMULATOR'
+                        );
+                        let device = devices[0];
+                        // device.url is of the form 'localhost:port'
+                        devicePortDeferred.resolve(parseInt(device.url.split(':')[1], 10));
+                    } catch (e) {
+                        devicePortDeferred.reject('Unable to find iOS target device/simulator');
+                    }
+                });
             });
+            findDeviceRequest.on('error', (err: Error) => {
+                this.outputLogger('Unable to communicate with ios_webkit_debug_proxy');
+                devicePortDeferred.reject(err);
+            });
+            findDeviceRequest.end();
 
             let findWebviewFunc = (appPort) => {
                 return () => {
                     let deferred = Q.defer<any[]>();
-                    request.get(`http://localhost:${appPort}/json`, (err, response, body) => {
-                        if (err) {
-                            this.outputLogger('Unable to find target app');
+                    let findAppRequest = http.request(`http://localhost:${appPort}/json`, (res) => {
+                        let responseContent = '';
+                        res.on('data', (chunk) => {
+                           responseContent += chunk.toString();
+                        });
+                        res.on('end', () => {
+                            try {
+                                let webviewsList = JSON.parse(responseContent);
+                                deferred.resolve(webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1));
+                            } catch (e) {
+                                deferred.reject('Unable to find target app');
+                            }
+                        });
+                    });
+                    findAppRequest.on('error', (err: Error) => {
+                            this.outputLogger('Unable to communicate with device');
                             deferred.reject(err);
                             return;
-                        }
-                        try {
-                            let webviewsList = JSON.parse(body);
-                            deferred.resolve(webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1));
-                        } catch (e) {
-                            deferred.reject('Unable to find target app');
-                        }
                     });
+                    findAppRequest.end();
                     return deferred.promise;
                 };
             };
