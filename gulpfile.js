@@ -36,13 +36,14 @@ function executeCordovaCommand(cwd, command) {
 
 var sources = [
     'src',
-    'test',
+    'test/debugger',
     'typings',
     'debugger/adapter',
     'debugger/common',
     'debugger/test',
     'debugger/webkit',
-].map(function(tsFolder) { return tsFolder + '/**/*.ts'; });
+].map(function(tsFolder) { return tsFolder + '/**/*.ts'; })
+.concat(['test/*.ts']);
 
 var projectConfig = {
     noImplicitAny: false,
