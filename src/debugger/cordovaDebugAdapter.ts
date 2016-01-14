@@ -226,7 +226,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     // device.url is of the form 'localhost:port'
                     devicePortDeferred.resolve(parseInt(device.url.split(':')[1], 10));
                 } catch (e) {
-                    devicePortDeferred.reject('Unable to communicate with ios_webkit_debug_proxy');
+                    devicePortDeferred.reject('Unable to find iOS target device/simulator');
                 }
             });
 
@@ -235,7 +235,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     let deferred = Q.defer<any[]>();
                     request.get(`http://localhost:${appPort}/json`, (err, response, body) => {
                         if (err) {
-                            this.outputLogger('Unable to communicate with device');
+                            this.outputLogger('Unable to find target app');
                             deferred.reject(err);
                             return;
                         }
@@ -243,7 +243,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                             let webviewsList = JSON.parse(body);
                             deferred.resolve(webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1));
                         } catch (e) {
-                            deferred.reject('Unable to communicate with device');
+                            deferred.reject('Unable to find target app');
                         }
                     });
                     return deferred.promise;
