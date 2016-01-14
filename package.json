@@ -170,8 +170,19 @@
                         }
                     },
                     "attach": {
-                        "required": [],
+                        "required": [
+                            "platform"
+                        ],
                         "properties": {
+                            "platform": {
+                                "type": "string",
+                                "description": "The platform to run on"
+                            },
+                            "target": {
+                                "type": "string",
+                                "description": "either 'device', 'emulator', or identifier for a specific device / emulator",
+                                "default": "emulator"
+                            },
                             "sourceMaps": {
                                 "type": "boolean",
                                 "description": "Use JavaScriptsource maps (if they exist)",
