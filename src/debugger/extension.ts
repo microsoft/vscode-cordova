@@ -5,19 +5,31 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as Q from 'q';
 
-export function execCommand(command: string, errorLogger: (message: string) => void, options: any = {}): Q.Promise<string> {
+export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
-    child_process.exec(command, options, (error, stdout, stderr) => {
-        if (error) {
-            errorLogger(stderr.toString());
-            errorLogger(stdout.toString());
-            deferred.reject(error);
-        } else {
-            deferred.resolve(stdout.toString());
-        }
+    let proc = child_process.spawn(command, args, {stdio: 'pipe'});
+    let stderr = '';
+    let stdout = '';
+    proc.stderr.on('data', (data: Buffer) => {
+        stderr += data.toString();
     });
+    proc.stdout.on('data', (data: Buffer) => {
+        stdout += data.toString();
+    });
+    proc.on('error', (err: Error) => {
+        deferred.reject(err);
+    });
+    proc.on('exit', (code: number) => {
+        if (code !== 0) {
+            errorLogger(stderr);
+            errorLogger(stdout);
+            deferred.reject(`Error running '${command} ${args.join(' ')}'`);
+        }
+        deferred.resolve(stdout);
+    });
+
     return deferred.promise;
-    }
+}
 
 export function cordovaRunCommand(args: string[], errorLogger: (message: string) => void, cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();

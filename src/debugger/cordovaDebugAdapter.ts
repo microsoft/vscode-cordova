@@ -95,7 +95,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
         // Determine which device/emulator we are targeting
 
-        let adbDevicesResult = execCommand('adb devices', errorLogger).then((devicesOutput) => {
+        let adbDevicesResult = execCommand('adb', ['devices'], errorLogger)
+        .then((devicesOutput) => {
             if (attachArgs.target.toLowerCase() === 'device') {
                 let deviceMatch = /\n([^\t]+)\tdevice($|\n)/m.exec(devicesOutput.replace(/\r/g, ''));
                 if (!deviceMatch) {
@@ -111,6 +112,13 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 }
                 return emulatorMatch[1];
             }
+        }, (err: Error) => {
+            let errorCode: string = (<any>err).code;
+            if (errorCode && errorCode === 'ENOENT') {
+                throw new Error("Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code")
+            }
+            throw err;
+            return null; // Redundant return to appease typescript
         });
         let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml')).then((manifestContents) => {
             let parsedFile = elementtree.XML(manifestContents.toString());
@@ -118,15 +126,15 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             return parsedFile.attrib[packageKey];
         });
         return Q.all([packagePromise, adbDevicesResult]).spread((appPackageName, targetDevice) => {
-            let getPidCommand = `adb -s ${targetDevice} shell "ps | grep ${appPackageName}"`;
+            let getPidCommandArguments = ['-s', targetDevice, 'shell', `ps | grep ${appPackageName}`];
 
-            let findPidFunction = () => execCommand(getPidCommand, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
+            let findPidFunction = () => execCommand('adb', getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
 
             return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1]).then((pid) => {
                 // Configure port forwarding to the app
-                let forwardSocketCommand = `adb -s ${targetDevice} forward tcp:${attachArgs.port} localabstract:webview_devtools_remote_${pid}`;
+                let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
-                return execCommand(forwardSocketCommand, errorLogger);
+                return execCommand('adb', forwardSocketCommandArguments, errorLogger);
             });
         }).then(() => {
             let args: IAttachRequestArgs = {port: attachArgs.port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd };
@@ -160,7 +168,14 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     }
                     let ipaFile = path.join(buildFolder, ipaFiles[0]);
 
-                    return execCommand(`ideviceinstaller -i '${ipaFile}'`, errorLogger);
+                    return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error) => {
+                        let errorCode: string = (<any>err).code;
+                        if (errorCode && errorCode === 'ENOENT') {
+                            throw new Error("Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code")
+                        }
+                        throw err;
+                        return null;
+                    });
                 });
 
                 return Q.all([CordovaIosDeviceLauncher.getBundleIdentifier(workingDirectory), installPromise]);
