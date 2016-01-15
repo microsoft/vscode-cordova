@@ -16,6 +16,17 @@ export class CordovaIosDeviceLauncher {
     private static nativeDebuggerProxyInstance: child_process.ChildProcess;
     private static webDebuggerProxyInstance: child_process.ChildProcess;
 
+    public static cleanup(): void {
+        if (CordovaIosDeviceLauncher.nativeDebuggerProxyInstance) {
+            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.kill('SIGHUP');
+            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance = null;
+        }
+        if (CordovaIosDeviceLauncher.webDebuggerProxyInstance) {
+            CordovaIosDeviceLauncher.webDebuggerProxyInstance.kill();
+            CordovaIosDeviceLauncher.webDebuggerProxyInstance = null;
+        }
+    }
+
     public static getBundleIdentifier(projectRoot: string): Q.Promise<string> {
         return Q.nfcall(fs.readdir, path.join(projectRoot, 'platforms', 'ios')).then((files: string[]) => {
             let xcodeprojfiles = files.filter((file: string) => /\.xcodeproj$/.test(file));
@@ -291,3 +302,5 @@ export class CordovaIosDeviceLauncher {
         return commandString;
     }
 }
+
+process.on('exit', CordovaIosDeviceLauncher.cleanup);
