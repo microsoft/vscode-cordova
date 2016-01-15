@@ -107,7 +107,7 @@ gulp.task('build-test', ['build'], test);
 gulp.task('test', test);
 
 gulp.task('prepare-integration-tests', ['build'], function() {
-    return executeCordovaCommand(path.resolve(__dirname, "test", "testProject"), "plugin add cordova-plugin-camera");
+    return executeCordovaCommand(path.resolve(__dirname, "test", "testProject"), "plugin add cordova-plugin-file");
 });
 
 gulp.task('watch-build-test', ['build', 'build-test'], function() {

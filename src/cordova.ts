@@ -15,7 +15,6 @@ let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEF
 let TSD_SETTINGS_JSON_FILE =  "tsd.json";
 let EXTENSION_SRC_FOLDERNAME =  "src";
 let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
-let TSD_JSON_INSTALLED_ATTR =  "installed";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Get the project root and check if it is a Cordova project
@@ -31,7 +30,6 @@ export function activate(context: vscode.ExtensionContext): void {
     // Note that watching plugins/fetch.json file would suffice
 
     let watcher = vscode.workspace.createFileSystemWatcher('**/plugins/fetch.json', false /*ignoreCreateEvents*/, false /*ignoreChangeEvents*/, false /*ignoreDeleteEvents*/);
-    watcher.ignoreChangeEvents = false;
 
     watcher.onDidChange((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     watcher.onDidDelete((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
@@ -55,12 +53,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
 }
 
+export function deactivate(context: vscode.ExtensionContext): void {
+    console.log("Extension has been deactivated");
+}
+
 function getTsdSettingsFilePath(cordovaProjectRoot: string): string {
     // Create the ".vscode" temp folder at the project root that will house the type definition files
-    let typingsTargetPath = CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot);
-
     let tsdJsonSrcPath = path.resolve(__dirname, "..", "..", EXTENSION_SRC_FOLDERNAME, TSD_SETTINGS_JSON_FILE);
-    let tsdJsonDestPath = path.resolve(typingsTargetPath, TSD_SETTINGS_JSON_FILE);
+    let tsdJsonDestPath = CordovaProjectHelper.getTsdJsonPath(cordovaProjectRoot);
 
     // Copy tsd.json only if the project does not have one already
     if (CordovaProjectHelper.existsSync(tsdJsonSrcPath) && !CordovaProjectHelper.existsSync(tsdJsonDestPath)) {

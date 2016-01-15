@@ -23,8 +23,8 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             rimraf.sync(cordovaTypeDefDir);
         }
 
-        // Remove the camera and whitelist plugins from the testProject
-        return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-camera", "cordova-plugin-whitelist"])
+        // Remove the FileSystem and whitelist plugins from the testProject
+        return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file", "cordova-plugin-whitelist"])
     });
 
     function checkTypeDefinitions(expectedTypedDefs: string[])
@@ -35,7 +35,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     test('Plugin type definitions are installed on activation', () => {
         return Q.delay(10000).then(() => {
-            checkTypeDefinitions(["Camera.d.ts"]);
+            checkTypeDefinitions(["FileSystem.d.ts"]);
         });
     });
 
@@ -44,7 +44,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
         .then(() => {
             return Q.delay(10000);
         }).then(() => {
-            checkTypeDefinitions(["Camera.d.ts", "Device.d.ts"]);
+            checkTypeDefinitions(["Device.d.ts", "FileSystem.d.ts"]);
         });
     });
 
@@ -53,7 +53,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
         .then(() => {
             return Q.delay(10000);
         }).then(() => {
-             checkTypeDefinitions(["Camera.d.ts"]);
+             checkTypeDefinitions(["FileSystem.d.ts"]);
         });
     });
 

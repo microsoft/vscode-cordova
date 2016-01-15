@@ -74,5 +74,9 @@
     "cordova-plugin-websql": {
         "queryString": "cordova/plugins:WebSQL",
         "typingFile": "cordova/plugins/WebSQL.d.ts"
+    },
+    "ionic-plugin-keyboard": {
+        "queryString": "cordova-ionic/plugins:keyboard",
+        "typingFile": "cordova-ionic/plugins/keyboard.d.ts"
     }
 }
