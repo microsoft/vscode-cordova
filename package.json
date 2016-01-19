@@ -1,7 +1,7 @@
 {
     "name": "cordova-tools",
     "displayName": "Cordova tools",
-    "description": "Code-hinting, auto-complete, debugging and integrated commands for Apache Cordova (PhoneGap)",
+    "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
     "version": "1.0.0",
     "publisher": "vsmobile",
     "license": "MIT",
