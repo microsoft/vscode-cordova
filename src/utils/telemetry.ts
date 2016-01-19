@@ -154,7 +154,7 @@ export module Telemetry {
             private static machineId: string;
             private static telemetrySettings: ITelemetrySettings = null;
             private static TELEMETRY_SETTINGS_FILENAME: string = 'VSCodeTelemetrySettings.json';
-            private static APPINSIGHTS_INSTRUMENTATIONKEY: string = 'TODO'; // TODO: add appropriate appinsights key
+            private static APPINSIGHTS_INSTRUMENTATIONKEY: string = '10baf391-c2e3-4651-a726-e9b25d8470fd';
             private static REGISTRY_SQMCLIENT_NODE: string = '\\SOFTWARE\\Microsoft\\SQMClient';
             private static REGISTRY_USERID_VALUE: string = 'UserId';
             private static REGISTRY_MACHINEID_VALUE: string = 'MachineId';

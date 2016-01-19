@@ -35,17 +35,19 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
 
-            generator.add('platform', platform, false);
-
             return TelemetryHelper.determineProjectTypes(launchArgs.cwd)
-            .then((projectType) => generator.add('projectType', projectType, false)).then(() => {
+            .then((projectType) => generator.add('projectType', projectType, false))
+            .then(() => {
                 this.outputLogger(`Launching for ${platform} (This may take a while)...`);
                 switch (platform) {
                 case 'android':
+                    generator.add('platform', platform, false);
                     return this.launchAndroid(launchArgs);
                 case 'ios':
+                    generator.add('platform', platform, false);
                     return this.launchIos(launchArgs);
                 default:
+                    generator.add('unknownPlatform', platform, true);
                     throw new Error(`Unknown Platform: ${platform}`);
                 }
             }).then(() => {
@@ -61,16 +63,17 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
-            generator.add('platform', platform, false);
-
             return TelemetryHelper.determineProjectTypes(attachArgs.cwd).then((projectType) => generator.add('projectType', projectType, false)).then(() => {
                 this.outputLogger(`Attaching to ${platform}`);
                 switch (platform) {
                 case 'android':
+                    generator.add('platform', platform, false);
                     return this.attachAndroid(attachArgs);
                 case 'ios':
+                    generator.add('platform', platform, false);
                     return this.attachIos(attachArgs);
                 default:
+                    generator.add('unknownPlatform', platform, true);
                     throw new Error(`Unknown Platform: ${platform}`);
                 }
             }).then((processedAttachArgs: IAttachRequestArgs & {url?: string}) => {
