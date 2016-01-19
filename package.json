@@ -3,7 +3,7 @@
     "displayName": "Cordova tools",
     "description": "Code-hinting, auto-complete, debugging and integrated commands for Apache Cordova (PhoneGap)",
     "version": "1.0.0",
-    "publisher": "TACO",
+    "publisher": "vsmobile",
     "license": "MIT",
     "repository": {
         "type": "git",
