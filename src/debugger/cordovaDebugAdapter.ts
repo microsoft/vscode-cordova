@@ -4,10 +4,10 @@
 
 import * as elementtree from 'elementtree';
 import * as fs from 'fs';
+import * as http from 'http';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
-import * as request from 'request';
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 
@@ -112,13 +112,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 }
                 return emulatorMatch[1];
             }
-        }, (err: Error) => {
+        }, (err: Error): any => {
             let errorCode: string = (<any>err).code;
             if (errorCode && errorCode === 'ENOENT') {
-                throw new Error("Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code")
+                throw new Error('Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code');
             }
             throw err;
-            return null; // Redundant return to appease typescript
         });
         let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml')).then((manifestContents) => {
             let parsedFile = elementtree.XML(manifestContents.toString());
@@ -168,13 +167,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     }
                     let ipaFile = path.join(buildFolder, ipaFiles[0]);
 
-                    return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error) => {
+                    return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error): any => {
                         let errorCode: string = (<any>err).code;
                         if (errorCode && errorCode === 'ENOENT') {
-                            throw new Error("Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code")
+                            throw new Error('Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code');
                         }
                         throw err;
-                        return null;
                     });
                 });
 
@@ -224,54 +222,39 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 });
             }
         }).then((packagePath) => {
-            let devicePortDeferred = Q.defer<number>();
-            request.get(`http://localhost:${attachArgs.port}/json`, (err, response, body) => {
-                if (err) {
-                    this.outputLogger('Unable to communicate with ios_webkit_debug_proxy');
-                    devicePortDeferred.reject(err);
-                    return;
-                }
+            return this.promiseGet(`http://localhost:${attachArgs.port}/json`, 'Unable to communicate with ios_webkit_debug_proxy').then((response: string) => {
                 try {
-                    let endpointsList = JSON.parse(body);
+                    let endpointsList = JSON.parse(response);
                     let devices = endpointsList.filter((entry) =>
                         attachArgs.target.toLowerCase() === 'device' ? entry.deviceId !== 'SIMULATOR'
-                                                                     : entry.deviceId === 'SIMULATOR'
+                                                                    : entry.deviceId === 'SIMULATOR'
                     );
                     let device = devices[0];
                     // device.url is of the form 'localhost:port'
-                    devicePortDeferred.resolve(parseInt(device.url.split(':')[1], 10));
+                    return parseInt(device.url.split(':')[1], 10);
                 } catch (e) {
-                    devicePortDeferred.reject('Unable to find iOS target device/simulator');
+                    throw new Error('Unable to find iOS target device/simulator');
                 }
-            });
-
-            let findWebviewFunc = (appPort) => {
-                return () => {
-                    let deferred = Q.defer<any[]>();
-                    request.get(`http://localhost:${appPort}/json`, (err, response, body) => {
-                        if (err) {
-                            this.outputLogger('Unable to find target app');
-                            deferred.reject(err);
-                            return;
-                        }
+            }).then((targetPort) => {
+                let findWebviewFunc = () => {
+                    return this.promiseGet(`http://localhost:${targetPort}/json`, 'Unable to communicate with target')
+                    .then((response: string) => {
                         try {
-                            let webviewsList = JSON.parse(body);
-                            deferred.resolve(webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1));
+                            let webviewsList = JSON.parse(response);
+                            return webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1);
                         } catch (e) {
-                            deferred.reject('Unable to find target app');
+                            throw new Error('Unable to find target app');
                         }
                     });
-                    return deferred.promise;
                 };
-            };
 
-            return devicePortDeferred.promise.then((appPort) => {
-                return CordovaDebugAdapter.retryAsync(findWebviewFunc(appPort), (webviewList) => webviewList.length > 0, attachArgs.attachAttempts, 1, attachArgs.attachDelay, 'Unable to find webview').then((relevantViews) => {
-                    return {port: appPort, url: relevantViews[0].url};
+                return CordovaDebugAdapter.retryAsync(findWebviewFunc, (webviewList) => webviewList.length > 0, attachArgs.attachAttempts, 1, attachArgs.attachDelay, 'Unable to find webview')
+                .then((relevantViews) => {
+                    return {port: targetPort, url: relevantViews[0].url};
                 });
-            }).then(({port, url}) => {
-                return {port: port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd, url: url};
             });
+        }).then(({port, url}) => {
+            return {port: port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd, url: url};
         });
     }
 
@@ -289,4 +272,21 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
+    private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
+        let deferred = Q.defer<string>();
+        let req = http.get(url, function (res) {
+            let responseString = '';
+            res.on('data', (data: Buffer) => {
+                responseString += data.toString();
+            });
+            res.on('end', () => {
+                deferred.resolve(responseString);
+            });
+        });
+        req.on('error', (err: Error) => {
+            this.outputLogger(reqErrMessage);
+            deferred.reject(err);
+        });
+        return deferred.promise;
+    }
 }
