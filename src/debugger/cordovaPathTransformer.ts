@@ -123,7 +123,7 @@ export class CordovaPathTransformer implements IDebugTransformer {
         // default behavior is to use that exact file, if it exists. We don't want that,
         // since we know that those files are copies of files in the local folder structure.
         // A simple workaround for this is to convert file:// paths to bogus http:// paths
-        sourceUrl = sourceUrl.replace("file:///", "http://localhost/");
+        sourceUrl = sourceUrl.replace('file:///', 'http://localhost/');
         let defaultPath = utils.webkitUrlToClientPath(this._cordovaRoot, sourceUrl);
         let wwwRoot = path.join(this._cordovaRoot, 'www');
         if (defaultPath.toLowerCase().indexOf(wwwRoot.toLowerCase()) === 0) {

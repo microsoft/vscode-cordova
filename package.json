@@ -225,6 +225,14 @@
         "compile": "gulp",
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
+    "dependencies": {
+        "elementtree": "^0.1.6",
+        "plist-with-patches": "^0.5.1",
+        "q": "^1.4.1",
+        "source-map": "^0.5.3",
+        "ws": "0.8.0",
+        "tsd": "^0.6.5"
+    },
     "devDependencies": {
         "gulp": "^3.9.0",
         "gulp-mocha": "^2.1.3",
@@ -240,13 +248,5 @@
         "tslint": "^2.5.1",
         "typescript": "^1.6.2",
         "vscode": "0.10.x"
-    },
-    "dependencies": {
-        "elementtree": "^0.1.6",
-        "plist-with-patches": "^0.5.1",
-        "q": "^1.4.1",
-        "source-map": "^0.5.3",
-        "ws": "0.8.0",
-        "tsd": "^0.6.5"
     }
 }
