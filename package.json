@@ -226,10 +226,12 @@
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "dependencies": {
+        "applicationinsights": "^0.15.8",
         "elementtree": "^0.1.6",
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
         "source-map": "^0.5.3",
+        "winreg": "0.0.13",
         "ws": "0.8.0",
         "tsd": "^0.6.5"
     },

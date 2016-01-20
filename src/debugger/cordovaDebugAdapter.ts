@@ -17,6 +17,8 @@ import {WebKitDebugAdapter} from '../../debugger/webkit/WebKitDebugAdapter';
 
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 
+import {TelemetryHelper} from '../utils/telemetryHelper';
+
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private outputLogger: (message: string,  error?: boolean) => void;
 
@@ -26,44 +28,61 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
-        launchArgs.port = launchArgs.port || 9222;
-        launchArgs.target = launchArgs.target || 'emulator';
-        launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
-        let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
-        return new Promise<void>((resolve, reject) => Q({}).then(() => {
-            this.outputLogger(`Launching for ${platform} (This may take a while)...`);
-            switch (platform) {
-            case 'android':
-                return this.launchAndroid(launchArgs);
-            case 'ios':
-                return this.launchIos(launchArgs);
-            default:
-                throw new Error(`Unknown Platform: ${platform}`);
-            }
-        }).then(() => {
-            return this.attach(launchArgs);
+        return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
+            launchArgs.port = launchArgs.port || 9222;
+            launchArgs.target = launchArgs.target || 'emulator';
+            launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
+
+            let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
+
+            return TelemetryHelper.determineProjectTypes(launchArgs.cwd)
+            .then((projectType) => generator.add('projectType', projectType, false))
+            .then(() => {
+                this.outputLogger(`Launching for ${platform} (This may take a while)...`);
+                switch (platform) {
+                case 'android':
+                    generator.add('platform', platform, false);
+                    return this.launchAndroid(launchArgs);
+                case 'ios':
+                    generator.add('platform', platform, false);
+                    return this.launchIos(launchArgs);
+                default:
+                    generator.add('unknownPlatform', platform, true);
+                    throw new Error(`Unknown Platform: ${platform}`);
+                }
+            }).then(() => {
+                return this.attach(launchArgs);
+            });
         }).done(resolve, reject));
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
-        attachArgs.port = attachArgs.port || 9222;
-        attachArgs.target = attachArgs.target || 'emulator';
-        attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
-        let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
-        return new Promise<void>((resolve, reject) => Q({}).then(() => {
-            this.outputLogger(`Attaching to ${platform}`);
-            switch (platform) {
-            case 'android':
-                return this.attachAndroid(attachArgs);
-            case 'ios':
-                return this.attachIos(attachArgs);
-            default:
-                throw new Error(`Unknown Platform: ${platform}`);
-            }
-        }).then((processedAttachArgs: IAttachRequestArgs & {url?: string}) => {
-            this.outputLogger('Attaching to app.');
-            this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
-            return super.attach(processedAttachArgs, processedAttachArgs.url);
+        return new Promise<void>((resolve, reject) => TelemetryHelper.generate('attach', (generator) => {
+            attachArgs.port = attachArgs.port || 9222;
+            attachArgs.target = attachArgs.target || 'emulator';
+            attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
+            let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
+
+            return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
+            .then((projectType) => generator.add('projectType', projectType, false))
+            .then(() => {
+                this.outputLogger(`Attaching to ${platform}`);
+                switch (platform) {
+                case 'android':
+                    generator.add('platform', platform, false);
+                    return this.attachAndroid(attachArgs);
+                case 'ios':
+                    generator.add('platform', platform, false);
+                    return this.attachIos(attachArgs);
+                default:
+                    generator.add('unknownPlatform', platform, true);
+                    throw new Error(`Unknown Platform: ${platform}`);
+                }
+            }).then((processedAttachArgs: IAttachRequestArgs & {url?: string}) => {
+                this.outputLogger('Attaching to app.');
+                this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
+                return super.attach(processedAttachArgs, processedAttachArgs.url);
+            });
         }).done(resolve, reject));
     }
 
@@ -119,7 +138,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }
             throw err;
         });
-        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml')).then((manifestContents) => {
+        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml'))
+        .then((manifestContents) => {
             let parsedFile = elementtree.XML(manifestContents.toString());
             let packageKey = 'package';
             return parsedFile.attrib[packageKey];
@@ -129,7 +149,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             let findPidFunction = () => execCommand('adb', getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
 
-            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1]).then((pid) => {
+            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1])
+            .then((pid) => {
                 // Configure port forwarding to the app
                 let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
