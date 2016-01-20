@@ -2,8 +2,6 @@
 **/*.map
 .vscode/**
 typings/**
-debugger/testapp/**
-test/**
 *.vsix
 gulpfile.js
 tsconfig.json
@@ -15,8 +13,10 @@ out/test/**
 node_modules/ws/node_modules/bufferutil/**
 node_modules/ws/node_modules/utf-8-validate/**
 node_modules/.bin/**
+node_modules/gulp/**
+node_modules/vsce/**
 
-out/test/**
 test/**
 src/**
+debugger/**
 .gitignore
