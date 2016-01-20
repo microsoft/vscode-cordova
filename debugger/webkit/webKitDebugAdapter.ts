@@ -54,7 +54,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
     private clearTargetContext(): void {
         this._scriptsById = new Map<WebKitProtocol.Debugger.ScriptId, WebKitProtocol.Debugger.Script>();
         this._committedBreakpointsByUrl = new Map<string, WebKitProtocol.Debugger.BreakpointId[]>();
-        this._setBreakpointsRequestQ = Promise.resolve<void>();
+        this._setBreakpointsRequestQ = Promise.resolve<void>(void 0);
         this.fireEvent(new Event('clearTargetContext'));
     }
 
@@ -120,14 +120,14 @@ export class WebKitDebugAdapter implements IDebugAdapter {
         return this._attach(port, launchUrl);
     }
 
-    public attach(args: IAttachRequestArgs): Promise<void> {
+    public attach(args: IAttachRequestArgs, url?: string): Promise<void> {
         if (args.port == null) {
             return utils.errP('The "port" field is required in the attach config.');
         }
 
         this.initDiagnosticLogging('attach', args);
 
-        return this._attach(args.port);
+        return this._attach(args.port, url);
     }
 
     private initDiagnosticLogging(name: string, args: IAttachRequestArgs | ILaunchRequestArgs): void {
@@ -163,7 +163,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
                     return utils.errP(e);
                 });
         } else {
-            return Promise.resolve<void>();
+            return Promise.resolve<void>(void 0);
         }
     }
 
@@ -231,8 +231,11 @@ export class WebKitDebugAdapter implements IDebugAdapter {
 
                 this._currentStack[0].scopeChain.unshift({ type: 'Exception', object: scopeObject });
             }
-        } else {
+        } else if (notification.hitBreakpoints) {
             reason = notification.hitBreakpoints.length ? 'breakpoint' : 'step';
+        } else {
+            reason = 'breakpoint'; // iOS webview is not specific about the cause of a debugger pause, so we default to breakpoint.
+
         }
 
         this.fireEvent(new StoppedEvent(reason, /*threadId=*/WebKitDebugAdapter.THREAD_ID, exceptionText));
@@ -288,7 +291,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
 
         this.clearEverything();
 
-        return Promise.resolve<void>();
+        return Promise.resolve<void>(void 0);
     }
 
     public setBreakpoints(args: ISetBreakpointsArgs): Promise<ISetBreakpointsResponseBody> {
@@ -322,7 +325,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
 
     private _clearAllBreakpoints(url: string): Promise<void> {
         if (!this._committedBreakpointsByUrl.has(url)) {
-            return Promise.resolve<void>();
+            return Promise.resolve<void>(void 0);
         }
 
         // Remove breakpoints one at a time. Seems like it would be ok to send the removes all at once,
@@ -331,7 +334,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
         // does not break there.
         return this._committedBreakpointsByUrl.get(url).reduce((p, bpId) => {
             return p.then(() => this._webKitConnection.debugger_removeBreakpoint(bpId)).then(() => { });
-        }, Promise.resolve<void>()).then(() => {
+        }, Promise.resolve<void>(void 0)).then(() => {
             this._committedBreakpointsByUrl.set(url, null);
         });
     }
@@ -513,7 +516,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
                 return { variables };
             });
         } else {
-            return Promise.resolve();
+            return Promise.resolve({});
         }
     }
 

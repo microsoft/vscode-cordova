@@ -1,3 +1,6 @@
 .DS_Store
 node_modules/
 out/
+test/testProject/.vscode/
+test/testProject/platforms/
+test/testProject/plugins/

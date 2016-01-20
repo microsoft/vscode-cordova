@@ -134,7 +134,7 @@ export class WebKitConnection {
                 const responseArray = JSON.parse(jsonResponse);
                 if (Array.isArray(responseArray)) {
                     // Filter out extension targets and other things
-                    let pages = responseArray.filter(target => target && target.type === 'page');
+                    let pages = responseArray.filter(target => target && (!target.type || target.type === 'page'));
 
                     // If a url was specified (launch mode), try to filter to that url
                     if (url) {

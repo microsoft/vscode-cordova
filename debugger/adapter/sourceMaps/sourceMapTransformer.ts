@@ -183,13 +183,13 @@ export class SourceMapTransformer implements IDebugTransformer {
 
     public scriptParsed(event: DebugProtocol.Event): void {
         if (this._sourceMaps) {
+            this._allRuntimeScriptPaths.add(event.body.scriptUrl);
+
             if (!event.body.sourceMapURL) {
                 return;
             }
 
             this._sourceMaps.ProcessNewSourceMap(event.body.scriptUrl, event.body.sourceMapURL).then(() => {
-                this._allRuntimeScriptPaths.add(event.body.scriptUrl);
-
                 const sources = this._sourceMaps.AllMappedSources(event.body.scriptUrl);
                 if (sources) {
                     utils.Logger.log(`SourceMaps.scriptParsed: ${event.body.scriptUrl} was just loaded and has mapped sources: ${JSON.stringify(sources) }`);
