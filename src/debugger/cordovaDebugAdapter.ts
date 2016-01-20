@@ -4,10 +4,10 @@
 
 import * as elementtree from 'elementtree';
 import * as fs from 'fs';
+import * as http from 'http';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
-import * as request from 'request';
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 
@@ -16,6 +16,8 @@ import {cordovaRunCommand, execCommand} from './extension';
 import {WebKitDebugAdapter} from '../../debugger/webkit/WebKitDebugAdapter';
 
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
+
+import {TelemetryHelper} from '../utils/telemetryHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private outputLogger: (message: string,  error?: boolean) => void;
@@ -26,44 +28,61 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
-        launchArgs.port = launchArgs.port || 9222;
-        launchArgs.target = launchArgs.target || 'emulator';
-        launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
-        let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
-        return new Promise<void>((resolve, reject) => Q({}).then(() => {
-            this.outputLogger(`Launching for ${platform} (This may take a while)...`);
-            switch (platform) {
-            case 'android':
-                return this.launchAndroid(launchArgs);
-            case 'ios':
-                return this.launchIos(launchArgs);
-            default:
-                throw new Error(`Unknown Platform: ${platform}`);
-            }
-        }).then(() => {
-            return this.attach(launchArgs);
+        return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
+            launchArgs.port = launchArgs.port || 9222;
+            launchArgs.target = launchArgs.target || 'emulator';
+            launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
+
+            let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
+
+            return TelemetryHelper.determineProjectTypes(launchArgs.cwd)
+            .then((projectType) => generator.add('projectType', projectType, false))
+            .then(() => {
+                this.outputLogger(`Launching for ${platform} (This may take a while)...`);
+                switch (platform) {
+                case 'android':
+                    generator.add('platform', platform, false);
+                    return this.launchAndroid(launchArgs);
+                case 'ios':
+                    generator.add('platform', platform, false);
+                    return this.launchIos(launchArgs);
+                default:
+                    generator.add('unknownPlatform', platform, true);
+                    throw new Error(`Unknown Platform: ${platform}`);
+                }
+            }).then(() => {
+                return this.attach(launchArgs);
+            });
         }).done(resolve, reject));
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
-        attachArgs.port = attachArgs.port || 9222;
-        attachArgs.target = attachArgs.target || 'emulator';
-        attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
-        let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
-        return new Promise<void>((resolve, reject) => Q({}).then(() => {
-            this.outputLogger(`Attaching to ${platform}`);
-            switch (platform) {
-            case 'android':
-                return this.attachAndroid(attachArgs);
-            case 'ios':
-                return this.attachIos(attachArgs);
-            default:
-                throw new Error(`Unknown Platform: ${platform}`);
-            }
-        }).then((processedAttachArgs: IAttachRequestArgs & {url?: string}) => {
-            this.outputLogger('Attaching to app.');
-            this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
-            return super.attach(processedAttachArgs, processedAttachArgs.url);
+        return new Promise<void>((resolve, reject) => TelemetryHelper.generate('attach', (generator) => {
+            attachArgs.port = attachArgs.port || 9222;
+            attachArgs.target = attachArgs.target || 'emulator';
+            attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
+            let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
+
+            return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
+            .then((projectType) => generator.add('projectType', projectType, false))
+            .then(() => {
+                this.outputLogger(`Attaching to ${platform}`);
+                switch (platform) {
+                case 'android':
+                    generator.add('platform', platform, false);
+                    return this.attachAndroid(attachArgs);
+                case 'ios':
+                    generator.add('platform', platform, false);
+                    return this.attachIos(attachArgs);
+                default:
+                    generator.add('unknownPlatform', platform, true);
+                    throw new Error(`Unknown Platform: ${platform}`);
+                }
+            }).then((processedAttachArgs: IAttachRequestArgs & {url?: string}) => {
+                this.outputLogger('Attaching to app.');
+                this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
+                return super.attach(processedAttachArgs, processedAttachArgs.url);
+            });
         }).done(resolve, reject));
     }
 
@@ -95,7 +114,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
         // Determine which device/emulator we are targeting
 
-        let adbDevicesResult = execCommand('adb devices', errorLogger).then((devicesOutput) => {
+        let adbDevicesResult = execCommand('adb', ['devices'], errorLogger)
+        .then((devicesOutput) => {
             if (attachArgs.target.toLowerCase() === 'device') {
                 let deviceMatch = /\n([^\t]+)\tdevice($|\n)/m.exec(devicesOutput.replace(/\r/g, ''));
                 if (!deviceMatch) {
@@ -111,22 +131,30 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 }
                 return emulatorMatch[1];
             }
+        }, (err: Error): any => {
+            let errorCode: string = (<any>err).code;
+            if (errorCode && errorCode === 'ENOENT') {
+                throw new Error('Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code');
+            }
+            throw err;
         });
-        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml')).then((manifestContents) => {
+        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml'))
+        .then((manifestContents) => {
             let parsedFile = elementtree.XML(manifestContents.toString());
             let packageKey = 'package';
             return parsedFile.attrib[packageKey];
         });
         return Q.all([packagePromise, adbDevicesResult]).spread((appPackageName, targetDevice) => {
-            let getPidCommand = `adb -s ${targetDevice} shell "ps | grep ${appPackageName}"`;
+            let getPidCommandArguments = ['-s', targetDevice, 'shell', `ps | grep ${appPackageName}`];
 
-            let findPidFunction = () => execCommand(getPidCommand, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
+            let findPidFunction = () => execCommand('adb', getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
 
-            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1]).then((pid) => {
+            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1])
+            .then((pid) => {
                 // Configure port forwarding to the app
-                let forwardSocketCommand = `adb -s ${targetDevice} forward tcp:${attachArgs.port} localabstract:webview_devtools_remote_${pid}`;
+                let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
-                return execCommand(forwardSocketCommand, errorLogger);
+                return execCommand('adb', forwardSocketCommandArguments, errorLogger);
             });
         }).then(() => {
             let args: IAttachRequestArgs = {port: attachArgs.port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd };
@@ -160,7 +188,13 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     }
                     let ipaFile = path.join(buildFolder, ipaFiles[0]);
 
-                    return execCommand(`ideviceinstaller -i '${ipaFile}'`, errorLogger);
+                    return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error): any => {
+                        let errorCode: string = (<any>err).code;
+                        if (errorCode && errorCode === 'ENOENT') {
+                            throw new Error('Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code');
+                        }
+                        throw err;
+                    });
                 });
 
                 return Q.all([CordovaIosDeviceLauncher.getBundleIdentifier(workingDirectory), installPromise]);
@@ -209,54 +243,39 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 });
             }
         }).then((packagePath) => {
-            let devicePortDeferred = Q.defer<number>();
-            request.get(`http://localhost:${attachArgs.port}/json`, (err, response, body) => {
-                if (err) {
-                    this.outputLogger('Unable to communicate with ios_webkit_debug_proxy');
-                    devicePortDeferred.reject(err);
-                    return;
-                }
+            return this.promiseGet(`http://localhost:${attachArgs.port}/json`, 'Unable to communicate with ios_webkit_debug_proxy').then((response: string) => {
                 try {
-                    let endpointsList = JSON.parse(body);
+                    let endpointsList = JSON.parse(response);
                     let devices = endpointsList.filter((entry) =>
                         attachArgs.target.toLowerCase() === 'device' ? entry.deviceId !== 'SIMULATOR'
-                                                                     : entry.deviceId === 'SIMULATOR'
+                                                                    : entry.deviceId === 'SIMULATOR'
                     );
                     let device = devices[0];
                     // device.url is of the form 'localhost:port'
-                    devicePortDeferred.resolve(parseInt(device.url.split(':')[1], 10));
+                    return parseInt(device.url.split(':')[1], 10);
                 } catch (e) {
-                    devicePortDeferred.reject('Unable to find iOS target device/simulator');
+                    throw new Error('Unable to find iOS target device/simulator');
                 }
-            });
-
-            let findWebviewFunc = (appPort) => {
-                return () => {
-                    let deferred = Q.defer<any[]>();
-                    request.get(`http://localhost:${appPort}/json`, (err, response, body) => {
-                        if (err) {
-                            this.outputLogger('Unable to find target app');
-                            deferred.reject(err);
-                            return;
-                        }
+            }).then((targetPort) => {
+                let findWebviewFunc = () => {
+                    return this.promiseGet(`http://localhost:${targetPort}/json`, 'Unable to communicate with target')
+                    .then((response: string) => {
                         try {
-                            let webviewsList = JSON.parse(body);
-                            deferred.resolve(webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1));
+                            let webviewsList = JSON.parse(response);
+                            return webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1);
                         } catch (e) {
-                            deferred.reject('Unable to find target app');
+                            throw new Error('Unable to find target app');
                         }
                     });
-                    return deferred.promise;
                 };
-            };
 
-            return devicePortDeferred.promise.then((appPort) => {
-                return CordovaDebugAdapter.retryAsync(findWebviewFunc(appPort), (webviewList) => webviewList.length > 0, attachArgs.attachAttempts, 1, attachArgs.attachDelay, 'Unable to find webview').then((relevantViews) => {
-                    return {port: appPort, url: relevantViews[0].url};
+                return CordovaDebugAdapter.retryAsync(findWebviewFunc, (webviewList) => webviewList.length > 0, attachArgs.attachAttempts, 1, attachArgs.attachDelay, 'Unable to find webview')
+                .then((relevantViews) => {
+                    return {port: targetPort, url: relevantViews[0].url};
                 });
-            }).then(({port, url}) => {
-                return {port: port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd, url: url};
             });
+        }).then(({port, url}) => {
+            return {port: port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd, url: url};
         });
     }
 
@@ -274,4 +293,21 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
+    private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
+        let deferred = Q.defer<string>();
+        let req = http.get(url, function (res) {
+            let responseString = '';
+            res.on('data', (data: Buffer) => {
+                responseString += data.toString();
+            });
+            res.on('end', () => {
+                deferred.resolve(responseString);
+            });
+        });
+        req.on('error', (err: Error) => {
+            this.outputLogger(reqErrMessage);
+            deferred.reject(err);
+        });
+        return deferred.promise;
+    }
 }

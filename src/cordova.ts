@@ -3,12 +3,12 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as rimraf from 'rimraf';
 import * as vscode from 'vscode';
 
 import {TsdHelper} from './utils/tsdHelper';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/CordovaCommandHelper';
+import {Telemetry} from './utils/telemetry';
 
 let PLUGIN_TYPE_DEFS_FILENAME =  "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -17,6 +17,8 @@ let EXTENSION_SRC_FOLDERNAME =  "src";
 let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
 
 export function activate(context: vscode.ExtensionContext): void {
+    // Asynchronously enable telemetry
+    Telemetry.init('vscode-cordova', require('./../../package.json').version, true);
     // Get the project root and check if it is a Cordova project
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 
@@ -106,6 +108,10 @@ function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: s
             return currentTypeDefs.indexOf(pluginTypings[pluginName].typingFile) < 0;
         }
 
+        // If we do not know the plugin, collect it anonymously for future prioritisation
+        let unknownPluginEvent = new Telemetry.TelemetryEvent('unknownPlugin');
+        unknownPluginEvent.setPiiProperty('plugin', pluginName);
+        Telemetry.send(unknownPluginEvent);
         return false;
     }).map((pluginName: string) => {
         return pluginTypings[pluginName].queryString;
@@ -119,7 +125,7 @@ function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: strin
     currentTypeDefs.forEach((typeDef: string) => {
         if (newTypeDefs.indexOf(typeDef) < 0) {
             var fileToDelete = path.resolve(CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot), typeDef);
-            rimraf(fileToDelete, (err: Error) => {
+            fs.unlink(fileToDelete, (err: Error) => {
                 if (err) {
                     // Debug-only message
                     console.log("Failed to delete file " + fileToDelete);

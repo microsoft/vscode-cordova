@@ -1,9 +1,9 @@
 {
-    "name": "vscode-cordova",
-    "displayName": "vscode-cordova",
-    "description": "VS Code Extension for Cordova applications",
-    "version": "0.0.1",
-    "publisher": "Microsoft",
+    "name": "cordova-tools",
+    "displayName": "Cordova tools",
+    "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
+    "version": "1.0.0",
+    "publisher": "vsmobile",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -14,7 +14,7 @@
     },
     "categories": [
         "Debuggers",
-    "Other"
+        "Other"
     ],
     "activationEvents": [
         "onLanguage:javascript",
@@ -225,6 +225,16 @@
         "compile": "gulp",
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
+    "dependencies": {
+        "applicationinsights": "^0.15.8",
+        "elementtree": "^0.1.6",
+        "plist-with-patches": "^0.5.1",
+        "q": "^1.4.1",
+        "source-map": "^0.5.3",
+        "winreg": "0.0.13",
+        "ws": "0.8.0",
+        "tsd": "^0.6.5"
+    },
     "devDependencies": {
         "gulp": "^3.9.0",
         "gulp-mocha": "^2.1.3",
@@ -234,20 +244,11 @@
         "gulp-util": "^3.0.5",
         "mocha": "^2.3.3",
         "mockery": "^1.4.0",
+        "rimraf": "^2.5.0",
         "should": "^4.6.5",
         "sinon": "^1.17.2",
         "tslint": "^2.5.1",
         "typescript": "^1.6.2",
         "vscode": "0.10.x"
-    },
-    "dependencies": {
-        "elementtree": "^0.1.6",
-        "plist-with-patches": "^0.5.1",
-        "q": "^1.4.1",
-        "request": "^2.67.0",
-        "rimraf": "^2.5.0",
-        "source-map": "^0.5.3",
-        "ws": "0.8.0",
-        "tsd": "^0.6.5"
     }
 }
