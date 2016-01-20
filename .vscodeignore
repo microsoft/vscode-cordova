@@ -13,8 +13,16 @@ out/test/**
 node_modules/ws/node_modules/bufferutil/**
 node_modules/ws/node_modules/utf-8-validate/**
 node_modules/.bin/**
-node_modules/gulp/**
+node_modules/gulp*/**
 node_modules/vsce/**
+node_modules/mocha/**
+node_modules/mockery/**
+node_modules/rimraf/**
+node_modules/should/**
+node_modules/sinon/**
+node_modules/tslint/**
+node_modules/typescript/**
+node_modules/vscode/**
 
 test/**
 src/**
