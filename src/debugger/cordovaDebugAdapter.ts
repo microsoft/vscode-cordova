@@ -53,7 +53,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }).then(() => {
                 return this.attach(launchArgs);
             });
-        }).done(resolve,reject));
+        }).done(resolve, reject));
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
@@ -63,7 +63,9 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
-            return TelemetryHelper.determineProjectTypes(attachArgs.cwd).then((projectType) => generator.add('projectType', projectType, false)).then(() => {
+            return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
+            .then((projectType) => generator.add('projectType', projectType, false))
+            .then(() => {
                 this.outputLogger(`Attaching to ${platform}`);
                 switch (platform) {
                 case 'android':
@@ -136,7 +138,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }
             throw err;
         });
-        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml')).then((manifestContents) => {
+        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml'))
+        .then((manifestContents) => {
             let parsedFile = elementtree.XML(manifestContents.toString());
             let packageKey = 'package';
             return parsedFile.attrib[packageKey];
@@ -146,7 +149,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             let findPidFunction = () => execCommand('adb', getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
 
-            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1]).then((pid) => {
+            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match,  5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1])
+            .then((pid) => {
                 // Configure port forwarding to the app
                 let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
