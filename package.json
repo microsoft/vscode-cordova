@@ -249,6 +249,7 @@
         "sinon": "^1.17.2",
         "tslint": "^2.5.1",
         "typescript": "^1.6.2",
-        "vscode": "0.10.x"
+        "vscode": "0.10.x",
+        "vsce": "latest"
     }
 }
