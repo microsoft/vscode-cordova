@@ -161,24 +161,20 @@ export module Telemetry {
             private static INTERNAL_DOMAIN_SUFFIX: string = 'microsoft.com';
             private static INTERNAL_USER_ENV_VAR: string = 'TACOINTERNAL';
 
-            private static get tacoHome(): string {
-                if (process.env['TACO_HOME']) {
-                    return process.env['TACO_HOME'];
-                }
-
+            private static get settingsHome(): string {
                 switch (os.platform()) {
                     case 'win32':
-                        return path.join(process.env['APPDATA'], 'taco_home');
+                        return path.join(process.env['APPDATA'], 'vscode-cordova');
                     case 'darwin':
                     case 'linux':
-                        return path.join(process.env['HOME'], '.taco_home');
+                        return path.join(process.env['HOME'], '.vscode-cordova');
                     default:
                         throw new Error('UnexpectedPlatform');
                 };
             }
 
             private static get telemetrySettingsFile(): string {
-                return path.join(TelemetryUtils.tacoHome, TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
+                return path.join(TelemetryUtils.settingsHome, TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
             }
 
             public static init(appVersion: string, isOptedInValue: boolean): Q.Promise<any> {
@@ -297,7 +293,7 @@ export module Telemetry {
             }
 
             /*
-             * Load settings data from TACO_HOME/TelemetrySettings.json
+             * Load settings data from settingsHome/TelemetrySettings.json
              */
             private static loadSettings(): ITelemetrySettings {
                 try {
@@ -311,11 +307,11 @@ export module Telemetry {
             }
 
             /*
-             * Save settings data in TACO_HOME/TelemetrySettings.json
+             * Save settings data in settingsHome/TelemetrySettings.json
              */
             private static saveSettings(): void {
-                if (!fs.existsSync(TelemetryUtils.tacoHome)) {
-                    fs.mkdirSync(TelemetryUtils.tacoHome);
+                if (!fs.existsSync(TelemetryUtils.settingsHome)) {
+                    fs.mkdirSync(TelemetryUtils.settingsHome);
                 }
 
                 fs.writeFileSync(TelemetryUtils.telemetrySettingsFile, JSON.stringify(TelemetryUtils.telemetrySettings));
