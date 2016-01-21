@@ -10,11 +10,11 @@ export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_FOLDERNAME =  "typings";
     private static PROJECT_TYPINGS_PLUGINS_FOLDERNAME =  "plugins";
     private static PROJECT_TYPINGS_CORDOVA_FOLDERNAME =  "cordova";
+    private static PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME =  "cordova-ionic";
     private static VSCODE_DIR: string = ".vscode";
     private static PLUGINS_FETCH_FILENAME: string = "fetch.json";
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
-    private static TSD_SETTINGS_JSON_FILE =  "tsd.json";
 
     /**
      *  Helper function check if a file exists.
@@ -27,6 +27,42 @@ export class CordovaProjectHelper {
         } catch (error) {
             return false;
         }
+    }
+
+
+    /**
+     *  Helper (synchronous) function to create a directory recursively
+     */
+    public static makeDirectoryRecursive(dirPath: string): void {
+        let parentPath = path.dirname(dirPath);
+        if(!CordovaProjectHelper.existsSync(parentPath)) {
+            CordovaProjectHelper.makeDirectoryRecursive(parentPath);
+        }
+
+        fs.mkdirSync(dirPath)
+    }
+
+    /**
+     *  Helper function to asynchronously copy a file
+     */
+    public static copyFile(from: string, to: string, encoding?: string): Q.Promise<any> {
+        var deferred: Q.Deferred<any> = Q.defer();
+        var destFile: fs.WriteStream = fs.createWriteStream(to, { encoding: encoding });
+        var srcFile: fs.ReadStream = fs.createReadStream(from, { encoding: encoding });
+        destFile.on("finish", function(): void {
+            deferred.resolve({});
+        });
+
+        destFile.on("error", function(e: Error): void {
+            deferred.reject(e);
+        });
+
+        srcFile.on("error", function(e: Error): void {
+            deferred.reject(e);
+        });
+
+        srcFile.pipe(destFile);
+        return deferred.promise;
     }
 
     /**
@@ -82,11 +118,10 @@ export class CordovaProjectHelper {
      *  Creates the target path if it does not exist already.
      */
     public static getOrCreateTypingsTargetPath(projectRoot: string): string {
-        let targetPath: string;
         if (projectRoot) {
-           targetPath = path.resolve(projectRoot, CordovaProjectHelper.VSCODE_DIR);
+           let targetPath = path.resolve(projectRoot, CordovaProjectHelper.VSCODE_DIR, CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME);
            if(!CordovaProjectHelper.existsSync(targetPath)) {
-               fs.mkdirSync(targetPath);
+               CordovaProjectHelper.makeDirectoryRecursive(targetPath);
            }
 
            return targetPath;
@@ -96,23 +131,16 @@ export class CordovaProjectHelper {
     }
 
     /**
-     *  Helper function to get the path to the Cordova type definitions folder
-     */
-    public static getCordovaTypeDefsPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME);
-    }
-
-    /**
-     *  Helper function to get the path of tsd.json file
-     */
-    public static getTsdJsonPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.TSD_SETTINGS_JSON_FILE);
-    }
-
-    /**
-     *  Helper function to get the path to the plugin type definitions folder
+     *  Helper function to get the path to Cordova plugin type definitions folder
      */
     public static getCordovaPluginTypeDefsPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+    }
+
+    /**
+     *  Helper function to get the path to Ionic plugin type definitions folder
+     */
+    public static getIonicPluginTypeDefsPath(projectRoot: string): string {
+        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
     }
 }
