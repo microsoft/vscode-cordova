@@ -154,7 +154,7 @@ export module Telemetry {
             private static machineId: string;
             private static telemetrySettings: ITelemetrySettings = null;
             private static TELEMETRY_SETTINGS_FILENAME: string = 'VSCodeTelemetrySettings.json';
-            private static APPINSIGHTS_INSTRUMENTATIONKEY: string = '10baf391-c2e3-4651-a726-e9b25d8470fd';
+            private static APPINSIGHTS_INSTRUMENTATIONKEY: string = 'AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217'; // Matches vscode telemetry key
             private static REGISTRY_SQMCLIENT_NODE: string = '\\SOFTWARE\\Microsoft\\SQMClient';
             private static REGISTRY_USERID_VALUE: string = 'UserId';
             private static REGISTRY_MACHINEID_VALUE: string = 'MachineId';
@@ -180,21 +180,30 @@ export module Telemetry {
             public static init(appVersion: string, isOptedInValue: boolean): Q.Promise<any> {
                 TelemetryUtils.loadSettings();
 
-                appInsights.setup(TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY)
+                let client = appInsights.setup(TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY)
+                    .setOfflineMode(true)
                     .setAutoCollectConsole(false)
                     .setAutoCollectRequests(false)
                     .setAutoCollectPerformance(false)
-                    .setAutoCollectExceptions(true)
-                    .start();
+                    .setAutoCollectExceptions(false)
+                    .start().client;
                 appInsights.client.config.maxBatchIntervalMs = 100;
-                (<any>appInsights.client.channel).setOfflineMode(true);
                 sender.WAIT_BETWEEN_RESEND = 0;
                 telemetryLogger.disableWarnings = true;
+
+                if (client && client.context && client.context.keys && client.context.tags) {
+                    // Remove potential PII
+                    let machineNameKey = client.context.keys.deviceMachineName;
+                    client.context.tags[machineNameKey] = '';
+                }
 
                 if (appVersion) {
                     var context: Context = appInsights.client.context;
                     context.tags[context.keys.applicationVersion] = appVersion;
                 }
+
+                // Change endpoint to match Aimov key
+                client.config.endpointUrl = "https://vortex.data.microsoft.com/collect/v1";
 
                 return Q.all([TelemetryUtils.getUserId(), TelemetryUtils.getMachineId()])
                 .spread<any>(function (userId: string, machineId: string): void {

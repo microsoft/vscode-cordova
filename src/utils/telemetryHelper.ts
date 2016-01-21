@@ -195,21 +195,6 @@ export class TelemetryHelper {
         });
     }
 
-    public static sendCommandFailureTelemetry(commandName: string, error: any, projectProperties: ICommandTelemetryProperties, args: string[] = null): void {
-        var errorEvent: Telemetry.TelemetryEvent = TelemetryHelper.createBasicCommandTelemetry(commandName, args);
-
-        if (error.isTacoError) {
-            errorEvent.properties['tacoErrorCode'] = error.errorCode;
-            errorEvent.properties['tacoErrorName'] = error.name;
-        } else if (error.message) {
-            errorEvent.setPiiProperty('errorMessage', error.message);
-        }
-
-        TelemetryHelper.addTelemetryEventProperties(errorEvent, projectProperties);
-
-        Telemetry.send(errorEvent);
-    }
-
     public static sendCommandSuccessTelemetry(commandName: string, commandProperties: ICommandTelemetryProperties, args: string[] = null): void {
         var successEvent: Telemetry.TelemetryEvent = TelemetryHelper.createBasicCommandTelemetry(commandName, args);
 
@@ -250,32 +235,6 @@ export class TelemetryHelper {
     public static generate<T>(name: string, codeGeneratingTelemetry: { (telemetry: TelemetryGenerator): Thenable<T> }): Q.Promise<T> {
         var generator: TelemetryGenerator = new TelemetryGenerator(name);
         return generator.time(null, () => codeGeneratingTelemetry(generator)).finally(() => generator.send());
-    }
-
-    /**
-     * Creates an object that can be passed to external modules to report telemetry events.
-     * @param componentName - a name to prefix on the telemetry event names received from the external module.
-     * @param baseProps - a collection of properties to include with all events.
-     * @param errorHandler - an optional function to wrap or modify any errors (wrap in a TacoError, for example).
-     * @returns {{sendTelemetry: (function(string, ITelemetryProperties, Error=): void)}}
-     */
-    public static getExternalTelemetryObject(componentName: string, baseProps: Telemetry.ITelemetryProperties, errorHandler?: (error: Error) => Error): IExternalTelemetryProvider {
-        return {
-            sendTelemetry: function (event: string, props: Telemetry.ITelemetryProperties, error?: Error): void {
-                var telemetryProperties: ICommandTelemetryProperties = {};
-                TelemetryHelper.addTelemetryProperties(telemetryProperties, baseProps);
-                TelemetryHelper.addTelemetryProperties(telemetryProperties, props);
-                var name = componentName + '/' + event;
-                if (error) {
-                    if (errorHandler) {
-                        error = errorHandler(error);
-                    }
-                    TelemetryHelper.sendCommandFailureTelemetry(name, error, telemetryProperties);
-                } else {
-                    TelemetryHelper.sendCommandSuccessTelemetry(name, telemetryProperties);
-                }
-            }
-        };
     }
 
     private static addTelemetryProperties(telemetryProperties: ICommandTelemetryProperties, newProps: Telemetry.ITelemetryProperties): void {
