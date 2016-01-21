@@ -33,6 +33,18 @@
                 "title": "Cordova: Run"
             }
         ],
+        "keybindings": [
+            {
+                "command": "cordova.build",
+                "key": "ctrl+shift+b",
+                "mac": "cmd+shift+b"
+            },
+            {
+                "command": "cordova.run",
+                "key": "ctrl+f5",
+                "mac": "cmd+f5"
+            }
+        ],
         "debuggers": [
             {
                 "type": "cordova",
