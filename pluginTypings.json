@@ -1,82 +1,65 @@
 ﻿{
+    "cordova": {
+        "typingFile": "cordova/cordova.d.ts"
+    },
     "cordova-plugin-battery-status": {
-        "queryString": "cordova/plugins:BatteryStatus",
         "typingFile": "cordova/plugins/BatteryStatus.d.ts"
     },
     "cordova-plugin-camera": {
-        "queryString": "cordova/plugins:Camera",
         "typingFile": "cordova/plugins/Camera.d.ts"
     },
     "cordova-plugin-contacts": {
-        "queryString": "cordova/plugins:Contact",
         "typingFile": "cordova/plugins/Contact.d.ts"
     },
     "cordova-plugin-device": {
-        "queryString": "cordova/plugins:Device",
         "typingFile": "cordova/plugins/Device.d.ts"
     },
     "cordova-plugin-device-motion": {
-        "queryString": "cordova/plugins:DeviceMotion",
         "typingFile": "cordova/plugins/DeviceMotion.d.ts"
     },
     "cordova-plugin-device-orientation": {
-        "queryString": "cordova/plugins:DeviceOrientation",
         "typingFile": "cordova/plugins/DeviceOrientation.d.ts"
     },
     "cordova-plugin-dialogs": {
-        "queryString": "cordova/plugins:Dialogs",
         "typingFile": "cordova/plugins/Dialogs.d.ts"
     },
     "cordova-plugin-file": {
-        "queryString": "cordova/plugins:FileSystem",
         "typingFile": "cordova/plugins/FileSystem.d.ts"
     },
     "cordova-plugin-file-transfer": {
-        "queryString": "cordova/plugins:FileTransfer",
         "typingFile": "cordova/plugins/FileTransfer.d.ts"
     },
     "cordova-plugin-globalization": {
-        "queryString": "cordova/plugins:Globalization",
         "typingFile": "cordova/plugins/Globalization.d.ts"
     },
     "cordova-plugin-inappbrowser": {
-        "queryString": "cordova/plugins:InAppBrowser",
         "typingFile": "cordova/plugins/InAppBrowser.d.ts"
     },
     "cordova-plugin-media": {
-        "queryString": "cordova/plugins:Media",
         "typingFile": "cordova/plugins/Media.d.ts"
     },
     "cordova-plugin-media-capture": {
-        "queryString": "cordova/plugins:MediaCapture",
         "typingFile": "cordova/plugins/MediaCapture.d.ts"
     },
     "cordova-plugin-network-information": {
-        "queryString": "cordova/plugins:NetworkInformation",
         "typingFile": "cordova/plugins/NetworkInformation.d.ts"
     },
     "phonegap-plugin-push": {
-        "queryString": "cordova/plugins:Push",
         "typingFile": "cordova/plugins/Push.d.ts"
     },
     "cordova-plugin-splashscreen": {
-        "queryString": "cordova/plugins:Splashscreen",
         "typingFile": "cordova/plugins/Splashscreen.d.ts"
     },
     "cordova-plugin-statusbar": {
-        "queryString": "cordova/plugins:StatusBar",
         "typingFile": "cordova/plugins/StatusBar.d.ts"
     },
     "cordova-plugin-vibration": {
-        "queryString": "cordova/plugins:Vibration",
         "typingFile": "cordova/plugins/Vibration.d.ts"
     },
     "cordova-plugin-websql": {
-        "queryString": "cordova/plugins:WebSQL",
         "typingFile": "cordova/plugins/WebSQL.d.ts"
     },
     "ionic-plugin-keyboard": {
-        "queryString": "cordova-ionic/plugins:keyboard",
         "typingFile": "cordova-ionic/plugins/keyboard.d.ts"
     }
 }

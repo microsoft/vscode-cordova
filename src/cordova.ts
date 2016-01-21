@@ -12,8 +12,6 @@ import {Telemetry} from './utils/telemetry';
 
 let PLUGIN_TYPE_DEFS_FILENAME =  "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
-let TSD_SETTINGS_JSON_FILE =  "tsd.json";
-let EXTENSION_SRC_FOLDERNAME =  "src";
 let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -45,10 +43,13 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
 
-    let tsdJsonPath = getTsdSettingsFilePath(cordovaProjectRoot);
+    let pluginTypings = getPluginTypingsJson();
+    if (!pluginTypings) {
+        return;
+    }
 
     // Install the type defintion files for Cordova
-    TsdHelper.installTypings(tsdJsonPath, [CORDOVA_TYPINGS_QUERYSTRING]);
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile]);
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
@@ -57,24 +58,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function deactivate(context: vscode.ExtensionContext): void {
     console.log("Extension has been deactivated");
-}
-
-function getTsdSettingsFilePath(cordovaProjectRoot: string): string {
-    // Create the ".vscode" temp folder at the project root that will house the type definition files
-    let tsdJsonSrcPath = path.resolve(__dirname, "..", "..", EXTENSION_SRC_FOLDERNAME, TSD_SETTINGS_JSON_FILE);
-    let tsdJsonDestPath = CordovaProjectHelper.getTsdJsonPath(cordovaProjectRoot);
-
-    // Copy tsd.json only if the project does not have one already
-    if (CordovaProjectHelper.existsSync(tsdJsonSrcPath) && !CordovaProjectHelper.existsSync(tsdJsonDestPath)) {
-        let tsdJsonContents = fs.readFileSync(tsdJsonSrcPath).toString();
-        fs.writeFileSync(tsdJsonDestPath, tsdJsonContents);
-    }
-
-    if (CordovaProjectHelper.existsSync(tsdJsonDestPath)) {
-        return tsdJsonDestPath;
-    }
-
-    return null;
 }
 
 function getPluginTypingsJson() : any {
@@ -97,7 +80,7 @@ function getNewTypeDefinitions(installedPlugins: string[]): string[] {
     .map(pluginName => pluginTypings[pluginName].typingFile);
 }
 
-function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: string[], tsdPath: string): void {
+function addPluginTypeDefinitions(projectRoot: string, installedPlugins: string[], currentTypeDefs: string[]): void {
     let pluginTypings = getPluginTypingsJson();
     if (!pluginTypings) {
         return;
@@ -114,17 +97,17 @@ function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: s
         Telemetry.send(unknownPluginEvent);
         return false;
     }).map((pluginName: string) => {
-        return pluginTypings[pluginName].queryString;
+        return pluginTypings[pluginName].typingFile;
     });
 
-    TsdHelper.installTypings(tsdPath, typingsToAdd);
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd);
 }
 
 function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: string[], newTypeDefs: string[]): void {
     // Find the type definition files that need to be removed
     currentTypeDefs.forEach((typeDef: string) => {
         if (newTypeDefs.indexOf(typeDef) < 0) {
-            var fileToDelete = path.resolve(CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot), typeDef);
+            var fileToDelete = path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typeDef);
             fs.unlink(fileToDelete, (err: Error) => {
                 if (err) {
                     // Debug-only message
@@ -135,22 +118,37 @@ function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: strin
     });
 }
 
+function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: string, typeDefinitionFile: string) {
+    return path.relative(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), path.resolve(parentPath, typeDefinitionFile)).replace(/\\/g, "\/")
+}
+
 function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     let installedPlugins: string[] = CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot);
     let newTypeDefs = getNewTypeDefinitions(installedPlugins);
-    let typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(cordovaProjectRoot);
+    let cordovaPluginTypesFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(cordovaProjectRoot);
+    let ionicPluginTypesFolder = CordovaProjectHelper.getIonicPluginTypeDefsPath(cordovaProjectRoot);
 
-    if (!CordovaProjectHelper.existsSync(typeDefsFolder)) {
-        addPluginTypeDefinitions(installedPlugins, [], CordovaProjectHelper.getTsdJsonPath(cordovaProjectRoot));
+    if (!CordovaProjectHelper.existsSync(cordovaPluginTypesFolder)) {
+        addPluginTypeDefinitions(cordovaProjectRoot, installedPlugins, []);
         return;
     }
 
-    fs.readdir(typeDefsFolder, (err: Error, currentTypeDefs: string[]) => {
-        if (err) {
-            return;
+    let currentTypeDefs: string[] = [];
+
+    // Now read the type definitions of Cordova plugins
+    fs.readdir(cordovaPluginTypesFolder, (err: Error, cordovaTypeDefs: string[]) => {
+        if (cordovaTypeDefs) {
+            currentTypeDefs = cordovaTypeDefs.map(typeDef => getRelativeTypeDefinitionFilePath(cordovaProjectRoot, cordovaPluginTypesFolder, typeDef));
         }
 
-        addPluginTypeDefinitions(installedPlugins, currentTypeDefs, CordovaProjectHelper.getTsdJsonPath(cordovaProjectRoot));
-        removePluginTypeDefinitions(cordovaProjectRoot, currentTypeDefs, newTypeDefs);
+        // Now read the type definitions of Ionic plugins
+        fs.readdir(ionicPluginTypesFolder, (err: Error, ionicTypeDefs: string[]) => {
+            if (ionicTypeDefs) {
+                currentTypeDefs.concat(ionicTypeDefs.map(typeDef => getRelativeTypeDefinitionFilePath(cordovaProjectRoot, ionicPluginTypesFolder, typeDef)));
+            }
+
+            addPluginTypeDefinitions(cordovaProjectRoot, installedPlugins, currentTypeDefs);
+            removePluginTypeDefinitions(cordovaProjectRoot, currentTypeDefs, newTypeDefs);
+        });
     });
 }
