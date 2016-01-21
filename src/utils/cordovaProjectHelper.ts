@@ -118,7 +118,6 @@ export class CordovaProjectHelper {
      *  Creates the target path if it does not exist already.
      */
     public static getOrCreateTypingsTargetPath(projectRoot: string): string {
-        let targetPath: string;
         if (projectRoot) {
            let targetPath = path.resolve(projectRoot, CordovaProjectHelper.VSCODE_DIR, CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME);
            if(!CordovaProjectHelper.existsSync(targetPath)) {
