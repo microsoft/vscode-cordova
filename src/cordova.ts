@@ -19,7 +19,7 @@ let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
-    Telemetry.init('vscode-cordova', require('./../../package.json').version, true);
+    Telemetry.init('cordova-tools', require('./../../package.json').version, true);
     // Get the project root and check if it is a Cordova project
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 

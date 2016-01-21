@@ -12,6 +12,6 @@ import {Telemetry} from '../utils/telemetry';
 let version = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf-8')).version;
 
 // Enable telemetry, forced on for now.
-Telemetry.init('vscode-cordova-debug-adapter', version, true).then(() => {
+Telemetry.init('cordova-tools-debug-adapter', version, true).then(() => {
     DebugSession.run(CordovaDebugSession);
 });
