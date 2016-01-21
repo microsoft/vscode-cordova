@@ -9,6 +9,7 @@ import {TsdHelper} from './utils/tsdHelper';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/CordovaCommandHelper';
 import {Telemetry} from './utils/telemetry';
+import {TelemetryHelper} from './utils/telemetryHelper';
 
 let PLUGIN_TYPE_DEFS_FILENAME =  "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -109,7 +110,7 @@ function addPluginTypeDefinitions(installedPlugins: string[], currentTypeDefs: s
         }
 
         // If we do not know the plugin, collect it anonymously for future prioritisation
-        let unknownPluginEvent = new Telemetry.TelemetryEvent('unknownPlugin');
+        let unknownPluginEvent = TelemetryHelper.createTelemetryEvent('unknownPlugin');
         unknownPluginEvent.setPiiProperty('plugin', pluginName);
         Telemetry.send(unknownPluginEvent);
         return false;

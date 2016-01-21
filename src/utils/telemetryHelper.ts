@@ -159,6 +159,10 @@ export interface IProjectType {
 }
 
 export class TelemetryHelper {
+    public static createTelemetryEvent(eventName: string): Telemetry.TelemetryEvent {
+        return new Telemetry.TelemetryEvent(Telemetry.appName + '/' + eventName);
+    }
+
     public static determineProjectTypes(projectRoot: string): Q.Promise<IProjectType> {
         let promiseExists = (file: string) => {
             var deferred = Q.defer<boolean>();
