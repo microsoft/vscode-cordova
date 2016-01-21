@@ -5,7 +5,6 @@ typings/**
 *.vsix
 gulpfile.js
 tsconfig.json
-tsd.json
 tslint.json
 
 out/test/**
