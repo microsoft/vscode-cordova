@@ -12,6 +12,7 @@
 import * as appInsights from 'applicationinsights';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
+import * as getmac from 'getmac';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
@@ -24,7 +25,7 @@ var telemetryLogger = require ('applicationinsights/Library/Logging');
 
 
 /**
- * Telemetry module is agnostic to the application using it so functions included here should also conform to that.
+ * Telemetry module specialized for vscode integration.
  */
 export module Telemetry {
         export var appName: string;
@@ -220,14 +221,14 @@ export module Telemetry {
             public static addCommonProperties(event: any): void {
                 if (Telemetry.isOptedIn) {
                     // for the opt out event, don't include tracking properties
-                    event.properties['userId'] = TelemetryUtils.userId;
-                    event.properties['machineId'] = TelemetryUtils.machineId;
+                    event.properties['cordova.userId'] = TelemetryUtils.userId;
+                    event.properties['cordova.machineId'] = TelemetryUtils.machineId;
                 }
 
-                event.properties['sessionId'] = TelemetryUtils.sessionId;
-                event.properties['userType'] = TelemetryUtils.userType;
-                event.properties['hostOS'] = os.platform();
-                event.properties['hostOSRelease'] = os.release();
+                event.properties['cordova.sessionId'] = TelemetryUtils.sessionId;
+                event.properties['cordova.userType'] = TelemetryUtils.userType;
+                event.properties['cordova.hostOS'] = os.platform();
+                event.properties['cordova.hostOSRelease'] = os.release();
             }
 
             public static generateGuid(): string {
@@ -344,15 +345,16 @@ export module Telemetry {
                 }
             }
 
-            private static generateMachineId(): string {
-                var macAddress: string = TelemetryUtils.getMacAddress();
-                return crypto.createHash('sha256').update(macAddress, 'utf8').digest('hex');
+            private static generateMachineId(): Q.Promise<string> {
+                return TelemetryUtils.getMacAddress().then((macAddress: string) => {
+                    return crypto.createHash('sha256').update(macAddress, 'utf8').digest('hex');
+                });
             }
 
             private static getMachineId(): Q.Promise<string> {
                 var machineId: string = TelemetryUtils.telemetrySettings.machineId;
                 if (!machineId) {
-                    return TelemetryUtils.getUniqueId(TelemetryUtils.REGISTRY_MACHINEID_VALUE, winreg.HKLM, TelemetryUtils.generateMachineId)
+                    return TelemetryUtils.generateMachineId()
                     .then(function(id: string): Q.Promise<string> {
                         TelemetryUtils.telemetrySettings.machineId = id;
                         return Q.resolve(id);
@@ -363,20 +365,12 @@ export module Telemetry {
                 }
             }
 
-            private static getMacAddress(): string {
-                var macAddress: string = '';
-                var interfaces: any = os.networkInterfaces();
-                Object.keys(interfaces).some((key: string) => {
-                    var mac: string = interfaces[key][0]['mac'];
-
-                    if (mac && mac !== '00:00:00:00:00:00') {
-                        macAddress = mac;
-                    }
-
-                    return !!macAddress;
+            private static getMacAddress(): Q.Promise<string> {
+                // Return a mac address, or failing that, a unique ID
+                // using getmac to attempt to match telemetry identifiers of vs code
+                return Q.nfcall(getmac.getMac).catch(() => {
+                    return TelemetryUtils.generateGuid();
                 });
-
-                return macAddress;
             }
 
             private static getUserId(): Q.Promise<string> {
