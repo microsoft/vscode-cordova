@@ -5,6 +5,11 @@
     "version": "1.0.0",
     "publisher": "vsmobile",
     "license": "MIT",
+    "icon": "images/icon.png",
+    "galleryBanner": {
+      "color": "#feb943",
+      "theme": "dark"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/Microsoft/vscode-cordova"
