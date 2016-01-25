@@ -352,7 +352,7 @@ interface Client {
      * @param properties   map[string, string] - additional data used to filter events and metrics in the portal. Defaults to empty.
      * @param dependencyKind   ContractsModule.DependencyKind of this dependency. Defaults to Other.
      * @param async  True if the dependency was executed asynchronously, false otherwise. Defaults to false
-     * @param dependencySource  ContractsModule.DependencySourceType of this dependency. Defaults to Undefined. 
+     * @param dependencySource  ContractsModule.DependencySourceType of this dependency. Defaults to Undefined.
      */
     trackDependency(name: string, commandName: string, elapsedTimeMs: number, success: boolean, dependencyTypeName?: string, properties?: {}, dependencyKind?: any, async?: boolean, dependencySource?: number): void;
     /**
@@ -458,6 +458,8 @@ interface ApplicationInsights {
      * @returns {ApplicationInsights} this interface
      */
     enableVerboseLogging(): ApplicationInsights;
+
+    setOfflineMode(value: boolean): ApplicationInsights;
 }
 
 declare module "applicationinsights" {
