@@ -4,6 +4,28 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 
 ![Choose Cordova debugger](images/overview.png)
 
+## Install it
+
+Click the **Get Started** button on this page.
+
+You'll also have to do a few more things:
+
+1. Open a Terminal (on a Mac) or a Command Prompt (on a Windows computer).
+2. Run `npm install -g cordova`
+3. If you're planning on targeting iOS devices, install [HomeBrew](http://brew.sh/) on your Mac.
+
+    Then open a Terminal and run `brew install ideviceinstaller ios-webkit-debug-proxy`
+
+## Make sure that your Cordova project has a platform
+
+Your project needs at least one of them.
+
+Just open a Terminal or a Command Prompt.
+
+In the root directory of your project run: `cordova platform add android` or `cordova platform add ios`.
+
+For now, only those two platforms are supported for debugging by this extension.
+
 ## Choose the Cordova debug environment
 
 Click the debug icon (![Choose Cordova debugger](images/debug-view-icon.png)) in the View bar, and then click the configure gear icon (![Configure-gear](images/configure-gear-icon.png)) to choose the Cordova debug environment.
