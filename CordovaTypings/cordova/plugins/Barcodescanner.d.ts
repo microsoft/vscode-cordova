@@ -13,7 +13,7 @@ interface CordovaPlugins {
     /**
      * This plugin provides an API for scanning and encoding barcodes.
      */
-    barcodescanner: PhonegapBarcodeScanner;
+    barcodeScanner: PhonegapBarcodeScanner;
 }
 
 /**
