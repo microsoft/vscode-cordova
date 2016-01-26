@@ -186,6 +186,15 @@ export class SourceMapTransformer implements IDebugTransformer {
             this._allRuntimeScriptPaths.add(event.body.scriptUrl);
 
             if (!event.body.sourceMapURL) {
+                // If a file does not have a source map, check if we've seen any breakpoints
+                // for it anyway and make sure to enable them
+                let scriptUrl = event.body.scriptUrl;
+                if (this._pendingBreakpointsByPath.has(scriptUrl)) {
+                    var pendingBreakpoint = this._pendingBreakpointsByPath.get(scriptUrl);
+                    this._pendingBreakpointsByPath.delete(scriptUrl);
+                    this.setBreakpoints(pendingBreakpoint.args, pendingBreakpoint.requestSeq)
+                        .then(pendingBreakpoint.resolve, pendingBreakpoint.reject);
+                }
                 return;
             }
 
