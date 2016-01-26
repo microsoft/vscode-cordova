@@ -24,7 +24,7 @@ Just open a Terminal or a Command Prompt.
 
 In the root directory of your project run: `cordova platform add android` or `cordova platform add ios`.
 
-For now, only those two platforms are used by this extension.
+For now, only those two platforms are supported for debugging by this extension.
 
 ## Choose the Cordova debug environment
 
