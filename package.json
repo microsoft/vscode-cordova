@@ -2,9 +2,8 @@
     "name": "cordova-tools",
     "displayName": "Cordova tools",
     "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "vsmobile",
-    "license": "MIT",
     "icon": "images/icon.png",
     "galleryBanner": {
       "color": "#feb943",
@@ -14,6 +13,8 @@
         "type": "git",
         "url": "https://github.com/Microsoft/vscode-cordova"
     },
+    "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
+    "license": "SEE LICENSE IN LICENSE.txt",
     "engines": {
         "vscode": "^0.10.1"
     },
