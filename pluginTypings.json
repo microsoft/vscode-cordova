@@ -62,7 +62,7 @@
     "cordova-plugin-x-toast": {
         "typingFile": "cordova/plugins/Toast.d.ts"
     },
-    "phonegap-plugin-barscodescanner": {
+    "phonegap-plugin-barcodescanner": {
         "typingFile": "cordova/plugins/BarcodeScanner.d.ts"
     },
     "ionic-plugin-keyboard": {
