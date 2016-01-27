@@ -1,3 +1,4 @@
+!CordovaTypings/**
 **/*.ts
 **/*.map
 .vscode/**
