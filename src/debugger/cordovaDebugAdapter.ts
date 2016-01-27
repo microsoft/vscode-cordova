@@ -254,7 +254,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     // device.url is of the form 'localhost:port'
                     return parseInt(device.url.split(':')[1], 10);
                 } catch (e) {
-                    throw new Error('Unable to find iOS target device/simulator');
+                    throw new Error('Unable to find iOS target device/simulator. Try specifying a different "port" parameter in launch.json');
                 }
             }).then((targetPort) => {
                 let findWebviewFunc = () => {
