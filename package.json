@@ -71,6 +71,7 @@
                         "request": "launch",
                         "platform": "android",
                         "target": "device",
+                        "port": 9222,
                         "sourceMaps": true
                     },
                     {
@@ -79,6 +80,7 @@
                         "request": "launch",
                         "platform": "ios",
                         "target": "device",
+                        "port": 9220,
                         "sourceMaps": true
                     },
                     {
@@ -87,6 +89,7 @@
                         "request": "attach",
                         "platform": "android",
                         "target": "device",
+                        "port": 9222,
                         "sourceMaps": true
                     },
                     {
@@ -95,6 +98,7 @@
                         "request": "attach",
                         "platform": "ios",
                         "target": "device",
+                        "port": 9220,
                         "sourceMaps": true
                     },
                     {
@@ -103,6 +107,7 @@
                         "request": "launch",
                         "platform": "android",
                         "target": "emulator",
+                        "port": 9222,
                         "sourceMaps": true
                     },
                     {
@@ -111,6 +116,7 @@
                         "request": "launch",
                         "platform": "ios",
                         "target": "emulator",
+                        "port": 9220,
                         "sourceMaps": true
                     },
                     {
@@ -119,6 +125,7 @@
                         "request": "attach",
                         "platform": "android",
                         "target": "emulator",
+                        "port": 9222,
                         "sourceMaps": true
                     },
                     {
@@ -127,6 +134,7 @@
                         "request": "attach",
                         "platform": "ios",
                         "target": "emulator",
+                        "port": 9220,
                         "sourceMaps": true
                     }
                 ],
