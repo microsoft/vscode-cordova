@@ -190,7 +190,7 @@ export class SourceMapTransformer implements IDebugTransformer {
                 // for it anyway and make sure to enable them
                 let scriptUrl = event.body.scriptUrl;
                 if (this._pendingBreakpointsByPath.has(scriptUrl)) {
-                    var pendingBreakpoint = this._pendingBreakpointsByPath.get(scriptUrl);
+                    let pendingBreakpoint = this._pendingBreakpointsByPath.get(scriptUrl);
                     this._pendingBreakpointsByPath.delete(scriptUrl);
                     this.setBreakpoints(pendingBreakpoint.args, pendingBreakpoint.requestSeq)
                         .then(pendingBreakpoint.resolve, pendingBreakpoint.reject);
