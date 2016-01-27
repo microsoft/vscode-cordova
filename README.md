@@ -12,19 +12,17 @@ You'll also have to do a few more things:
 
 1. Open a Terminal (on a Mac) or a Command Prompt (on a Windows computer).
 2. Run `npm install -g cordova`
-3. If you're planning on targeting iOS devices, install [HomeBrew](http://brew.sh/) on your Mac.
+3. If you're planning on targeting iOS devices,
+ * Install [HomeBrew](http://brew.sh/) on your Mac.
+ * Open a Terminal and run `brew install ideviceinstaller ios-webkit-debug-proxy`
 
-    Then open a Terminal and run `brew install ideviceinstaller ios-webkit-debug-proxy`
+## Add a platform to your Cordova project
 
-## Make sure that your Cordova project has a platform
+Open a Terminal or a Command Prompt and run following command in the root directory of your project
 
-Your project needs at least one of them.
+`cordova platform add android`
 
-Just open a Terminal or a Command Prompt.
-
-In the root directory of your project run: `cordova platform add android` or `cordova platform add ios`.
-
-For now, only those two platforms are supported for debugging by this extension.
+Supported platforms: `android, ios`
 
 ## Choose the Cordova debug environment
 
@@ -71,11 +69,12 @@ In the Command Palette, type ```Cordova``` and choose a command.
 
 There's only a couple of them for now but that list will grow.
 
-The **Build** command is equal to running ```cordova build``` from the Cordova command line. It builds for *all* platforms that you've added to the project and because of that, you might receive errors. Don't worry, in some cases, that's normal.
+The **Build** command triggers ```cordova build``` and builds for *all* platforms that you've added to the project.
 
+Since all platforms are built you may receive errors for incompatible configurations.
 For example, if you're on a Windows computer, and you've added an iOS platform to your project, you'll get an error because you need a Mac to build for iOS platforms. You can't build an iOS app on a Mac by using VSCode on a Windows computer.
 
-The ```Run``` command starts your app without debugging. It's equal to running ```cordova run``` from the Cordova command line, and just like the **Build** command, it runs *all* platforms that you've added to your project.
+The ```Run``` command triggers `cordova run` and starts your app without debugging and just like the **Build** command, it runs *all* platforms that you've added to your project.
 
 ## Use IntelliSense with Plugin API's
 
