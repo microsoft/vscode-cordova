@@ -1,6 +1,6 @@
 {
     "name": "cordova-tools",
-    "displayName": "Cordova tools",
+    "displayName": "Cordova Tools",
     "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
     "version": "1.0.0",
     "publisher": "vsmobile",
