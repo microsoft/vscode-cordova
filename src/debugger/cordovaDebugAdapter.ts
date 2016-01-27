@@ -262,7 +262,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     .then((response: string) => {
                         try {
                             let webviewsList = JSON.parse(response);
-                            return webviewsList.filter((entry) => entry.url.indexOf(packagePath) !== -1);
+                            return webviewsList.filter((entry) => entry.url.indexOf(encodeURIComponent(packagePath)) !== -1);
                         } catch (e) {
                             throw new Error('Unable to find target app');
                         }
