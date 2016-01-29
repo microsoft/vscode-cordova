@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 
 import {TsdHelper} from './utils/tsdHelper';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
-import {CordovaCommandHelper} from './utils/CordovaCommandHelper';
+import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
 
