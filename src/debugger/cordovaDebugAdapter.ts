@@ -13,7 +13,7 @@ import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 
 import {cordovaRunCommand, execCommand} from './extension';
 
-import {WebKitDebugAdapter} from '../../debugger/webkit/WebKitDebugAdapter';
+import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 

@@ -3,12 +3,12 @@
 
 'use strict';
 
-import child_process = require ('child_process');
-import fs = require ('fs');
-import net = require ('net');
-import path = require('path');
-import pl = require ('plist-with-patches');
-import Q = require ('q');
+import * as child_process from 'child_process';
+import * as fs from 'fs';
+import * as net from 'net';
+import * as path from 'path';
+import * as pl from 'plist-with-patches';
+import * as Q from 'q';
 
 let promiseExec = Q.denodeify(child_process.exec);
 
