@@ -21,6 +21,7 @@ import {TelemetryHelper} from '../utils/telemetryHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private outputLogger: (message: string,  error?: boolean) => void;
+    private adbForwardCleanupTask: () => Q.Promise<void>;
 
     public constructor(outputLogger: (message: string,  error?: boolean) => void) {
         super();
@@ -84,6 +85,14 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 return super.attach(processedAttachArgs, processedAttachArgs.url);
             });
         }).done(resolve, reject));
+    }
+
+    public disconnect(): Promise<void> {
+        if (this.adbForwardCleanupTask) {
+            return new Promise<void>((resolve, reject) => this.adbForwardCleanupTask().then(resolve, reject));
+        }
+
+        return Promise.resolve(void 0);
     }
 
     private launchAndroid(launchArgs: ICordovaLaunchRequestArgs): Q.Promise<void> {
@@ -154,7 +163,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 // Configure port forwarding to the app
                 let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
-                return execCommand('adb', forwardSocketCommandArguments, errorLogger);
+                return execCommand('adb', forwardSocketCommandArguments, errorLogger).then(() => {
+                    this.adbForwardCleanupTask = () => {
+                        return execCommand('adb', ['-s', targetDevice, 'forward', '--remove', `tcp:${attachArgs.port}`], errorLogger)
+                        .then(() => {});
+                    }
+                });
             });
         }).then(() => {
             let args: IAttachRequestArgs = {port: attachArgs.port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd };
