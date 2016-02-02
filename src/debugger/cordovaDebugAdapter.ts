@@ -231,7 +231,9 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         this.outputLogger('Configuring debugging proxy');
         return CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax).then(() => {
             if (attachArgs.target.toLowerCase() === 'device') {
-                return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd).then(CordovaIosDeviceLauncher.getPathOnDevice);
+                return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
+                    .then(CordovaIosDeviceLauncher.getPathOnDevice)
+                    .then(path.basename);
             } else {
                 return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, 'platforms', 'ios', 'build', 'emulator')).then((entries: string[]) => {
                    let filtered = entries.filter((entry) => /\.app$/.test(entry));
