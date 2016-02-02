@@ -21,7 +21,7 @@ import {TelemetryHelper} from '../utils/telemetryHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private outputLogger: (message: string,  error?: boolean) => void;
-    private adbForwardCleanupTask: () => Q.Promise<void>;
+    private adbPortForwardinginfo: {targetDevice: string, port: number};
 
     public constructor(outputLogger: (message: string,  error?: boolean) => void) {
         super();
@@ -88,8 +88,15 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public disconnect(): Promise<void> {
-        if (this.adbForwardCleanupTask) {
-            return new Promise<void>((resolve, reject) => this.adbForwardCleanupTask().then(resolve, reject));
+        if (this.adbPortForwardinginfo) {
+            const adbForwardStopArgs =
+                ['-s', this.adbPortForwardinginfo.targetDevice,
+                'forward',
+                '--remove', `tcp:${this.adbPortForwardinginfo.port}`];
+            const errorLogger = (message) => this.outputLogger(message, true);
+            return new Promise<void>((resolve, reject) =>
+                execCommand('adb', adbForwardStopArgs, errorLogger).then(() => resolve(), reject)
+            );
         }
 
         return Promise.resolve(void 0);
@@ -164,10 +171,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
                 return execCommand('adb', forwardSocketCommandArguments, errorLogger).then(() => {
-                    this.adbForwardCleanupTask = () => {
-                        return execCommand('adb', ['-s', targetDevice, 'forward', '--remove', `tcp:${attachArgs.port}`], errorLogger)
-                        .then(() => {});
-                    }
+                    this.adbPortForwardinginfo = {targetDevice, port: attachArgs.port};
                 });
             });
         }).then(() => {
