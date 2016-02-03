@@ -54,7 +54,7 @@ To start the debugger, choose a target from the target drop-down list, and then 
 
 ![Cordova launch targets](images/debug-targets.png)
 
-You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach the debugger it. The debugger uses the application ID of your project to locate the running instance.
+You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
 We won't go into all of the great things that you can do with the Visual Studio Code debugger, but you can read about it [here](https://code.visualstudio.com/docs/editor/debugging).
 
