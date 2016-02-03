@@ -88,18 +88,17 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public disconnect(): Promise<void> {
-        if (this.adbPortForwardingInfo) {
-            const adbForwardStopArgs =
-                ['-s', this.adbPortForwardingInfo.targetDevice,
-                'forward',
-                '--remove', `tcp:${this.adbPortForwardingInfo.port}`];
-            const errorLogger = (message) => this.outputLogger(message, true);
-            return new Promise<void>((resolve, reject) =>
-                execCommand('adb', adbForwardStopArgs, errorLogger).then(() => resolve(), reject)
-            );
-        }
-
-        return Promise.resolve(void 0);
+        return super.disconnect().then(() => {
+            if (this.adbPortForwardingInfo) {
+                const adbForwardStopArgs =
+                    ['-s', this.adbPortForwardingInfo.targetDevice,
+                    'forward',
+                    '--remove', `tcp:${this.adbPortForwardingInfo.port}`];
+                const errorLogger = (message) => this.outputLogger(message, true);
+                return execCommand('adb', adbForwardStopArgs, errorLogger)
+                    .then(() => {});
+            }
+        });
     }
 
     private launchAndroid(launchArgs: ICordovaLaunchRequestArgs): Q.Promise<void> {
