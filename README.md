@@ -18,7 +18,7 @@ You'll also have to do a few more things:
 
 ## Add a platform to your Cordova project
 
-Open a Terminal or a Command Prompt and run following command in the root directory of your project
+Open a Terminal or a Command Prompt and run the following command in the root directory of your project
 
 `cordova platform add android`
 
@@ -30,33 +30,33 @@ Click the debug icon (![Choose Cordova debugger](images/debug-view-icon.png)) in
 
 ![Choose Cordova debugger](images/choose-debugger.png)
 
-The launch configuration file appears. It contains some default configurations such as this one below.
+The launch configuration file appears. It contains some default configurations such as what is shown below.
 
 ![Cordova launch configuration file](images/launch-config.png)
 
-You can modify these configurations or add new ones to the list. Just don't add a Windows or a Browser configuration. They're not supported yet.
+You can modify these configurations or add new ones to the list. Just don't add a Windows or a Browser configuration as they are not supported yet.
 
 You can use other fields in these configurations as well. Here's the complete list:
 
 
-* `port`: The port number that the debugger uses to connect to a device or emulator. Defaults to 9222.
-* `sourceMaps`: Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist). Defaults to false.
-* `webkitRangeMin`, `webkitRangeMax`: Specifies the port range that you want the debugger to use to find the specific device or simulator that is described in the configuration. Defaults to 9223 to 9322.
-* `attachAttempts`: The maximum number of times that you want the debugger to attempt to attach to a running iOS app. Defaults to 5.
-* `attachDelay`: The time in millisecond sbetween each attempt to attach to a running iOS application. Defaults to 1000.
-* `iosDeubgProxyPort`: The port number that you want the debugger to use when it launches iOS applications on a device. Defaults to 9221.
-* `appStepLaunchTimeout`: The maximum time in milliseconds that you want to allow for each individual step that the debugger takes to launch an iOS app on a device. Defaults to 5000.
+* `port`: The port number that the debugger uses to connect to a device or emulator. The default is 9222.
+* `sourceMaps`: Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist). The default is false.
+* `webkitRangeMin`, `webkitRangeMax`: Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. The defaults are 9223 and 9322.
+* `attachAttempts`: The maximum number of times that you want the debugger to attempt to attach to a running iOS app. The default is 5.
+* `attachDelay`: The time in milliseconds between each attempt to attach to a running iOS application. The default is 1000.
+* `iosDeubgProxyPort`: The port number that you want the debugger to use when it launches iOS applications on a device. The default is 9221.
+* `appStepLaunchTimeout`: The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device. The default is 5000.
 
 
 ## Debug your Cordova-based project
 
-To start the debugger, choose a target from the target drop-down list, and then click the start button (![Configure-gear](images/debug-icon.png)) or press F5.
+To start the debugger, choose a target from the target drop-down list, and then either click the start button (![Configure-gear](images/debug-icon.png)) or press F5.
 
 ![Cordova launch targets](images/debug-targets.png)
 
-You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach to it. The debugger uses the application ID of your project to locate the running instance.
+You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
-We won't go into all of the great things that you can do with the Visual Studio Code debugger, but you can read about them [here](https://code.visualstudio.com/docs/editor/debugging).
+We won't go into all of the great things that you can do with the Visual Studio Code debugger, but you can read about it [here](https://code.visualstudio.com/docs/editor/debugging).
 
 > **Troubleshooting tip:**
 If you receive an error stating that ADB is not recognized as an internal or external command, you'll have to update your path variable to include the location of your *ADB* executable file. The *ADB* executable file is located in a subfolder along with your other Android SDK files. For example, on a Windows computer, the location of the *ADB* executable file would likely be here: ```C:\Program Files (x86)\Android\android-sdk\platform-tools```.
@@ -67,16 +67,16 @@ In the Command Palette, type ```Cordova``` and choose a command.
 
 ![Cordova commands](images/command-palette.png)
 
-There's only a couple of them for now but that list will grow.
+There are only a couple of them for now but that list will grow.
 
-The **Build** command triggers ```cordova build``` and builds for *all* platforms that you've added to the project.
+The **Build** command triggers ```cordova build``` and builds for all platforms that you've added to the project.
 
 Since all platforms are built you may receive errors for incompatible configurations.
 For example, if you're on a Windows computer, and you've added an iOS platform to your project, you'll get an error because you need a Mac to build for iOS platforms. You can't build an iOS app on a Mac by using VSCode on a Windows computer.
 
 The ```Run``` command triggers `cordova run` and starts your app without debugging and just like the **Build** command, it runs *all* platforms that you've added to your project.
 
-## Use IntelliSense with Plugin API's
+## Use IntelliSense with Plugin APIs
 
 Intellisense helps you discover objects, functions, and parameters in libraries that your project consumes. Now you can use it for the more popularly used *core* plugins.
 
