@@ -213,7 +213,7 @@ export module Telemetry {
                     TelemetryUtils.sessionId = TelemetryUtils.generateGuid();
                     TelemetryUtils.userType = TelemetryUtils.getUserType();
 
-                    Telemetry.isOptedIn = isOptedInValue;
+                    Telemetry.isOptedIn = TelemetryUtils.getTelemetryOptInSetting();
                     TelemetryUtils.saveSettings();
                 });
             }
@@ -249,6 +249,11 @@ export module Telemetry {
             }
 
             public static getTelemetryOptInSetting(): boolean {
+                if (TelemetryUtils.telemetrySettings.optIn === undefined) {
+                    // Opt-in by default
+                    TelemetryUtils.telemetrySettings.optIn = true;
+                }
+
                 return TelemetryUtils.telemetrySettings.optIn;
             }
 
