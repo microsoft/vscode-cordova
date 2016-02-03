@@ -21,7 +21,7 @@ import {TelemetryHelper} from '../utils/telemetryHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private outputLogger: (message: string,  error?: boolean) => void;
-    private adbPortForwardinginfo: {targetDevice: string, port: number};
+    private adbPortForwardingInfo: {targetDevice: string, port: number};
 
     public constructor(outputLogger: (message: string,  error?: boolean) => void) {
         super();
@@ -88,11 +88,11 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public disconnect(): Promise<void> {
-        if (this.adbPortForwardinginfo) {
+        if (this.adbPortForwardingInfo) {
             const adbForwardStopArgs =
-                ['-s', this.adbPortForwardinginfo.targetDevice,
+                ['-s', this.adbPortForwardingInfo.targetDevice,
                 'forward',
-                '--remove', `tcp:${this.adbPortForwardinginfo.port}`];
+                '--remove', `tcp:${this.adbPortForwardingInfo.port}`];
             const errorLogger = (message) => this.outputLogger(message, true);
             return new Promise<void>((resolve, reject) =>
                 execCommand('adb', adbForwardStopArgs, errorLogger).then(() => resolve(), reject)
@@ -171,7 +171,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                 this.outputLogger('Forwarding debug port');
                 return execCommand('adb', forwardSocketCommandArguments, errorLogger).then(() => {
-                    this.adbPortForwardinginfo = {targetDevice, port: attachArgs.port};
+                    this.adbPortForwardingInfo = {targetDevice, port: attachArgs.port};
                 });
             });
         }).then(() => {
