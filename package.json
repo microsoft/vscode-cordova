@@ -42,8 +42,8 @@
         "keybindings": [
             {
                 "command": "cordova.build",
-                "key": "ctrl+shift+b",
-                "mac": "cmd+shift+b"
+                "key": "f6",
+                "mac": "f6"
             },
             {
                 "command": "cordova.run",
