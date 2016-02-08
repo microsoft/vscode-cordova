@@ -98,8 +98,6 @@ Important Notice: You will need to apply these changes after every update to dis
 
 * Edit VSCodeTelemetrySettings.json file at %appdata%\vscode-cordova and add "optIn":false.
 
-Save the file via CTRL+S and exit Notepad. Restart VS Code. Collection of usage data should now be disabled.
-
 ### OS X / Linux
 
 * Edit VSCodeTelemetrySettings.json file at ~/.vscode-cordova and add "optIn":false.
