@@ -85,3 +85,19 @@ Intellisense helps you discover objects, functions, and parameters in libraries 
 IntelliSense appears only for plugins that you've added to your project, but it doesn't matter whether you add the plugin before or after you install this extension.
 
 Just start typing in the code editor to see the objects, functions, and parameters of your plugin's API.
+
+## How to disable telemetry reporting
+
+VS Code Cordova extension collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://www.visualstudio.com/en-us/dn948229) to learn more.
+
+If you don’t wish to send usage data to Microsoft, please follow the instructions below to disable its collection.
+
+Important Notice: You will need to apply these changes after every update to disable collection of usage data. These changes do not survive product updates.
+
+### Windows
+
+* Edit VSCodeTelemetrySettings.json file at %appdata%\vscode-cordova and add "optIn":false.
+
+### OS X / Linux
+
+* Edit VSCodeTelemetrySettings.json file at ~/.vscode-cordova and add "optIn":false.
