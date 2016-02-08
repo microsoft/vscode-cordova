@@ -63,7 +63,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             let cordovaCmdsAvailable = results.filter((commandName: string) => {
                 return commandName.indexOf("cordova.") > -1
             });
-            assert.deepEqual(cordovaCmdsAvailable, ["cordova.build", "cordova.run"])
+            assert.deepEqual(cordovaCmdsAvailable, ["cordova.build", "cordova.run", "cordova.prepare"])
         });
     });
 
