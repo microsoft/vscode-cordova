@@ -37,6 +37,10 @@
             {
                 "command": "cordova.run",
                 "title": "Cordova: Run"
+            },
+            {
+                "command": "cordova.prepare",
+                "title": "Cordova: Prepare"
             }
         ],
         "keybindings": [

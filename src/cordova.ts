@@ -39,6 +39,8 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(watcher);
 
     // Register Cordova commands
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.build',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
