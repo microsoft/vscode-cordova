@@ -38,14 +38,15 @@ You can modify these configurations or add new ones to the list. Just don't add 
 
 You can use other fields in these configurations as well. Here's the complete list:
 
-
-* `port`: The port number that the debugger uses to connect to a device or emulator. The default is 9222.
-* `sourceMaps`: Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist). The default is false.
-* `webkitRangeMin`, `webkitRangeMax`: Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. The defaults are 9223 and 9322.
-* `attachAttempts`: The maximum number of times that you want the debugger to attempt to attach to a running iOS app. The default is 5.
-* `attachDelay`: The time in milliseconds between each attempt to attach to a running iOS application. The default is 1000.
-* `iosDeubgProxyPort`: The port number that you want the debugger to use when it launches iOS applications on a device. The default is 9221.
-* `appStepLaunchTimeout`: The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device. The default is 5000.
+Name                               | Description                                                                                                                                   | Defaults
+---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------| ---------
+`port`                             | The port number that the debugger uses to connect to a device or emulator.                                                                    | 9222
+`sourceMaps`                       | Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist).                                               | false
+`webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
+`attachAttempts`                   | The maximum number of times that you want the debugger to attempt to attach to a running iOS app.                                             | 5
+`attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
+`iosDeubgProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
+`appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
 
 
 ## Debug your Cordova-based project
