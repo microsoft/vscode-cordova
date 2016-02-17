@@ -33,15 +33,15 @@
         "commands": [
             {
                 "command": "cordova.build",
-                "title": "Cordova: Build"
+                "title": "Cordova: Build (Ionic / Cordova)"
             },
             {
                 "command": "cordova.run",
-                "title": "Cordova: Run"
+                "title": "Cordova: Run (Ionic / Cordova)"
             },
             {
                 "command": "cordova.prepare",
-                "title": "Cordova: Prepare"
+                "title": "Cordova: Prepare (Ionic / Cordova)"
             }
         ],
         "keybindings": [

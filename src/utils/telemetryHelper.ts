@@ -6,6 +6,7 @@
  *******************************************************
  */
 
+import {CordovaProjectHelper} from './cordovaProjectHelper';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
@@ -170,13 +171,13 @@ export class TelemetryHelper {
             return deferred.promise;
         }
 
-        let ionic = promiseExists(path.join(projectRoot, 'www', 'lib', 'ionic'));
+        let isIonic = CordovaProjectHelper.isIonicProject(projectRoot);
         let meteor = promiseExists(path.join(projectRoot, '.meteor'));
         let mobilefirst = promiseExists(path.join(projectRoot, '.project'));
         let phonegap = promiseExists(path.join(projectRoot, 'www', 'res', '.pgbomit'));
         let cordova = promiseExists(path.join(projectRoot, 'config.xml'));
-        return Q.all([ionic, meteor, mobilefirst, phonegap, cordova])
-        .spread((isIonic: boolean, isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
+        return Q.all([meteor, mobilefirst, phonegap, cordova])
+        .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
             return {ionic: isIonic, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova};
         });
     }

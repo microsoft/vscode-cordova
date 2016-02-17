@@ -11,9 +11,9 @@ import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
 
-let PLUGIN_TYPE_DEFS_FILENAME =  "pluginTypings.json";
-let PLUGIN_TYPE_DEFS_PATH =  path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
-let CORDOVA_TYPINGS_QUERYSTRING =  "cordova";
+let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
+let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
+let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
@@ -38,13 +38,25 @@ export function activate(context: vscode.ExtensionContext): void {
 
     context.subscriptions.push(watcher);
 
+    let isIonicProject: boolean = CordovaProjectHelper.isIonicProject(cordovaProjectRoot);
+
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare")));
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", isIonicProject)));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.build',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build", isIonicProject)));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run", isIonicProject)));
+
+    // Install Ionic type definitions if necessary
+    if (isIonicProject) {
+        let ionicTypings: string[] = [
+            path.join("angularjs", "angular.d.ts"),
+            path.join("jquery", "jquery.d.ts"),
+            path.join("ionic", "ionic.d.ts")
+        ];
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings);
+    }
 
     let pluginTypings = getPluginTypingsJson();
     if (!pluginTypings) {
@@ -56,14 +68,13 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
-
 }
 
 export function deactivate(context: vscode.ExtensionContext): void {
     console.log("Extension has been deactivated");
 }
 
-function getPluginTypingsJson() : any {
+function getPluginTypingsJson(): any {
     if (CordovaProjectHelper.existsSync(PLUGIN_TYPE_DEFS_PATH)) {
         return require(PLUGIN_TYPE_DEFS_PATH);
     }
@@ -80,7 +91,7 @@ function getNewTypeDefinitions(installedPlugins: string[]): string[] {
     }
 
     return installedPlugins.filter(pluginName => !!pluginTypings[pluginName])
-    .map(pluginName => pluginTypings[pluginName].typingFile);
+        .map(pluginName => pluginTypings[pluginName].typingFile);
 }
 
 function addPluginTypeDefinitions(projectRoot: string, installedPlugins: string[], currentTypeDefs: string[]): void {

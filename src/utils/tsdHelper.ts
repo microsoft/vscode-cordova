@@ -25,7 +25,7 @@ export class TsdHelper {
    }
 
    /**
-    *   Helper to install type defintion files for Cordova plugins.
+    *   Helper to install type defintion files for Cordova plugins and Ionic projects.
     *   {typingsFolderPath} - the parent folder where the type definitions need to be installed
     *   {typeDefsPath} - the relative paths of all plugin type definitions that need to be
     *                    installed (relative to <project_root>\.vscode\typings)
