@@ -93,8 +93,6 @@ VS Code Cordova extension collects usage data and sends it to Microsoft to help 
 
 If you don’t wish to send usage data to Microsoft, please follow the instructions below to disable its collection.
 
-Important Notice: You will need to apply these changes after every update to disable collection of usage data. These changes do not survive product updates.
-
 ### Windows
 
 * Edit VSCodeTelemetrySettings.json file at %appdata%\vscode-cordova and add "optIn":false.
