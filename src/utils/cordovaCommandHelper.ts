@@ -17,12 +17,12 @@ export class CordovaCommandHelper {
     private static CORDOVA_DISPLAY_NAME: string = "Cordova";
     private static IONIC_DISPLAY_NAME: string = "Ionic";
 
-    public static executeCordovaCommand(projectRoot: string, command: string, isIonicProject: boolean = false) {
+    public static executeCordovaCommand(projectRoot: string, command: string, useIonic: boolean = false) {
         var telemetryEventName: string = CordovaCommandHelper.CORDOVA_TELEMETRY_EVENT_NAME;
         var cliCommandName: string = CordovaCommandHelper.CORDOVA_CMD_NAME;
         var cliDisplayName: string = CordovaCommandHelper.CORDOVA_DISPLAY_NAME;
 
-        if (isIonicProject) {
+        if (useIonic) {
             telemetryEventName = CordovaCommandHelper.IONIC_TELEMETRY_EVENT_NAME;
             cliCommandName = CordovaCommandHelper.IONIC_CMD_NAME;
             cliDisplayName = CordovaCommandHelper.IONIC_DISPLAY_NAME;

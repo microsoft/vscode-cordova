@@ -38,18 +38,22 @@ export function activate(context: vscode.ExtensionContext): void {
 
     context.subscriptions.push(watcher);
 
-    let isIonicProject: boolean = CordovaProjectHelper.isIonicProject(cordovaProjectRoot);
-
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", isIonicProject)));
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.build',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build", isIonicProject)));
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
-        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run", isIonicProject)));
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
+    context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
+    context.subscriptions.push(vscode.commands.registerCommand('ionic.build',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build", true)));
+    context.subscriptions.push(vscode.commands.registerCommand('ionic.run',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run", true)));
 
     // Install Ionic type definitions if necessary
-    if (isIonicProject) {
+    if (CordovaProjectHelper.isIonicProject(cordovaProjectRoot)) {
         let ionicTypings: string[] = [
             path.join("angularjs", "angular.d.ts"),
             path.join("jquery", "jquery.d.ts"),

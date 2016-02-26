@@ -2,10 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as child_process from 'child_process';
-import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import * as os from 'os';
 import * as Q from 'q';
-import * as util from 'util';
 
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
@@ -38,10 +36,8 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
 
     let output = '';
     let stderr = '';
-    let cliName = CordovaProjectHelper.isIonicProject(cordovaRootPath) ? 'ionic' : 'cordova';
-    let commandExtension = os.platform() === 'win32' ? '.cmd' : '';
-    let command = cliName + commandExtension;
-    let process = child_process.spawn(command, args, {cwd: cordovaRootPath});
+    let cordovaCommand = `cordova${os.platform() === 'win32' ? '.cmd' : ''}`;
+    let process = child_process.spawn(cordovaCommand, args, {cwd: cordovaRootPath});
     process.stderr.on('data', data => {
         stderr += data.toString();
     });
@@ -52,7 +48,7 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
         if (exitCode) {
             errorLogger(stderr);
             errorLogger(output);
-            defer.reject(new Error(util.format("'%s %s' failed with exit code %d", cliName, args.join(' '), exitCode)));
+            defer.reject(new Error(`'cordova ${args.join(' ')}' failed with exit code ${exitCode}.`));
         } else {
             defer.resolve([output, stderr]);
         }
