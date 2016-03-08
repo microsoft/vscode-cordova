@@ -77,7 +77,8 @@
                         "platform": "android",
                         "target": "device",
                         "port": 9222,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Run iOS on device",
@@ -86,7 +87,8 @@
                         "platform": "ios",
                         "target": "device",
                         "port": 9220,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Attach to running android on device",
@@ -95,7 +97,8 @@
                         "platform": "android",
                         "target": "device",
                         "port": 9222,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Attach to running iOS on device",
@@ -104,7 +107,8 @@
                         "platform": "ios",
                         "target": "device",
                         "port": 9220,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Run Android on emulator",
@@ -113,7 +117,8 @@
                         "platform": "android",
                         "target": "emulator",
                         "port": 9222,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Run iOS on simulator",
@@ -122,7 +127,8 @@
                         "platform": "ios",
                         "target": "emulator",
                         "port": 9220,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Attach to running android on emulator",
@@ -131,7 +137,8 @@
                         "platform": "android",
                         "target": "emulator",
                         "port": 9222,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     },
                     {
                         "name": "Attach to running iOS on simulator",
@@ -140,19 +147,25 @@
                         "platform": "ios",
                         "target": "emulator",
                         "port": 9220,
-                        "sourceMaps": true
+                        "sourceMaps": true,
+                        "cwd": "${workspaceRoot}"
                     }
                 ],
                 "configurationAttributes": {
                     "launch": {
                         "required": [
-                            "platform"
+                            "platform",
+                            "cwd"
                         ],
                         "properties": {
                             "platform": {
                                 "type": "string",
                                 "description": "The platform to run on"
                             },
+                            "cwd": {
+                                "type": "string",
+                                "description": "The root of the project"
+                            }
                             "target": {
                                 "type": "string",
                                 "description": "either 'device', 'emulator', or identifier for a specific device / emulator",
