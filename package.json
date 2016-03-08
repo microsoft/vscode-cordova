@@ -165,7 +165,7 @@
                             "cwd": {
                                 "type": "string",
                                 "description": "The root of the project"
-                            }
+                            },
                             "target": {
                                 "type": "string",
                                 "description": "either 'device', 'emulator', or identifier for a specific device / emulator",
@@ -215,12 +215,17 @@
                     },
                     "attach": {
                         "required": [
-                            "platform"
+                            "platform",
+                            "cwd"
                         ],
                         "properties": {
                             "platform": {
                                 "type": "string",
                                 "description": "The platform to run on"
+                            },
+                            "cwd": {
+                                "type": "string",
+                                "description": "The root of the project"
                             },
                             "target": {
                                 "type": "string",
