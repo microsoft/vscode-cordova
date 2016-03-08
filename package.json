@@ -161,6 +161,13 @@
                         "port": 9220,
                         "sourceMaps": true,
                         "cwd": "${workspaceRoot}"
+                    },
+                    {
+                        "name": "Run in the browser",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "browser",
+                        "cwd": "${workspaceRoot}"
                     }
                 ],
                 "configurationAttributes": {
@@ -222,6 +229,19 @@
                                 "type": "number",
                                 "description": "Timeout for individual steps when launching iOS app",
                                 "default": 5000
+                            },
+                            "noLivereload": {
+                                "type": "boolean",
+                                "description": "Set to true to disable Ionic live reload (changes to the sources will not be pushed to the running app)",
+                                "default": false
+                            },
+                            "devServerPort": {
+                                "type": "number",
+                                "description": "The port on which Ionic's live reload server should listen on"
+                            },
+                            "devServerAddress": {
+                                "type": "string",
+                                "description": "The IP address that Ionic should use for the live reload server"
                             }
                         }
                     },

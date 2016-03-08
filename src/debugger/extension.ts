@@ -2,12 +2,14 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as child_process from 'child_process';
+import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import * as os from 'os';
 import * as Q from 'q';
+import * as util from 'util';
 
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
-    let proc = child_process.spawn(command, args, {stdio: 'pipe'});
+    let proc = child_process.spawn(command, args, { stdio: 'pipe' });
     let stderr = '';
     let stdout = '';
     proc.stderr.on('data', (data: Buffer) => {
@@ -33,11 +35,11 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
 
 export function cordovaRunCommand(args: string[], errorLogger: (message: string) => void, cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
-
+    let cliName = CordovaProjectHelper.isIonicProject(cordovaRootPath) ? 'ionic' : 'cordova';
     let output = '';
     let stderr = '';
-    let cordovaCommand = `cordova${os.platform() === 'win32' ? '.cmd' : ''}`;
-    let process = child_process.spawn(cordovaCommand, args, {cwd: cordovaRootPath});
+    let process = cordovaStartCommand(args, cordovaRootPath);
+
     process.stderr.on('data', data => {
         stderr += data.toString();
     });
@@ -48,7 +50,7 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
         if (exitCode) {
             errorLogger(stderr);
             errorLogger(output);
-            defer.reject(new Error(`'cordova ${args.join(' ')}' failed with exit code ${exitCode}.`));
+            defer.reject(new Error(util.format("'%s %s' failed with exit code %d", cliName, args.join(' '), exitCode)));
         } else {
             defer.resolve([output, stderr]);
         }
@@ -58,4 +60,30 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
     });
 
     return defer.promise;
+}
+
+export function cordovaStartCommand(args: string[], cordovaRootPath: string): child_process.ChildProcess {
+    let cliName = CordovaProjectHelper.isIonicProject(cordovaRootPath) ? 'ionic' : 'cordova';
+    let commandExtension = os.platform() === 'win32' ? '.cmd' : '';
+    let command = cliName + commandExtension;
+    return child_process.spawn(command, args, { cwd: cordovaRootPath });
+}
+
+export function killChildProcess(childProcess: child_process.ChildProcess, errorLogger: (message: string) => void): Q.Promise<void> {
+    if (process.platform === "win32") {
+        // Use taskkill to reliably kill the child process on all versions of Windows
+        let command: string = "taskkill";
+        let args: string[] = [
+            "/pid",
+            childProcess.pid.toString(),
+            "/T",
+            "/F"
+        ];
+
+        return execCommand(command, args, errorLogger).then(() => void 0);
+    } else {
+        childProcess.kill();
+
+        return Q<void>(void 0);
+    }
 }

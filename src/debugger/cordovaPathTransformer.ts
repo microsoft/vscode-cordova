@@ -17,6 +17,7 @@ interface IPendingBreakpoint {
 export class CordovaPathTransformer implements IDebugTransformer {
     private _cordovaRoot: string;
     private _platform: string;
+    private _webRoot: string;
     private _clientPathToWebkitUrl = new Map<string, string>();
     private _webkitUrlToClientPath = new Map<string, string>();
     private _shadowedClientPaths = new Map<string, string>();
@@ -34,6 +35,7 @@ export class CordovaPathTransformer implements IDebugTransformer {
     public attach(args: ICordovaAttachRequestArgs): void {
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
+        this._webRoot = args.webRoot || this._cordovaRoot;
     }
 
     public setBreakpoints(args: ISetBreakpointsArgs): Promise<void> {
@@ -82,9 +84,9 @@ export class CordovaPathTransformer implements IDebugTransformer {
         const clientPath = this.getClientPath(webkitUrl);
 
         if (!clientPath) {
-            utils.Logger.log(`Paths.scriptParsed: could not resolve ${webkitUrl} to a file in the workspace. webRoot: ${this._cordovaRoot}`);
+            utils.Logger.log(`Paths.scriptParsed: could not resolve ${webkitUrl} to a file in the workspace. webRoot: ${this._webRoot}`);
         } else {
-            utils.Logger.log(`Paths.scriptParsed: resolved ${webkitUrl} to ${clientPath}. webRoot: ${this._cordovaRoot}`);
+            utils.Logger.log(`Paths.scriptParsed: resolved ${webkitUrl} to ${clientPath}. webRoot: ${this._webRoot}`);
             this._clientPathToWebkitUrl.set(clientPath, webkitUrl);
             this._webkitUrlToClientPath.set(webkitUrl, clientPath);
 
@@ -119,13 +121,27 @@ export class CordovaPathTransformer implements IDebugTransformer {
     }
 
     public getClientPath(sourceUrl: string): string {
+        let wwwRoot = path.join(this._cordovaRoot, 'www');
+
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
         // default behavior is to use that exact file, if it exists. We don't want that,
         // since we know that those files are copies of files in the local folder structure.
         // A simple workaround for this is to convert file:// paths to bogus http:// paths
         sourceUrl = sourceUrl.replace('file:///', 'http://localhost/');
-        let defaultPath = utils.webkitUrlToClientPath(this._cordovaRoot, sourceUrl);
-        let wwwRoot = path.join(this._cordovaRoot, 'www');
+
+        // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
+        let defaultPath = '';
+        [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
+            let mappedPath = utils.webkitUrlToClientPath(searchFolder, sourceUrl);
+
+            if (mappedPath) {
+                defaultPath = mappedPath;
+                return true;
+            }
+
+            return false;
+        });
+
         if (defaultPath.toLowerCase().indexOf(wwwRoot.toLowerCase()) === 0) {
             // If the path appears to be in www, check to see if it exists in /merges/<platform>/<relative path>
             let relativePath = path.relative(wwwRoot, defaultPath);
@@ -144,4 +160,3 @@ export class CordovaPathTransformer implements IDebugTransformer {
         return defaultPath;
     }
 }
-;
