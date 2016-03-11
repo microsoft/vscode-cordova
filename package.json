@@ -187,7 +187,7 @@
                             },
                             "target": {
                                 "type": "string",
-                                "description": "either 'device', 'emulator', or identifier for a specific device / emulator",
+                                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator",
                                 "default": "emulator"
                             },
                             "sourceMaps": {
