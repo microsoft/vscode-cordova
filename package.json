@@ -68,6 +68,16 @@
                 "mac": "cmd+f5"
             }
         ],
+        "snippets": [
+            {
+                "language": "javascript",
+                "path": "./snippets/ionicJs.json"
+            },
+            {
+                "language": "html",
+                "path": "./snippets/ionicHtml.json"
+            }
+        ],
         "debuggers": [
             {
                 "type": "cordova",

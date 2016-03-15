@@ -19,22 +19,24 @@ This project incorporates components from the projects listed below. The origina
 11.	oozcitak/xmlbuilder-js version 0.4.3 (https://github.com/oozcitak/xmlbuilder-js)
 12.	jindw/xmldom version 0.1.21 (https://github.com/jindw/xmldom)
 13.	DefinitelyTyped/definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
-14. 	Microsoft/vscode-chrome-debug (https://github.com/Microsoft/vscode-chrome-debug)
-15.     bevry/getmac version 1.0.7 (https://github.com/bevry/getmac)
-16.     bevry/extract-opts version 2.2.0 (https://github.com/bevry/extract-opts)
-17.     bevry/typechecker version 2.0.8 (https://github.com/bevry/typechecker)
+14. Microsoft/vscode-chrome-debug (https://github.com/Microsoft/vscode-chrome-debug)
+15. bevry/getmac version 1.0.7 (https://github.com/bevry/getmac)
+16. bevry/extract-opts version 2.2.0 (https://github.com/bevry/extract-opts)
+17. bevry/typechecker version 2.0.8 (https://github.com/bevry/typechecker)
+18. imsingh/ionic-sublime-plugin (https://github.com/imsingh/ionic-sublime-plugin)
+19. Ionic Documentation (http://ionicframework.com/docs/)
 
 %% Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION BEGIN HERE
 =========================================
-The MIT License (MIT) 
+The MIT License (MIT)
 
-Copyright © 2014 Microsoft Corporation
+Copyright ï¿½ 2014 Microsoft Corporation
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ï¿½Softwareï¿½), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED ï¿½AS ISï¿½, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION
 
@@ -43,7 +45,7 @@ END OF Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION
 Copyright (c) 2011, Rackspace, Inc.
 
 The ElementTree toolkit is Copyright (c) 1999-2007 by Fredrik Lundh
-                                 
+
 				Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -291,7 +293,7 @@ END OF agrieve/node-plist NOTICES AND INFORMATION
 
 %% kriskowal/q NOTICES AND INFORMATION BEGIN HERE
 =========================================
-Copyright 2009–2014 Kristopher Michael Kowal. All rights reserved.
+Copyright 2009ï¿½2014 Kristopher Michael Kowal. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
@@ -431,7 +433,7 @@ END OF websockets/ws NOTICES AND INFORMATION
 =========================================
 The MIT License (MIT)
 
-Copyright (c) 2013 Ozgur Ozcitak 
+Copyright (c) 2013 Ozgur Ozcitak
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -455,7 +457,7 @@ END OF oozcitak/xmlbuilder-js NOTICES AND INFORMATION
 
 %% jindw/xmldom NOTICES AND INFORMATION BEGIN HERE
 =========================================
-Copyright © jindw <jindw@xidea.org> (http://www.xidea.org) and contributors
+Copyright ï¿½ jindw <jindw@xidea.org> (http://www.xidea.org) and contributors
 
 You can choose any one of those:
 
@@ -505,7 +507,7 @@ END OF Microsoft/vscode-chrome-debug NOTICES AND INFORMATION
 License
 
 Unless stated otherwise all works are:
-* Copyright © 2013+ Bevry Pty Ltd us@bevry.me (http://bevry.me)
+* Copyright ï¿½ 2013+ Bevry Pty Ltd us@bevry.me (http://bevry.me)
 
 and licensed under:
 * The incredibly permissive MIT License
@@ -525,8 +527,8 @@ END OF bevry/getmac NOTICES AND INFORMATION
 License
 
 Unless stated otherwise all works are:
-* Copyright © 2013+ Bevry Pty Ltd
-* Copyright © 2011+ Benjamin Lupton
+* Copyright ï¿½ 2013+ Bevry Pty Ltd
+* Copyright ï¿½ 2011+ Benjamin Lupton
 
 and licensed under:
 * MIT License
@@ -546,8 +548,8 @@ END OF bevry/extract-opts NOTICES AND INFORMATION
 License
 
 Unless stated otherwise all works are:
-* Copyright © 2013+ Bevry Pty Ltd
-* Copyright © 2011-2012 Benjamin Lupton
+* Copyright ï¿½ 2013+ Bevry Pty Ltd
+* Copyright ï¿½ 2011-2012 Benjamin Lupton
 
 and licensed under:
 * MIT License
@@ -562,3 +564,37 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 =========================================
 END OF bevry/typechecker NOTICES AND INFORMATION
 
+%% imsingh/ionic-sublime-plugin NOTICES AND INFORMATION BEGIN HERE
+=========================================
+License
+
+Ionic-Sublime Plugin (https://github.com/imsingh/ionic-sublime-plugin)
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Indermohan Singh
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF imsingh/ionic-sublime-plugin NOTICES AND INFORMATION
+
+%% Ionic Documentation NOTICES AND INFORMATION BEGIN HERE
+=========================================
+License
+
+Ionic Documentation (http://ionicframework.com/docs/)
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+these files except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+=========================================
+END OF Ionic Documentation NOTICES AND INFORMATION
