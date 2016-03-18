@@ -5,15 +5,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {TsdHelper} from './utils/tsdHelper';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
+import * as Q from "q";
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
+import {TsdHelper} from './utils/tsdHelper';
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
 let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
+let JSCONFIG_FILENAME = "jsconfig.json";
+let TSCONFIG_FILENAME = "tsconfig.json";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
@@ -72,6 +75,18 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
+    // In VSCode 0.10.10+, if the root doesn't contain jsconfig.json or tsconfig.json, intellisense won't work for files without /// typing references, so add a jsconfig.json here if necessary
+    let jsconfigPath: string = path.join(vscode.workspace.rootPath, JSCONFIG_FILENAME);
+    let tsconfigPath: string = path.join(vscode.workspace.rootPath, TSCONFIG_FILENAME);
+
+    Q.all([Q.nfcall(fs.exists, jsconfigPath), Q.nfcall(fs.exists, tsconfigPath)]).spread((jsExists: boolean, tsExists: boolean) => {
+        if (!jsExists && !tsExists) {
+            Q.nfcall(fs.writeFile, jsconfigPath, "{}").then(() => {
+                // Any open file must be reloaded to enable intellisense on them, so inform the user
+                vscode.window.showInformationMessage("To enable IntelliSense a 'jsconfig.json' file was added to your project. Please close and reopen any active JavaScript file(s).");
+            });
+        }
+    });
 }
 
 export function deactivate(context: vscode.ExtensionContext): void {
