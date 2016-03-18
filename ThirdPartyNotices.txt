@@ -19,12 +19,12 @@ This project incorporates components from the projects listed below. The origina
 11.	oozcitak/xmlbuilder-js version 0.4.3 (https://github.com/oozcitak/xmlbuilder-js)
 12.	jindw/xmldom version 0.1.21 (https://github.com/jindw/xmldom)
 13.	DefinitelyTyped/definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
-14. Microsoft/vscode-chrome-debug (https://github.com/Microsoft/vscode-chrome-debug)
-15. bevry/getmac version 1.0.7 (https://github.com/bevry/getmac)
-16. bevry/extract-opts version 2.2.0 (https://github.com/bevry/extract-opts)
-17. bevry/typechecker version 2.0.8 (https://github.com/bevry/typechecker)
-18. imsingh/ionic-sublime-plugin (https://github.com/imsingh/ionic-sublime-plugin)
-19. Ionic Documentation (http://ionicframework.com/docs/)
+14.	Microsoft/vscode-chrome-debug (https://github.com/Microsoft/vscode-chrome-debug)
+15.	bevry/getmac version 1.0.7 (https://github.com/bevry/getmac)
+16.	bevry/extract-opts version 2.2.0 (https://github.com/bevry/extract-opts)
+17.	bevry/typechecker version 2.0.8 (https://github.com/bevry/typechecker)
+18.	imsingh/ionic-sublime-plugin (https://github.com/imsingh/ionic-sublime-plugin)
+19.	Ionic Documentation (http://ionicframework.com/docs/)
 
 %% Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION BEGIN HERE
 =========================================

@@ -148,6 +148,7 @@ export class TelemetryGenerator extends TelemetryGeneratorBase {
 
 export interface IProjectType {
     ionic: boolean;
+    ionic2: boolean;
     meteor: boolean;
     mobilefirst: boolean;
     phonegap: boolean;
@@ -167,13 +168,14 @@ export class TelemetryHelper {
         }
 
         let isIonic = CordovaProjectHelper.isIonicProject(projectRoot);
+        let isIonic2 = CordovaProjectHelper.isIonic2Project(projectRoot);
         let meteor = promiseExists(path.join(projectRoot, '.meteor'));
         let mobilefirst = promiseExists(path.join(projectRoot, '.project'));
         let phonegap = promiseExists(path.join(projectRoot, 'www', 'res', '.pgbomit'));
         let cordova = promiseExists(path.join(projectRoot, 'config.xml'));
         return Q.all([meteor, mobilefirst, phonegap, cordova])
         .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
-            return {ionic: isIonic, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova};
+            return {ionic: isIonic, ionic2: isIonic2, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova};
         });
     }
 

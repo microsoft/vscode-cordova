@@ -9,7 +9,7 @@ import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import * as Q from "q";
 import {Telemetry} from './utils/telemetry';
-import {TelemetryHelper} from './utils/telemetryHelper';
+import {IProjectType, TelemetryHelper} from './utils/telemetryHelper';
 import {TsdHelper} from './utils/tsdHelper';
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
@@ -21,6 +21,7 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
     Telemetry.init('cordova-tools', require('./../../package.json').version, true);
+
     // Get the project root and check if it is a Cordova project
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 
@@ -28,11 +29,13 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
     }
 
-    var activateExtensionEvent = TelemetryHelper.createTelemetryEvent("activate");
+    let activateExtensionEvent = TelemetryHelper.createTelemetryEvent("activate");
+    let projectType: IProjectType;
 
     TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
-        .then((projectType) => {
-            activateExtensionEvent.properties["projectType"] = projectType;
+        .then((projType) => {
+            projectType = projType;
+            activateExtensionEvent.properties["projectType"] = projType;
         })
         .finally(() => {
             Telemetry.send(activateExtensionEvent);
@@ -85,6 +88,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
+
     // In VSCode 0.10.10+, if the root doesn't contain jsconfig.json or tsconfig.json, intellisense won't work for files without /// typing references, so add a jsconfig.json here if necessary
     let jsconfigPath: string = path.join(vscode.workspace.rootPath, JSCONFIG_FILENAME);
     let tsconfigPath: string = path.join(vscode.workspace.rootPath, TSCONFIG_FILENAME);

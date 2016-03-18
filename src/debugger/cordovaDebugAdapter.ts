@@ -350,7 +350,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         // Currently, browser is only supported for Ionic projects
         if (!projectType.ionic) {
-            let errorMessage = 'Browser is currently only supported for Ionic projects';
+            let errorMessage = 'Serving to the browser is currently only supported for Ionic 1 projects';
 
             errorLogger(errorMessage);
 
