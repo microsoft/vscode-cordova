@@ -28,6 +28,16 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
     }
 
+    var activateExtensionEvent = TelemetryHelper.createTelemetryEvent("activate");
+
+    TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
+        .then((projectType) => {
+            activateExtensionEvent.properties["projectType"] = projectType;
+        })
+        .finally(() => {
+            Telemetry.send(activateExtensionEvent);
+        }).done();
+
     // We need to update the type definitions added to the project
     // as and when plugins are added or removed. For this reason,
     // setup a file system watcher to watch changes to plugins in the Cordova project
