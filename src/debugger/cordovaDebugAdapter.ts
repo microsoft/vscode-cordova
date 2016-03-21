@@ -15,7 +15,7 @@ import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} f
 import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import {IProjectType, TelemetryHelper} from '../utils/telemetryHelper';
-import {settingsHome} from '../utils/settingsHelper'
+import {settingsHome} from '../utils/settingsHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -345,7 +345,6 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     private launchBrowser(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
-        let workingDirectory = launchArgs.cwd;
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, browser is only supported for Ionic projects
@@ -359,7 +358,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         // Set up "ionic serve" args
         let ionicServeArgs: string[] = [
-            "serve",
+            'serve',
             '--nobrowser'
         ];
 
@@ -394,7 +393,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             // Propagate the error
             return killPromise.finally(() => {
                 this.ionicLivereloadProcess = null;
-                Q.reject<void>(err)
+
+                return Q.reject<void>(err);
             });
         });
     }

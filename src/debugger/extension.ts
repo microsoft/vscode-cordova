@@ -50,7 +50,7 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
         if (exitCode) {
             errorLogger(stderr);
             errorLogger(output);
-            defer.reject(new Error(util.format("'%s %s' failed with exit code %d", cliName, args.join(' '), exitCode)));
+            defer.reject(new Error(util.format('\'%s %s\' failed with exit code %d', cliName, args.join(' '), exitCode)));
         } else {
             defer.resolve([output, stderr]);
         }
@@ -70,14 +70,14 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
 }
 
 export function killChildProcess(childProcess: child_process.ChildProcess, errorLogger: (message: string) => void): Q.Promise<void> {
-    if (process.platform === "win32") {
+    if (process.platform === 'win32') {
         // Use taskkill to reliably kill the child process on all versions of Windows
-        let command: string = "taskkill";
+        let command: string = 'taskkill';
         let args: string[] = [
-            "/pid",
+            '/pid',
             childProcess.pid.toString(),
-            "/T",
-            "/F"
+            '/T',
+            '/F'
         ];
 
         return execCommand(command, args, errorLogger).then(() => void 0);
