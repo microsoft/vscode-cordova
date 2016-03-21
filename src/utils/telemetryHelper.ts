@@ -108,7 +108,7 @@ export abstract class TelemetryGeneratorBase {
 
     private sendCurrentStep(): void {
         this.add('step', this.currentStep, /*isPii*/ false);
-        var telemetryEvent: Telemetry.TelemetryEvent = new Telemetry.TelemetryEvent(Telemetry.appName + '/' + this.componentName);
+        var telemetryEvent: Telemetry.TelemetryEvent = new Telemetry.TelemetryEvent(this.componentName);
         TelemetryHelper.addTelemetryEventProperties(telemetryEvent, this.telemetryProperties);
         this.sendTelemetryEvent(telemetryEvent);
     }
@@ -155,7 +155,7 @@ export interface IProjectType {
 
 export class TelemetryHelper {
     public static createTelemetryEvent(eventName: string): Telemetry.TelemetryEvent {
-        return new Telemetry.TelemetryEvent(Telemetry.appName + '/' + eventName);
+        return new Telemetry.TelemetryEvent(eventName);
     }
 
     public static determineProjectTypes(projectRoot: string): Q.Promise<IProjectType> {
@@ -239,7 +239,7 @@ export class TelemetryHelper {
     }
 
     private static createBasicCommandTelemetry(commandName: string, args: string[] = null): Telemetry.TelemetryEvent {
-        var commandEvent: Telemetry.TelemetryEvent = new Telemetry.TelemetryEvent(Telemetry.appName + '/' + (commandName || 'command'));
+        var commandEvent: Telemetry.TelemetryEvent = new Telemetry.TelemetryEvent(commandName || 'command');
 
         if (!commandName && args && args.length > 0) {
             commandEvent.setPiiProperty('command', args[0]);
