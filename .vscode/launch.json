@@ -9,7 +9,7 @@
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out/src",
+            "outDir": "${workspaceRoot}/out",
             "preLaunchTask": "build"
         },
         {
@@ -27,12 +27,12 @@
             "name": "Launch debugger as server",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/out/webkit/debugCordova.js",
+            "program": "${workspaceRoot}/out/src/debugger/debugCordova.js",
             "runtimeArgs": ["--harmony"],
             "stopOnEntry": false,
             "args": [ "--server=4712" ],
             "sourceMaps": true,
-            "outDir": "out"
+            "outDir": "${workspaceRoot}/out"
         }
     ]
 }
