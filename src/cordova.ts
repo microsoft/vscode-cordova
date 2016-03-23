@@ -97,7 +97,7 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!jsExists && !tsExists) {
             Q.nfcall(fs.writeFile, jsconfigPath, "{}").then(() => {
                 // Any open file must be reloaded to enable intellisense on them, so inform the user
-                vscode.window.showInformationMessage("To enable IntelliSense a 'jsconfig.json' file was added to your project. Please close and reopen any active JavaScript file(s).");
+                vscode.window.showInformationMessage("A 'jsconfig.json' file was created to enable IntelliSense. You may need to reload your open JS file(s).");
             });
         }
     });

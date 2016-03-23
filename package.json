@@ -100,7 +100,8 @@
                         "target": "device",
                         "port": 9222,
                         "sourceMaps": true,
-                        "cwd": "${workspaceRoot}"
+                        "cwd": "${workspaceRoot}",
+                        "ionicLivereload": false
                     },
                     {
                         "name": "Run iOS on device",
@@ -110,7 +111,8 @@
                         "target": "device",
                         "port": 9220,
                         "sourceMaps": true,
-                        "cwd": "${workspaceRoot}"
+                        "cwd": "${workspaceRoot}",
+                        "ionicLivereload": false
                     },
                     {
                         "name": "Attach to running android on device",
@@ -140,7 +142,8 @@
                         "target": "emulator",
                         "port": 9222,
                         "sourceMaps": true,
-                        "cwd": "${workspaceRoot}"
+                        "cwd": "${workspaceRoot}",
+                        "ionicLivereload": false
                     },
                     {
                         "name": "Run iOS on simulator",
@@ -150,7 +153,8 @@
                         "target": "emulator",
                         "port": 9220,
                         "sourceMaps": true,
-                        "cwd": "${workspaceRoot}"
+                        "cwd": "${workspaceRoot}",
+                        "ionicLivereload": false
                     },
                     {
                         "name": "Attach to running android on emulator",
@@ -173,12 +177,13 @@
                         "cwd": "${workspaceRoot}"
                     },
                     {
-                        "name": "Run in the browser",
+                        "name": "Serve to the browser (ionic serve)",
                         "type": "cordova",
                         "request": "launch",
-                        "platform": "browser",
+                        "platform": "serve",
                         "cwd": "${workspaceRoot}",
-                        "devServerAddress": "localhost"
+                        "devServerAddress": "localhost",
+                        "ionicLivereload": true
                     }
                 ],
                 "configurationAttributes": {
@@ -241,9 +246,9 @@
                                 "description": "Timeout for individual steps when launching iOS app",
                                 "default": 5000
                             },
-                            "noLivereload": {
+                            "ionicLivereload": {
                                 "type": "boolean",
-                                "description": "Set to true to disable Ionic live reload (changes to the sources will not be pushed to the running app)",
+                                "description": "Whether or not to start an Ionic live reload session. This is currently only supported for Ionic 1 projects.",
                                 "default": false
                             },
                             "devServerPort": {
