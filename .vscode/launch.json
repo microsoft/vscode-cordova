@@ -20,7 +20,7 @@
             "args": ["test/testProject", "--extensionDevelopmentPath=${workspaceRoot}", "--extensionTestsPath=${workspaceRoot}/out/test" ],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out/test",
+            "outDir": "${workspaceRoot}/out/src",
             "preLaunchTask": "prepare-integration-tests"
         },
         {
@@ -32,7 +32,8 @@
             "stopOnEntry": false,
             "args": [ "--server=4712" ],
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out"
+            "outDir": "${workspaceRoot}/out",
+            "preLaunchTask": "build"
         }
     ]
 }

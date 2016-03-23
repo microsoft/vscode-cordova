@@ -14,6 +14,8 @@ import * as Q from 'q';
 import * as readline from 'readline';
 import * as winreg from 'winreg';
 
+import {settingsHome} from './settingsHelper'
+
 // for poking around at internal applicationinsights options
 var sender = require ('applicationinsights/Library/Sender');
 var telemetryLogger = require ('applicationinsights/Library/Logging');
@@ -157,20 +159,8 @@ export module Telemetry {
             private static INTERNAL_DOMAIN_SUFFIX: string = 'microsoft.com';
             private static INTERNAL_USER_ENV_VAR: string = 'TACOINTERNAL';
 
-            private static get settingsHome(): string {
-                switch (os.platform()) {
-                    case 'win32':
-                        return path.join(process.env['APPDATA'], 'vscode-cordova');
-                    case 'darwin':
-                    case 'linux':
-                        return path.join(process.env['HOME'], '.vscode-cordova');
-                    default:
-                        throw new Error('UnexpectedPlatform');
-                };
-            }
-
             private static get telemetrySettingsFile(): string {
-                return path.join(TelemetryUtils.settingsHome, TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
+                return path.join(settingsHome(), TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
             }
 
             public static init(appVersion: string, isOptedInValue: boolean): Q.Promise<any> {
@@ -320,8 +310,8 @@ export module Telemetry {
              * Save settings data in settingsHome/TelemetrySettings.json
              */
             private static saveSettings(): void {
-                if (!fs.existsSync(TelemetryUtils.settingsHome)) {
-                    fs.mkdirSync(TelemetryUtils.settingsHome);
+                if (!fs.existsSync(settingsHome())) {
+                    fs.mkdirSync(settingsHome());
                 }
 
                 fs.writeFileSync(TelemetryUtils.telemetrySettingsFile, JSON.stringify(TelemetryUtils.telemetrySettings));

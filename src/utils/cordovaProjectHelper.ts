@@ -15,6 +15,8 @@ export class CordovaProjectHelper {
     private static PLUGINS_FETCH_FILENAME: string = "fetch.json";
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
+    private static IONIC_PROJECT_FILE: string = "ionic.project";
+    private static IONIC_CONFIG_JS_FILE: string = "ionic.config.js";
 
     /**
      *  Helper function check if a file exists.
@@ -142,5 +144,19 @@ export class CordovaProjectHelper {
      */
     public static getIonicPluginTypeDefsPath(projectRoot: string): string {
         return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+    }
+
+    /**
+     *  Helper function to determine whether the project is an Ionic 1 project or no
+     */
+    public static isIonicProject(projectRoot: string): boolean {
+        return fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_PROJECT_FILE));
+    }
+
+    /**
+     *  Helper function to determine whether the project is an Ionic 2 project or no. NOTE: we currently rely on "ionic.config.js" file, which may change as Ionic 2 continues development.
+     */
+    public static isIonic2Project(projectRoot: string): boolean {
+        return fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_CONFIG_JS_FILE));
     }
 }
