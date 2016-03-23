@@ -7,7 +7,7 @@
     appStepLaunchTimeout?: number;
 
     // Ionic livereload properties
-    ionicLivereload?: boolean;
+    ionicLiveReload?: boolean;
     devServerPort?: number;
     devServerAddress?: string;
 

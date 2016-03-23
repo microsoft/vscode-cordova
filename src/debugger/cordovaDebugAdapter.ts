@@ -127,7 +127,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         }
 
         // Verify if we are using Ionic livereload
-        if (launchArgs.ionicLivereload) {
+        if (launchArgs.ionicLiveReload) {
             if (projectType.ionic) {
                 // Livereload is enabled, let Ionic do the launch
                 args.push('--livereload');
@@ -221,7 +221,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         // Launch the app
         if (launchArgs.target.toLowerCase() === 'device') {
             // Verify if we are using Ionic livereload
-            if (launchArgs.ionicLivereload) {
+            if (launchArgs.ionicLiveReload) {
                 if (projectType.ionic) {
                     // Livereload is enabled, let Ionic do the launch
                     let ionicArgs = ['run', '--device', 'ios', '--livereload'];
@@ -272,7 +272,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }
 
             // Verify if we are using Ionic livereload
-            if (launchArgs.ionicLivereload) {
+            if (launchArgs.ionicLiveReload) {
                 if (projectType.ionic) {
                     // Livereload is enabled, let Ionic do the launch
                     emulateArgs.push('--livereload');
@@ -381,7 +381,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             '--nobrowser'
         ];
 
-        if (!launchArgs.ionicLivereload) {
+        if (!launchArgs.ionicLiveReload) {
             ionicServeArgs.push('--nolivereload');
         }
 
@@ -528,7 +528,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 appDeferred.reject(new Error(errorMatch[0]));
             }
         });
-        this.outputLogger(`Starting Ionic dev server (live reload: ${launchArgs.ionicLivereload})`);
+        this.outputLogger(`Starting Ionic dev server (live reload: ${launchArgs.ionicLiveReload})`);
 
         return serverDeferred.promise.timeout(serverReadyTimeout, `Starting the Ionic dev server timed out (${serverReadyTimeout} ms)`).then(() => {
             this.outputLogger('Building and deploying app');

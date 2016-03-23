@@ -101,7 +101,7 @@
                         "port": 9222,
                         "sourceMaps": true,
                         "cwd": "${workspaceRoot}",
-                        "ionicLivereload": false
+                        "ionicLiveReload": false
                     },
                     {
                         "name": "Run iOS on device",
@@ -112,7 +112,7 @@
                         "port": 9220,
                         "sourceMaps": true,
                         "cwd": "${workspaceRoot}",
-                        "ionicLivereload": false
+                        "ionicLiveReload": false
                     },
                     {
                         "name": "Attach to running android on device",
@@ -143,7 +143,7 @@
                         "port": 9222,
                         "sourceMaps": true,
                         "cwd": "${workspaceRoot}",
-                        "ionicLivereload": false
+                        "ionicLiveReload": false
                     },
                     {
                         "name": "Run iOS on simulator",
@@ -154,7 +154,7 @@
                         "port": 9220,
                         "sourceMaps": true,
                         "cwd": "${workspaceRoot}",
-                        "ionicLivereload": false
+                        "ionicLiveReload": false
                     },
                     {
                         "name": "Attach to running android on emulator",
@@ -183,7 +183,7 @@
                         "platform": "serve",
                         "cwd": "${workspaceRoot}",
                         "devServerAddress": "localhost",
-                        "ionicLivereload": true
+                        "ionicLiveReload": true
                     }
                 ],
                 "configurationAttributes": {
@@ -246,7 +246,7 @@
                                 "description": "Timeout for individual steps when launching iOS app",
                                 "default": 5000
                             },
-                            "ionicLivereload": {
+                            "ionicLiveReload": {
                                 "type": "boolean",
                                 "description": "Whether or not to start an Ionic live reload session. This is currently only supported for Ionic 1 projects.",
                                 "default": false
