@@ -47,9 +47,9 @@ Name                               | Description                                
 `attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
 `iosDeubgProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
 `appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
-`ionicLiveReload`                  | Set true to enable Ionic livereload                                                                                                           | false
-`devServerAddress`                 | For Ionic livereload scenario specify the IP address the device can use to contact the Ionic server                                           | n/a
-`devServerPort`                    | For Ionic livereload scenario specify the port the device can use to contact the Ionic server                                                 | n/a
+`ionicLiveReload`                  | Set to true to enable Ionic live reload                                                                                                       | false
+`devServerAddress`                 | For Ionic live reload scenario specify the IP address the device can use to contact the Ionic server                                          | n/a
+`devServerPort`                    | For Ionic live reload scenario specify the port the device can use to contact the Ionic server                                                | n/a
 
 
 ## Debug your Cordova-based project
@@ -82,14 +82,18 @@ The ```Run``` command triggers `cordova run` and starts your app without debuggi
 
 ## Support for Ionic
 
-* The debug target includes the browser for use with Ionic projects. You can now deploy and debug directly to Chrome, livereload is enabled by default.
+* The debug target includes the ability to serve to the browser for use with Ionic projects. You can now deploy and debug directly to Chrome, live reload is enabled by default.
 
-* We've included a number of useful JavaScript and HTML code snippets for your project, try typing `ion` in the editor to see what's available.
+* We've included a number of useful JavaScript and HTML code snippets for your project, try typing `ion_` in the editor to see what's available.
 
 ![JavaScript snippets](images/ionic_javascript_snippet.png)
 ![HTML snippets](images/ionic_html_snippet.png)
 
 * New Ionic commands have also been added to the Command Palette, type `Ionic` in the palette to see the full list.
+
+* Ionic live reload is supported on devices and emulators.
+
+* Additional IntelliSense has been added for Ionic, Angular and JQuery.
 
 ## Use IntelliSense with Plugin APIs
 
