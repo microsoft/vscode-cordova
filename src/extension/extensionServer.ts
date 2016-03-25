@@ -3,6 +3,7 @@
 
 import * as net from "net";
 import * as Q from "q";
+import * as rimraf from "rimraf";
 import * as vscode from "vscode";
 
 import {
@@ -12,10 +13,13 @@ import {
     MessageWithArguments
 } from "../common/extensionMessaging";
 
+import {Telemetry} from "../utils/telemetry";
+
 export class ExtensionServer implements vscode.Disposable {
     private serverInstance: net.Server = null;
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
+    private telemetryReporterDictionary: {} = {};
 
     public constructor() {
         this.pipePath = ExtensionMessageSender.getExtensionPipePath();
@@ -60,7 +64,8 @@ export class ExtensionServer implements vscode.Disposable {
     /**
      * Sends telemetry
      */
-    private sendTelemetry(): Q.Promise<any> {
+    private sendTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: {[key: string]: string}, measures: {[key: string]: number}): Q.Promise<any> {
+        Telemetry.sendExtensionTelemetry(extensionId, extensionVersion, appInsightsKey, eventName, properties, measures);
         return Q.resolve({});
     }
 
@@ -110,13 +115,8 @@ export class ExtensionServer implements vscode.Disposable {
         let errorHandler = (e: any) => {
             /* The named socket is not used. */
             if (e.code === "ECONNREFUSED") {
-                /*
-                new FileSystem().removePathRecursivelyAsync(this.pipePath)
-                    .then(() => {
-                        this.serverInstance.listen(this.pipePath);
-                    })
-                    .done();
-                */
+                rimraf.sync(this.pipePath);
+                this.serverInstance.listen(this.pipePath);
             }
         };
 

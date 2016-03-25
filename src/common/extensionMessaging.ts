@@ -26,9 +26,9 @@ export class ExtensionMessageSender {
     public static getExtensionPipePath(): string {
         switch (process.platform) {
             case "win32":
-                return "\\\\?\\pipe\\vscodereactnative";
+                return "\\\\?\\pipe\\vscodecordova";
             default:
-                return "/tmp/vscodereactnative.sock";
+                return "/tmp/vscodecordova.sock";
         }
     }
 

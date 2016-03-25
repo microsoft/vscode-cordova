@@ -9,8 +9,12 @@ import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
 import * as readline from 'readline';
-import TelemetryReporter from 'vscode-extension-telemetry';
 import * as winreg from 'winreg';
+
+import {
+    ExtensionMessage,
+    ExtensionMessageSender
+} from '../common/extensionMessaging';
 
 /**
  * Telemetry module specialized for vscode integration.
@@ -18,7 +22,8 @@ import * as winreg from 'winreg';
 export module Telemetry {
         export var appName: string;
         export var isOptedIn: boolean = false;
-        export var reporter: TelemetryReporter;
+        export var reporter: ITelemetryReporter;
+        export var reporterDictionary: {[key: string]: ITelemetryReporter} = {};
 
         export interface ITelemetryProperties {
             [propertyName: string]: any;
@@ -80,10 +85,14 @@ export module Telemetry {
             }
         };
 
-        export function init(appNameValue: string, appVersion?: string, isOptedInValue?: boolean): Q.Promise<any> {
+        export interface ITelemetryInitOptions {
+            isExtensionProcess: boolean;
+        }
+
+        export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
             try {
                 Telemetry.appName = appNameValue;
-                return TelemetryUtils.init(appVersion, isOptedInValue);
+                return TelemetryUtils.init(appVersion, initOptions);
             } catch (err) {
                 console.error(err);
             }
@@ -99,8 +108,8 @@ export module Telemetry {
                     }
 
                     if (Telemetry.reporter) {
-                        var properties: {[key: string]: string} = {};
-                        var measures: {[key: string]: number} = {};
+                        var properties: ITelemetryEventProperties = {};
+                        var measures: ITelemetryEventMeasures = {};
 
                         for (var key in event.properties) {
                             switch (typeof event.properties[key]) {
@@ -178,10 +187,16 @@ export module Telemetry {
                 return path.join(TelemetryUtils.settingsHome, TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
             }
 
-            public static init(appVersion: string, isOptedInValue: boolean): Q.Promise<any> {
+            public static init(appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
                 TelemetryUtils.loadSettings();
 
-                Telemetry.reporter = new TelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
+                if (initOptions.isExtensionProcess) {
+                    let TelemetryReporter = require('vscode-extension-telemetry').default;
+                    Telemetry.reporter = new TelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
+                }
+                else {
+                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
+                }
 
                 return Q.all([TelemetryUtils.getUserId()])
                 .spread<any>(function (userId: string): void {
@@ -334,4 +349,47 @@ export module Telemetry {
                 }
             }
         };
+
+        export interface ITelemetryEventProperties {
+            [key: string]: string;
+        }
+
+        export interface ITelemetryEventMeasures {
+            [key: string]: number;
+        }
+
+        export interface ITelemetryReporter {
+            sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures);
+        }
+
+        class ExtensionTelemetryReporter implements ITelemetryReporter {
+            private extensionMessageSender: ExtensionMessageSender;
+            private extensionId: string;
+            private extensionVersion: string;
+            private appInsightsKey: string;
+
+            constructor(extensionId: string, extensionVersion: string, key: string) {
+                this.extensionId = extensionId;
+                this.extensionVersion = extensionVersion;
+                this.appInsightsKey = key;
+                this.extensionMessageSender = new ExtensionMessageSender();
+            }
+
+            sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {
+                this.extensionMessageSender.sendMessage(ExtensionMessage.SEND_TELEMETRY, [this.extensionId, this.extensionVersion, this.appInsightsKey, eventName, properties, measures])
+                .catch(function(){});
+            }
+        }
+
+        export function sendExtensionTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: ITelemetryEventProperties, measures: ITelemetryEventMeasures): void {
+            let reporter: ITelemetryReporter = Telemetry.reporterDictionary[extensionId];
+
+            if (!reporter) {
+                let TelemetryReporter = require('vscode-extension-telemetry').default;
+                Telemetry.reporterDictionary[extensionId] = new TelemetryReporter(extensionId, extensionVersion, appInsightsKey);
+                reporter = Telemetry.reporterDictionary[extensionId];
+            }
+
+            reporter.sendTelemetryEvent(eventName, properties, measures);
+        }
     };
