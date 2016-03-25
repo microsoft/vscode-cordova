@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
+import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
@@ -50,6 +51,7 @@ export function activate(context: vscode.ExtensionContext): void {
     watcher.onDidCreate((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
 
     context.subscriptions.push(watcher);
+    context.subscriptions.push(new ExtensionServer());
 
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
