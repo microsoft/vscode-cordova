@@ -75,7 +75,7 @@ export function activate(context: vscode.ExtensionContext): void {
             path.join("jquery", "jquery.d.ts"),
             path.join("ionic", "ionic.d.ts")
         ];
-        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings);
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
     }
 
     let pluginTypings = getPluginTypingsJson();
@@ -84,7 +84,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     // Install the type defintion files for Cordova
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile]);
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], cordovaProjectRoot);
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
@@ -147,7 +147,7 @@ function addPluginTypeDefinitions(projectRoot: string, installedPlugins: string[
         return pluginTypings[pluginName].typingFile;
     });
 
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd);
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd, CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath));
 }
 
 function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: string[], newTypeDefs: string[]): void {
