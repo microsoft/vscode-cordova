@@ -23,9 +23,19 @@ export function activate(context: vscode.ExtensionContext): void {
     Telemetry.init('cordova-tools', require('./../../package.json').version, true);
 
     // Get the project root and check if it is a Cordova project
+    if (!vscode.workspace.rootPath) {
+        return;
+    }
+
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 
     if (!cordovaProjectRoot) {
+        return;
+    }
+
+    if (path.resolve(cordovaProjectRoot) !== path.resolve(vscode.workspace.rootPath)) {
+        vscode.window.showWarningMessage("VSCode Cordova extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated.");
+
         return;
     }
 
