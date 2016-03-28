@@ -242,17 +242,6 @@ export module Telemetry {
                 return TelemetryUtils.telemetrySettings.optIn;
             }
 
-            public static setTelemetryOptInSetting(optIn: boolean): void {
-                TelemetryUtils.telemetrySettings.optIn = optIn;
-
-                if (!optIn) {
-                    Telemetry.send(new TelemetryEvent(Telemetry.appName + '/telemetryOptOut'), true);
-                }
-
-                TelemetryUtils.optInCollectedForCurrentSession = true;
-                TelemetryUtils.saveSettings();
-            }
-
             private static getUserType(): string {
                 var userType: string = TelemetryUtils.telemetrySettings.userType;
 
@@ -377,7 +366,8 @@ export module Telemetry {
 
             sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {
                 this.extensionMessageSender.sendMessage(ExtensionMessage.SEND_TELEMETRY, [this.extensionId, this.extensionVersion, this.appInsightsKey, eventName, properties, measures])
-                .catch(function(){});
+                .catch(function(){})
+                .done();
             }
         }
 

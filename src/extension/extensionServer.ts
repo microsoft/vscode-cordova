@@ -36,7 +36,6 @@ export class ExtensionServer implements vscode.Disposable {
         let deferred = Q.defer<void>();
 
         let launchCallback = (error: any) => {
-            // Log.logInternalMessage(LogLevel.Info, "Extension messaging server started.");
             if (error) {
                 deferred.reject(error);
             } else {

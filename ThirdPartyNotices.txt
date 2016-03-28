@@ -26,15 +26,15 @@ This project incorporates components from the projects listed below. The origina
 
 %% Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION BEGIN HERE
 =========================================
-The MIT License (MIT) 
+The MIT License (MIT)
 
-Copyright © 2014 Microsoft Corporation
+Copyright ï¿½ 2014 Microsoft Corporation
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ï¿½Softwareï¿½), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED ï¿½AS ISï¿½, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION
 
@@ -43,7 +43,7 @@ END OF Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION
 Copyright (c) 2011, Rackspace, Inc.
 
 The ElementTree toolkit is Copyright (c) 1999-2007 by Fredrik Lundh
-                                 
+
 				Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -291,7 +291,7 @@ END OF agrieve/node-plist NOTICES AND INFORMATION
 
 %% kriskowal/q NOTICES AND INFORMATION BEGIN HERE
 =========================================
-Copyright 2009–2014 Kristopher Michael Kowal. All rights reserved.
+Copyright 2009ï¿½2014 Kristopher Michael Kowal. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
@@ -312,6 +312,26 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 =========================================
 END OF kriskowal/q NOTICES AND INFORMATION
+
+%% isaacs/rimraf NOTICES AND INFORMATION BEGIN HERE
+=========================================
+The ISC License
+
+Copyright (c) Isaac Z. Schlueter and Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+=========================================
+isaacs/rimraf Working Draft NOTICES AND INFORMATION
 
 %% isaacs/sax-js NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -431,7 +451,7 @@ END OF websockets/ws NOTICES AND INFORMATION
 =========================================
 The MIT License (MIT)
 
-Copyright (c) 2013 Ozgur Ozcitak 
+Copyright (c) 2013 Ozgur Ozcitak
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -455,7 +475,7 @@ END OF oozcitak/xmlbuilder-js NOTICES AND INFORMATION
 
 %% jindw/xmldom NOTICES AND INFORMATION BEGIN HERE
 =========================================
-Copyright © jindw <jindw@xidea.org> (http://www.xidea.org) and contributors
+Copyright ï¿½ jindw <jindw@xidea.org> (http://www.xidea.org) and contributors
 
 You can choose any one of those:
 
@@ -500,33 +520,13 @@ THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 =========================================
 END OF Microsoft/vscode-chrome-debug NOTICES AND INFORMATION
 
-%% bevry/getmac NOTICES AND INFORMATION BEGIN HERE
-=========================================
-License
-
-Unless stated otherwise all works are:
-* Copyright © 2013+ Bevry Pty Ltd us@bevry.me (http://bevry.me)
-
-and licensed under:
-* The incredibly permissive MIT License
-
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- =========================================
-END OF bevry/getmac NOTICES AND INFORMATION
-
 %% bevry/extract-opts NOTICES AND INFORMATION BEGIN HERE
 =========================================
 License
 
 Unless stated otherwise all works are:
-* Copyright © 2013+ Bevry Pty Ltd
-* Copyright © 2011+ Benjamin Lupton
+* Copyright ï¿½ 2013+ Bevry Pty Ltd
+* Copyright ï¿½ 2011+ Benjamin Lupton
 
 and licensed under:
 * MIT License
@@ -546,8 +546,8 @@ END OF bevry/extract-opts NOTICES AND INFORMATION
 License
 
 Unless stated otherwise all works are:
-* Copyright © 2013+ Bevry Pty Ltd
-* Copyright © 2011-2012 Benjamin Lupton
+* Copyright ï¿½ 2013+ Bevry Pty Ltd
+* Copyright ï¿½ 2011-2012 Benjamin Lupton
 
 and licensed under:
 * MIT License
