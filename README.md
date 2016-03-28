@@ -61,7 +61,7 @@ To start the debugger, choose a target from the target drop-down list, and then 
 You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
 > **Visual Studio Emulator for Android:**
-If you are planning on using the Visual Studio Emulator for Android, please note that it is considered a device by *ADB*. To deploy to it using our extension, select the ```Run Android on Device``` target rather than the emulator one. You may also need to run ```adb connect [EMULATOR'S IP]``` before trying to deploy. To find out the IP address of your emulator, click the double arrow icon at the bottom of the emulator's side-menu to open the "Additional Tools" window, and look up the network adapter list under the "Network" tab.
+To deploy your app to the Visual Studio Emulator for Android using our extension, you first need to manually launch the emulator. Once it is running, select the ```Run Android on Device``` debug target rather than the emulator target. If *ADB* didn't automatically recognize the VS Android emulator when you launched it, you will need to run ```adb connect [EMULATOR'S IP]``` on the command prompt before trying to deploy. To find out the IP address of your emulator, click the double arrow icon at the bottom of the emulator's side-menu to open the "Additional Tools" window, and go to the "Network" tab. Use the IP of an appropriate network adapter in the list.
 
 We won't go into all of the great things that you can do with the Visual Studio Code debugger, but you can read about it [here](https://code.visualstudio.com/docs/editor/debugging).
 
@@ -116,12 +116,12 @@ To properly enable IntelliSense in these scenarios, you will need to use [JSDoc 
 
 ![IntelliSense for Angular and Ionic services](images/ionic-intellisense.png)
 
-Our extension will provide the typings for you, so all you have to do is create the JSDoc headers over the functions you wish to receive IntelliSense for.
+Our extension will provide the typings for you, so all you have to do is create the JSDoc headers above the functions you wish to receive IntelliSense for.
 
 > **Note:**
 JSDoc headers may not be supported (for IntelliSense purposes) in old VSCode versions.
 
-For Ionic services, the service type will be in the following format: ```ionic.[service].Ionic[Service]Service```, where ```[service]``` and ```[Service]``` should be replaced with the service's name, without the ```$``` sign and the ```ionic``` keyword. For example:
+For Ionic services, the service type will be in the following format: ```ionic.[service].Ionic[Service]Service```, where ```[service]``` and ```[Service]``` should be replaced with the service's name, without the ```$``` sign and the ```ionic``` prefix. For example:
 
 ```@param {ionic.popup.IonicPopupService} $ionicPopup - The $ionicPopup service```
 
