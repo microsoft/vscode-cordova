@@ -19,7 +19,6 @@ export class ExtensionServer implements vscode.Disposable {
     private serverInstance: net.Server = null;
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
-    private telemetryReporterDictionary: {} = {};
 
     public constructor() {
         this.pipePath = ExtensionMessageSender.getExtensionPipePath();

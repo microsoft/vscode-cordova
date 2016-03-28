@@ -112,17 +112,19 @@ export module Telemetry {
                         var measures: ITelemetryEventMeasures = {};
 
                         for (var key in event.properties) {
-                            switch (typeof event.properties[key]) {
+                            var propertyValue = event.properties[key];
+
+                            switch (typeof propertyValue) {
                                 case "string":
-                                    properties[key] = <string>event.properties[key];
+                                    properties[key] = <string>propertyValue;
                                     break;
 
                                 case "number":
-                                    measures[key] = <number>event.properties[key];
+                                    measures[key] = <number>propertyValue;
                                     break;
 
                                 default:
-                                    properties[key] = JSON.stringify(event.properties[key]);
+                                    properties[key] = JSON.stringify(propertyValue);
                                     break;
                             }
                         };
