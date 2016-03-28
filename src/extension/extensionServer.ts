@@ -3,7 +3,6 @@
 
 import * as net from "net";
 import * as Q from "q";
-import * as rimraf from "rimraf";
 import * as vscode from "vscode";
 
 import {
@@ -13,6 +12,7 @@ import {
     MessageWithArguments
 } from "../common/extensionMessaging";
 
+import {CordovaProjectHelper} from "../utils/cordovaProjectHelper";
 import {Telemetry} from "../utils/telemetry";
 
 export class ExtensionServer implements vscode.Disposable {
@@ -113,7 +113,7 @@ export class ExtensionServer implements vscode.Disposable {
         let errorHandler = (e: any) => {
             /* The named socket is not used. */
             if (e.code === "ECONNREFUSED") {
-                rimraf.sync(this.pipePath);
+                CordovaProjectHelper.deleteDirectoryRecursive(this.pipePath);
                 this.serverInstance.listen(this.pipePath);
             }
         };

@@ -19,10 +19,10 @@ This project incorporates components from the projects listed below. The origina
 11.	oozcitak/xmlbuilder-js version 0.4.3 (https://github.com/oozcitak/xmlbuilder-js)
 12.	jindw/xmldom version 0.1.21 (https://github.com/jindw/xmldom)
 13.	DefinitelyTyped/definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
-14. 	Microsoft/vscode-chrome-debug (https://github.com/Microsoft/vscode-chrome-debug)
-15.     bevry/getmac version 1.0.7 (https://github.com/bevry/getmac)
-16.     bevry/extract-opts version 2.2.0 (https://github.com/bevry/extract-opts)
-17.     bevry/typechecker version 2.0.8 (https://github.com/bevry/typechecker)
+14. Microsoft/vscode-chrome-debug (https://github.com/Microsoft/vscode-chrome-debug)
+15. Microsoft/vscode-extension-telemetry 0.0.5 (https://github.com/Microsoft/vscode-extension-telemetry)
+16. bevry/extract-opts version 2.2.0 (https://github.com/bevry/extract-opts)
+17. bevry/typechecker version 2.0.8 (https://github.com/bevry/typechecker)
 
 %% Microsoft/ApplicationInsights-node.js NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -312,26 +312,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 =========================================
 END OF kriskowal/q NOTICES AND INFORMATION
-
-%% isaacs/rimraf NOTICES AND INFORMATION BEGIN HERE
-=========================================
-The ISC License
-
-Copyright (c) Isaac Z. Schlueter and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-=========================================
-isaacs/rimraf Working Draft NOTICES AND INFORMATION
 
 %% isaacs/sax-js NOTICES AND INFORMATION BEGIN HERE
 =========================================
