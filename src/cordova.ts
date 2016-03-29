@@ -10,7 +10,7 @@ import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
 import {Telemetry} from './utils/telemetry';
-import {TelemetryHelper} from './utils/telemetryHelper';
+import {IProjectType, TelemetryHelper} from './utils/telemetryHelper';
 import {TsdHelper} from './utils/tsdHelper';
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
@@ -22,6 +22,7 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
     Telemetry.init('cordova-tools', require('./../../package.json').version, {isExtensionProcess: true});
+
     // Get the project root and check if it is a Cordova project
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 
@@ -29,11 +30,13 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
     }
 
-    var activateExtensionEvent = TelemetryHelper.createTelemetryEvent("activate");
+    let activateExtensionEvent = TelemetryHelper.createTelemetryEvent("activate");
+    let projectType: IProjectType;
 
     TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
-        .then((projectType) => {
-            activateExtensionEvent.properties["projectType"] = projectType;
+        .then((projType) => {
+            projectType = projType;
+            activateExtensionEvent.properties["projectType"] = projType;
         })
         .finally(() => {
             Telemetry.send(activateExtensionEvent);
@@ -62,6 +65,22 @@ export function activate(context: vscode.ExtensionContext): void {
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
+    context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
+    context.subscriptions.push(vscode.commands.registerCommand('ionic.build',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build", true)));
+    context.subscriptions.push(vscode.commands.registerCommand('ionic.run',
+        () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run", true)));
+
+    // Install Ionic type definitions if necessary
+    if (CordovaProjectHelper.isIonicProject(cordovaProjectRoot)) {
+        let ionicTypings: string[] = [
+            path.join("angularjs", "angular.d.ts"),
+            path.join("jquery", "jquery.d.ts"),
+            path.join("ionic", "ionic.d.ts")
+        ];
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings);
+    }
 
     let pluginTypings = getPluginTypingsJson();
     if (!pluginTypings) {
@@ -82,7 +101,7 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!jsExists && !tsExists) {
             Q.nfcall(fs.writeFile, jsconfigPath, "{}").then(() => {
                 // Any open file must be reloaded to enable intellisense on them, so inform the user
-                vscode.window.showInformationMessage("To enable IntelliSense a 'jsconfig.json' file was added to your project. Please close and reopen any active JavaScript file(s).");
+                vscode.window.showInformationMessage("A 'jsconfig.json' file was created to enable IntelliSense. You may need to reload your open JS file(s).");
             });
         }
     });

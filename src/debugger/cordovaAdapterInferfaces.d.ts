@@ -5,6 +5,15 @@
  interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
     appStepLaunchTimeout?: number;
+
+    // Ionic livereload properties
+    ionicLiveReload?: boolean;
+    devServerPort?: number;
+    devServerAddress?: string;
+
+    // Chrome debug properties
+    url?: string;
+    userDataDir?: string;
 }
 
 interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {

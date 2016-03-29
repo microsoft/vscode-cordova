@@ -1,0 +1,181 @@
+{
+    "ionicFooterBar": {
+        "prefix": "ion_footerBar",
+        "body": [
+            "<ion-footer-bar align-title=\"${1:left}\" class=\"${2:bar-assertive}\">",
+            "\t<div class=\"buttons\">",
+            "\t\t<button class=\"button\" ng-click=\"${3:doSomething()}\">${4:Left Button}</button>",
+            "\t</div>",
+            "\t<h1 class=\"title\">${5:Title}</h1>",
+            "\t<div class=\"buttons\">",
+            "\t\t<button class=\"button\" ng-click=\"${6:doSomething()}\">${7:Right Button}</button>",
+            "\t</div>",
+            "</ion-footer-bar>"
+        ],
+        "description": "A snippet for an ion-footer-bar element"
+    },
+    "ionicHeaderBar": {
+        "prefix": "ion_headerBar",
+        "body": [
+            "<ion-header-bar align-title=\"${1:left}\" class=\"${2:bar-positive}\">",
+            "\t<div class=\"buttons\">",
+            "\t\t<button class=\"button\" ng-click=\"${3:doSomething()}\">${4:Left Button}</button>",
+            "\t</div>",
+            "\t<h1 class=\"title\">${5:Title}</h1>",
+            "\t<div class=\"buttons\">",
+            "\t\t<button class=\"button\" ng-click=\"${6:doSomething()}\">${7:Right Button}</button>",
+            "\t</div>",
+            "</ion-header-bar>"
+        ],
+        "description": "A snippet for an ion-header-bar element"
+    },
+    "ionicInfiniteScroll": {
+        "prefix": "ion_infiniteScroll",
+        "body": [
+            "<ion-infinite-scroll",
+            "\ton-infinite=\"${1:loadMore()}\"",
+            "\tdistance=\"${2:1%}\">",
+            "</ion-infinite-scroll>"
+        ],
+        "description": "A snippet for an ion-infinite-scroll element"
+    },
+    "ionicListComplex": {
+        "prefix": "ion_listComplex",
+        "body": [
+            "<ion-list show-delete=\"${shouldShowDelete}\" show-reorder=\"${shouldShowReorder}\" can-swipe=\"${canSwipe}\">",
+            "\t<ion-item ng-repeat=\"${item} in ${items}\" class=\"item-thumbnail-left\">",
+            "\t\t<img ng-src=\"{{${item}.img}}\">",
+            "\t\t<h2>{{${item}.title}}</h2>",
+            "\t\t<p>{{${item}.description}}</p>",
+            "\t\t<ion-option-button class=\"button-positive\" ng-click=\"action1(${item})\">",
+            "\t\t\tAction 1",
+            "\t\t</ion-option-button>",
+            "\t\t<ion-option-button class=\"button-info\" ng-click=\"action2(${item})\">",
+            "\t\t\tAction 2",
+            "\t\t</ion-option-button>",
+            "\t\t<ion-delete-button class=\"ion-minus-circled\" ng-click=\"${item}s.splice($index, 1)\">",
+            "\t\t</ion-delete-button>",
+            "\t\t<ion-reorder-button class=\"ion-navicon\" on-reorder=\"${item}s.splice($fromIndex, 1);${item}s.splice($toIndex, 0, ${item});\">",
+            "\t\t</ion-reorder-button>",
+            "\t</ion-item>",
+            "</ion-list>"
+        ],
+        "description": "A snippet for a complex ion-list element"
+    },
+    "ionicListSimple": {
+        "prefix": "ion_listSimple",
+        "body": [
+            "<ion-list>",
+            "\t<ion-item ng-repeat=\"${1:item in items}\">",
+            "\t\t${2:Hello, \\{\\{item\\}\\}!}",
+            "\t</ion-item>",
+            "</ion-list>"
+        ],
+        "description": "A snippet for a simple ion-list element"
+    },
+    "ionicModalView": {
+        "prefix": "ion_modalView",
+        "body": [
+            "<ion-modal-view>",
+            "\t<ion-header-bar>",
+            "\t\t<h1 class=\"title\">${1:My Modal title}</h1>",
+            "\t</ion-header-bar>",
+            "\t<ion-content>",
+            "\t\t${2:My Modal content}",
+            "\t</ion-content>",
+            "</ion-modal-view>"
+        ],
+        "description": "A snippet for an ion-modal-view element"
+    },
+    "ionicNavButtons": {
+        "prefix": "ion_navButtons",
+        "body": [
+            "<ion-nav-buttons side=\"${1:primary}\">",
+            "\t<button class=\"button\" ng-click=\"${2:doSomething()}\">",
+            "\t\t${3:Button label}",
+            "\t</button>",
+            "</ion-nav-buttons>"
+        ],
+        "description": "A snippet for an ion-nav-buttons element"
+    },
+    "ionicPopoverView": {
+        "prefix": "ion_popoverView",
+        "body": [
+            "<ion-popover-view>",
+            "\t<ion-header-bar>",
+            "\t\t<h1 class=\"title\">${1:My Popover Title}</h1>",
+            "\t</ion-header-bar>",
+            "\t<ion-content>",
+            "\t\t${2:My Popover content}",
+            "\t</ion-content>",
+            "</ion-popover-view>"
+        ],
+        "description": "A snippet for an ion-popover-view element"
+    },
+    "ionicRefresher": {
+        "prefix": "ion_refresher",
+        "body": [
+            "<ion-refresher",
+            "\tpulling-text=\"${1:Pull to refresh...}\"",
+            "\ton-refresh=\"${doRefresh()}\">",
+            "</ion-refresher>",
+            "<ion-list>",
+            "\t<ion-item ng-repeat=\"${2:item in items}\"></ion-item>",
+            "</ion-list>"
+        ],
+        "description": "A snippet for an ion-refresher element"
+    },
+    "ionicSideMenus": {
+        "prefix": "ion_sideMenus",
+        "body": [
+            "<ion-side-menus>",
+            "\t<!-- Left menu -->",
+            "\t<ion-side-menu side=\"left\">${1}",
+            "\t</ion-side-menu>",
+            "",
+            "\t<!-- Main content -->",
+            "\t<ion-side-menu-content>${2}",
+            "\t</ion-side-menu-content>",
+            "",
+            "\t<!-- Right menu -->",
+            "\t<ion-side-menu side=\"right\">${3}",
+            "\t</ion-side-menu>",
+            "</ion-side-menus>"
+        ],
+        "description": "A snippet for an ion-side-menus element"
+    },
+    "ionicSlides": {
+        "prefix": "ion_slides",
+        "body": [
+            "<ion-slides options=\"${slidesOptions}\" slider=\"${data.slider}\">",
+            "\t<ion-slide-page>",
+            "\t\t<h1>Page 1</h1>",
+            "\t</ion-slide-page>",
+            "\t<ion-slide-page>",
+            "\t\t<h1>Page 2</h1>",
+            "\t</ion-slide-page>",
+            "\t<ion-slide-page>",
+            "\t\t<h1>Page 3</h1>",
+            "\t</ion-slide-page>",
+            "</ion-slides>"
+        ],
+        "description": "A snippet for an ion-slides element"
+    },
+    "ionicTabs": {
+        "prefix": "ion_tabs",
+        "body": [
+            "<ion-tabs class=\"tabs-positive tabs-icon-top\">",
+            "\t<ion-tab title=\"${Home}\" icon-on=\"${ion-ios-filing}\" icon-off=\"${ion-ios-filing-outline}\">",
+            "\t\t${<!-- Tab 1 content -->}",
+            "\t</ion-tab>",
+            "\t<ion-tab title=\"${About}\" icon-on=\"${ion-ios-clock}\" icon-off=\"${ion-ios-clock-outline}\">",
+            "\t\t${<!-- Tab 2 content -->}",
+            "\t</ion-tab>",
+            "\t<ion-tab title=\"${Settings}\" icon-on=\"${ion-ios-gear}\" icon-off=\"${ion-ios-gear-outline}\">",
+            "\t\t${<!-- Tab 3 content -->}",
+            "\t</ion-tab>",
+            "</ion-tabs>"
+        ],
+        "description": "A snippet for an ion-tabs element"
+    }
+}

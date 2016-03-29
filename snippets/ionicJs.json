@@ -1,0 +1,298 @@
+{
+    "ionicActionSheet": {
+        "prefix": "ion_actionSheet",
+        "body": [
+            "$scope.${showActionSheet} = function() {",
+            "\t// Show the action sheet",
+            "\tvar ${hideSheet} = $ionicActionSheet.show({",
+            "\t\tbuttons: [",
+            "\t\t\t{ text: '${1:My button}' }",
+            "\t\t],",
+            "\t\tdestructiveText: '${2:Delete}',",
+            "\t\ttitleText: '${3:Modify your album}',",
+            "\t\tcancelText: '${4:Cancel}',",
+            "\t\tcancel: function() {",
+            "\t\t\t${hideSheet}();",
+            "\t\t},",
+            "\t\tbuttonClicked: function(${index}) {",
+            "\t\t\t${5:return true;}",
+            "\t\t}",
+            "\t});",
+            "};"
+        ],
+        "description": "A snippet for $ionicActionSheet"
+    },
+    "ionicBackdrop": {
+        "prefix": "ion_backdrop",
+        "body": [
+            "$scope.${hideBackdrop} = function() {",
+            "\t$ionicBackdrop.release();",
+            "};",
+            "",
+            "// Show a backdrop for one second",
+            "$scope.${showBackdrop} = function() {",
+            "\t$ionicBackdrop.retain();",
+            "\t${1}$timeout(function() {",
+            "\t\t$scope.${hideBackdrop}();",
+            "\t}, 1000);",
+            "};",
+            "",
+            "// Execute action on backdrop disappearing",
+            "$scope.$on('backdrop.hidden', function() {",
+            "\t${2:// Execute action}",
+            "});",
+            "",
+            "// Execute action on backdrop appearing",
+            "$scope.$on('backdrop.shown', function() {",
+            "\t${3:// Execute action}",
+            "});"
+        ],
+        "description": "A snippet for $ionicBackdrop"
+    },
+    "ionicInfiniteScrollJS": {
+        "prefix": "ion_infiniteScroll",
+        "body": [
+            "$scope.${scopeItems:items} = [];",
+            "$scope.${loadMore} = function() {",
+            "\t$http.get('${1:/more-items}').success(function(${items}) {",
+            "\t\t$scope.${scopeItems:items} = $scope.${scopeItems:items}.concat(${items});",
+            "\t\t$scope.$broadcast('scroll.infiniteScrollComplete');",
+            "\t});",
+            "};",
+            "",
+            "$scope.$on('$stateChangeSuccess', function() {",
+            "\t$scope.${loadMore}();",
+            "});"
+        ],
+        "description": "A snippet for the JavaScript usage of an ion-infinite-scroll"
+    },
+    "ionicLoading": {
+        "prefix": "ion_loading",
+        "body": [
+            "$scope.${hideLoading} = function() {",
+            "\t$ionicLoading.hide();",
+            "};",
+            "",
+            "// Show a loading state for one second",
+            "$scope.${showLoading} = function() {",
+            "\t$ionicLoading.show({",
+            "\t\ttemplate: '${1:Content to show while loading. You can also use an HTML template by using the templateUrl property instead.}'",
+            "\t});",
+            "\t${2}$timeout(function() {",
+            "\t\t$scope.${hideLoading}();",
+            "\t}, 1000);",
+            "};"
+        ],
+        "description": "A snippet for $ionicLoading"
+    },
+    "ionicLoadingConstant": {
+        "prefix": "ion_loadingConstant",
+        "body": [
+            "${app}.constant('$ionicLoadingConfig', {",
+            "\ttemplate: '${1:Content to show while loading. You can also use an HTML template by using the templateUrl property instead.}'",
+            "})${2}"
+        ],
+        "description": "A snippet to define the default template of $ionicLoading"
+    },
+    "ionicModal": {
+        "prefix": "ion_modal",
+        "body": [
+            "// Create the Modal using a template",
+            "$ionicModal.fromTemplateUrl('templates/${1:my-modal.html}', {",
+            "\tscope: $scope,",
+            "\tanimation: '${2:slide-in-up}'",
+            "}).then(function(${modal}) {",
+            "\t$scope.${scopeModal:modal} = ${modal};",
+            "});",
+            "",
+            "$scope.${closeModal} = function() {",
+            "\t$scope.${scopeModal:modal}.hide();",
+            "};",
+            "",
+            "// Show a modal for one second",
+            "$scope.${openModal} = function() {",
+            "\t$scope.${scopeModal:modal}.show();",
+            "\t${3}$timeout(function() {",
+            "\t\t$scope.${closeModal}();",
+            "\t}, 1000);",
+            "};",
+            "",
+            "// Cleanup the modal when we're done with it",
+            "$scope.$on('$destroy', function() {",
+            "\t$scope.${scopeModal:modal}.remove();",
+            "});",
+            "",
+            "// Execute action on hide modal",
+            "$scope.$on('modal.hidden', function() {",
+            "\t${4:// Execute action}",
+            "});",
+            "",
+            "// Execute action on remove modal",
+            "$scope.$on('modal.removed', function() {",
+            "\t${5:// Execute action}",
+            "});"
+        ],
+        "description": "A snippet for $ionicModal"
+    },
+    "ionicPopover": {
+        "prefix": "ion_popover",
+        "body": [
+            "// Create the Popover using a template",
+            "$ionicPopover.fromTemplateUrl('templates/${1:my-popover.html}', {",
+            "\tscope: $scope${2}",
+            "}).then(function(${popover}) {",
+            "\t$scope.${scopePopover:popover} = ${popover};",
+            "});",
+            "",
+            "$scope.${openPopover} = function($event) {",
+            "\t$scope.${scopePopover:popover}.show($event);",
+            "};",
+            "$scope.${closePopover} = function() {",
+            "\t$scope.${scopePopover:popover}.hide();",
+            "};",
+            "",
+            "// Cleanup the popover when we're done with it",
+            "$scope.$on('$destroy', function() {",
+            "\t$scope.${scopePopover:popover}.remove();",
+            "});",
+            "",
+            "// Execute action on hide popover",
+            "$scope.$on('popover.hidden', function() {",
+            "\t${3:// Execute action}",
+            "});",
+            "",
+            "// Execute action on remove popover",
+            "$scope.$on('popover.removed', function() {",
+            "\t${4:// Execute action}",
+            "});"
+        ],
+        "description": "A snippet for $ionicPopover"
+    },
+    "ionicPopupAlert": {
+        "prefix": "ion_popupAlert",
+        "body": [
+            "$scope.${showAlert} = function() {",
+            "\t$ionicPopup.alert({",
+            "\t\ttitle: '${1:Popup title}',",
+            "\t\ttemplate: '${2:The body of the popup. You can also use an HTML template by using the templateUrl property instead.}'",
+            "\t}).then(function(${res}) {",
+            "\t\t${3}console.log('Popup was closed', ${res});",
+            "\t});",
+            "};"
+        ],
+        "description": "A snippet for $ionicPopup using the alert() method"
+    },
+    "ionicPopupConfirm": {
+        "prefix": "ion_popupConfirm",
+        "body": [
+            "$scope.${showConfirm} = function() {",
+            "\t$ionicPopup.confirm({",
+            "\t\ttitle: '${1:Popup title}',",
+            "\t\ttemplate: '${2:The body of the popup. You can also use an HTML template by using the templateUrl property instead.}'",
+            "\t}).then(function(${res}) {",
+            "\t\t${3}if (${res}) {",
+            "\t\t\tconsole.log('Popup was closed with OK');",
+            "\t\t} else {",
+            "\t\t\tconsole.log('Popup was closed with Cancel');",
+            "\t\t}",
+            "\t});",
+            "};"
+        ],
+        "description": "A snippet for $ionicPopup using the confirm() method"
+    },
+    "ionicPopupPrompt": {
+        "prefix": "ion_popupPrompt",
+        "body": [
+            "$scope.${showPrompt} = function() {",
+            "\t$ionicPopup.prompt({",
+            "\t\ttitle: '${1:Popup title}',",
+            "\t\ttemplate: '${2:The body of the popup. You can also use an HTML template by using the templateUrl property instead.}',",
+            "\t\tinputType: '${3:password}',",
+            "\t\tinputPlaceholder: '${4:Password}'",
+            "\t}).then(function(${res}) {",
+            "\t\t${5}console.log('Popup was closed', ${res});",
+            "\t});",
+            "}"
+        ],
+        "description": "A snippet for $ionicPopup using the prompt() method"
+    },
+    "ionicPopupShow": {
+        "prefix": "ion_popupShow",
+        "body": [
+            "$scope.${showPopup} = function() {",
+            "\t$scope.data = {};",
+            "",
+            "\t// A popup example that prompts for a password",
+            "\t$scope.${myPopup} = $ionicPopup.show({",
+            "\t\ttemplate: '${1:<input type=\\'password\\' ng-model=\\'data.password\\'><p>You can also use an HTML template by using the templateUrl property instead.</p>}',",
+            "\t\ttitle: '${Enter Password}',",
+            "\t\tsubTitle: '${Example subtitle}',",
+            "\t\tscope: $scope,",
+            "\t\tbuttons: [",
+            "\t\t\t${2}{ text: 'Cancel' },",
+            "\t\t\t{",
+            "\t\t\t\ttext: '<b>Ok</b>',",
+            "\t\t\t\ttype: 'button-positive',",
+            "\t\t\t\tonTap: function(e) {",
+            "\t\t\t\t\tif (!$scope.data.password) {",
+            "\t\t\t\t\t\t// Prevent closing the popup if there is no password",
+            "\t\t\t\t\t\te.preventDefault();",
+            "\t\t\t\t\t} else {",
+            "\t\t\t\t\t\treturn $scope.data.password;",
+            "\t\t\t\t\t}",
+            "\t\t\t\t}",
+            "\t\t\t}",
+            "\t\t]",
+            "\t}).then(function(${res}) {",
+            "\t\t${3}console.log('Popup closed', ${res});",
+            "\t});",
+            "};",
+            "",
+            "$scope.${closePopup} = function() {",
+            "\t$scope.${myPopup}.close();",
+            "};"
+        ],
+        "description": "A snippet for $ionicPopup using the show() method"
+    },
+    "ionicRefresherJS": {
+        "prefix": "ion_refresher",
+        "body": [
+            "// Example usage for the refresher",
+            "$scope.${items} = [1,2,3];",
+            "$scope.${doRefresh} = function() {",
+            "\t$http.get('${1:/new-items}')",
+            "\t\t.success(function(${newItems}) {",
+            "\t\t\t$scope.${items} = ${newItems};",
+            "\t\t})",
+            "\t\t.finally(function() {",
+            "\t\t\t// Stop the ion-refresher from spinning",
+            "\t\t\t$scope.$broadcast('scroll.refreshComplete');",
+            "\t\t});",
+            "};"
+        ],
+        "description": "A snippet for the JavaScript usage of an ion-refresher"
+    },
+    "ionicSlidesJS": {
+        "prefix": "ion_slides",
+        "body": [
+            "$scope.${slidesOptions} = {",
+            "\tloop: true",
+            "}",
+            "$scope.${data} = {};",
+            "$scope.$watch('${data}.${slider}', function(${nv}, ${ov}) {",
+            "\t$scope.${scopeSlider:slider} = $scope.${data}.${slider};",
+            "});"
+        ],
+        "description": "A snippet for the JavaScript usage of an ion-slides"
+    },
+    "ionicState": {
+        "prefix": "ion_state",
+        "body": [
+            "${$stateProvider}.state('${1:State name, for example: index}', {",
+            "\turl: '${2:URL to route to this state, for example: /}',",
+            "\ttemplateUrl: '${3:Template file to use, for example: home.html}'",
+            "})${4}"
+        ],
+        "description": "A snippet to add a state to the $stateProvider service"
+    }
+}

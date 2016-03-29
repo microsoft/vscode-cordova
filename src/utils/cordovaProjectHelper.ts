@@ -7,14 +7,17 @@ import * as path from 'path';
 import * as Q from 'q';
 
 export class CordovaProjectHelper {
-    private static PROJECT_TYPINGS_FOLDERNAME =  "typings";
-    private static PROJECT_TYPINGS_PLUGINS_FOLDERNAME =  "plugins";
-    private static PROJECT_TYPINGS_CORDOVA_FOLDERNAME =  "cordova";
-    private static PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME =  "cordova-ionic";
+    private static PROJECT_TYPINGS_FOLDERNAME = "typings";
+    private static PROJECT_TYPINGS_PLUGINS_FOLDERNAME = "plugins";
+    private static PROJECT_TYPINGS_CORDOVA_FOLDERNAME = "cordova";
+    private static PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME = "cordova-ionic";
     private static VSCODE_DIR: string = ".vscode";
     private static PLUGINS_FETCH_FILENAME: string = "fetch.json";
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
+    private static IONIC_PROJECT_FILE: string = "ionic.project";
+    private static IONIC_CONFIG_JS_FILE: string = "ionic.config.js";
+    private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
 
     /**
      *  Helper function check if a file exists.
@@ -35,7 +38,7 @@ export class CordovaProjectHelper {
      */
     public static makeDirectoryRecursive(dirPath: string): void {
         let parentPath = path.dirname(dirPath);
-        if(!CordovaProjectHelper.existsSync(parentPath)) {
+        if (!CordovaProjectHelper.existsSync(parentPath)) {
             CordovaProjectHelper.makeDirectoryRecursive(parentPath);
         }
 
@@ -136,12 +139,12 @@ export class CordovaProjectHelper {
      */
     public static getOrCreateTypingsTargetPath(projectRoot: string): string {
         if (projectRoot) {
-           let targetPath = path.resolve(projectRoot, CordovaProjectHelper.VSCODE_DIR, CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME);
-           if(!CordovaProjectHelper.existsSync(targetPath)) {
-               CordovaProjectHelper.makeDirectoryRecursive(targetPath);
-           }
+            let targetPath = path.resolve(projectRoot, CordovaProjectHelper.VSCODE_DIR, CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME);
+            if (!CordovaProjectHelper.existsSync(targetPath)) {
+                CordovaProjectHelper.makeDirectoryRecursive(targetPath);
+            }
 
-           return targetPath;
+            return targetPath;
         }
 
         return null;
@@ -159,5 +162,26 @@ export class CordovaProjectHelper {
      */
     public static getIonicPluginTypeDefsPath(projectRoot: string): string {
         return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+    }
+
+    /**
+     *  Helper function to determine whether the project is an Ionic 1 project or no
+     */
+    public static isIonicProject(projectRoot: string): boolean {
+        // First look for "ionic.project" at the project root
+        if (fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_PROJECT_FILE))) {
+            return true;
+        }
+
+        // If not found, fall back to looking for "www/lib/ionic" folder. This isn't a 100% guarantee though: an Ionic project doesn't necessarily have an "ionic.project" and could have the Ionic lib
+        // files in a non-default location
+        return fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_LIB_DEFAULT_PATH));
+    }
+
+    /**
+     *  Helper function to determine whether the project is an Ionic 2 project or no. NOTE: we currently rely on "ionic.config.js" file, which may change as Ionic 2 continues development.
+     */
+    public static isIonic2Project(projectRoot: string): boolean {
+        return fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_CONFIG_JS_FILE));
     }
 }
