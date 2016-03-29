@@ -1,25 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-/// <reference path='../../typings/applicationinsights/applicationinsights.d.ts' />
 /// <reference path='../../typings/winreg/winreg.d.ts' />
 
-import * as appInsights from 'applicationinsights';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-import * as getmac from 'getmac';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
 import * as readline from 'readline';
 import * as winreg from 'winreg';
 
+import {
+    ExtensionMessage,
+    ExtensionMessageSender
+} from '../common/extensionMessaging';
+
 import {settingsHome} from './settingsHelper'
-
-// for poking around at internal applicationinsights options
-var sender = require ('applicationinsights/Library/Sender');
-var telemetryLogger = require ('applicationinsights/Library/Logging');
-
 
 /**
  * Telemetry module specialized for vscode integration.
@@ -27,6 +24,8 @@ var telemetryLogger = require ('applicationinsights/Library/Logging');
 export module Telemetry {
         export var appName: string;
         export var isOptedIn: boolean = false;
+        export var reporter: ITelemetryReporter;
+        export var reporterDictionary: {[key: string]: ITelemetryReporter} = {};
 
         export interface ITelemetryProperties {
             [propertyName: string]: any;
@@ -88,10 +87,14 @@ export module Telemetry {
             }
         };
 
-        export function init(appNameValue: string, appVersion?: string, isOptedInValue?: boolean): Q.Promise<any> {
+        export interface ITelemetryInitOptions {
+            isExtensionProcess: boolean;
+        }
+
+        export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
             try {
                 Telemetry.appName = appNameValue;
-                return TelemetryUtils.init(appVersion, isOptedInValue);
+                return TelemetryUtils.init(appVersion, initOptions);
             } catch (err) {
                 console.error(err);
             }
@@ -106,19 +109,34 @@ export module Telemetry {
                         (<TelemetryActivity> event).end();
                     }
 
-                    if (appInsights.client) { // no-op if telemetry is not initialized
-                        appInsights.client.trackEvent(event.name, event.properties);
+                    if (Telemetry.reporter) {
+                        var properties: ITelemetryEventProperties = {};
+                        var measures: ITelemetryEventMeasures = {};
+
+                        Object.keys(event.properties || {}).forEach(function (key: string) {
+                            var propertyValue = event.properties[key];
+
+                            switch (typeof propertyValue) {
+                                case "string":
+                                    properties[key] = <string>propertyValue;
+                                    break;
+
+                                case "number":
+                                    measures[key] = <number>propertyValue;
+                                    break;
+
+                                default:
+                                    properties[key] = JSON.stringify(propertyValue);
+                                    break;
+                            }
+                        });
+
+                        Telemetry.reporter.sendTelemetryEvent(event.name, properties, measures);
                     }
                 } catch (err) {
                     console.error(err);
                 }
             }
-        }
-
-        export function sendPendingData(): Q.Promise<string> {
-            var defer: Q.Deferred<string> = Q.defer<string>();
-            appInsights.client.sendPendingData((result: string) => defer.resolve(result));
-            return defer.promise;
         }
 
         export function isInternal(): boolean {
@@ -149,13 +167,11 @@ export module Telemetry {
             public static optInCollectedForCurrentSession: boolean;
 
             private static userId: string;
-            private static machineId: string;
             private static telemetrySettings: ITelemetrySettings = null;
             private static TELEMETRY_SETTINGS_FILENAME: string = 'VSCodeTelemetrySettings.json';
             private static APPINSIGHTS_INSTRUMENTATIONKEY: string = 'AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217'; // Matches vscode telemetry key
             private static REGISTRY_SQMCLIENT_NODE: string = '\\SOFTWARE\\Microsoft\\SQMClient';
             private static REGISTRY_USERID_VALUE: string = 'UserId';
-            private static REGISTRY_MACHINEID_VALUE: string = 'MachineId';
             private static INTERNAL_DOMAIN_SUFFIX: string = 'microsoft.com';
             private static INTERNAL_USER_ENV_VAR: string = 'TACOINTERNAL';
 
@@ -163,39 +179,20 @@ export module Telemetry {
                 return path.join(settingsHome(), TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
             }
 
-            public static init(appVersion: string, isOptedInValue: boolean): Q.Promise<any> {
+            public static init(appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
                 TelemetryUtils.loadSettings();
 
-                let client = appInsights.setup(TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY)
-                    .setOfflineMode(true)
-                    .setAutoCollectConsole(false)
-                    .setAutoCollectRequests(false)
-                    .setAutoCollectPerformance(false)
-                    .setAutoCollectExceptions(false)
-                    .start().client;
-                appInsights.client.config.maxBatchIntervalMs = 100;
-                sender.WAIT_BETWEEN_RESEND = 0;
-                telemetryLogger.disableWarnings = true;
-
-                if (client && client.context && client.context.keys && client.context.tags) {
-                    // Remove potential PII
-                    let machineNameKey = client.context.keys.deviceMachineName;
-                    client.context.tags[machineNameKey] = '';
+                if (initOptions.isExtensionProcess) {
+                    let TelemetryReporter = require('vscode-extension-telemetry').default;
+                    Telemetry.reporter = new TelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
+                }
+                else {
+                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
                 }
 
-                if (appVersion) {
-                    var context: Context = appInsights.client.context;
-                    context.tags[context.keys.applicationVersion] = appVersion;
-                }
-
-                // Change endpoint to match Aimov key
-                client.config.endpointUrl = "https://vortex.data.microsoft.com/collect/v1";
-
-                return Q.all([TelemetryUtils.getUserId(), TelemetryUtils.getMachineId()])
-                .spread<any>(function (userId: string, machineId: string): void {
+                return TelemetryUtils.getUserId()
+                .then(function (userId: string): void {
                     TelemetryUtils.userId = userId;
-                    TelemetryUtils.machineId = machineId;
-                    TelemetryUtils.sessionId = TelemetryUtils.generateGuid();
                     TelemetryUtils.userType = TelemetryUtils.getUserType();
 
                     Telemetry.isOptedIn = TelemetryUtils.getTelemetryOptInSetting();
@@ -205,15 +202,10 @@ export module Telemetry {
 
             public static addCommonProperties(event: any): void {
                 if (Telemetry.isOptedIn) {
-                    // for the opt out event, don't include tracking properties
                     event.properties['cordova.userId'] = TelemetryUtils.userId;
-                    event.properties['cordova.machineId'] = TelemetryUtils.machineId;
                 }
 
-                event.properties['cordova.sessionId'] = TelemetryUtils.sessionId;
                 event.properties['cordova.userType'] = TelemetryUtils.userType;
-                event.properties['cordova.hostOS'] = os.platform();
-                event.properties['cordova.hostOSRelease'] = os.release();
             }
 
             public static generateGuid(): string {
@@ -240,17 +232,6 @@ export module Telemetry {
                 }
 
                 return TelemetryUtils.telemetrySettings.optIn;
-            }
-
-            public static setTelemetryOptInSetting(optIn: boolean): void {
-                TelemetryUtils.telemetrySettings.optIn = optIn;
-
-                if (!optIn) {
-                    Telemetry.send(new TelemetryEvent(Telemetry.appName + '/telemetryOptOut'), true);
-                }
-
-                TelemetryUtils.optInCollectedForCurrentSession = true;
-                TelemetryUtils.saveSettings();
             }
 
             private static getUserType(): string {
@@ -335,34 +316,6 @@ export module Telemetry {
                 }
             }
 
-            private static generateMachineId(): Q.Promise<string> {
-                return TelemetryUtils.getMacAddress().then((macAddress: string) => {
-                    return crypto.createHash('sha256').update(macAddress, 'utf8').digest('hex');
-                });
-            }
-
-            private static getMachineId(): Q.Promise<string> {
-                var machineId: string = TelemetryUtils.telemetrySettings.machineId;
-                if (!machineId) {
-                    return TelemetryUtils.generateMachineId()
-                    .then(function(id: string): Q.Promise<string> {
-                        TelemetryUtils.telemetrySettings.machineId = id;
-                        return Q.resolve(id);
-                    });
-                } else {
-                    TelemetryUtils.telemetrySettings.machineId = machineId;
-                    return Q.resolve(machineId);
-                }
-            }
-
-            private static getMacAddress(): Q.Promise<string> {
-                // Return a mac address, or failing that, a unique ID
-                // using getmac to attempt to match telemetry identifiers of vs code
-                return Q.nfcall(getmac.getMac).catch(() => {
-                    return TelemetryUtils.generateGuid();
-                });
-            }
-
             private static getUserId(): Q.Promise<string> {
                 var userId: string = TelemetryUtils.telemetrySettings.userId;
                 if (!userId) {
@@ -377,4 +330,48 @@ export module Telemetry {
                 }
             }
         };
+
+        export interface ITelemetryEventProperties {
+            [key: string]: string;
+        }
+
+        export interface ITelemetryEventMeasures {
+            [key: string]: number;
+        }
+
+        export interface ITelemetryReporter {
+            sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures);
+        }
+
+        class ExtensionTelemetryReporter implements ITelemetryReporter {
+            private extensionMessageSender: ExtensionMessageSender;
+            private extensionId: string;
+            private extensionVersion: string;
+            private appInsightsKey: string;
+
+            constructor(extensionId: string, extensionVersion: string, key: string) {
+                this.extensionId = extensionId;
+                this.extensionVersion = extensionVersion;
+                this.appInsightsKey = key;
+                this.extensionMessageSender = new ExtensionMessageSender();
+            }
+
+            sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {
+                this.extensionMessageSender.sendMessage(ExtensionMessage.SEND_TELEMETRY, [this.extensionId, this.extensionVersion, this.appInsightsKey, eventName, properties, measures])
+                .catch(function(){})
+                .done();
+            }
+        }
+
+        export function sendExtensionTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: ITelemetryEventProperties, measures: ITelemetryEventMeasures): void {
+            let reporter: ITelemetryReporter = Telemetry.reporterDictionary[extensionId];
+
+            if (!reporter) {
+                let TelemetryReporter = require('vscode-extension-telemetry').default;
+                Telemetry.reporterDictionary[extensionId] = new TelemetryReporter(extensionId, extensionVersion, appInsightsKey);
+                reporter = Telemetry.reporterDictionary[extensionId];
+            }
+
+            reporter.sendTelemetryEvent(eventName, properties, measures);
+        }
     };

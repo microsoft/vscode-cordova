@@ -46,6 +46,24 @@ export class CordovaProjectHelper {
     }
 
     /**
+     *  Helper (synchronous) function to delete a directory recursively
+     */
+    public static deleteDirectoryRecursive (dirPath: string) {
+        if (fs.existsSync(dirPath)) {
+            if (fs.lstatSync(dirPath).isDirectory()) {
+                fs.readdirSync(dirPath).forEach(function(file) {
+                    var curPath = path.join(dirPath, file);
+                    CordovaProjectHelper.deleteDirectoryRecursive(curPath);
+                });
+
+                fs.rmdirSync(dirPath);
+            } else {
+                fs.unlinkSync(dirPath);
+            }
+        }
+    };
+
+    /**
      *  Helper function to asynchronously copy a file
      */
     public static copyFile(from: string, to: string, encoding?: string): Q.Promise<any> {
