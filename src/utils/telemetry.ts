@@ -111,7 +111,7 @@ export module Telemetry {
                         var properties: ITelemetryEventProperties = {};
                         var measures: ITelemetryEventMeasures = {};
 
-                        for (var key in event.properties) {
+                        Object.keys(event.properties || {}).forEach(function (key: string) {
                             var propertyValue = event.properties[key];
 
                             switch (typeof propertyValue) {
@@ -127,7 +127,7 @@ export module Telemetry {
                                     properties[key] = JSON.stringify(propertyValue);
                                     break;
                             }
-                        };
+                        });
 
                         Telemetry.reporter.sendTelemetryEvent(event.name, properties, measures);
                     }
@@ -200,8 +200,8 @@ export module Telemetry {
                     Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
                 }
 
-                return Q.all([TelemetryUtils.getUserId()])
-                .spread<any>(function (userId: string): void {
+                return TelemetryUtils.getUserId()
+                .then(function (userId: string): void {
                     TelemetryUtils.userId = userId;
                     TelemetryUtils.userType = TelemetryUtils.getUserType();
 
