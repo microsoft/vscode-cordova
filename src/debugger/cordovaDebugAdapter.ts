@@ -426,8 +426,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             cliArgs.push('--address', launchArgs.devServerAddress);
         }
 
-        if (launchArgs.hasOwnProperty('devServerPort') && typeof launchArgs.devServerPort === 'number') {
-            cliArgs.push('--port', launchArgs.devServerPort.toString());
+        if (launchArgs.hasOwnProperty('devServerPort')) {
+            if (typeof launchArgs.devServerPort === 'number' && launchArgs.devServerPort >= 0 && launchArgs.devServerPort <= 65535) {
+                cliArgs.push('--port', launchArgs.devServerPort.toString());
+            } else {
+                return Q.reject<string>(new Error('The value for "devServerPort" must be a number between 0 and 65535'));
+            }
         }
 
         let isServe: boolean = cliArgs[0] === 'serve';
@@ -436,15 +440,24 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let appReadyRegex: RegExp = /Ionic server commands(?:.*\r?\n)*.*Ionic server commands/;
         let errorRegex: RegExp = /error:.*/i;
         let serverReady: boolean = false;
+        let appReady: boolean = false;
         let serverReadyTimeout: number = 10000;
-        let appReadyTimeout: number = 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
+        let appReadyTimeout: number = 120000;   // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverDeferred = Q.defer<void>();
         let appDeferred = Q.defer<void>();
         let serverOut: string = '';
         let serverErr: string = '';
+        let getServerErrorMessage = (channel: string) => {
+            let errorMatch = errorRegex.exec(channel);
+
+            if (errorMatch) {
+                return "Error in the Ionic live reload server:" + os.EOL + errorMatch[0];
+            }
+
+            return null;
+        };
 
         this.ionicLivereloadProcess = cordovaStartCommand(cliArgs, launchArgs.cwd);
-        this.ionicLivereloadProcess.on('exit', this.devServerExitHandler);
         this.ionicLivereloadProcess.on('error', (err) => {
             if (err.code === 'ENOENT') {
                 serverDeferred.reject(new Error('Ionic not found, please run \'npm install –g ionic\' to install it globally'));
@@ -452,6 +465,32 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 serverDeferred.reject(err);
             }
         });
+        this.ionicLivereloadProcess.on('exit', (() => {
+            this.ionicLivereloadProcess = null;
+
+            let exitMessage: string = 'The Ionic live reload server exited unexpectedly';
+            let errorMsg = getServerErrorMessage(serverErr);
+
+            if (errorMsg) {
+                // The Ionic live reload server has an error; check if it is related to the devServerAddress to give a better message
+                if (errorMsg.indexOf('getaddrinfo ENOTFOUND') !== -1 || errorMsg.indexOf('listen EADDRNOTAVAIL') !== -1) {
+                    exitMessage += os.EOL + 'Invalid address: please provide a valid IP address or hostname for the "devServerAddress" property in launch.json';
+                } else {
+                    exitMessage += os.EOL + errorMsg;
+                }
+            }
+
+            if (!serverDeferred.promise.isPending() && !appDeferred.promise.isPending()) {
+                // We are already debugging; disconnect the session
+                this.outputLogger(exitMessage, true);
+                this.disconnect();
+                throw new Error(exitMessage);
+            } else {
+                // The Ionic dev server wasn't ready yet, so reject its promises
+                serverDeferred.reject(new Error(exitMessage));
+                appDeferred.reject(new Error(exitMessage));
+            }
+        }).bind(this));
 
         let serverOutputHandler = (data: Buffer) => {
             serverOut += data.toString();
@@ -476,7 +515,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 serverDeferred.resolve(void 0);
             }
 
-            if (serverReady) {
+            if (serverReady && !appReady) {
                 // Now that the server is ready, listen for the app to be ready as well. For "serve", this is always true, because no build and deploy is involved. For "run" and "emulate", we need to
                 // wait until we encounter the "Ionic server commands" string a second time. The reason for that is that the output of the server will be the same as above, plus the build output, and
                 // finally the "Ionic server commands" part will be printed again at the very end. However, for iOS device, the server output is different and instead we need to look for:
@@ -486,7 +525,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 let regex: RegExp = isIosDevice ? iosDeviceAppReadyRegex : appReadyRegex;
 
                 if (isServe || regex.test(serverOut)) {
-                    this.ionicLivereloadProcess.stdout.removeListener('data', serverOutputHandler);
+                    appReady = true;
                     appDeferred.resolve(void 0);
                 }
             }
@@ -511,10 +550,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 serverDeferred.reject(new Error(errorMessage));
             }
 
-            let errorMatch = errorRegex.exec(serverOut);
+            let errorMsg = getServerErrorMessage(serverOut);
 
-            if (errorMatch) {
-                appDeferred.reject(new Error(errorMatch[0]));
+            if (errorMsg) {
+                appDeferred.reject(new Error(errorMsg));
             }
         };
 
@@ -522,10 +561,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         this.ionicLivereloadProcess.stderr.on('data', (data: Buffer) => {
             serverErr += data.toString();
 
-            let errorMatch = errorRegex.exec(serverErr);
+            let errorMsg = getServerErrorMessage(serverErr);
 
-            if (errorMatch) {
-                appDeferred.reject(new Error(errorMatch[0]));
+            if (errorMsg) {
+                appDeferred.reject(new Error(errorMsg));
             }
         });
         this.outputLogger(`Starting Ionic dev server (live reload: ${launchArgs.ionicLiveReload})`);
@@ -602,7 +641,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let killServePromise: Q.Promise<void>;
 
         if (this.ionicLivereloadProcess) {
-            this.ionicLivereloadProcess.removeListener('exit', this.devServerExitHandler);
+            this.ionicLivereloadProcess.removeAllListeners('exit');
             killServePromise = killChildProcess(this.ionicLivereloadProcess, errorLogger).finally(() => {
                 this.ionicLivereloadProcess = null;
             });
@@ -617,11 +656,5 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         // Wait on all the cleanups
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
-    }
-
-    private devServerExitHandler(): void {
-        this.outputLogger('The Ionic dev server exited unexpectedly', true);
-        this.ionicLivereloadProcess = null;
-        this.disconnect();
     }
 }

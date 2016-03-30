@@ -121,13 +121,13 @@ Our extension will provide the typings for you, so all you have to do is create 
 > **Note:**
 JSDoc headers may not be supported (for IntelliSense purposes) in old VSCode versions.
 
-For Ionic services, the service type will be in the following format: ```ionic.[service].Ionic[Service]Service```, where ```[service]``` and ```[Service]``` should be replaced with the service's name, without the ```$``` sign and the ```ionic``` prefix. For example:
+For Ionic services, the service type will be in the following format: ```ionic.[service].Ionic[Service]Service```, where ```[service]``` and ```[Service]``` should be replaced with the service's name, without the ```$ionic``` prefix. For example:
 
 ```@param {ionic.popup.IonicPopupService} $ionicPopup - The $ionicPopup service```
 
 ```@param {ionic.modal.IonicModalService} $ionicModal - The $ionicModal service```
 
-For Angular services, the service type will be in the following format: ```angular.I[Service]Service```, where ```[Service]``` should be replaced with the capitalized service's name, without the ```$``` sign. For example:
+For Angular services, the service type will be in the following format: ```angular.I[Service]Service```, where ```[Service]``` should be replaced with the capitalized service's name, without the ```$``` prefix. For example:
 
 ```@param {angular.ITimeoutService} $timeout - The Angular $timeout service```
 
