@@ -24,9 +24,19 @@ export function activate(context: vscode.ExtensionContext): void {
     Telemetry.init('cordova-tools', require('./../../package.json').version, {isExtensionProcess: true});
 
     // Get the project root and check if it is a Cordova project
+    if (!vscode.workspace.rootPath) {
+        return;
+    }
+
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath);
 
     if (!cordovaProjectRoot) {
+        return;
+    }
+
+    if (path.resolve(cordovaProjectRoot) !== path.resolve(vscode.workspace.rootPath)) {
+        vscode.window.showWarningMessage("VSCode Cordova extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated.");
+
         return;
     }
 
@@ -79,7 +89,7 @@ export function activate(context: vscode.ExtensionContext): void {
             path.join("jquery", "jquery.d.ts"),
             path.join("ionic", "ionic.d.ts")
         ];
-        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings);
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
     }
 
     let pluginTypings = getPluginTypingsJson();
@@ -88,7 +98,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     // Install the type defintion files for Cordova
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile]);
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], cordovaProjectRoot);
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
@@ -151,7 +161,7 @@ function addPluginTypeDefinitions(projectRoot: string, installedPlugins: string[
         return pluginTypings[pluginName].typingFile;
     });
 
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd);
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd, CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath));
 }
 
 function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: string[], newTypeDefs: string[]): void {

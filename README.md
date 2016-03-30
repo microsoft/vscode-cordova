@@ -45,7 +45,7 @@ Name                               | Description                                
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
 `attachAttempts`                   | The maximum number of times that you want the debugger to attempt to attach to a running iOS app.                                             | 5
 `attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
-`iosDeubgProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
+`iosDebugProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
 `appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
 `ionicLiveReload`                  | Set to true to enable Ionic live reload                                                                                                       | false
 `devServerAddress`                 | For Ionic live reload scenario specify the IP address the device can use to contact the Ionic server                                          | n/a
@@ -59,6 +59,9 @@ To start the debugger, choose a target from the target drop-down list, and then 
 ![Cordova launch targets](images/debug-targets.png)
 
 You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
+
+> **Visual Studio Emulator for Android:**
+To deploy your app to the Visual Studio Emulator for Android using our extension, you first need to manually launch the emulator. Once it is running, select the ```Run Android on Device``` debug target rather than the emulator target. If *ADB* didn't automatically recognize the VS Android emulator when you launched it, you will need to run ```adb connect [EMULATOR'S IP]``` on the command prompt before trying to deploy. To find out the IP address of your emulator, click the double arrow icon at the bottom of the emulator's side-menu to open the "Additional Tools" window, and go to the "Network" tab. Use the IP of an appropriate network adapter in the list.
 
 We won't go into all of the great things that you can do with the Visual Studio Code debugger, but you can read about it [here](https://code.visualstudio.com/docs/editor/debugging).
 
@@ -104,6 +107,33 @@ Intellisense helps you discover objects, functions, and parameters in libraries 
 IntelliSense appears only for plugins that you've added to your project, but it doesn't matter whether you add the plugin before or after you install this extension.
 
 Just start typing in the code editor to see the objects, functions, and parameters of your plugin's API.
+
+## Use IntelliSense with injected Ionic and Angular services
+
+While IntelliSense is also available for Ionic and Angular, these frameworks use a dependency injection model for built-in services that VSCode's language service cannot understand by default.
+
+To properly enable IntelliSense in these scenarios, you will need to use [JSDoc headers](http://usejsdoc.org/about-getting-started.html).
+
+![IntelliSense for Angular and Ionic services](images/ionic-intellisense.png)
+
+Our extension will provide the typings for you, so all you have to do is create the JSDoc headers above the functions you wish to receive IntelliSense for.
+
+> **Note:**
+JSDoc headers may not be supported (for IntelliSense purposes) in old VSCode versions.
+
+For Ionic services, the service type will be in the following format: ```ionic.[service].Ionic[Service]Service```, where ```[service]``` and ```[Service]``` should be replaced with the service's name, without the ```$ionic``` prefix. For example:
+
+```@param {ionic.popup.IonicPopupService} $ionicPopup - The $ionicPopup service```
+
+```@param {ionic.modal.IonicModalService} $ionicModal - The $ionicModal service```
+
+For Angular services, the service type will be in the following format: ```angular.I[Service]Service```, where ```[Service]``` should be replaced with the capitalized service's name, without the ```$``` prefix. For example:
+
+```@param {angular.ITimeoutService} $timeout - The Angular $timeout service```
+
+```@param {angular.IHttpService} $http - The Angular $http service```
+
+For a list of supported services for IntelliSense, see the ```angular.d.ts``` and ```ionic.d.ts``` typing files, which our extension places by default under ```.vscode/typings``` in your project.
 
 ## How to disable telemetry reporting
 
