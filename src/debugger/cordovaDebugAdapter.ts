@@ -243,7 +243,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     let ipaFiles = files.filter((file) => /\.ipa$/.test(file));
 
                     if (ipaFiles.length !== 0) {
-                        return Q.resolve(path.join(buildFolder, ipaFiles[0]));
+                        return path.join(buildFolder, ipaFiles[0]);
                     }
 
                     // No .ipa was found, look for a .app to convert to .ipa using xcrun
@@ -255,11 +255,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
                     let appFile = path.join(buildFolder, appFiles[0]);
                     let ipaFile = path.join(buildFolder, path.basename(appFile, path.extname(appFile)) + '.ipa'); // Convert [path]/foo.app to [path]/foo.ipa
+                    let execArgs = ['-v', '-sdk', 'iphoneos', 'PackageApplication', `${appFile}`, '-o', `${ipaFile}`];
 
-                    return execCommand('xcrun', ['-v', '-sdk', 'iphoneos', 'PackageApplication', `${appFile}`, '-o', `${ipaFile}`], errorLogger).then(() => {
-                        return Q.resolve(ipaFile);
-                    }).catch((err): string => {
-                        throw new Error('Error converting .app to .ipa');
+                    return execCommand('xcrun', execArgs, errorLogger).then(() => ipaFile).catch((err): string => {
+                        throw new Error(`Error converting ${path.basename(appFile)} to .ipa`);
                     });
                 }).then((ipaFile: string) => {
                     return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error): any => {
