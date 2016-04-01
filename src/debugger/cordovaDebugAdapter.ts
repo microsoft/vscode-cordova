@@ -241,11 +241,26 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
                 let installPromise = Q.nfcall(fs.readdir, buildFolder).then((files: string[]) => {
                     let ipaFiles = files.filter((file) => /\.ipa$/.test(file));
-                    if (ipaFiles.length === 0) {
-                        throw new Error('Unable to find an ipa to install');
-                    }
-                    let ipaFile = path.join(buildFolder, ipaFiles[0]);
 
+                    if (ipaFiles.length !== 0) {
+                        return path.join(buildFolder, ipaFiles[0]);
+                    }
+
+                    // No .ipa was found, look for a .app to convert to .ipa using xcrun
+                    let appFiles = files.filter((file) => /\.app$/.test(file));
+
+                    if (appFiles.length === 0) {
+                        throw new Error('Unable to find a .app or a .ipa to install');
+                    }
+
+                    let appFile = path.join(buildFolder, appFiles[0]);
+                    let ipaFile = path.join(buildFolder, path.basename(appFile, path.extname(appFile)) + '.ipa'); // Convert [path]/foo.app to [path]/foo.ipa
+                    let execArgs = ['-v', '-sdk', 'iphoneos', 'PackageApplication', `${appFile}`, '-o', `${ipaFile}`];
+
+                    return execCommand('xcrun', execArgs, errorLogger).then(() => ipaFile).catch((err): string => {
+                        throw new Error(`Error converting ${path.basename(appFile)} to .ipa`);
+                    });
+                }).then((ipaFile: string) => {
                     return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error): any => {
                         let errorCode: string = (<any>err).code;
                         if (errorCode && errorCode === 'ENOENT') {
@@ -433,7 +448,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             let errorMatch = errorRegex.exec(channel);
 
             if (errorMatch) {
-                return "Error in the Ionic live reload server:" + os.EOL + errorMatch[0];
+                return 'Error in the Ionic live reload server:' + os.EOL + errorMatch[0];
             }
 
             return null;
