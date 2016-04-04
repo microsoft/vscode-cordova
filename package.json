@@ -195,7 +195,7 @@
                         "properties": {
                             "platform": {
                                 "type": "string",
-                                "description": "The target platform to run for (either 'ios' or 'android', Windows is not supported yet)"
+                                "description": "The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported)"
                             },
                             "cwd": {
                                 "type": "string",
