@@ -345,7 +345,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
             .map((lineNumber, i) => this._webKitConnection.debugger_setBreakpointByUrl(url, lineNumber, cols ? cols[i] : 0));
 
         // Join all setBreakpoint requests to a single promise
-        return Promise.all(responsePs);
+        return <any>Promise.all(responsePs);
     }
 
     private _webkitBreakpointResponsesToODPBreakpoints(url: string, responses: WebKitProtocol.Debugger.SetBreakpointByUrlResponse[], requestLines: number[]): IBreakpoint[] {
@@ -508,7 +508,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
             ]).then(getPropsResponses => {
                 // Sometimes duplicates will be returned - merge all property descriptors returned
                 const propsByName = new Map<string, WebKitProtocol.Runtime.PropertyDescriptor>();
-                getPropsResponses.forEach(response => {
+                getPropsResponses.forEach((response: any) => {
                     if (!response.error) {
                         response.result.result.forEach(propDesc =>
                             propsByName.set(propDesc.name, propDesc));
