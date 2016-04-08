@@ -345,7 +345,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
             .map((lineNumber, i) => this._webKitConnection.debugger_setBreakpointByUrl(url, lineNumber, cols ? cols[i] : 0));
 
         // Join all setBreakpoint requests to a single promise
-        return <any>Promise.all(responsePs);
+        return Promise.all<WebKitProtocol.Debugger.SetBreakpointByUrlResponse>(responsePs);
     }
 
     private _webkitBreakpointResponsesToODPBreakpoints(url: string, responses: WebKitProtocol.Debugger.SetBreakpointByUrlResponse[], requestLines: number[]): IBreakpoint[] {
@@ -501,14 +501,14 @@ export class WebKitDebugAdapter implements IDebugAdapter {
             const excValuePropDescriptor: WebKitProtocol.Runtime.PropertyDescriptor = <any>{ name: 'exception', value: this._exceptionValueObject };
             return Promise.resolve({ variables: [this.propertyDescriptorToVariable(excValuePropDescriptor)] });
         } else if (handle != null) {
-            return Promise.all([
+            return Promise.all<WebKitProtocol.Runtime.GetPropertiesResponse>([
                 // Need to make two requests to get all properties
                 this._webKitConnection.runtime_getProperties(handle.objectId, /*ownProperties=*/false, /*accessorPropertiesOnly=*/true),
                 this._webKitConnection.runtime_getProperties(handle.objectId, /*ownProperties=*/true, /*accessorPropertiesOnly=*/false)
-            ]).then(getPropsResponses => {
+            ]).then((getPropsResponses: WebKitProtocol.Runtime.GetPropertiesResponse[]) => {
                 // Sometimes duplicates will be returned - merge all property descriptors returned
                 const propsByName = new Map<string, WebKitProtocol.Runtime.PropertyDescriptor>();
-                getPropsResponses.forEach((response: any) => {
+                getPropsResponses.forEach((response: WebKitProtocol.Runtime.GetPropertiesResponse) => {
                     if (!response.error) {
                         response.result.result.forEach(propDesc =>
                             propsByName.set(propDesc.name, propDesc));
