@@ -9,6 +9,7 @@ import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
+import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from './utils/telemetry';
 import {IProjectType, TelemetryHelper} from './utils/telemetryHelper';
 import {TsdHelper} from './utils/tsdHelper';
@@ -21,7 +22,7 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
-    Telemetry.init('cordova-tools', require('./../../package.json').version, {isExtensionProcess: true});
+    Telemetry.init('cordova-tools', require('./../../package.json').version, { isExtensionProcess: true });
 
     // Get the project root and check if it is a Cordova project
     if (!vscode.workspace.rootPath) {
@@ -68,6 +69,9 @@ export function activate(context: vscode.ExtensionContext): void {
     extensionServer.setup();
     context.subscriptions.push(extensionServer);
 
+    let simulator = new PluginSimulator();
+    context.subscriptions.push(simulator);
+
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare")));
@@ -75,6 +79,8 @@ export function activate(context: vscode.ExtensionContext): void {
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate',
+        () => simulator.simulate(vscode.workspace.rootPath)));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.build',
