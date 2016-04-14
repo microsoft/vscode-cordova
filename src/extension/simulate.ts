@@ -16,6 +16,7 @@ export class PluginSimulator implements vscode.Disposable {
 
     public simulate(projectDirectory: string): Q.Promise<any> {
         let target = "chrome";
+
         return simulate.launchServer({ platform: "browser", target: target, dir: projectDirectory })
             .then(simulateInfo => {
                 return simulate.launchBrowser(target, simulateInfo.appUrl)
@@ -30,6 +31,7 @@ export class PluginSimulator implements vscode.Disposable {
     public dispose(): void {
         if (this.registration) {
             this.registration.dispose();
+            this.registration = null;
         }
     }
 }
@@ -45,6 +47,30 @@ class SimHostContentProvider implements vscode.TextDocumentContentProvider {
     }
 
     public provideTextDocumentContent(uri: vscode.Uri): string {
-        return `<html><body height><div><iframe height="2000px" width="2000px" src="${this.simHostUrl}" scrolling="no" frameborder="0" marginheight="0" marginwidth="0"></iframe></div></body></html>`;
+        return `<!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        html, body {
+                            height: 100%;
+                            margin: 0;
+                            overflow: hidden;
+                        }
+
+                        .intrinsic-container iframe {
+                            position: absolute;
+                            top:0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="intrinsic-container">
+                        <iframe src="${this.simHostUrl}" ></iframe>
+                    </div>
+                </body>
+                </html>`;
     }
 }
