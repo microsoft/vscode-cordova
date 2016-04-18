@@ -210,7 +210,7 @@
                         "properties": {
                             "platform": {
                                 "type": "string",
-                                "description": "The platform to run on"
+                                "description": "The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported)"
                             },
                             "cwd": {
                                 "type": "string",
@@ -263,12 +263,12 @@
                             },
                             "ionicLiveReload": {
                                 "type": "boolean",
-                                "description": "Whether or not to start an Ionic live reload session. This is currently only supported for Ionic 1 projects.",
+                                "description": "Whether or not to start an Ionic live reload session (this is currently only supported for Ionic 1 projects)",
                                 "default": false
                             },
                             "devServerPort": {
                                 "type": "number",
-                                "description": "The port on which Ionic's live reload server should listen on"
+                                "description": "The port on which Ionic's live reload server should listen"
                             },
                             "devServerAddress": {
                                 "type": "string",
