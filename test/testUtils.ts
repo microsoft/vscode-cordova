@@ -61,7 +61,7 @@ export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
 export function isUrlReachable(url: string): Q.Promise<boolean> {
     let deferred = Q.defer<boolean>();
 
-    http.get(url, function (res) {
+    http.get(url, (res) => {
         deferred.resolve(true);
         res.resume();
     }).on("error", (err: Error) => {
