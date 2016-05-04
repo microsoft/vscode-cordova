@@ -6,6 +6,7 @@ import * as child_process from 'child_process';
 import * as elementtree from 'elementtree';
 import * as fs from 'fs';
 import * as http from 'http';
+import * as messaging from '../common/extensionMessaging';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
@@ -54,6 +55,9 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                         case 'serve':
                             generator.add('platform', platform, false);
                             return this.launchServe(launchArgs, projectType);
+                        case 'simulate':
+                            generator.add('platform', platform, false);
+                            return this.launchSimulate(launchArgs, projectType);
                         default:
                             generator.add('unknownPlatform', platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
@@ -66,7 +70,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     });
                 }).then(() => {
                     // For the serve platform, we call super.launch(), which already attaches. For other platforms, attach here
-                    if (platform !== 'serve') {
+                    if (platform !== 'serve' && platform !== 'simulate') {
                         return this.attach(launchArgs);
                     }
                 });
@@ -378,6 +382,21 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
+        return Q(void 0)
+            .then(() => {
+                let messageSender = new messaging.ExtensionMessageSender();
+                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE);
+            }).then((appHostUrl: string) => {
+                launchArgs.url = appHostUrl;
+                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
+
+                // Launch Chrome and attach
+                this.outputLogger('Attaching to app');
+                return super.launch(launchArgs);
+            });
+    }
+
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
         let errorLogger = (message) => this.outputLogger(message, true);
 
@@ -601,7 +620,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
     private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
         let deferred = Q.defer<string>();
-        let req = http.get(url, function(res) {
+        let req = http.get(url, function (res) {
             let responseString = '';
             res.on('data', (data: Buffer) => {
                 responseString += data.toString();

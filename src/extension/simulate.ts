@@ -5,7 +5,7 @@ import * as http from "http";
 import * as Q from "q";
 import * as cordovaServer from "cordova-serve";
 import * as path from "path";
-import * as simulate from "taco-simulate";
+import * as simulate from "cordova-simulate";
 import * as vscode from "vscode";
 
 /**
@@ -14,30 +14,37 @@ import * as vscode from "vscode";
 export class PluginSimulator implements vscode.Disposable {
     private simulateInfo: simulate.SimulateInfo;
     private registration: vscode.Disposable;
-    private simulateUri = vscode.Uri.parse("browser-simulate://authority/browser-simulate");
+    private simulateUri = vscode.Uri.parse("cordova-simulate://authority/cordova-simulate");
     private target = "chrome";
 
     public simulate(projectDirectory: string): Q.Promise<any> {
-        return this.launchServer(this.target, projectDirectory)
-            .then(() => this.launchHosts(this.target));
+        return this.launchServer(projectDirectory)
+            .then(() => this.launchAppHost())
+            .then(() => this.launchSimHost());
     }
 
-    private launchHosts(target: string): Q.Promise<any> {
-        return simulate.launchBrowser(target, this.simulateInfo.appUrl)
-            .then(() => {
-                let provider = new SimHostContentProvider(this.simulateInfo.simHostUrl);
-                this.registration = vscode.workspace.registerTextDocumentContentProvider("browser-simulate", provider);
-                return vscode.commands.executeCommand('vscode.previewHtml', this.simulateUri, vscode.ViewColumn.Two);
+    public launchAppHost(): Q.Promise<any> {
+        return simulate.launchBrowser(this.target, this.simulateInfo.appUrl);
+    }
+
+    public launchSimHost(): Q.Promise<any> {
+        let provider = new SimHostContentProvider(this.simulateInfo.simHostUrl);
+        this.registration = vscode.workspace.registerTextDocumentContentProvider("cordova-simulate", provider);
+        return <any>vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two);
+    }
+
+    public launchServer(projectDirectory: string): Q.Promise<simulate.SimulateInfo> {
+        return this.isServerRunning()
+            .then((isRunning: boolean) => {
+                if (!isRunning) {
+                    return simulate.launchServer({ platform: "browser", target: this.target, dir: projectDirectory })
+                        .then(simulateInfo => {
+                            this.simulateInfo = simulateInfo;
+                        });
+                }
+            }).then(() => {
+                return this.simulateInfo;
             });
-    }
-
-    private launchServer(target: string, projectDirectory: string): Q.Promise<void> {
-        return this.isServerRunning().then((isRunning: boolean) => {
-            if (!isRunning) {
-                return simulate.launchServer({ platform: "browser", target: target, dir: projectDirectory })
-                    .then(simulateInfo => { this.simulateInfo = simulateInfo });
-            }
-        });
     }
 
     private isServerRunning(): Q.Promise<boolean> {

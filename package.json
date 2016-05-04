@@ -193,12 +193,8 @@
                         "name": "Simulate in browser",
                         "type": "cordova",
                         "request": "launch",
-                        "platform": "android",
-                        "target": "browser",
-                        "port": 9222,
-                        "sourceMaps": true,
-                        "cwd": "${workspaceRoot}",
-                        "ionicLiveReload": false
+                        "platform": "simulate",
+                        "cwd": "${workspaceRoot}"
                     }
                 ],
                 "configurationAttributes": {
@@ -343,7 +339,7 @@
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
         "source-map": "^0.5.3",
-        "taco-simulate": "dlebu/taco-simulate#dev",
+        "cordova-simulate": "microsoft/cordova-simulate",
         "vscode-extension-telemetry": "0.0.5",
         "winreg": "0.0.13",
         "ws": "0.8.0"

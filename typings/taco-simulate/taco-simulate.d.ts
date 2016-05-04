@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-declare module "taco-simulate" {
+declare module "cordova-simulate" {
     export interface SimulateOptions {
         platform?: string;
         target?: string;
         port?: number;
         dir?: string;
+        simhostui?: string;
     }
 
     export interface SimulateInfo {
