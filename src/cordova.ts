@@ -59,18 +59,17 @@ export function activate(context: vscode.ExtensionContext): void {
     // Note that watching plugins/fetch.json file would suffice
 
     let watcher = vscode.workspace.createFileSystemWatcher('**/plugins/fetch.json', false /*ignoreCreateEvents*/, false /*ignoreChangeEvents*/, false /*ignoreDeleteEvents*/);
-
     watcher.onDidChange((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     watcher.onDidDelete((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     watcher.onDidCreate((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
-
     context.subscriptions.push(watcher);
-    let extensionServer: ExtensionServer = new ExtensionServer();
-    extensionServer.setup();
-    context.subscriptions.push(extensionServer);
 
     let simulator = new PluginSimulator();
     context.subscriptions.push(simulator);
+
+    let extensionServer: ExtensionServer = new ExtensionServer(simulator);
+    extensionServer.setup();
+    context.subscriptions.push(extensionServer);
 
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',

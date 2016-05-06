@@ -23,8 +23,9 @@ export class ExtensionServer implements vscode.Disposable {
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
 
-    public constructor() {
+    public constructor(pluginSimulator: PluginSimulator) {
         this.pipePath = ExtensionMessageSender.getExtensionPipePath();
+        this.pluginSimulator = pluginSimulator;
 
         // Register handlers for all messages
         this.messageHandlerDictionary[ExtensionMessage.SEND_TELEMETRY] = this.sendTelemetry;
@@ -84,10 +85,6 @@ export class ExtensionServer implements vscode.Disposable {
      */
     private simulate(): Q.Promise<string> {
         var simInfo: SimulateInfo;
-
-        if (!this.pluginSimulator) {
-            this.pluginSimulator = new PluginSimulator();
-        }
 
         return this.pluginSimulator.launchServer(vscode.workspace.rootPath)
             .then((simulateInfo: SimulateInfo) => {
