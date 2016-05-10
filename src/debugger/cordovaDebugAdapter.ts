@@ -27,6 +27,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private ionicLivereloadProcess: child_process.ChildProcess;
     private ionicDevServerUrl: string;
     private cordovaPathTransformer: CordovaPathTransformer;
+    private previousLaunchArgs: ICordovaLaunchRequestArgs;
+    private previousAttachArgs: ICordovaAttachRequestArgs;
 
     public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
         super();
@@ -35,6 +37,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
+        this.previousLaunchArgs = launchArgs;
+
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
             launchArgs.port = launchArgs.port || 9222;
             launchArgs.target = launchArgs.target || 'emulator';
@@ -77,6 +81,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
+        this.previousAttachArgs = attachArgs;
+
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
@@ -625,6 +631,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private cleanUp(): Q.Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
+        // Clean up this session's attach and launch args
+        this.previousLaunchArgs = null;
+        this.previousAttachArgs = null;
+
         // Stop ADB port forwarding if necessary
         let adbPortPromise: Q.Promise<void>;
 
@@ -661,7 +671,9 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     protected onScriptParsed(script: WebKitProtocol.Debugger.Script): void {
-        if (!script.sourceMapURL && path.extname(script.url) === '.js') {
+        let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
+
+        if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
             // Browsers don't always report source maps for scripts, so even though no source map was reported for this script, parse it in case it has a sourceMappingUrl attribute.
             let clientPath = this.cordovaPathTransformer.getClientPath(script.url);
 
