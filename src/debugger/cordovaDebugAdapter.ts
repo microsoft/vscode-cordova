@@ -12,6 +12,7 @@ import * as Q from 'q';
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
+import {CordovaPathTransformer} from './cordovaPathTransformer';
 import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import {IProjectType, TelemetryHelper} from '../utils/telemetryHelper';
@@ -25,13 +26,19 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private adbPortForwardingInfo: { targetDevice: string, port: number };
     private ionicLivereloadProcess: child_process.ChildProcess;
     private ionicDevServerUrl: string;
+    private cordovaPathTransformer: CordovaPathTransformer;
+    private previousLaunchArgs: ICordovaLaunchRequestArgs;
+    private previousAttachArgs: ICordovaAttachRequestArgs;
 
-    public constructor(outputLogger: (message: string, error?: boolean) => void) {
+    public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
         super();
         this.outputLogger = outputLogger;
+        this.cordovaPathTransformer = cdvPathTransformer;
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
+        this.previousLaunchArgs = launchArgs;
+
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
             launchArgs.port = launchArgs.port || 9222;
             launchArgs.target = launchArgs.target || 'emulator';
@@ -74,6 +81,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
+        this.previousAttachArgs = attachArgs;
+
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
@@ -280,11 +289,13 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === 'emulator' ? null : launchArgs.target;
-            let emulateArgs = ['emulate', 'ios'];
+            let emulateArgs = ['emulate'];
 
             if (target) {
                 emulateArgs.push('--target=' + target);
             }
+
+            emulateArgs.push('ios');
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
@@ -601,7 +612,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
     private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
         let deferred = Q.defer<string>();
-        let req = http.get(url, function(res) {
+        let req = http.get(url, function (res) {
             let responseString = '';
             res.on('data', (data: Buffer) => {
                 responseString += data.toString();
@@ -619,6 +630,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
     private cleanUp(): Q.Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
+
+        // Clean up this session's attach and launch args
+        this.previousLaunchArgs = null;
+        this.previousAttachArgs = null;
 
         // Stop ADB port forwarding if necessary
         let adbPortPromise: Q.Promise<void>;
@@ -653,5 +668,67 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         // Wait on all the cleanups
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
+    }
+
+    protected onScriptParsed(script: WebKitProtocol.Debugger.Script): void {
+        let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
+
+        if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
+            // Browsers don't always report source maps for scripts, so even though no source map was reported for this script, parse it in case it has a sourceMappingUrl attribute.
+            let clientPath = this.cordovaPathTransformer.getClientPath(script.url);
+
+            if (clientPath) {
+                let scriptContent = fs.readFileSync(clientPath).toString();
+                let parsedSrcMapUrl = this.findSourceAttribute('sourceMappingURL', scriptContent);
+
+                if (parsedSrcMapUrl) {
+                    script.sourceMapURL = parsedSrcMapUrl;
+                }
+            }
+        }
+
+        super.onScriptParsed(script);
+    }
+
+    /**
+     * Searches the specified code text for an attribute comment. Supported forms are line or
+     * block comments followed by # (or @, though this is deprecated):
+     * //# attribute=..., /*# attribute=... * /, //@ attribute=..., and /*@ attribute=... * /
+     * @param attribute Name of the attribute to find
+     * @param codeContent Source code to search for attribute comment
+     * @return The attribute's value, or null if not exactly one is found
+     */
+    private findSourceAttribute(attribute: string, codeContent: string): string {
+        if (codeContent) {
+            var prefixes = ['//#', '/*#', '//@', '/*@'];
+            var findString: string;
+            var index = -1;
+            var endIndex = -1;
+
+            // Use pound-sign definitions first, but fall back to at-sign
+            // The last instance of the attribute comment takes precedence
+            for (var i = 0; index < 0 && i < prefixes.length; i++) {
+                findString = '\n' + prefixes[i] + ' ' + attribute + '=';
+                index = codeContent.lastIndexOf(findString);
+            }
+
+            if (index >= 0) {
+                if (index >= 0) {
+                    if (findString.charAt(2) === '*') {
+                        endIndex = codeContent.indexOf('*/', index + findString.length);
+                    } else {
+                        endIndex = codeContent.indexOf('\n', index + findString.length);
+                    }
+
+                    if (endIndex < 0) {
+                        endIndex = codeContent.length;
+                    }
+
+                    return codeContent.substring(index + findString.length, endIndex).trim();
+                }
+            }
+
+            return null;
+        }
     }
 }

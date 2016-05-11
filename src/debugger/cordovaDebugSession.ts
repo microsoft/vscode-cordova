@@ -35,14 +35,15 @@ export class CordovaDebugSession extends DebugSession {
         super(targetLinesStartAt1, isServer);
 
         let outputLogger = (message: string, error: boolean = false) => this.sendEvent(new OutputEvent(message + '\n', error ? 'stderr' : 'console'));
+        let cdvPathTransformer = new CordovaPathTransformer(outputLogger);
 
         this._adapterProxy = new AdapterProxy(
             [
                 new LineNumberTransformer(targetLinesStartAt1),
                 new SourceMapTransformer(),
-                new CordovaPathTransformer(outputLogger)
+                cdvPathTransformer
             ],
-            new CordovaDebugAdapter(outputLogger),
+            new CordovaDebugAdapter(outputLogger, cdvPathTransformer),
             event => this.sendEvent(event));
     }
 
