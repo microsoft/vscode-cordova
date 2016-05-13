@@ -87,7 +87,8 @@ export function activate(context: vscode.ExtensionContext): void {
         let ionicTypings: string[] = [
             path.join("angularjs", "angular.d.ts"),
             path.join("jquery", "jquery.d.ts"),
-            path.join("ionic", "ionic.d.ts")
+            path.join("ionic", "ionic.d.ts"),
+            path.join("cordova-ionic", "plugins", "keyboard.d.ts")
         ];
         TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
     }
