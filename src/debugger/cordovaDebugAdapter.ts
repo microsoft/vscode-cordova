@@ -30,6 +30,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private cordovaPathTransformer: CordovaPathTransformer;
     private previousLaunchArgs: ICordovaLaunchRequestArgs;
     private previousAttachArgs: ICordovaAttachRequestArgs;
+    private static simulateTargets: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
 
     public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
         super();
@@ -42,7 +43,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
             launchArgs.port = launchArgs.port || 9222;
-            launchArgs.target = launchArgs.target || 'emulator';
+            launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
             launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
             let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
@@ -54,15 +55,27 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
                     switch (platform) {
                         case 'android':
+                            /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
-                            return this.launchAndroid(launchArgs, projectType);
+                            if (this.isSimulateTarget(launchArgs.target)) {
+                                return this.launchSimulate(launchArgs, projectType);
+                            } else {
+                                return this.launchAndroid(launchArgs, projectType);
+                            }
+                            /* tslint:enable:no-switch-case-fall-through */
                         case 'ios':
+                            /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
-                            return this.launchIos(launchArgs, projectType);
+                            if (this.isSimulateTarget(launchArgs.target)) {
+                                return this.launchSimulate(launchArgs, projectType);
+                            } else {
+                                return this.launchIos(launchArgs, projectType);
+                            }
+                            /* tslint:enable:no-switch-case-fall-through */
                         case 'serve':
                             generator.add('platform', platform, false);
                             return this.launchServe(launchArgs, projectType);
-                        case 'simulate':
+                        case 'browser':
                             generator.add('platform', platform, false);
                             return this.launchSimulate(launchArgs, projectType);
                         default:
@@ -77,11 +90,15 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     });
                 }).then(() => {
                     // For the serve platform, we call super.launch(), which already attaches. For other platforms, attach here
-                    if (platform !== 'serve' && platform !== 'simulate') {
+                    if (platform !== 'serve' && platform !== 'browser' && !this.isSimulateTarget(launchArgs.target)) {
                         return this.attach(launchArgs);
                     }
                 });
         }).done(resolve, reject));
+    }
+
+    public isSimulateTarget(target: string) {
+        return CordovaDebugAdapter.simulateTargets.indexOf(target) > -1;
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
@@ -397,7 +414,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         return Q(void 0)
             .then(() => {
                 let messageSender = new messaging.ExtensionMessageSender();
-                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE);
+                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE, [launchArgs]);
             }).then((appHostUrl: string) => {
                 launchArgs.url = appHostUrl;
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
@@ -719,10 +736,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
      */
     private findSourceAttribute(attribute: string, codeContent: string): string {
         if (codeContent) {
-            var prefixes = ['//#', '/*#', '//@', '/*@'];
-            var findString: string;
-            var index = -1;
-            var endIndex = -1;
+            let prefixes = ['//#', '/*#', '//@', '/*@'];
+            let findString: string;
+            let index = -1;
+            let endIndex = -1;
 
             // Use pound-sign definitions first, but fall back to at-sign
             // The last instance of the attribute comment takes precedence

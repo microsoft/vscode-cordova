@@ -8,6 +8,8 @@ declare module "cordova-simulate" {
         port?: number;
         dir?: string;
         simhostui?: string;
+        livereload?: boolean;
+        forceprepare?:boolean;
     }
 
     export interface SimulateInfo {

@@ -4,7 +4,7 @@
 import * as net from "net";
 import * as Q from "q";
 import {PluginSimulator} from "./simulate";
-import {SimulateInfo} from "cordova-simulate";
+import {SimulateInfo, SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
 
 import {
@@ -83,10 +83,10 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns the url of the sim-host.
      */
-    private simulate(): Q.Promise<string> {
+    private simulate(simulateOptions: SimulateOptions): Q.Promise<string> {
         var simInfo: SimulateInfo;
 
-        return this.pluginSimulator.launchServer(vscode.workspace.rootPath)
+        return this.pluginSimulator.launchServer(simulateOptions)
             .then((simulateInfo: SimulateInfo) => {
                 simInfo = simulateInfo;
                 return this.pluginSimulator.launchSimHost();
@@ -101,7 +101,6 @@ export class ExtensionServer implements vscode.Disposable {
     private handleExtensionMessage(messageWithArgs: MessageWithArguments): Q.Promise<any> {
         let handler = this.messageHandlerDictionary[messageWithArgs.message];
         if (handler) {
-            // Log.logInternalMessage(LogLevel.Info, "Handling message: " + em.ExtensionMessage[messageWithArgs.message]);
             return handler.apply(this, messageWithArgs.args);
         } else {
             return Q.reject("Invalid message: " + messageWithArgs.message);
@@ -113,8 +112,8 @@ export class ExtensionServer implements vscode.Disposable {
      */
     private handleSocket(socket: net.Socket): void {
         let handleError = (e: any) => {
-            // Log.logError("An error ocurred. ", e);
-            socket.end(ErrorMarker);
+            let errorMessage = e ? e.message || e.error || e.data || e : "";
+            socket.end(ErrorMarker + errorMessage);
         };
 
         let dataCallback = (data: any) => {

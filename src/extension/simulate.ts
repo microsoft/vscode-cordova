@@ -15,16 +15,15 @@ export class PluginSimulator implements vscode.Disposable {
     private simulateInfo: simulate.SimulateInfo;
     private registration: vscode.Disposable;
     private simulateUri = vscode.Uri.parse("cordova-simulate://authority/cordova-simulate");
-    private target = "chrome";
 
-    public simulate(projectDirectory: string): Q.Promise<any> {
-        return this.launchServer(projectDirectory)
-            .then(() => this.launchAppHost())
+    public simulate(simulateOptions: simulate.SimulateOptions): Q.Promise<any> {
+        return this.launchServer(simulateOptions)
+            .then(() => this.launchAppHost(simulateOptions.target))
             .then(() => this.launchSimHost());
     }
 
-    public launchAppHost(): Q.Promise<any> {
-        return simulate.launchBrowser(this.target, this.simulateInfo.appUrl);
+    public launchAppHost(target: string): Q.Promise<any> {
+        return simulate.launchBrowser(target, this.simulateInfo.appUrl);
     }
 
     public launchSimHost(): Q.Promise<any> {
@@ -33,11 +32,12 @@ export class PluginSimulator implements vscode.Disposable {
         return <any>vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two);
     }
 
-    public launchServer(projectDirectory: string): Q.Promise<simulate.SimulateInfo> {
+    public launchServer(simulateOptions: simulate.SimulateOptions): Q.Promise<simulate.SimulateInfo> {
+        simulateOptions.dir = vscode.workspace.rootPath;
         return this.isServerRunning()
             .then((isRunning: boolean) => {
                 if (!isRunning) {
-                    return simulate.launchServer({ platform: "browser", target: this.target, dir: projectDirectory })
+                    return simulate.launchServer(simulateOptions)
                         .then(simulateInfo => {
                             this.simulateInfo = simulateInfo;
                         });

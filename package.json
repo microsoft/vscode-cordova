@@ -190,10 +190,21 @@
                         "ionicLiveReload": true
                     },
                     {
-                        "name": "Simulate in browser",
+                        "name": "Simulate Android in browser",
                         "type": "cordova",
                         "request": "launch",
-                        "platform": "simulate",
+                        "platform": "android",
+                        "target": "chrome",
+                        "port": 8000,
+                        "cwd": "${workspaceRoot}"
+                    },
+                    {
+                        "name": "Simulate iOS in browser",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "ios",
+                        "target": "chrome",
+                        "port": 8000,
                         "cwd": "${workspaceRoot}"
                     }
                 ],
