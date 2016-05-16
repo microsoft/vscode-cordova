@@ -22,7 +22,7 @@ export class PluginSimulator implements vscode.Disposable {
             .then(() => this.launchSimHost());
     }
 
-    public launchAppHost(target: string): Q.Promise<any> {
+    public launchAppHost(target: string): Q.Promise<void> {
         return simulate.launchBrowser(target, this.simulateInfo.appUrl);
     }
 
@@ -79,7 +79,7 @@ export class PluginSimulator implements vscode.Disposable {
 class SimHostContentProvider implements vscode.TextDocumentContentProvider {
     private simHostUrl: string;
 
-    constructor(simHostUrl) {
+    constructor(simHostUrl: string) {
         this.simHostUrl = simHostUrl;
     }
 
