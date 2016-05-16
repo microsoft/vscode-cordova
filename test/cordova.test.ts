@@ -82,7 +82,6 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     test('#Verify that the simulate command launches the simulate server', () => {
         return testUtils.addCordovaComponents("platform", testProjectPath, ["browser"])
             .then(() => vscode.commands.executeCommand("cordova.simulate"))
-            .then(() => Q.delay(10000))
             .then(() => testUtils.isUrlReachable('http://localhost:8000/simulator/index.html'))
             .then((simHostStarted: boolean) => assert.equal(simHostStarted, true, "The simulation host is running."))
             .then(() => testUtils.isUrlReachable('http://localhost:8000/index.html'))
@@ -90,4 +89,3 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             .then(() => testUtils.removeCordovaComponents("platform", testProjectPath, ["browser"]));
     });
 });
-
