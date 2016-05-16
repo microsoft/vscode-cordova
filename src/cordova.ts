@@ -64,11 +64,10 @@ export function activate(context: vscode.ExtensionContext): void {
     watcher.onDidCreate((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     context.subscriptions.push(watcher);
 
-    let simulator = new PluginSimulator();
-    context.subscriptions.push(simulator);
-
+    let simulator: PluginSimulator = new PluginSimulator();
     let extensionServer: ExtensionServer = new ExtensionServer(simulator);
     extensionServer.setup();
+    // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);
 
     // Register Cordova commands

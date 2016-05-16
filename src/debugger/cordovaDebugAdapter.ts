@@ -89,7 +89,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                         throw err;
                     });
                 }).then(() => {
-                    // For the serve platform, we call super.launch(), which already attaches. For other platforms, attach here
+                    // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
                     if (platform !== 'serve' && platform !== 'browser' && !this.isSimulateTarget(launchArgs.target)) {
                         return this.attach(launchArgs);
                     }
@@ -457,7 +457,6 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             // Launch Chrome and attach
             this.outputLogger('Attaching to app');
-
             return super.launch(launchArgs);
         });
     }
