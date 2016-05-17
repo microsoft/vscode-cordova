@@ -3,6 +3,7 @@
 
 import * as child_process from 'child_process';
 import * as fs from 'fs';
+import * as http from 'http';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
@@ -15,18 +16,18 @@ export function executeCordovaCommand(cwd: string, command: string): Q.Promise<a
     let deferred = Q.defer<any>();
     let cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
     let commandToExecute = cordovaCmd + " " + command;
-	let process = child_process.exec(commandToExecute, {cwd: cwd});
+    let process = child_process.exec(commandToExecute, { cwd: cwd });
 
-    process.on("error", function(err: any): void {
+    process.on("error", function (err: any): void {
         deferred.reject(err);
     });
     process.stdout.on("close", exitCode => {
-	   if (exitCode) {
-           deferred.reject("Cordova command failed with exit code " + exitCode);
-       } else {
-           deferred.resolve({});
-       }
-	});
+        if (exitCode) {
+            deferred.reject("Cordova command failed with exit code " + exitCode);
+        } else {
+            deferred.resolve({});
+        }
+    });
 
     return deferred.promise;
 }
@@ -55,4 +56,17 @@ export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
     } else {
         return fs.readdirSync(typeDefsFolder);
     }
+}
+
+export function isUrlReachable(url: string): Q.Promise<boolean> {
+    let deferred = Q.defer<boolean>();
+
+    http.get(url, (res) => {
+        deferred.resolve(true);
+        res.resume();
+    }).on("error", (err: Error) => {
+        deferred.resolve(false);
+    });
+
+    return deferred.promise;
 }

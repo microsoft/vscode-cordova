@@ -9,6 +9,7 @@ import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
+import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from './utils/telemetry';
 import {IProjectType, TelemetryHelper} from './utils/telemetryHelper';
 import {TsdHelper} from './utils/tsdHelper';
@@ -21,7 +22,7 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
-    Telemetry.init('cordova-tools', require('./../../package.json').version, {isExtensionProcess: true});
+    Telemetry.init('cordova-tools', require('./../../package.json').version, { isExtensionProcess: true });
 
     // Get the project root and check if it is a Cordova project
     if (!vscode.workspace.rootPath) {
@@ -58,14 +59,15 @@ export function activate(context: vscode.ExtensionContext): void {
     // Note that watching plugins/fetch.json file would suffice
 
     let watcher = vscode.workspace.createFileSystemWatcher('**/plugins/fetch.json', false /*ignoreCreateEvents*/, false /*ignoreChangeEvents*/, false /*ignoreDeleteEvents*/);
-
     watcher.onDidChange((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     watcher.onDidDelete((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     watcher.onDidCreate((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
-
     context.subscriptions.push(watcher);
-    let extensionServer: ExtensionServer = new ExtensionServer();
+
+    let simulator: PluginSimulator = new PluginSimulator();
+    let extensionServer: ExtensionServer = new ExtensionServer(simulator);
     extensionServer.setup();
+    // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);
 
     // Register Cordova commands
@@ -75,6 +77,10 @@ export function activate(context: vscode.ExtensionContext): void {
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.android',
+        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'android'})));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.ios',
+        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'ios'})));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.build',

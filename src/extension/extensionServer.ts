@@ -3,6 +3,8 @@
 
 import * as net from "net";
 import * as Q from "q";
+import {PluginSimulator} from "./simulate";
+import {SimulateInfo, SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
 
 import {
@@ -17,14 +19,17 @@ import {Telemetry} from "../utils/telemetry";
 
 export class ExtensionServer implements vscode.Disposable {
     private serverInstance: net.Server = null;
+    private pluginSimulator: PluginSimulator;
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
 
-    public constructor() {
+    public constructor(pluginSimulator: PluginSimulator) {
         this.pipePath = ExtensionMessageSender.getExtensionPipePath();
+        this.pluginSimulator = pluginSimulator;
 
         // Register handlers for all messages
         this.messageHandlerDictionary[ExtensionMessage.SEND_TELEMETRY] = this.sendTelemetry;
+        this.messageHandlerDictionary[ExtensionMessage.SIMULATE] = this.simulate;
     }
 
     /**
@@ -57,14 +62,37 @@ export class ExtensionServer implements vscode.Disposable {
             this.serverInstance.close();
             this.serverInstance = null;
         }
+
+        if (this.pluginSimulator) {
+            this.pluginSimulator.dispose();
+            this.pluginSimulator = null;
+        }
     }
 
     /**
      * Sends telemetry
      */
-    private sendTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: {[key: string]: string}, measures: {[key: string]: number}): Q.Promise<any> {
+    private sendTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: { [key: string]: string }, measures: { [key: string]: number }): Q.Promise<any> {
         Telemetry.sendExtensionTelemetry(extensionId, extensionVersion, appInsightsKey, eventName, properties, measures);
         return Q.resolve({});
+    }
+
+    /**
+     * Prepares for simulate debugging. The server and simulate host are launched here.
+     * The application host is launched by the debugger.
+     *
+     * Returns the url of the sim-host.
+     */
+    private simulate(simulateOptions: SimulateOptions): Q.Promise<string> {
+        var simInfo: SimulateInfo;
+
+        return this.pluginSimulator.launchServer(simulateOptions)
+            .then((simulateInfo: SimulateInfo) => {
+                simInfo = simulateInfo;
+                return this.pluginSimulator.launchSimHost();
+            }).then(() => {
+                return simInfo.appUrl;
+            });
     }
 
     /**
@@ -73,7 +101,6 @@ export class ExtensionServer implements vscode.Disposable {
     private handleExtensionMessage(messageWithArgs: MessageWithArguments): Q.Promise<any> {
         let handler = this.messageHandlerDictionary[messageWithArgs.message];
         if (handler) {
-            // Log.logInternalMessage(LogLevel.Info, "Handling message: " + em.ExtensionMessage[messageWithArgs.message]);
             return handler.apply(this, messageWithArgs.args);
         } else {
             return Q.reject("Invalid message: " + messageWithArgs.message);
@@ -85,8 +112,8 @@ export class ExtensionServer implements vscode.Disposable {
      */
     private handleSocket(socket: net.Socket): void {
         let handleError = (e: any) => {
-            // Log.logError("An error ocurred. ", e);
-            socket.end(ErrorMarker);
+            let errorMessage = e ? e.message || e.error || e.data || e : "";
+            socket.end(ErrorMarker + errorMessage);
         };
 
         let dataCallback = (data: any) => {
@@ -122,7 +149,7 @@ export class ExtensionServer implements vscode.Disposable {
         if (error.code === "EADDRINUSE") {
             let clientSocket = new net.Socket();
             clientSocket.on("error", errorHandler);
-            clientSocket.connect(this.pipePath, function() {
+            clientSocket.connect(this.pipePath, function () {
                 clientSocket.end();
             });
         }

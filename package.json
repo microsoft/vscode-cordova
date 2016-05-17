@@ -17,7 +17,7 @@
     "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
     "license": "SEE LICENSE IN LICENSE.txt",
     "engines": {
-        "vscode": "^0.10.1"
+        "vscode": "^0.10.7"
     },
     "categories": [
         "Debuggers",
@@ -42,6 +42,14 @@
             {
                 "command": "cordova.prepare",
                 "title": "Cordova: Prepare"
+            },
+            {
+                "command": "cordova.simulate.android",
+                "title": "Cordova: Simulate Android in browser"
+            },
+            {
+                "command": "cordova.simulate.ios",
+                "title": "Cordova: Simulate iOS in browser"
             },
             {
                 "command": "ionic.build",
@@ -184,6 +192,24 @@
                         "cwd": "${workspaceRoot}",
                         "devServerAddress": "localhost",
                         "ionicLiveReload": true
+                    },
+                    {
+                        "name": "Simulate Android in browser",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "android",
+                        "target": "chrome",
+                        "port": 8000,
+                        "cwd": "${workspaceRoot}"
+                    },
+                    {
+                        "name": "Simulate iOS in browser",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "ios",
+                        "target": "chrome",
+                        "port": 8000,
+                        "cwd": "${workspaceRoot}"
                     }
                 ],
                 "configurationAttributes": {
@@ -203,7 +229,7 @@
                             },
                             "target": {
                                 "type": "string",
-                                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator",
+                                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome'.",
                                 "default": "emulator"
                             },
                             "sourceMaps": {
@@ -320,6 +346,7 @@
     "scripts": {
         "vscode:prepublish": "gulp",
         "compile": "gulp",
+        "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "dependencies": {
@@ -327,6 +354,7 @@
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
         "source-map": "^0.5.3",
+        "cordova-simulate": "microsoft/cordova-simulate",
         "vscode-extension-telemetry": "0.0.5",
         "winreg": "0.0.13",
         "ws": "0.8.0"
@@ -345,7 +373,7 @@
         "sinon": "^1.17.2",
         "tslint": "^2.5.1",
         "typescript": "^1.6.2",
-        "vscode": "0.10.x",
+        "vscode": "^0.11.0",
         "vsce": "1.0.0"
     }
 }

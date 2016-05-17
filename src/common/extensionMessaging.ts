@@ -11,7 +11,8 @@ export let ErrorMarker = "vscode-cordova-error-marker";
  * Add new messages to this enum.
  */
 export enum ExtensionMessage {
-    SEND_TELEMETRY
+    SEND_TELEMETRY,
+    SIMULATE
 }
 
 export interface MessageWithArguments {
@@ -51,10 +52,12 @@ export class ExtensionMessageSender {
             deferred.reject(new Error("An error ocurred while handling message: " + ExtensionMessage[message]));
         });
 
-        socket.on("end", function() {
+        socket.on("end", function () {
             try {
-                if (body === ErrorMarker) {
-                    deferred.reject(new Error("An error ocurred while handling message: " + ExtensionMessage[message]));
+                if (body.startsWith(ErrorMarker)) {
+                    let errorString = body.replace(ErrorMarker, "");
+                    let error = new Error(errorString ? errorString : "An error ocurred while handling message: " + ExtensionMessage[message]);
+                    deferred.reject(error);
                 } else {
                     let responseBody: any = body ? JSON.parse(body) : null;
                     deferred.resolve(responseBody);
