@@ -44,8 +44,12 @@
                 "title": "Cordova: Prepare"
             },
             {
-                "command": "cordova.simulate",
-                "title": "Cordova: Simulate"
+                "command": "cordova.simulate.android",
+                "title": "Cordova: Simulate Android in browser"
+            },
+            {
+                "command": "cordova.simulate.ios",
+                "title": "Cordova: Simulate iOS in browser"
             },
             {
                 "command": "ionic.build",

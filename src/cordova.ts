@@ -77,8 +77,10 @@ export function activate(context: vscode.ExtensionContext): void {
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
-    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate',
-        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'browser'})));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.android',
+        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'android'})));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.ios',
+        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'ios'})));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.build',
