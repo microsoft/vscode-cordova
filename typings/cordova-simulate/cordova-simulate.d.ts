@@ -2,6 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 declare module "cordova-simulate" {
+    interface PropertyDictionary {
+        [propName: string]: any;
+    }
+
     export interface SimulateOptions {
         platform?: string;
         target?: string;
@@ -9,7 +13,12 @@ declare module "cordova-simulate" {
         dir?: string;
         simhostui?: string;
         livereload?: boolean;
-        forceprepare?:boolean;
+        forceprepare?: boolean;
+        telemetry?: TelemetryModule;
+    }
+
+    export interface TelemetryModule {
+        sendTelemetry: (eventName: string, props: PropertyDictionary, piiProps: PropertyDictionary) => void;
     }
 
     export interface SimulateInfo {

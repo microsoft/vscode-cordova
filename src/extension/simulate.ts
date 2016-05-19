@@ -6,6 +6,7 @@ import * as Q from "q";
 import * as cordovaServer from "cordova-serve";
 import * as path from "path";
 import * as simulate from "cordova-simulate";
+import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
 import * as vscode from "vscode";
 
 /**
@@ -37,6 +38,9 @@ export class PluginSimulator implements vscode.Disposable {
         return this.isServerRunning()
             .then((isRunning: boolean) => {
                 if (!isRunning) {
+                    let simulateTelemetryWrapper = new CordovaSimulateTelemetry();
+                    simulateOptions.telemetry = simulateTelemetryWrapper;
+
                     return simulate.launchServer(simulateOptions)
                         .then(simulateInfo => {
                             this.simulateInfo = simulateInfo;

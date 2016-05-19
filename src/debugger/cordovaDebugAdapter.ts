@@ -16,7 +16,7 @@ import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} f
 import {CordovaPathTransformer} from './cordovaPathTransformer';
 import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
-import {IProjectType, TelemetryHelper} from '../utils/telemetryHelper';
+import {IProjectType, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
 import {settingsHome} from '../utils/settingsHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
@@ -58,26 +58,26 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                             /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, projectType);
+                                return this.launchSimulate(launchArgs, generator);
                             } else {
                                 return this.launchAndroid(launchArgs, projectType);
                             }
-                            /* tslint:enable:no-switch-case-fall-through */
+                        /* tslint:enable:no-switch-case-fall-through */
                         case 'ios':
                             /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, projectType);
+                                return this.launchSimulate(launchArgs, generator);
                             } else {
                                 return this.launchIos(launchArgs, projectType);
                             }
-                            /* tslint:enable:no-switch-case-fall-through */
+                        /* tslint:enable:no-switch-case-fall-through */
                         case 'serve':
                             generator.add('platform', platform, false);
                             return this.launchServe(launchArgs, projectType);
                         case 'browser':
                             generator.add('platform', platform, false);
-                            return this.launchSimulate(launchArgs, projectType);
+                            return this.launchSimulate(launchArgs, generator);
                         default:
                             generator.add('unknownPlatform', platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
@@ -410,7 +410,23 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
-    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<void> {
+        let simulateTelemetryPropts = {
+            platform: launchArgs.platform,
+            target: launchArgs.target,
+            port: launchArgs.port
+        };
+
+        if (launchArgs.hasOwnProperty('livereload')) {
+            simulateTelemetryPropts['livereload'] = launchArgs.livereload;
+        }
+
+        if (launchArgs.hasOwnProperty('forceprepare')) {
+            simulateTelemetryPropts['forceprepare'] = launchArgs.forceprepare;
+        }
+
+        generator.add('simulateOptions', simulateTelemetryPropts, false);
+
         return Q(void 0)
             .then(() => {
                 let messageSender = new messaging.ExtensionMessageSender();

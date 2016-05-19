@@ -49,14 +49,14 @@ export class ExtensionMessageSender {
         });
 
         socket.on("error", function(data: any) {
-            deferred.reject(new Error("An error ocurred while handling message: " + ExtensionMessage[message]));
+            deferred.reject(new Error("An error occurred while handling message: " + ExtensionMessage[message]));
         });
 
         socket.on("end", function () {
             try {
                 if (body.startsWith(ErrorMarker)) {
                     let errorString = body.replace(ErrorMarker, "");
-                    let error = new Error(errorString ? errorString : "An error ocurred while handling message: " + ExtensionMessage[message]);
+                    let error = new Error(errorString ? errorString : "An error occurred while handling message: " + ExtensionMessage[message]);
                     deferred.reject(error);
                 } else {
                     let responseBody: any = body ? JSON.parse(body) : null;
