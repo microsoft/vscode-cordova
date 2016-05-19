@@ -200,7 +200,8 @@
                         "platform": "android",
                         "target": "chrome",
                         "port": 8000,
-                        "cwd": "${workspaceRoot}"
+                        "cwd": "${workspaceRoot}",
+                        "livereload": true
                     },
                     {
                         "name": "Simulate iOS in browser",
@@ -209,7 +210,8 @@
                         "platform": "ios",
                         "target": "chrome",
                         "port": 8000,
-                        "cwd": "${workspaceRoot}"
+                        "cwd": "${workspaceRoot}",
+                        "livereload": true
                     }
                 ],
                 "configurationAttributes": {
@@ -276,6 +278,11 @@
                                 "type": "boolean",
                                 "description": "Whether or not to start an Ionic live reload session (this is currently only supported for Ionic 1 projects)",
                                 "default": false
+                            },
+                            "livereload": {
+                                "type": "boolean",
+                                "description": "Enables live reload during simulation in the browser.",
+                                "default": true
                             },
                             "devServerPort": {
                                 "type": "number",
