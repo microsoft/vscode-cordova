@@ -163,9 +163,9 @@ export class WebKitConnection {
 
             return utils.errP('Got response from target app, but no valid target pages found');
         },
-        e => {
-            return utils.errP('Cannot connect to the target: ' + e.message);
-        });
+            e => {
+                return utils.errP('Cannot connect to the target: ' + e.message);
+            });
     }
 
     public close(): void {
@@ -230,6 +230,36 @@ export class WebKitConnection {
 
     public page_clearOverlayMessage(): Promise<WebKitProtocol.Response> {
         return this.sendMessage('Page.setOverlayMessage');
+    }
+
+    public page_setShowViewportSizeOnResize(show: boolean, showGrid: boolean): Promise<WebKitProtocol.Response> {
+        return this.sendMessage('Emulation.setShowViewportSizeOnResize', { show, showGrid });
+    }
+
+    public emulation_clearDeviceMetricsOverride(): Promise<WebKitProtocol.Response> {
+        return this.sendMessage('Emulation.clearDeviceMetricsOverride');
+    }
+
+    public emulation_setEmulatedMedia(media: string): Promise<WebKitProtocol.Response> {
+        return this.sendMessage('Emulation.setEmulatedMedia', { media });
+    }
+
+    public emulation_setTouchEmulationEnabled(enabled: boolean, configuration?: string): Promise<WebKitProtocol.Response> {
+        let messageData: { enabled: boolean; configuration?: string; } = { enabled };
+
+        if (configuration) {
+            messageData.configuration = configuration;
+        }
+
+        return this.sendMessage('Emulation.setTouchEmulationEnabled', messageData);
+    }
+
+    public emulation_resetScrollAndPageScaleFactor(): Promise<WebKitProtocol.Response> {
+        return this.sendMessage('Emulation.resetScrollAndPageScaleFactor');
+    }
+
+    public emulation_setDeviceMetricsOverride(metrics: WebKitProtocol.Emulation.SetDeviceMetricsOverrideParams): Promise<WebKitProtocol.Response> {
+        return this.sendMessage('Emulation.setDeviceMetricsOverride', metrics);
     }
 
     private sendMessage(method: any, params?: any): Promise<WebKitProtocol.Response> {

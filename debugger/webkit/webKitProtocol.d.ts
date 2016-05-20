@@ -206,6 +206,29 @@ declare namespace WebKitProtocol {
         }
     }
 
+    namespace Emulation {
+        interface SetDeviceMetricsOverrideParams {
+            width: number;
+            height: number;
+            deviceScaleFactor: number;
+            mobile: boolean;
+            fitWindow: boolean;
+            scale?: number;
+            offsetX?: number;
+            offsetY?: number;
+            screenWidth?: number;
+            screenHeight?: number;
+            positionX?: number;
+            positionY?: number;
+            screenOrientation?: ScreenOrientation;
+        }
+
+        interface ScreenOrientation {
+            type: string;
+            angle: number;
+        }
+    }
+
     namespace Console {
         interface CallFrame {
             lineNumber: number;

@@ -27,10 +27,11 @@ export class PluginSimulator implements vscode.Disposable {
         return simulate.launchBrowser(target, this.simulateInfo.appUrl);
     }
 
-    public launchSimHost(): Q.Promise<any> {
+    public launchSimHost(): Q.Promise<void> {
         let provider = new SimHostContentProvider(this.simulateInfo.simHostUrl);
         this.registration = vscode.workspace.registerTextDocumentContentProvider("cordova-simulate", provider);
-        return <any>vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two);
+
+        return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => void 0));
     }
 
     public launchServer(simulateOptions: simulate.SimulateOptions): Q.Promise<simulate.SimulateInfo> {

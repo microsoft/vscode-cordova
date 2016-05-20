@@ -22,8 +22,14 @@ declare module "cordova-simulate" {
     }
 
     export interface SimulateInfo {
+        urlRoot: string,
         appUrl: string,
         simHostUrl: string
+    }
+
+    export interface ResizeViewportData {
+        width: number;
+        height: number;
     }
 
     export function launchBrowser(target: string, url: string): Q.Promise<void>;
