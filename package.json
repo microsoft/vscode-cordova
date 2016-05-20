@@ -7,8 +7,8 @@
     "publisher": "vsmobile",
     "icon": "images/icon.png",
     "galleryBanner": {
-      "color": "#feb943",
-      "theme": "dark"
+        "color": "#feb943",
+        "theme": "dark"
     },
     "repository": {
         "type": "git",
@@ -351,7 +351,6 @@
                 }
             }
         ]
-
     },
     "scripts": {
         "vscode:prepublish": "node ./node_modules/gulp/bin/gulp",
@@ -360,11 +359,12 @@
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "dependencies": {
+        "cordova-simulate": "microsoft/cordova-simulate",
         "elementtree": "^0.1.6",
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
+        "socket.io-client": "^1.4.6",
         "source-map": "^0.5.3",
-        "cordova-simulate": "microsoft/cordova-simulate",
         "vscode-extension-telemetry": "0.0.5",
         "winreg": "0.0.13",
         "ws": "0.8.0"

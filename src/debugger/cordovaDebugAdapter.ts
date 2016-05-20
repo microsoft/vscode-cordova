@@ -6,10 +6,12 @@ import * as child_process from 'child_process';
 import * as elementtree from 'elementtree';
 import * as fs from 'fs';
 import * as http from 'http';
+import * as io from 'socket.io-client';
 import * as messaging from '../common/extensionMessaging';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
+import * as simulate from "cordova-simulate";
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
@@ -22,6 +24,7 @@ import {settingsHome} from '../utils/settingsHelper';
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
+    private static SIMULATE_TARGETS: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
 
     private outputLogger: (message: string, error?: boolean) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
@@ -30,7 +33,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private cordovaPathTransformer: CordovaPathTransformer;
     private previousLaunchArgs: ICordovaLaunchRequestArgs;
     private previousAttachArgs: ICordovaAttachRequestArgs;
-    private static simulateTargets: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
+    private simulateDebugHost: SocketIOClient.Socket;
 
     public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
         super();
@@ -98,7 +101,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     public isSimulateTarget(target: string) {
-        return CordovaDebugAdapter.simulateTargets.indexOf(target) > -1;
+        return CordovaDebugAdapter.SIMULATE_TARGETS.indexOf(target) > -1;
     }
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
@@ -427,18 +430,82 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         generator.add('simulateOptions', simulateTelemetryPropts, false);
 
+        let messageSender = new messaging.ExtensionMessageSender();
+        let simulateInfo: simulate.SimulateInfo;
+
         return Q(void 0)
             .then(() => {
-                let messageSender = new messaging.ExtensionMessageSender();
-                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE, [launchArgs]);
-            }).then((appHostUrl: string) => {
-                launchArgs.url = appHostUrl;
-                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
-
+                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [launchArgs]);
+            }).then((simInfo: simulate.SimulateInfo) => {
+                simulateInfo = simInfo;
+                return this.connectSimulateDebugHost(simulateInfo);
+            }).then(() => {
+                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST);
+            }).then(() => {
                 // Launch Chrome and attach
+                launchArgs.url = simulateInfo.appUrl;
+                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
                 this.outputLogger('Attaching to app');
+
                 return super.launch(launchArgs);
+            }).then(() => void 0);
+    }
+
+    private resetSimulateViewport(): Q.Promise<void> {
+        let jsPromise = this._webKitConnection.emulation_clearDeviceMetricsOverride().then(() => {
+            return this._webKitConnection.emulation_setEmulatedMedia("");
+        }).then(() => {
+            return this._webKitConnection.emulation_resetScrollAndPageScaleFactor();
+        }).then(() => void 0);
+
+        return Q(jsPromise);
+    }
+
+    private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
+        let jsPromise = this._webKitConnection.emulation_setTouchEmulationEnabled(true, 'mobile').then(() => {
+            return this._webKitConnection.emulation_setDeviceMetricsOverride({
+                width: data.width,
+                height: data.height,
+                deviceScaleFactor: 0,
+                mobile: true,
+                fitWindow: true
             });
+        }).then(() => void 0);
+
+        return Q(jsPromise);
+    }
+
+    private connectSimulateDebugHost(simulateInfo: simulate.SimulateInfo): Q.Promise<void> {
+        // Connect debug-host to cordova-simulate
+        let viewportResizeFailMessage = 'Viewport resizing failed. Please try again.';
+        let simulateDeferred: Q.Deferred<void> = Q.defer<void>();
+
+        let simulateConnectErrorHandler = (err: any): void => {
+            this.outputLogger(`Error connecting to the simulated app.`);
+            simulateDeferred.reject(err);
+        }
+
+        this.simulateDebugHost = io.connect(simulateInfo.urlRoot);
+        this.simulateDebugHost.on('connect_error', simulateConnectErrorHandler);
+        this.simulateDebugHost.on('connect_timeout', simulateConnectErrorHandler);
+        this.simulateDebugHost.on('connect', () => {
+            this.simulateDebugHost.on('resize-viewport', (data: simulate.ResizeViewportData) => {
+                this.changeSimulateViewport(data).catch((err) => {
+                    this.outputLogger(viewportResizeFailMessage, true);
+                }).done();
+            });
+            this.simulateDebugHost.on('reset-viewport', () => {
+                this.resetSimulateViewport().then(() => {
+                    this._webKitConnection.emulation_setTouchEmulationEnabled(false).catch((err) => {
+                        this.outputLogger(viewportResizeFailMessage, true);
+                    });
+                }).done();
+            });
+            this.simulateDebugHost.emit('register-debug-host', { handlers: ['reset-viewport', 'resize-viewport'] });
+            simulateDeferred.resolve(void 0);
+        });
+
+        return simulateDeferred.promise;
     }
 
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
@@ -715,6 +782,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         // Clear the Ionic dev server URL if necessary
         if (this.ionicDevServerUrl) {
             this.ionicDevServerUrl = null;
+        }
+
+        // Close the simulate debug-host socket if necessary
+        if (this.simulateDebugHost) {
+            this.simulateDebugHost.close();
+            this.simulateDebugHost = null;
         }
 
         // Wait on all the cleanups
