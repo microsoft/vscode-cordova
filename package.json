@@ -339,7 +339,7 @@
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
         "source-map": "^0.5.3",
-        "cordova-simulate": "microsoft/cordova-simulate",
+        "cordova-simulate": "0.2.0-dev",
         "vscode-extension-telemetry": "0.0.5",
         "winreg": "0.0.13",
         "ws": "0.8.0"

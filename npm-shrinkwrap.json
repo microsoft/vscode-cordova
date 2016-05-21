@@ -352,7 +352,29 @@
     "cordova-simulate": {
       "version": "0.2.0-dev",
       "from": "microsoft/cordova-simulate",
-      "resolved": "git://github.com/microsoft/cordova-simulate.git#40f0db1ce1e1865c4b18477e06e02de8e7b2bda1"
+      "resolved": "git://github.com/microsoft/cordova-simulate.git#87331709000863fc2715a888384b854ea080ace1",
+      "dependencies": {
+        "depd": {
+          "version": "1.0.1",
+          "from": "depd@>=1.0.1 <1.1.0",
+          "resolved": "https://registry.npmjs.org/depd/-/depd-1.0.1.tgz"
+        },
+        "destroy": {
+          "version": "1.0.3",
+          "from": "destroy@1.0.3",
+          "resolved": "https://registry.npmjs.org/destroy/-/destroy-1.0.3.tgz"
+        },
+        "escape-html": {
+          "version": "1.0.2",
+          "from": "escape-html@1.0.2",
+          "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.2.tgz"
+        },
+        "send": {
+          "version": "0.13.0",
+          "from": "timbarham/send#transform",
+          "resolved": "git://github.com/timbarham/send.git#59f9650772a278da2b8024e576b64b45fce4d723"
+        }
+      }
     },
     "core-util-is": {
       "version": "1.0.2",
@@ -827,6 +849,11 @@
       "from": "nan@>=2.0.5 <3.0.0",
       "resolved": "https://registry.npmjs.org/nan/-/nan-2.3.3.tgz"
     },
+    "ncp": {
+      "version": "2.0.0",
+      "from": "ncp@>=2.0.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/ncp/-/ncp-2.0.0.tgz"
+    },
     "negotiator": {
       "version": "0.6.1",
       "from": "negotiator@0.6.1",
@@ -1042,28 +1069,6 @@
       "version": "0.3.5",
       "from": "sax@0.3.5",
       "resolved": "https://registry.npmjs.org/sax/-/sax-0.3.5.tgz"
-    },
-    "send": {
-      "version": "0.13.0",
-      "from": "timbarham/send#transform",
-      "resolved": "git://github.com/timbarham/send.git#59f9650772a278da2b8024e576b64b45fce4d723",
-      "dependencies": {
-        "depd": {
-          "version": "1.0.1",
-          "from": "depd@>=1.0.1 <1.1.0",
-          "resolved": "https://registry.npmjs.org/depd/-/depd-1.0.1.tgz"
-        },
-        "destroy": {
-          "version": "1.0.3",
-          "from": "destroy@1.0.3",
-          "resolved": "https://registry.npmjs.org/destroy/-/destroy-1.0.3.tgz"
-        },
-        "escape-html": {
-          "version": "1.0.2",
-          "from": "escape-html@1.0.2",
-          "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.2.tgz"
-        }
-      }
     },
     "serve-static": {
       "version": "1.10.2",
