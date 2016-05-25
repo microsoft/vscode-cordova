@@ -3,6 +3,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import {SimulateOptions} from 'cordova-simulate';
 import * as vscode from 'vscode';
 
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
@@ -70,6 +71,19 @@ export function activate(context: vscode.ExtensionContext): void {
     // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);
 
+    /* Launches a simulate command and records telemetry for it */
+    let launchSimulateCommand = function (options: SimulateOptions): void {
+        TelemetryHelper.generate("simulateCommand", (generator) => {
+            return TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
+                .then((projectType) => {
+                    generator.add("simulateOptions", options, false);
+                    generator.add("projectType", projectType, false);
+                });
+        }).then(() => {
+            simulator.simulate(options);
+        });
+    };
+
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare")));
@@ -78,9 +92,9 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.android',
-        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'android'})));
+        () => launchSimulateCommand({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'android'})));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.ios',
-        () => simulator.simulate({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'ios'})));
+        () => launchSimulateCommand({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'ios'})));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.build',
