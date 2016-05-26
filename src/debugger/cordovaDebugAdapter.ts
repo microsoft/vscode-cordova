@@ -411,18 +411,18 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<void> {
-        let simulateTelemetryPropts = {
+        let simulateTelemetryPropts: any = {
             platform: launchArgs.platform,
             target: launchArgs.target,
             port: launchArgs.port
         };
 
         if (launchArgs.hasOwnProperty('livereload')) {
-            simulateTelemetryPropts['livereload'] = launchArgs.livereload;
+            simulateTelemetryPropts.livereload = launchArgs.livereload;
         }
 
         if (launchArgs.hasOwnProperty('forceprepare')) {
-            simulateTelemetryPropts['forceprepare'] = launchArgs.forceprepare;
+            simulateTelemetryPropts.forceprepare = launchArgs.forceprepare;
         }
 
         generator.add('simulateOptions', simulateTelemetryPropts, false);

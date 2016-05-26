@@ -2,7 +2,7 @@
     "name": "cordova-tools",
     "displayName": "Cordova Tools",
     "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "private": true,
     "publisher": "vsmobile",
     "icon": "images/icon.png",
