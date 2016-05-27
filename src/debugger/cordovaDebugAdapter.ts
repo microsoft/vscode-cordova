@@ -16,7 +16,7 @@ import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} f
 import {CordovaPathTransformer} from './cordovaPathTransformer';
 import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
-import {IProjectType, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
+import {IProjectType, ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
 import {settingsHome} from '../utils/settingsHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
@@ -411,7 +411,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<void> {
-        let simulateTelemetryPropts: any = {
+        let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
             port: launchArgs.port

@@ -158,6 +158,14 @@ export interface IProjectType {
     cordova: boolean;
 }
 
+export interface ISimulateTelemetryProperties {
+    platform?: string;
+    target: string;
+    port: number;
+    livereload?: boolean;
+    forceprepare?: boolean
+}
+
 export class TelemetryHelper {
     public static createTelemetryEvent(eventName: string): Telemetry.TelemetryEvent {
         return new Telemetry.TelemetryEvent(eventName);
