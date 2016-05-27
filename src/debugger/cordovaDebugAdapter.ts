@@ -10,6 +10,7 @@ import * as messaging from '../common/extensionMessaging';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
+import {SimulateOptions} from 'cordova-simulate';
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
@@ -430,7 +431,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         return Q(void 0)
             .then(() => {
                 let messageSender = new messaging.ExtensionMessageSender();
-                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE, [launchArgs]);
+                let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
+                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE, [simulateOptions]);
             }).then((appHostUrl: string) => {
                 launchArgs.url = appHostUrl;
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
@@ -439,6 +441,18 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 this.outputLogger('Attaching to app');
                 return super.launch(launchArgs);
             });
+    }
+
+    private convertLaunchArgsToSimulateArgs(launchArgs: ICordovaLaunchRequestArgs): SimulateOptions {
+        let result: SimulateOptions = {};
+
+        result.platform = launchArgs.platform;
+        result.target = launchArgs.target;
+        result.port = launchArgs.simulatePort;
+        result.livereload = launchArgs.livereload;
+        result.forceprepare = launchArgs.forceprepare;
+
+        return result;
     }
 
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
