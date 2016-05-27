@@ -36,8 +36,8 @@ export class WebKitDebugAdapter implements IDebugAdapter {
     private _setBreakpointsRequestQ: Promise<any>;
 
     private _chromeProc: ChildProcess;
-    private _webKitConnection: WebKitConnection;
     private _eventHandler: (event: DebugProtocol.Event) => void;
+    protected _webKitConnection: WebKitConnection;
 
 
     public constructor() {

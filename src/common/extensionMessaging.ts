@@ -11,8 +11,10 @@ export let ErrorMarker = "vscode-cordova-error-marker";
  * Add new messages to this enum.
  */
 export enum ExtensionMessage {
+    LAUNCH_SIM_HOST,
     SEND_TELEMETRY,
-    SIMULATE
+    SIMULATE,
+    START_SIMULATE_SERVER
 }
 
 export interface MessageWithArguments {
