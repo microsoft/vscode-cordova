@@ -16,6 +16,7 @@ interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments
     userDataDir?: string;
 
     // Cordova-simulate properties
+    simulatePort?: number;
     livereload?: boolean;
     forceprepare?: boolean;
 }

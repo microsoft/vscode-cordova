@@ -11,7 +11,8 @@ import * as messaging from '../common/extensionMessaging';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
-import * as simulate from "cordova-simulate";
+import * as simulate from 'cordova-simulate';
+
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
@@ -417,7 +418,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
-            port: launchArgs.port
+            port: launchArgs.port,
+            simulatePort: launchArgs.simulatePort
         };
 
         if (launchArgs.hasOwnProperty('livereload')) {
@@ -435,7 +437,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         return Q(void 0)
             .then(() => {
-                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [launchArgs]);
+                let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
+                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions]);
             }).then((simInfo: simulate.SimulateInfo) => {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
@@ -453,7 +456,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
     private resetSimulateViewport(): Q.Promise<void> {
         let jsPromise = this._webKitConnection.emulation_clearDeviceMetricsOverride().then(() => {
-            return this._webKitConnection.emulation_setEmulatedMedia("");
+            return this._webKitConnection.emulation_setEmulatedMedia('');
         }).then(() => {
             return this._webKitConnection.emulation_resetScrollAndPageScaleFactor();
         }).then(() => void 0);
@@ -483,7 +486,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let simulateConnectErrorHandler = (err: any): void => {
             this.outputLogger(`Error connecting to the simulated app.`);
             simulateDeferred.reject(err);
-        }
+        };
 
         this.simulateDebugHost = io.connect(simulateInfo.urlRoot);
         this.simulateDebugHost.on('connect_error', simulateConnectErrorHandler);
@@ -506,6 +509,18 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
 
         return simulateDeferred.promise;
+    }
+
+    private convertLaunchArgsToSimulateArgs(launchArgs: ICordovaLaunchRequestArgs): simulate.SimulateOptions {
+        let result: simulate.SimulateOptions = {};
+
+        result.platform = launchArgs.platform;
+        result.target = launchArgs.target;
+        result.port = launchArgs.simulatePort;
+        result.livereload = launchArgs.livereload;
+        result.forceprepare = launchArgs.forceprepare;
+
+        return result;
     }
 
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {

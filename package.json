@@ -199,7 +199,7 @@
                         "request": "launch",
                         "platform": "android",
                         "target": "chrome",
-                        "port": 8000,
+                        "simulatePort": 8000,
                         "livereload": true,
                         "cwd": "${workspaceRoot}"
                     },
@@ -209,7 +209,7 @@
                         "request": "launch",
                         "platform": "ios",
                         "target": "chrome",
-                        "port": 8000,
+                        "simulatePort": 8000,
                         "livereload": true,
                         "cwd": "${workspaceRoot}"
                     }
@@ -286,6 +286,11 @@
                             "devServerAddress": {
                                 "type": "string",
                                 "description": "The IP address that Ionic should use for the live reload server"
+                            },
+                            "simulatePort": {
+                                "type": "number",
+                                "description": "Port to use for connecting to the local Cordova Simulate server.",
+                                "default": 8000
                             },
                             "livereload": {
                                 "type": "boolean",
