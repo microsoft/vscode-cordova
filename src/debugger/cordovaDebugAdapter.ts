@@ -418,7 +418,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
-            port: launchArgs.port
+            port: launchArgs.port,
+            simulatePort: launchArgs.simulatePort
         };
 
         if (launchArgs.hasOwnProperty('livereload')) {

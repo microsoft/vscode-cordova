@@ -162,8 +162,9 @@ export interface ISimulateTelemetryProperties {
     platform?: string;
     target: string;
     port: number;
+    simulatePort?: number;
     livereload?: boolean;
-    forceprepare?: boolean
+    forceprepare?: boolean;
 }
 
 export class TelemetryHelper {
