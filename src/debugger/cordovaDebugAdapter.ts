@@ -437,6 +437,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         return Q(void 0)
             .then(() => {
+                return messageSender.sendMessage(messaging.ExtensionMessage.GET_VISIBLE_EDITORS_COUNT);
+            }).then((editorCount) => {
+                generator.add('visibleTextEditors', editorCount, false);
+            }).then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
                 return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions]);
             }).then((simInfo: simulate.SimulateInfo) => {
@@ -451,6 +455,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 this.outputLogger('Attaching to app');
 
                 return super.launch(launchArgs);
+            }).catch((e) => {
+                this.outputLogger('An error occurred while attaching to the debugger. ' + e.message || e.error || e.data || e);
+                generator.addError(e);
+                throw e;
             }).then(() => void 0);
     }
 
