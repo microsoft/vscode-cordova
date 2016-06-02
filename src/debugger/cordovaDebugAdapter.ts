@@ -482,14 +482,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
-        let jsPromise = this._webKitConnection.emulation_setTouchEmulationEnabled(true, 'mobile').then(() => {
-            return this._webKitConnection.emulation_setDeviceMetricsOverride({
-                width: data.width,
-                height: data.height,
-                deviceScaleFactor: 0,
-                mobile: true,
-                fitWindow: true
-            });
+        let jsPromise = this._webKitConnection.emulation_setDeviceMetricsOverride({
+            width: data.width,
+            height: data.height,
+            deviceScaleFactor: 0,
+            mobile: true,
+            fitWindow: true
         }).then(() => void 0);
 
         return Q(jsPromise);
@@ -515,10 +513,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 }).done();
             });
             this.simulateDebugHost.on('reset-viewport', () => {
-                this.resetSimulateViewport().then(() => {
-                    this._webKitConnection.emulation_setTouchEmulationEnabled(false).catch((err) => {
-                        this.outputLogger(viewportResizeFailMessage, true);
-                    });
+                this.resetSimulateViewport().catch((err) => {
+                    this.outputLogger(viewportResizeFailMessage, true);
                 }).done();
             });
             this.simulateDebugHost.emit('register-debug-host', { handlers: ['reset-viewport', 'resize-viewport'] });
@@ -762,7 +758,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
     private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
         let deferred = Q.defer<string>();
-        let req = http.get(url, function (res) {
+        let req = http.get(url, function(res) {
             let responseString = '';
             res.on('data', (data: Buffer) => {
                 responseString += data.toString();
