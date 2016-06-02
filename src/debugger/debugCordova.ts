@@ -9,9 +9,10 @@ import {DebugSession} from '../../debugger/common/debugSession';
 
 import {Telemetry} from '../utils/telemetry';
 
-let version = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf-8')).version;
+let projectRoot = path.join(__dirname, '..', '..', '..');
+let version = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf-8')).version;
 
 // Enable telemetry, forced on for now.
-Telemetry.init('cordova-tools-debug-adapter', version, {isExtensionProcess: false}).then(() => {
+Telemetry.init('cordova-tools-debug-adapter', version, {isExtensionProcess: false}, projectRoot).then(() => {
     DebugSession.run(CordovaDebugSession);
 });

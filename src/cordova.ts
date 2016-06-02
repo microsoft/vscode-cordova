@@ -23,7 +23,7 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
-    Telemetry.init('cordova-tools', require('./../../package.json').version, { isExtensionProcess: true });
+    Telemetry.init('cordova-tools', require('./../../package.json').version, { isExtensionProcess: true }, vscode.workspace.rootPath);
 
     // Get the project root and check if it is a Cordova project
     if (!vscode.workspace.rootPath) {
@@ -66,7 +66,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(watcher);
 
     let simulator: PluginSimulator = new PluginSimulator();
-    let extensionServer: ExtensionServer = new ExtensionServer(simulator);
+    let extensionServer: ExtensionServer = new ExtensionServer(simulator, vscode.workspace.rootPath);
     extensionServer.setup();
     // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);

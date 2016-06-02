@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
+import {Hash} from "../utils/hash";
 import * as http from "http";
 import * as Q from "q";
 import * as cordovaServer from "cordova-serve";
@@ -15,7 +16,13 @@ import * as vscode from "vscode";
 export class PluginSimulator implements vscode.Disposable {
     private simulateInfo: simulate.SimulateInfo;
     private registration: vscode.Disposable;
-    private simulateUri = vscode.Uri.parse("cordova-simulate://authority/cordova-simulate");
+    private simulateProtocol: string;
+    private simulateUri: vscode.Uri;
+
+    constructor() {
+        this.simulateProtocol = "cordova-simulate-" + Hash.hashCode(vscode.workspace.rootPath);
+        this.simulateUri = vscode.Uri.parse(this.simulateProtocol + "://authority/cordova-simulate");
+    }
 
     public simulate(simulateOptions: simulate.SimulateOptions): Q.Promise<any> {
         return this.launchServer(simulateOptions)
@@ -29,7 +36,7 @@ export class PluginSimulator implements vscode.Disposable {
 
     public launchSimHost(): Q.Promise<void> {
         let provider = new SimHostContentProvider(this.simulateInfo.simHostUrl);
-        this.registration = vscode.workspace.registerTextDocumentContentProvider("cordova-simulate", provider);
+        this.registration = vscode.workspace.registerTextDocumentContentProvider(this.simulateProtocol, provider);
 
         return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => void 0));
     }

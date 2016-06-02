@@ -91,10 +91,10 @@ export module Telemetry {
             isExtensionProcess: boolean;
         }
 
-        export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
+        export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions, projectRoot: string): Q.Promise<any> {
             try {
                 Telemetry.appName = appNameValue;
-                return TelemetryUtils.init(appVersion, initOptions);
+                return TelemetryUtils.init(appVersion, initOptions, projectRoot);
             } catch (err) {
                 console.error(err);
             }
@@ -179,7 +179,7 @@ export module Telemetry {
                 return path.join(settingsHome(), TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
             }
 
-            public static init(appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
+            public static init(appVersion: string, initOptions: ITelemetryInitOptions, projectRoot: string): Q.Promise<any> {
                 TelemetryUtils.loadSettings();
 
                 if (initOptions.isExtensionProcess) {
@@ -187,7 +187,7 @@ export module Telemetry {
                     Telemetry.reporter = new TelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
                 }
                 else {
-                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
+                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY, projectRoot);
                 }
 
                 return TelemetryUtils.getUserId()
@@ -349,11 +349,11 @@ export module Telemetry {
             private extensionVersion: string;
             private appInsightsKey: string;
 
-            constructor(extensionId: string, extensionVersion: string, key: string) {
+            constructor(extensionId: string, extensionVersion: string, key: string, projectRoot: string) {
                 this.extensionId = extensionId;
                 this.extensionVersion = extensionVersion;
                 this.appInsightsKey = key;
-                this.extensionMessageSender = new ExtensionMessageSender();
+                this.extensionMessageSender = new ExtensionMessageSender(projectRoot);
             }
 
             sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {

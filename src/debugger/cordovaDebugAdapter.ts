@@ -432,7 +432,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         generator.add('simulateOptions', simulateTelemetryPropts, false);
 
-        let messageSender = new messaging.ExtensionMessageSender();
+        let messageSender = new messaging.ExtensionMessageSender(launchArgs.cwd);
         let simulateInfo: simulate.SimulateInfo;
 
         return Q(void 0)
