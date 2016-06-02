@@ -86,6 +86,8 @@ The ```Run``` command triggers `cordova run` and starts your app without debuggi
 ## Support for Ionic
 
 * The debug target includes the ability to serve to the browser for use with Ionic projects. You can now deploy and debug directly to Chrome, live reload is enabled by default.
+> **Note:**
+Ionic 2 Beta is not currently supported.
 
 * We've included a number of useful JavaScript and HTML code snippets for your project, try typing `ion_` in the editor to see what's available.
 
@@ -107,6 +109,32 @@ Intellisense helps you discover objects, functions, and parameters in libraries 
 IntelliSense appears only for plugins that you've added to your project, but it doesn't matter whether you add the plugin before or after you install this extension.
 
 Just start typing in the code editor to see the objects, functions, and parameters of your plugin's API.
+
+By default, this extension supports the typings for the following plugins. To add typings for other plugins, place the appropriate `.d.ts` file(s) in your project's `.vscode/typings` folder.
+* cordova-plugin-battery-status
+* cordova-plugin-camera
+* cordova-plugin-contacts
+* cordova-plugin-device
+* cordova-plugin-device-motion
+* cordova-plugin-device-orientation
+* cordova-plugin-dialogs
+* cordova-plugin-file
+* cordova-plugin-file-transfer
+* cordova-plugin-globalization
+* cordova-plugin-inappbrowser
+* cordova-plugin-keyboard
+* cordova-plugin-media
+* cordova-plugin-media-capture
+* cordova-plugin-network-information
+* cordova-plugin-push
+* cordova-plugin-splashscreen
+* cordova-plugin-statusbar
+* cordova-plugin-toast
+* cordova-plugin-vibration
+* cordova-plugin-websql
+* phonegap-build/PushPlugin
+* phonegap-plugin-barcodescanner
+* Toast-Phonegap-Plugin
 
 ## Use IntelliSense with injected Ionic and Angular services
 

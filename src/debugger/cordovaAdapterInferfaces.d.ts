@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 
- interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
+interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
     appStepLaunchTimeout?: number;
 
@@ -14,6 +14,11 @@
     // Chrome debug properties
     url?: string;
     userDataDir?: string;
+
+    // Cordova-simulate properties
+    simulatePort?: number;
+    livereload?: boolean;
+    forceprepare?: boolean;
 }
 
 interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {

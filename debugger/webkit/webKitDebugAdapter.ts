@@ -36,8 +36,8 @@ export class WebKitDebugAdapter implements IDebugAdapter {
     private _setBreakpointsRequestQ: Promise<any>;
 
     private _chromeProc: ChildProcess;
-    private _webKitConnection: WebKitConnection;
     private _eventHandler: (event: DebugProtocol.Event) => void;
+    protected _webKitConnection: WebKitConnection;
 
 
     public constructor() {
@@ -254,7 +254,7 @@ export class WebKitDebugAdapter implements IDebugAdapter {
         }
     }
 
-    private onScriptParsed(script: WebKitProtocol.Debugger.Script): void {
+    protected onScriptParsed(script: WebKitProtocol.Debugger.Script): void {
         this._scriptsById.set(script.scriptId, script);
 
         if (!this.isExtensionScript(script)) {

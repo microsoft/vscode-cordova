@@ -3,6 +3,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import {SimulateOptions} from 'cordova-simulate';
 import * as vscode from 'vscode';
 
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
@@ -64,12 +65,24 @@ export function activate(context: vscode.ExtensionContext): void {
     watcher.onDidCreate((e: vscode.Uri) => updatePluginTypeDefinitions(cordovaProjectRoot));
     context.subscriptions.push(watcher);
 
-    let simulator = new PluginSimulator();
-    context.subscriptions.push(simulator);
-
+    let simulator: PluginSimulator = new PluginSimulator();
     let extensionServer: ExtensionServer = new ExtensionServer(simulator);
     extensionServer.setup();
+    // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);
+
+    /* Launches a simulate command and records telemetry for it */
+    let launchSimulateCommand = function (options: SimulateOptions): void {
+        TelemetryHelper.generate("simulateCommand", (generator) => {
+            return TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
+                .then((projectType) => {
+                    generator.add("simulateOptions", options, false);
+                    generator.add("projectType", projectType, false);
+                });
+        }).then(() => {
+            simulator.simulate(options);
+        });
+    };
 
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
@@ -78,8 +91,10 @@ export function activate(context: vscode.ExtensionContext): void {
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "build")));
     context.subscriptions.push(vscode.commands.registerCommand('cordova.run',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "run")));
-    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate',
-        () => simulator.simulate(vscode.workspace.rootPath)));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.android',
+        () => launchSimulateCommand({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'android'})));
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.ios',
+        () => launchSimulateCommand({ dir: vscode.workspace.rootPath, target: 'chrome', platform: 'ios'})));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.prepare',
         () => CordovaCommandHelper.executeCordovaCommand(cordovaProjectRoot, "prepare", true)));
     context.subscriptions.push(vscode.commands.registerCommand('ionic.build',
@@ -92,7 +107,8 @@ export function activate(context: vscode.ExtensionContext): void {
         let ionicTypings: string[] = [
             path.join("angularjs", "angular.d.ts"),
             path.join("jquery", "jquery.d.ts"),
-            path.join("ionic", "ionic.d.ts")
+            path.join("ionic", "ionic.d.ts"),
+            path.join("cordova-ionic", "plugins", "keyboard.d.ts")
         ];
         TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
     }

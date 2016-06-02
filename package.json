@@ -2,13 +2,13 @@
     "name": "cordova-tools",
     "displayName": "Cordova Tools",
     "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "private": true,
     "publisher": "vsmobile",
     "icon": "images/icon.png",
     "galleryBanner": {
-      "color": "#feb943",
-      "theme": "dark"
+        "color": "#feb943",
+        "theme": "dark"
     },
     "repository": {
         "type": "git",
@@ -44,8 +44,12 @@
                 "title": "Cordova: Prepare"
             },
             {
-                "command": "cordova.simulate",
-                "title": "Cordova: Simulate"
+                "command": "cordova.simulate.android",
+                "title": "Cordova: Simulate Android in browser"
+            },
+            {
+                "command": "cordova.simulate.ios",
+                "title": "Cordova: Simulate iOS in browser"
             },
             {
                 "command": "ionic.build",
@@ -190,10 +194,23 @@
                         "ionicLiveReload": true
                     },
                     {
-                        "name": "Simulate in browser",
+                        "name": "Simulate Android in browser",
                         "type": "cordova",
                         "request": "launch",
-                        "platform": "simulate",
+                        "platform": "android",
+                        "target": "chrome",
+                        "simulatePort": 8000,
+                        "livereload": true,
+                        "cwd": "${workspaceRoot}"
+                    },
+                    {
+                        "name": "Simulate iOS in browser",
+                        "type": "cordova",
+                        "request": "launch",
+                        "platform": "ios",
+                        "target": "chrome",
+                        "simulatePort": 8000,
+                        "livereload": true,
                         "cwd": "${workspaceRoot}"
                     }
                 ],
@@ -214,7 +231,7 @@
                             },
                             "target": {
                                 "type": "string",
-                                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator",
+                                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome'.",
                                 "default": "emulator"
                             },
                             "sourceMaps": {
@@ -269,6 +286,19 @@
                             "devServerAddress": {
                                 "type": "string",
                                 "description": "The IP address that Ionic should use for the live reload server"
+                            },
+                            "simulatePort": {
+                                "type": "number",
+                                "description": "Port to use for connecting to the local Cordova Simulate server.",
+                                "default": 8000
+                            },
+                            "livereload": {
+                                "type": "boolean",
+                                "description": "When simulating in the browser, determines whether live reload is enabled"
+                            },
+                            "forceprepare": {
+                                "type": "boolean",
+                                "description": "When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading"
                             }
                         }
                     },
@@ -326,20 +356,20 @@
                 }
             }
         ]
-
     },
     "scripts": {
-        "vscode:prepublish": "gulp",
-        "compile": "gulp",
+        "vscode:prepublish": "node ./node_modules/gulp/bin/gulp",
+        "compile": "node ./node_modules/gulp/bin/gulp",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "dependencies": {
+        "cordova-simulate": "microsoft/cordova-simulate",
         "elementtree": "^0.1.6",
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
+        "socket.io-client": "^1.4.6",
         "source-map": "^0.5.3",
-        "cordova-simulate": "0.2.0-dev",
         "vscode-extension-telemetry": "0.0.5",
         "winreg": "0.0.13",
         "ws": "0.8.0"

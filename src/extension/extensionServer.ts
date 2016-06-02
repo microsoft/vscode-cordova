@@ -4,7 +4,7 @@
 import * as net from "net";
 import * as Q from "q";
 import {PluginSimulator} from "./simulate";
-import {SimulateInfo} from "cordova-simulate";
+import {SimulateInfo, SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
 
 import {
@@ -29,7 +29,9 @@ export class ExtensionServer implements vscode.Disposable {
 
         // Register handlers for all messages
         this.messageHandlerDictionary[ExtensionMessage.SEND_TELEMETRY] = this.sendTelemetry;
+        this.messageHandlerDictionary[ExtensionMessage.LAUNCH_SIM_HOST] = this.launchSimHost;
         this.messageHandlerDictionary[ExtensionMessage.SIMULATE] = this.simulate;
+        this.messageHandlerDictionary[ExtensionMessage.START_SIMULATE_SERVER] = this.launchSimulateServer;
     }
 
     /**
@@ -81,18 +83,34 @@ export class ExtensionServer implements vscode.Disposable {
      * Prepares for simulate debugging. The server and simulate host are launched here.
      * The application host is launched by the debugger.
      *
-     * Returns the url of the sim-host.
+     * Returns info about the running simulate server
      */
-    private simulate(): Q.Promise<string> {
+    private simulate(simulateOptions: SimulateOptions): Q.Promise<SimulateInfo> {
         var simInfo: SimulateInfo;
 
-        return this.pluginSimulator.launchServer(vscode.workspace.rootPath)
+        return this.launchSimulateServer(simulateOptions)
             .then((simulateInfo: SimulateInfo) => {
                 simInfo = simulateInfo;
-                return this.pluginSimulator.launchSimHost();
+                return this.launchSimHost();
             }).then(() => {
-                return simInfo.appUrl;
+                return simInfo;
             });
+    }
+
+    /**
+     * Launches the simulate server. Only the server is launched here.
+     *
+     * Returns info about the running simulate server
+     */
+    private launchSimulateServer(simulateOptions: SimulateOptions): Q.Promise<SimulateInfo> {
+        return this.pluginSimulator.launchServer(simulateOptions);
+    }
+
+    /**
+     * Launches sim-host using an already running simulate server.
+     */
+    private launchSimHost(): Q.Promise<void> {
+        return this.pluginSimulator.launchSimHost();
     }
 
     /**
@@ -101,7 +119,6 @@ export class ExtensionServer implements vscode.Disposable {
     private handleExtensionMessage(messageWithArgs: MessageWithArguments): Q.Promise<any> {
         let handler = this.messageHandlerDictionary[messageWithArgs.message];
         if (handler) {
-            // Log.logInternalMessage(LogLevel.Info, "Handling message: " + em.ExtensionMessage[messageWithArgs.message]);
             return handler.apply(this, messageWithArgs.args);
         } else {
             return Q.reject("Invalid message: " + messageWithArgs.message);
@@ -113,8 +130,8 @@ export class ExtensionServer implements vscode.Disposable {
      */
     private handleSocket(socket: net.Socket): void {
         let handleError = (e: any) => {
-            // Log.logError("An error ocurred. ", e);
-            socket.end(ErrorMarker);
+            let errorMessage = e ? e.message || e.error || e.data || e : "";
+            socket.end(ErrorMarker + errorMessage);
         };
 
         let dataCallback = (data: any) => {

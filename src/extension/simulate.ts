@@ -6,6 +6,7 @@ import * as Q from "q";
 import * as cordovaServer from "cordova-serve";
 import * as path from "path";
 import * as simulate from "cordova-simulate";
+import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
 import * as vscode from "vscode";
 
 /**
@@ -15,29 +16,33 @@ export class PluginSimulator implements vscode.Disposable {
     private simulateInfo: simulate.SimulateInfo;
     private registration: vscode.Disposable;
     private simulateUri = vscode.Uri.parse("cordova-simulate://authority/cordova-simulate");
-    private target = "chrome";
 
-    public simulate(projectDirectory: string): Q.Promise<any> {
-        return this.launchServer(projectDirectory)
-            .then(() => this.launchAppHost())
+    public simulate(simulateOptions: simulate.SimulateOptions): Q.Promise<any> {
+        return this.launchServer(simulateOptions)
+            .then(() => this.launchAppHost(simulateOptions.target))
             .then(() => this.launchSimHost());
     }
 
-    public launchAppHost(): Q.Promise<any> {
-        return simulate.launchBrowser(this.target, this.simulateInfo.appUrl);
+    public launchAppHost(target: string): Q.Promise<void> {
+        return simulate.launchBrowser(target, this.simulateInfo.appUrl);
     }
 
-    public launchSimHost(): Q.Promise<any> {
+    public launchSimHost(): Q.Promise<void> {
         let provider = new SimHostContentProvider(this.simulateInfo.simHostUrl);
         this.registration = vscode.workspace.registerTextDocumentContentProvider("cordova-simulate", provider);
-        return <any>vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two);
+
+        return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => void 0));
     }
 
-    public launchServer(projectDirectory: string): Q.Promise<simulate.SimulateInfo> {
+    public launchServer(simulateOptions: simulate.SimulateOptions): Q.Promise<simulate.SimulateInfo> {
+        simulateOptions.dir = vscode.workspace.rootPath;
         return this.isServerRunning()
             .then((isRunning: boolean) => {
                 if (!isRunning) {
-                    return simulate.launchServer({ platform: "browser", target: this.target, dir: projectDirectory })
+                    let simulateTelemetryWrapper = new CordovaSimulateTelemetry();
+                    simulateOptions.telemetry = simulateTelemetryWrapper;
+
+                    return simulate.launchServer(simulateOptions)
                         .then(simulateInfo => {
                             this.simulateInfo = simulateInfo;
                         });
@@ -79,7 +84,7 @@ export class PluginSimulator implements vscode.Disposable {
 class SimHostContentProvider implements vscode.TextDocumentContentProvider {
     private simHostUrl: string;
 
-    constructor(simHostUrl) {
+    constructor(simHostUrl: string) {
         this.simHostUrl = simHostUrl;
     }
 

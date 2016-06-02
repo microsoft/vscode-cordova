@@ -6,36 +6,48 @@ import * as child_process from 'child_process';
 import * as elementtree from 'elementtree';
 import * as fs from 'fs';
 import * as http from 'http';
+import * as io from 'socket.io-client';
 import * as messaging from '../common/extensionMessaging';
 import * as os from 'os';
 import * as path from 'path';
 import * as Q from 'q';
+import * as simulate from 'cordova-simulate';
+
 
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
+import {CordovaPathTransformer} from './cordovaPathTransformer';
 import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
-import {IProjectType, TelemetryHelper} from '../utils/telemetryHelper';
+import {IProjectType, ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
 import {settingsHome} from '../utils/settingsHelper';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
+    private static SIMULATE_TARGETS: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
 
     private outputLogger: (message: string, error?: boolean) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
     private ionicLivereloadProcess: child_process.ChildProcess;
     private ionicDevServerUrl: string;
+    private cordovaPathTransformer: CordovaPathTransformer;
+    private previousLaunchArgs: ICordovaLaunchRequestArgs;
+    private previousAttachArgs: ICordovaAttachRequestArgs;
+    private simulateDebugHost: SocketIOClient.Socket;
 
-    public constructor(outputLogger: (message: string, error?: boolean) => void) {
+    public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
         super();
         this.outputLogger = outputLogger;
+        this.cordovaPathTransformer = cdvPathTransformer;
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
+        this.previousLaunchArgs = launchArgs;
+
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
             launchArgs.port = launchArgs.port || 9222;
-            launchArgs.target = launchArgs.target || 'emulator';
+            launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
             launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
             let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
@@ -47,17 +59,29 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
                     switch (platform) {
                         case 'android':
+                            /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
-                            return this.launchAndroid(launchArgs, projectType);
+                            if (this.isSimulateTarget(launchArgs.target)) {
+                                return this.launchSimulate(launchArgs, generator);
+                            } else {
+                                return this.launchAndroid(launchArgs, projectType);
+                            }
+                        /* tslint:enable:no-switch-case-fall-through */
                         case 'ios':
+                            /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
-                            return this.launchIos(launchArgs, projectType);
+                            if (this.isSimulateTarget(launchArgs.target)) {
+                                return this.launchSimulate(launchArgs, generator);
+                            } else {
+                                return this.launchIos(launchArgs, projectType);
+                            }
+                        /* tslint:enable:no-switch-case-fall-through */
                         case 'serve':
                             generator.add('platform', platform, false);
                             return this.launchServe(launchArgs, projectType);
-                        case 'simulate':
+                        case 'browser':
                             generator.add('platform', platform, false);
-                            return this.launchSimulate(launchArgs, projectType);
+                            return this.launchSimulate(launchArgs, generator);
                         default:
                             generator.add('unknownPlatform', platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
@@ -69,15 +93,21 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                         throw err;
                     });
                 }).then(() => {
-                    // For the serve platform, we call super.launch(), which already attaches. For other platforms, attach here
-                    if (platform !== 'serve' && platform !== 'simulate') {
+                    // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
+                    if (platform !== 'serve' && platform !== 'browser' && !this.isSimulateTarget(launchArgs.target)) {
                         return this.attach(launchArgs);
                     }
                 });
         }).done(resolve, reject));
     }
 
+    public isSimulateTarget(target: string) {
+        return CordovaDebugAdapter.SIMULATE_TARGETS.indexOf(target) > -1;
+    }
+
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
+        this.previousAttachArgs = attachArgs;
+
         return new Promise<void>((resolve, reject) => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
@@ -284,11 +314,13 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === 'emulator' ? null : launchArgs.target;
-            let emulateArgs = ['emulate', 'ios'];
+            let emulateArgs = ['emulate'];
 
             if (target) {
                 emulateArgs.push('--target=' + target);
             }
+
+            emulateArgs.push('ios');
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
@@ -382,19 +414,113 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
-    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<void> {
+        let simulateTelemetryPropts: ISimulateTelemetryProperties = {
+            platform: launchArgs.platform,
+            target: launchArgs.target,
+            port: launchArgs.port,
+            simulatePort: launchArgs.simulatePort
+        };
+
+        if (launchArgs.hasOwnProperty('livereload')) {
+            simulateTelemetryPropts.livereload = launchArgs.livereload;
+        }
+
+        if (launchArgs.hasOwnProperty('forceprepare')) {
+            simulateTelemetryPropts.forceprepare = launchArgs.forceprepare;
+        }
+
+        generator.add('simulateOptions', simulateTelemetryPropts, false);
+
+        let messageSender = new messaging.ExtensionMessageSender();
+        let simulateInfo: simulate.SimulateInfo;
+
         return Q(void 0)
             .then(() => {
-                let messageSender = new messaging.ExtensionMessageSender();
-                return messageSender.sendMessage(messaging.ExtensionMessage.SIMULATE);
-            }).then((appHostUrl: string) => {
-                launchArgs.url = appHostUrl;
-                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
-
+                let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
+                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions]);
+            }).then((simInfo: simulate.SimulateInfo) => {
+                simulateInfo = simInfo;
+                return this.connectSimulateDebugHost(simulateInfo);
+            }).then(() => {
+                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST);
+            }).then(() => {
                 // Launch Chrome and attach
+                launchArgs.url = simulateInfo.appUrl;
+                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
                 this.outputLogger('Attaching to app');
+
                 return super.launch(launchArgs);
+            }).then(() => void 0);
+    }
+
+    private resetSimulateViewport(): Q.Promise<void> {
+        let jsPromise = this._webKitConnection.emulation_clearDeviceMetricsOverride().then(() => {
+            return this._webKitConnection.emulation_setEmulatedMedia('');
+        }).then(() => {
+            return this._webKitConnection.emulation_resetScrollAndPageScaleFactor();
+        }).then(() => void 0);
+
+        return Q(jsPromise);
+    }
+
+    private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
+        let jsPromise = this._webKitConnection.emulation_setTouchEmulationEnabled(true, 'mobile').then(() => {
+            return this._webKitConnection.emulation_setDeviceMetricsOverride({
+                width: data.width,
+                height: data.height,
+                deviceScaleFactor: 0,
+                mobile: true,
+                fitWindow: true
             });
+        }).then(() => void 0);
+
+        return Q(jsPromise);
+    }
+
+    private connectSimulateDebugHost(simulateInfo: simulate.SimulateInfo): Q.Promise<void> {
+        // Connect debug-host to cordova-simulate
+        let viewportResizeFailMessage = 'Viewport resizing failed. Please try again.';
+        let simulateDeferred: Q.Deferred<void> = Q.defer<void>();
+
+        let simulateConnectErrorHandler = (err: any): void => {
+            this.outputLogger(`Error connecting to the simulated app.`);
+            simulateDeferred.reject(err);
+        };
+
+        this.simulateDebugHost = io.connect(simulateInfo.urlRoot);
+        this.simulateDebugHost.on('connect_error', simulateConnectErrorHandler);
+        this.simulateDebugHost.on('connect_timeout', simulateConnectErrorHandler);
+        this.simulateDebugHost.on('connect', () => {
+            this.simulateDebugHost.on('resize-viewport', (data: simulate.ResizeViewportData) => {
+                this.changeSimulateViewport(data).catch((err) => {
+                    this.outputLogger(viewportResizeFailMessage, true);
+                }).done();
+            });
+            this.simulateDebugHost.on('reset-viewport', () => {
+                this.resetSimulateViewport().then(() => {
+                    this._webKitConnection.emulation_setTouchEmulationEnabled(false).catch((err) => {
+                        this.outputLogger(viewportResizeFailMessage, true);
+                    });
+                }).done();
+            });
+            this.simulateDebugHost.emit('register-debug-host', { handlers: ['reset-viewport', 'resize-viewport'] });
+            simulateDeferred.resolve(void 0);
+        });
+
+        return simulateDeferred.promise;
+    }
+
+    private convertLaunchArgsToSimulateArgs(launchArgs: ICordovaLaunchRequestArgs): simulate.SimulateOptions {
+        let result: simulate.SimulateOptions = {};
+
+        result.platform = launchArgs.platform;
+        result.target = launchArgs.target;
+        result.port = launchArgs.simulatePort;
+        result.livereload = launchArgs.livereload;
+        result.forceprepare = launchArgs.forceprepare;
+
+        return result;
     }
 
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
@@ -429,7 +555,6 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             // Launch Chrome and attach
             this.outputLogger('Attaching to app');
-
             return super.launch(launchArgs);
         });
     }
@@ -639,6 +764,10 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private cleanUp(): Q.Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
+        // Clean up this session's attach and launch args
+        this.previousLaunchArgs = null;
+        this.previousAttachArgs = null;
+
         // Stop ADB port forwarding if necessary
         let adbPortPromise: Q.Promise<void>;
 
@@ -670,7 +799,75 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             this.ionicDevServerUrl = null;
         }
 
+        // Close the simulate debug-host socket if necessary
+        if (this.simulateDebugHost) {
+            this.simulateDebugHost.close();
+            this.simulateDebugHost = null;
+        }
+
         // Wait on all the cleanups
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
+    }
+
+    protected onScriptParsed(script: WebKitProtocol.Debugger.Script): void {
+        let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
+
+        if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
+            // Browsers don't always report source maps for scripts, so even though no source map was reported for this script, parse it in case it has a sourceMappingUrl attribute.
+            let clientPath = this.cordovaPathTransformer.getClientPath(script.url);
+
+            if (clientPath) {
+                let scriptContent = fs.readFileSync(clientPath).toString();
+                let parsedSrcMapUrl = this.findSourceAttribute('sourceMappingURL', scriptContent);
+
+                if (parsedSrcMapUrl) {
+                    script.sourceMapURL = parsedSrcMapUrl;
+                }
+            }
+        }
+
+        super.onScriptParsed(script);
+    }
+
+    /**
+     * Searches the specified code text for an attribute comment. Supported forms are line or
+     * block comments followed by # (or @, though this is deprecated):
+     * //# attribute=..., /*# attribute=... * /, //@ attribute=..., and /*@ attribute=... * /
+     * @param attribute Name of the attribute to find
+     * @param codeContent Source code to search for attribute comment
+     * @return The attribute's value, or null if not exactly one is found
+     */
+    private findSourceAttribute(attribute: string, codeContent: string): string {
+        if (codeContent) {
+            let prefixes = ['//#', '/*#', '//@', '/*@'];
+            let findString: string;
+            let index = -1;
+            let endIndex = -1;
+
+            // Use pound-sign definitions first, but fall back to at-sign
+            // The last instance of the attribute comment takes precedence
+            for (var i = 0; index < 0 && i < prefixes.length; i++) {
+                findString = '\n' + prefixes[i] + ' ' + attribute + '=';
+                index = codeContent.lastIndexOf(findString);
+            }
+
+            if (index >= 0) {
+                if (index >= 0) {
+                    if (findString.charAt(2) === '*') {
+                        endIndex = codeContent.indexOf('*/', index + findString.length);
+                    } else {
+                        endIndex = codeContent.indexOf('\n', index + findString.length);
+                    }
+
+                    if (endIndex < 0) {
+                        endIndex = codeContent.length;
+                    }
+
+                    return codeContent.substring(index + findString.length, endIndex).trim();
+                }
+            }
+
+            return null;
+        }
     }
 }

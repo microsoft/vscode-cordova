@@ -53,9 +53,9 @@ export abstract class TelemetryGeneratorBase {
         //     * Object is a value, we add the element as baseName
         try {
             if (Array.isArray(value)) {
-                this.addArray(baseName, <any[]> value, piiEvaluator);
+                this.addArray(baseName, <any[]>value, piiEvaluator);
             } else if (!!value && (typeof value === 'object' || typeof value === 'function')) {
-                this.addHash(baseName, <IDictionary<any>> value, piiEvaluator);
+                this.addHash(baseName, <IDictionary<any>>value, piiEvaluator);
             } else {
                 this.addString(baseName, String(value), piiEvaluator);
             }
@@ -70,7 +70,7 @@ export abstract class TelemetryGeneratorBase {
 
     public addError(error: Error): TelemetryGeneratorBase {
         this.add('error.message' + ++this.errorIndex, error.message, /*isPii*/ true);
-        var errorWithErrorCode: IHasErrorCode = <IHasErrorCode> <Object> error;
+        var errorWithErrorCode: IHasErrorCode = <IHasErrorCode><Object>error;
         if (errorWithErrorCode.errorCode) {
             this.add('error.code' + this.errorIndex, errorWithErrorCode.errorCode, /*isPii*/ false);
         }
@@ -104,6 +104,10 @@ export abstract class TelemetryGeneratorBase {
         }
 
         this.step(null); // Send the last step
+    }
+
+    public getTelemetryProperties(): ICommandTelemetryProperties {
+        return this.telemetryProperties;
     }
 
     private sendCurrentStep(): void {
@@ -154,6 +158,15 @@ export interface IProjectType {
     cordova: boolean;
 }
 
+export interface ISimulateTelemetryProperties {
+    platform?: string;
+    target: string;
+    port: number;
+    simulatePort?: number;
+    livereload?: boolean;
+    forceprepare?: boolean;
+}
+
 export class TelemetryHelper {
     public static createTelemetryEvent(eventName: string): Telemetry.TelemetryEvent {
         return new Telemetry.TelemetryEvent(eventName);
@@ -173,9 +186,9 @@ export class TelemetryHelper {
         let phonegap = promiseExists(path.join(projectRoot, 'www', 'res', '.pgbomit'));
         let cordova = promiseExists(path.join(projectRoot, 'config.xml'));
         return Q.all([meteor, mobilefirst, phonegap, cordova])
-        .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
-            return {ionic: isIonic, ionic2: isIonic2, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova};
-        });
+            .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
+                return { ionic: isIonic, ionic2: isIonic2, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova };
+            });
     }
 
     public static telemetryProperty(propertyValue: any, pii?: boolean): ITelemetryPropertyInfo {
