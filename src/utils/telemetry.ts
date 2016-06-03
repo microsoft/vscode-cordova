@@ -89,12 +89,13 @@ export module Telemetry {
 
         export interface ITelemetryInitOptions {
             isExtensionProcess: boolean;
+            projectRoot: string;
         }
 
-        export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions, projectRoot: string): Q.Promise<any> {
+        export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
             try {
                 Telemetry.appName = appNameValue;
-                return TelemetryUtils.init(appVersion, initOptions, projectRoot);
+                return TelemetryUtils.init(appVersion, initOptions);
             } catch (err) {
                 console.error(err);
             }
@@ -179,7 +180,7 @@ export module Telemetry {
                 return path.join(settingsHome(), TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
             }
 
-            public static init(appVersion: string, initOptions: ITelemetryInitOptions, projectRoot: string): Q.Promise<any> {
+            public static init(appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
                 TelemetryUtils.loadSettings();
 
                 if (initOptions.isExtensionProcess) {
@@ -187,7 +188,7 @@ export module Telemetry {
                     Telemetry.reporter = new TelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
                 }
                 else {
-                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY, projectRoot);
+                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY, initOptions.projectRoot);
                 }
 
                 return TelemetryUtils.getUserId()

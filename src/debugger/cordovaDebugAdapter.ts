@@ -21,6 +21,7 @@ import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import {IProjectType, ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
 import {settingsHome} from '../utils/settingsHelper';
+import {Telemetry} from '../utils/telemetry';
 
 export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -35,17 +36,20 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private previousLaunchArgs: ICordovaLaunchRequestArgs;
     private previousAttachArgs: ICordovaAttachRequestArgs;
     private simulateDebugHost: SocketIOClient.Socket;
+    private telemetryInitialized: boolean;
 
     public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
         super();
         this.outputLogger = outputLogger;
         this.cordovaPathTransformer = cdvPathTransformer;
+        this.telemetryInitialized = false;
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
         this.previousLaunchArgs = launchArgs;
 
-        return new Promise<void>((resolve, reject) => TelemetryHelper.generate('launch', (generator) => {
+        return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
+            .then(() => TelemetryHelper.generate('launch', (generator) => {
             launchArgs.port = launchArgs.port || 9222;
             launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
             launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
@@ -98,7 +102,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                         return this.attach(launchArgs);
                     }
                 });
-        }).done(resolve, reject));
+        }).done(resolve, reject)));
     }
 
     public isSimulateTarget(target: string) {
@@ -108,7 +112,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
         this.previousAttachArgs = attachArgs;
 
-        return new Promise<void>((resolve, reject) => TelemetryHelper.generate('attach', (generator) => {
+        return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
+            .then(() => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
@@ -140,7 +145,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             return this.cleanUp().then(() => {
                 throw err;
             });
-        }).done(resolve, reject));
+        }).done(resolve, reject)));
     }
 
     public disconnect(): Promise<void> {
@@ -827,6 +832,21 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         }
 
         super.onScriptParsed(script);
+    }
+
+    /**
+     * Initializes telemetry.
+     */
+    private initializeTelemetry(projectRoot: string): Q.Promise<any> {
+        if (!this.telemetryInitialized) {
+            this.telemetryInitialized = true;
+            let version = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf-8')).version;
+            // Enable telemetry, forced on for now.
+            return Telemetry.init('cordova-tools-debug-adapter', version, { isExtensionProcess: false, projectRoot: projectRoot })
+                .catch((e) => {
+                    this.outputLogger('Could not initialize telemetry.' + e.message || e.error || e.data || e);
+                });
+        }
     }
 
     /**
