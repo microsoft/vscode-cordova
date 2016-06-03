@@ -89,6 +89,7 @@ export module Telemetry {
 
         export interface ITelemetryInitOptions {
             isExtensionProcess: boolean;
+            projectRoot: string;
         }
 
         export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
@@ -187,7 +188,7 @@ export module Telemetry {
                     Telemetry.reporter = new TelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
                 }
                 else {
-                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY);
+                    Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY, initOptions.projectRoot);
                 }
 
                 return TelemetryUtils.getUserId()
@@ -349,11 +350,11 @@ export module Telemetry {
             private extensionVersion: string;
             private appInsightsKey: string;
 
-            constructor(extensionId: string, extensionVersion: string, key: string) {
+            constructor(extensionId: string, extensionVersion: string, key: string, projectRoot: string) {
                 this.extensionId = extensionId;
                 this.extensionVersion = extensionVersion;
                 this.appInsightsKey = key;
-                this.extensionMessageSender = new ExtensionMessageSender();
+                this.extensionMessageSender = new ExtensionMessageSender(projectRoot);
             }
 
             sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {
