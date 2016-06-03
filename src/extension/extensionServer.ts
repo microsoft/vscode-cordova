@@ -23,8 +23,9 @@ export class ExtensionServer implements vscode.Disposable {
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
 
-    public constructor(pluginSimulator: PluginSimulator) {
-        this.pipePath = ExtensionMessageSender.getExtensionPipePath();
+    public constructor(pluginSimulator: PluginSimulator, projectRoot: string) {
+        let messageSender = new ExtensionMessageSender(projectRoot);
+        this.pipePath = messageSender.getExtensionPipePath();
         this.pluginSimulator = pluginSimulator;
 
         // Register handlers for all messages
