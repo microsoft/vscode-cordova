@@ -846,6 +846,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 .catch((e) => {
                     this.outputLogger('Could not initialize telemetry.' + e.message || e.error || e.data || e);
                 });
+        } else {
+            return Q.resolve(void 0);
         }
     }
 
