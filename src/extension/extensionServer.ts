@@ -33,6 +33,7 @@ export class ExtensionServer implements vscode.Disposable {
         this.messageHandlerDictionary[ExtensionMessage.LAUNCH_SIM_HOST] = this.launchSimHost;
         this.messageHandlerDictionary[ExtensionMessage.SIMULATE] = this.simulate;
         this.messageHandlerDictionary[ExtensionMessage.START_SIMULATE_SERVER] = this.launchSimulateServer;
+        this.messageHandlerDictionary[ExtensionMessage.GET_VISIBLE_EDITORS_COUNT] = this.getVisibleEditorsCount;
     }
 
     /**
@@ -112,6 +113,14 @@ export class ExtensionServer implements vscode.Disposable {
      */
     private launchSimHost(): Q.Promise<void> {
         return this.pluginSimulator.launchSimHost();
+    }
+
+    /**
+     * Returns the number of currently visible editors.
+     */
+    private getVisibleEditorsCount(): Q.Promise<number> {
+        // visibleTextEditors is null proof (returns empty array if no editors visible)
+        return Q.resolve(vscode.window.visibleTextEditors.length);
     }
 
     /**

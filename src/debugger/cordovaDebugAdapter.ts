@@ -419,7 +419,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
-    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<void> {
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<any> {
         let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
@@ -440,7 +440,14 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let messageSender = new messaging.ExtensionMessageSender(launchArgs.cwd);
         let simulateInfo: simulate.SimulateInfo;
 
-        return Q(void 0)
+        let getEditorsTelemetry = messageSender.sendMessage(messaging.ExtensionMessage.GET_VISIBLE_EDITORS_COUNT)
+            .then((editorsCount) => {
+                generator.add('visibleTextEditors', editorsCount, false);
+            }).catch((e) => {
+                this.outputLogger('Could not read the visible text editors. ' + this.getErrorMessage(e));
+            });
+
+        let launchSimulate = Q(void 0)
             .then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
                 return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions]);
@@ -456,7 +463,12 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 this.outputLogger('Attaching to app');
 
                 return super.launch(launchArgs);
+            }).catch((e) => {
+                this.outputLogger('An error occurred while attaching to the debugger. ' + this.getErrorMessage(e));
+                throw e;
             }).then(() => void 0);
+
+        return Q.all([launchSimulate, getEditorsTelemetry]);
     }
 
     private resetSimulateViewport(): Q.Promise<void> {
@@ -891,5 +903,9 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             return null;
         }
+    }
+
+    private getErrorMessage(e: any): string {
+        return e.message || e.error || e.data || e;
     }
 }
