@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     generator.add("simulateOptions", options, false);
                     generator.add("projectType", projectType, false);
                     // visibleTextEditors is null proof (returns empty array if no editors visible)
-                    generator.add("visibleTextEditors", vscode.window.visibleTextEditors.length, false);
+                    generator.add("visibleTextEditorsCount", vscode.window.visibleTextEditors.length, false);
                 });
         }).then(() => {
             simulator.simulate(options);
