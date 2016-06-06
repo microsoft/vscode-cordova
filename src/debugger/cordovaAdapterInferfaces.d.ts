@@ -19,6 +19,7 @@ interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments
     simulatePort?: number;
     livereload?: boolean;
     forceprepare?: boolean;
+    simulateTempDir?: string;
 }
 
 interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {

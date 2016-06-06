@@ -15,6 +15,7 @@ declare module "cordova-simulate" {
         livereload?: boolean;
         forceprepare?: boolean;
         telemetry?: TelemetryModule;
+        simulationpath?: string;
     }
 
     export interface TelemetryModule {

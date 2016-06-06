@@ -532,6 +532,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         result.port = launchArgs.simulatePort;
         result.livereload = launchArgs.livereload;
         result.forceprepare = launchArgs.forceprepare;
+        result.simulationpath = launchArgs.simulateTempDir;
 
         return result;
     }

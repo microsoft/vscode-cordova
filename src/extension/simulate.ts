@@ -18,10 +18,12 @@ export class PluginSimulator implements vscode.Disposable {
     private registration: vscode.Disposable;
     private simulateProtocol: string;
     private simulateUri: vscode.Uri;
+    private defaultSimulateTempDir: string;
 
     constructor() {
         this.simulateProtocol = "cordova-simulate-" + Hash.hashCode(vscode.workspace.rootPath);
         this.simulateUri = vscode.Uri.parse(this.simulateProtocol + "://authority/cordova-simulate");
+        this.defaultSimulateTempDir = path.join(vscode.workspace.rootPath, ".vscode", "simulate");
     }
 
     public simulate(simulateOptions: simulate.SimulateOptions): Q.Promise<any> {
@@ -43,6 +45,10 @@ export class PluginSimulator implements vscode.Disposable {
 
     public launchServer(simulateOptions: simulate.SimulateOptions): Q.Promise<simulate.SimulateInfo> {
         simulateOptions.dir = vscode.workspace.rootPath;
+        if (!simulateOptions.simulationpath) {
+            simulateOptions.simulationpath = this.defaultSimulateTempDir;
+        }
+
         return this.isServerRunning()
             .then((isRunning: boolean) => {
                 if (!isRunning) {
