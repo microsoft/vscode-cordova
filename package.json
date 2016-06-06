@@ -299,6 +299,11 @@
                             "forceprepare": {
                                 "type": "boolean",
                                 "description": "When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading"
+                            },
+                            "simulateTempDir": {
+                                "type": "string",
+                                "description": "The directory where temporary browser simulation files are hosted.",
+                                "default": "${workspaceRoot}/.vscode/simulation"
                             }
                         }
                     },
