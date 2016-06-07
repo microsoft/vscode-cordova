@@ -23,7 +23,7 @@ function executeCommand(cwd, commandToExecute) {
     var deferred = Q.defer();
     var process = child_process.exec(commandToExecute, { cwd: cwd }, (error, stdout, stderr) => {
         if (error) {
-            console.error(console.error("An error occurred: " + error));
+            console.error("An error occurred: " + error);
             return;
         }
         console.log(stderr);
