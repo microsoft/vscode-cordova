@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 var child_process = require('child_process');
+var fs = require('fs');
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var sourcemaps = require('gulp-sourcemaps');
@@ -13,17 +14,28 @@ var Q = require('q');
 var typescript = require('typescript');
 
 function executeCordovaCommand(cwd, command) {
-    var deferred = Q.defer();
     var cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
     var commandToExecute = cordovaCmd + " " + command;
-    var process = child_process.exec(commandToExecute, { cwd: cwd });
+    return executeCommand(cwd, commandToExecute);
+}
+
+function executeCommand(cwd, commandToExecute) {
+    var deferred = Q.defer();
+    var process = child_process.exec(commandToExecute, { cwd: cwd }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(console.error("An error occurred: " + error));
+            return;
+        }
+        console.log(stderr);
+        console.log(stdout);
+    });
     process.on("error", function (err) {
-        console.log("Executing cordova command failed with error: " + err);
+        console.log("Command failed with error: " + err);
         deferred.reject(err);
     });
     process.stdout.on("close", function (exitCode) {
         if (exitCode) {
-            console.log("Cordova command failed with exit code " + exitCode);
+            console.log("Command failed with exit code " + exitCode);
             deferred.reject(exitCode);
         }
         else {
@@ -111,4 +123,37 @@ gulp.task('prepare-integration-tests', ['build'], function() {
 
 gulp.task('watch-build-test', ['build', 'build-test'], function() {
     return gulp.watch(sources, ['build', 'build-test']);
+});
+
+gulp.task('release', function () {
+    var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt", "README.md"];
+    var backupFolder = path.resolve(path.join(os.tmpdir(), 'vscode-cordova'));
+    if (!fs.existsSync(backupFolder)) {
+        fs.mkdirSync(backupFolder);
+    }
+
+    return Q({})
+        .then(function () {
+            /* back up LICENSE.txt, ThirdPartyNotices.txt, README.md */
+            console.log("Backing up license files to " + backupFolder + " ...");
+            licenseFiles.forEach(function (fileName) {
+                fs.writeFileSync(path.join(backupFolder, fileName), fs.readFileSync(fileName));
+            });
+
+            /* copy over the release package license files */
+            console.log("Preparing license files for release...");
+            fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/releaselicense.txt'));
+            fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/release3party.txt'));
+            /* append the release license to the readme file */
+            fs.appendFileSync('README.md', fs.readFileSync('release/releasereadme.md'));
+
+            console.log("Creating release package...");
+            return executeCommand(path.resolve(__dirname), 'node ./node_modules/.bin/vsce package');
+        }).then(function () {
+            /* restore backed up files */
+            console.log("Restoring modified files...");
+            licenseFiles.forEach(function (fileName) {
+                fs.writeFileSync(path.join(__dirname, fileName), fs.readFileSync(path.join(backupFolder, fileName)));
+            });
+        });
 });
