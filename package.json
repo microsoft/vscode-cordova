@@ -363,7 +363,6 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "node ./node_modules/gulp/bin/gulp",
         "compile": "node ./node_modules/gulp/bin/gulp",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
