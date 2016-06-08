@@ -72,8 +72,8 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(extensionServer);
 
     /* Launches a simulate command and records telemetry for it */
-    let launchSimulateCommand = function (options: SimulateOptions): void {
-        TelemetryHelper.generate("simulateCommand", (generator) => {
+    let launchSimulateCommand = function (options: SimulateOptions): Q.Promise<void> {
+        return TelemetryHelper.generate("simulateCommand", (generator) => {
             return TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
                 .then((projectType) => {
                     generator.add("simulateOptions", options, false);
@@ -82,7 +82,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     generator.add("visibleTextEditorsCount", vscode.window.visibleTextEditors.length, false);
                 });
         }).then(() => {
-            simulator.simulate(options);
+            return simulator.simulate(options);
         });
     };
 
