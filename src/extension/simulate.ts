@@ -53,7 +53,9 @@ export class PluginSimulator implements vscode.Disposable {
             .then((isRunning: boolean) => {
                 if (isRunning) {
                     /* close the server old instance */
-                    return simulate.closeServer();
+                    return Q({})
+                    .then(()=> simulate.stopSimulate())
+                    .then(()=> simulate.closeServer());
                 }
             }).then(() => {
                 let simulateTelemetryWrapper = new CordovaSimulateTelemetry();

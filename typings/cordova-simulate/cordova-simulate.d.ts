@@ -36,4 +36,5 @@ declare module "cordova-simulate" {
     export function launchBrowser(target: string, url: string): Q.Promise<void>;
     export function launchServer(opts?: SimulateOptions): Q.Promise<SimulateInfo>;
     export function closeServer(): Q.Promise<void>;
+    export function stopSimulate(): Q.Promise<void>;
 }
