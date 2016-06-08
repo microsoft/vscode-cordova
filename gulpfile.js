@@ -126,7 +126,7 @@ gulp.task('watch-build-test', ['build', 'build-test'], function() {
 });
 
 gulp.task('release', function () {
-    var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt", "README.md"];
+    var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt"];
     var backupFolder = path.resolve(path.join(os.tmpdir(), 'vscode-cordova'));
     if (!fs.existsSync(backupFolder)) {
         fs.mkdirSync(backupFolder);
@@ -144,8 +144,6 @@ gulp.task('release', function () {
             console.log("Preparing license files for release...");
             fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/releaselicense.txt'));
             fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/release3party.txt'));
-            /* append the release license to the readme file */
-            fs.appendFileSync('README.md', fs.readFileSync('release/releasereadme.md'));
 
             console.log("Creating release package...");
             return executeCommand(path.resolve(__dirname), 'node ./node_modules/.bin/vsce package');
