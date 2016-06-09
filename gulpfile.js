@@ -125,7 +125,7 @@ gulp.task('watch-build-test', ['build', 'build-test'], function() {
     return gulp.watch(sources, ['build', 'build-test']);
 });
 
-gulp.task('release', function () {
+gulp.task('release', ['build'], function () {
     var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt"];
     var backupFolder = path.resolve(path.join(os.tmpdir(), 'vscode-cordova'));
     if (!fs.existsSync(backupFolder)) {
@@ -135,7 +135,7 @@ gulp.task('release', function () {
     return Q({})
         .then(function () {
             /* back up LICENSE.txt, ThirdPartyNotices.txt, README.md */
-            console.log("Backing up license files to " + backupFolder + " ...");
+            console.log("Backing up license files to " + backupFolder + "...");
             licenseFiles.forEach(function (fileName) {
                 fs.writeFileSync(path.join(backupFolder, fileName), fs.readFileSync(fileName));
             });
@@ -144,9 +144,12 @@ gulp.task('release', function () {
             console.log("Preparing license files for release...");
             fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/releaselicense.txt'));
             fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/release3party.txt'));
-
+        }).then(()=>{
+            console.log("Removing dev dependencies...");
+            return executeCommand(path.resolve(__dirname), 'npm prune --production');
+        }).then(()=>{
             console.log("Creating release package...");
-            return executeCommand(path.resolve(__dirname), 'node ./node_modules/.bin/vsce package');
+            return executeCommand(path.resolve(__dirname), 'vsce package');
         }).then(function () {
             /* restore backed up files */
             console.log("Restoring modified files...");
