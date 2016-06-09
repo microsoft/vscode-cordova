@@ -10,6 +10,7 @@ interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments
     ionicLiveReload?: boolean;
     devServerPort?: number;
     devServerAddress?: string;
+    devServerTimeout?: number;
 
     // Chrome debug properties
     url?: string;

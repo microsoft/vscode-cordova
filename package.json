@@ -287,6 +287,11 @@
                                 "type": "string",
                                 "description": "The IP address that Ionic should use for the live reload server"
                             },
+                            "devServerTimeout": {
+                                "type": "number",
+                                "description": "Timeout for starting the Ionic dev server when serving to the browser or running with Ionic live reload enabled.",
+                                "default": 10000
+                            },
                             "simulatePort": {
                                 "type": "number",
                                 "description": "Port to use for connecting to the local Cordova Simulate server.",
