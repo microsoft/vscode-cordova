@@ -271,7 +271,7 @@
                             },
                             "appStepLaunchTimeout": {
                                 "type": "number",
-                                "description": "Timeout for individual steps when launching iOS app",
+                                "description": "Timeout in milliseconds for individual steps when launching iOS app",
                                 "default": 5000
                             },
                             "ionicLiveReload": {
@@ -286,6 +286,11 @@
                             "devServerAddress": {
                                 "type": "string",
                                 "description": "The IP address that Ionic should use for the live reload server"
+                            },
+                            "devServerTimeout": {
+                                "type": "number",
+                                "description": "Timeout in milliseconds for starting the Ionic dev server when serving to the browser or running with Ionic live reload enabled.",
+                                "default": 20000
                             },
                             "simulatePort": {
                                 "type": "number",

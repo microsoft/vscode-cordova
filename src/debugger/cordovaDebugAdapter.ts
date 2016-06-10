@@ -596,7 +596,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let errorRegex: RegExp = /error:.*/i;
         let serverReady: boolean = false;
         let appReady: boolean = false;
-        let serverReadyTimeout: number = 10000;
+        let serverReadyTimeout: number = launchArgs.devServerTimeout || 20000;
         let appReadyTimeout: number = 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverDeferred = Q.defer<void>();
         let appDeferred = Q.defer<void>();
