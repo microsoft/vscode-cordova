@@ -9,7 +9,7 @@
         "typingFile": "cordova/plugins/Camera.d.ts"
     },
     "cordova-plugin-contacts": {
-        "typingFile": "cordova/plugins/Contact.d.ts"
+        "typingFile": "cordova/plugins/Contacts.d.ts"
     },
     "cordova-plugin-device": {
         "typingFile": "cordova/plugins/Device.d.ts"
