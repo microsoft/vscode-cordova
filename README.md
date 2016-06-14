@@ -41,15 +41,22 @@ You can use other fields in these configurations as well. Here's the complete li
 Name                               | Description                                                                                                                                   | Defaults
 ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------| ---------
 `port`                             | The port number that the debugger uses to connect to a device or emulator.                                                                    | 9222
+`platform`                         | The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported).                                      | n/a
+`target`                           | Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome'.             | n/a
 `sourceMaps`                       | Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist).                                               | false
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
 `attachAttempts`                   | The maximum number of times that you want the debugger to attempt to attach to a running iOS app.                                             | 5
 `attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
 `iosDebugProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
 `appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
-`ionicLiveReload`                  | Set to true to enable Ionic live reload                                                                                                       | false
-`devServerAddress`                 | For Ionic live reload scenario specify the IP address the device can use to contact the Ionic server                                          | n/a
-`devServerPort`                    | For Ionic live reload scenario specify the port the device can use to contact the Ionic server                                                | n/a
+`ionicLiveReload`                  | Set to true to enable Ionic live reload.                                                                                                      | false
+`devServerAddress`                 | For Ionic live reload scenario specify the IP address the device can use to contact the Ionic server.                                         | n/a
+`devServerPort`                    | For Ionic live reload scenario specify the port the device can use to contact the Ionic server.                                               | n/a
+`devServerTimeout`                 | Timeout in milliseconds for starting the Ionic dev server when serving to the browser or running with Ionic live reload enabled.              | 20000
+`simulatePort`                     | Port to use for connecting to the local Cordova Simulate server.                                                                              | 8000
+`livereload`                       | When simulating in the browser, determines whether live reload is enabled.                                                                    | true
+`forceprepare`                     | When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading.                            | false
+`simulateTempDir`                  | The directory where temporary browser simulation files are hosted.                                                                            | `${workspaceRoot}`/.vscode/simulation
 
 
 ## Debug your Cordova-based project
@@ -82,6 +89,9 @@ Since all platforms are built you may receive errors for incompatible configurat
 For example, if you're on a Windows computer, and you've added an iOS platform to your project, you'll get an error because you need a Mac to build for iOS platforms. You can't build an iOS app on a Mac by using VSCode on a Windows computer.
 
 The ```Run``` command triggers `cordova run` and starts your app without debugging and just like the **Build** command, it runs *all* platforms that you've added to your project.
+
+## Simulate your app in the browser
+
 
 ## Support for Ionic
 
