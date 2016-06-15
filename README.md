@@ -81,17 +81,37 @@ In the Command Palette, type ```Cordova``` and choose a command.
 
 ![Cordova commands](images/command-palette.png)
 
-There are only a couple of them for now but that list will grow.
-
 The **Build** command triggers ```cordova build``` and builds for all platforms that you've added to the project.
 
 Since all platforms are built you may receive errors for incompatible configurations.
 For example, if you're on a Windows computer, and you've added an iOS platform to your project, you'll get an error because you need a Mac to build for iOS platforms. You can't build an iOS app on a Mac by using VSCode on a Windows computer.
 
-The ```Run``` command triggers `cordova run` and starts your app without debugging and just like the **Build** command, it runs *all* platforms that you've added to your project.
+The **Prepare** command triggers `cordova prepare`, which transforms `config.xml` metadata to platform-specific manifest files, copies icons & splashscreens, copies plugin files for specified platforms so that the project is ready to build with each native SDK.
+
+The **Run** command triggers `cordova run` and starts your app without debugging and just like the **Build** command, it runs *all* platforms that you've added to your project.
+
+The **Simulate Android in browser** and **Simulate iOS in browser** launch your application in the browser and they are described in the next section.
 
 ## Simulate your app in the browser
 
+The debugging target list includes two additional targets: `Simulate Android in browser` and `Simulate iOS in browser`. If you don't see these targets in your debugging target list, you might have to remove your `.vscode/launch.json` configuration file and regenerate it
+by following the steps described in the [Choose the Cordova debug environment](#choose-the-cordova-debug-environment) section.
+
+If you just want to run the application in the browser without debugging, two commands with the same names are available in the Command Palette.
+
+If you launch the application using one of these debug targets or commands, the application will launch in Chrome, and Visual Studio Code will display an additional panel that
+controls the simulation for the core plugins added to your project. Here are some of the new features:
+
+* support for the majority of core plugins
+* live reload
+* event firing
+* device screen resizing (while debugging only)
+
+![Cordova Simulate](images/simulate-debugging.png)
+
+>**Note**: If the simulate panel is closed accidentally when you navigate to a new file in your editor, it can be reopened by using `Ctrl+Tab`. This is the same command you use for navigating through your open documents.
+
+Here is a [video demo](https://www.youtube.com/watch?v=LdFT6xxhSbw) of the feature. If you have feature requests or suggestions, please reach out to us [here](https://github.com/Microsoft/vscode-cordova/issues/new).
 
 ## Support for Ionic
 
