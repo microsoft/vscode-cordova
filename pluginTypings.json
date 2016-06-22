@@ -44,9 +44,6 @@
     "cordova-plugin-network-information": {
         "typingFile": "cordova/plugins/NetworkInformation.d.ts"
     },
-    "phonegap-plugin-push": {
-        "typingFile": "cordova/plugins/Push.d.ts"
-    },
     "cordova-plugin-splashscreen": {
         "typingFile": "cordova/plugins/Splashscreen.d.ts"
     },
@@ -62,10 +59,13 @@
     "cordova-plugin-x-toast": {
         "typingFile": "cordova/plugins/Toast.d.ts"
     },
+    "ionic-plugin-keyboard": {
+        "typingFile": "cordova-ionic/plugins/keyboard.d.ts"
+    },
     "phonegap-plugin-barcodescanner": {
         "typingFile": "cordova/plugins/BarcodeScanner.d.ts"
     },
-    "ionic-plugin-keyboard": {
-        "typingFile": "cordova-ionic/plugins/keyboard.d.ts"
+    "phonegap-plugin-push": {
+        "typingFile": "cordova/plugins/Push.d.ts"
     }
 }

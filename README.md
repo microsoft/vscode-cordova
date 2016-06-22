@@ -152,19 +152,17 @@ By default, this extension supports the typings for the following plugins. To ad
 * cordova-plugin-file-transfer
 * cordova-plugin-globalization
 * cordova-plugin-inappbrowser
-* cordova-plugin-keyboard
 * cordova-plugin-media
 * cordova-plugin-media-capture
 * cordova-plugin-network-information
-* cordova-plugin-push
 * cordova-plugin-splashscreen
 * cordova-plugin-statusbar
-* cordova-plugin-toast
 * cordova-plugin-vibration
 * cordova-plugin-websql
-* phonegap-build/PushPlugin
+* cordova-plugin-x-toast
+* ionic-plugin-keyboard
 * phonegap-plugin-barcodescanner
-* Toast-Phonegap-Plugin
+* phonegap-plugin-push
 
 ## Use IntelliSense with injected Ionic and Angular services
 
