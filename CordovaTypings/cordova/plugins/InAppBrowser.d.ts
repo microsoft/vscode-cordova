@@ -2,7 +2,7 @@
 // Project: https://github.com/apache/cordova-plugin-inappbrowser
 // Definitions by: Microsoft Open Technologies, Inc. <http://msopentech.com>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
-// 
+//
 // Copyright (c) Microsoft Open Technologies, Inc.
 // Licensed under the MIT license.
 
@@ -216,4 +216,8 @@ interface InAppBrowserEvent extends Event {
     code: number;
     /** the error message, only in the case of loaderror. */
     message: string;
+}
+
+interface Cordova {
+    InAppBrowser: InAppBrowser;
 }
