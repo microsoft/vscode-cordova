@@ -1,4 +1,4 @@
-// Type definitions for Apache Cordova InAppBrowser plugin.
+// Type definitions for Apache Cordova InAppBrowser plugin 1.4.0.
 // Project: https://github.com/apache/cordova-plugin-inappbrowser
 // Definitions by: Microsoft Open Technologies, Inc. <http://msopentech.com>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
