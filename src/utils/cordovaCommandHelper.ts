@@ -10,8 +10,8 @@ import {window} from 'vscode';
 import {TelemetryHelper} from './telemetryHelper';
 
 export class CordovaCommandHelper {
-    private static CORDOVA_CMD_NAME = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
-    private static IONIC_CMD_NAME = os.platform() === "darwin" ? "ionic" : "ionic.cmd";
+    private static CORDOVA_CMD_NAME = os.platform() === "win32" ? "cordova.cmd" : "cordova";
+    private static IONIC_CMD_NAME = os.platform() === "win32" ? "ionic.cmd" : "ionic";
     private static CORDOVA_TELEMETRY_EVENT_NAME: string = "cordovaCommand";
     private static IONIC_TELEMETRY_EVENT_NAME: string = "ionicCommand";
     private static CORDOVA_DISPLAY_NAME: string = "Cordova";
