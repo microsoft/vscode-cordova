@@ -6,6 +6,7 @@ import * as Q from "q";
 import {PluginSimulator} from "./simulate";
 import {SimulateInfo, SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
+import {IProjectType} from '../utils/telemetryHelper';
 
 import {
     ErrorMarker,
@@ -87,10 +88,10 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    private simulate(simulateOptions: SimulateOptions): Q.Promise<SimulateInfo> {
+    private simulate(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulateInfo> {
         var simInfo: SimulateInfo;
 
-        return this.launchSimulateServer(simulateOptions)
+        return this.launchSimulateServer(simulateOptions, projectType)
             .then((simulateInfo: SimulateInfo) => {
                 simInfo = simulateInfo;
                 return this.launchSimHost();
@@ -104,8 +105,8 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    private launchSimulateServer(simulateOptions: SimulateOptions): Q.Promise<SimulateInfo> {
-        return this.pluginSimulator.launchServer(simulateOptions);
+    private launchSimulateServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulateInfo> {
+        return this.pluginSimulator.launchServer(simulateOptions, projectType);
     }
 
     /**

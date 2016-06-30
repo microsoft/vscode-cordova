@@ -8,6 +8,7 @@ import * as cordovaServer from "cordova-serve";
 import * as path from "path";
 import * as simulate from "cordova-simulate";
 import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
+import {IProjectType} from '../utils/telemetryHelper';
 import * as vscode from "vscode";
 
 /**
@@ -26,8 +27,8 @@ export class PluginSimulator implements vscode.Disposable {
         this.defaultSimulateTempDir = path.join(vscode.workspace.rootPath, ".vscode", "simulate");
     }
 
-    public simulate(simulateOptions: simulate.SimulateOptions): Q.Promise<any> {
-        return this.launchServer(simulateOptions)
+    public simulate(simulateOptions: simulate.SimulateOptions, projectType: IProjectType): Q.Promise<any> {
+        return this.launchServer(simulateOptions, projectType)
             .then(() => this.launchAppHost(simulateOptions.target))
             .then(() => this.launchSimHost());
     }
@@ -43,7 +44,7 @@ export class PluginSimulator implements vscode.Disposable {
         return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => void 0));
     }
 
-    public launchServer(simulateOptions: simulate.SimulateOptions): Q.Promise<simulate.SimulateInfo> {
+    public launchServer(simulateOptions: simulate.SimulateOptions, projectType: IProjectType): Q.Promise<simulate.SimulateInfo> {
         simulateOptions.dir = vscode.workspace.rootPath;
         if (!simulateOptions.simulationpath) {
             simulateOptions.simulationpath = this.defaultSimulateTempDir;
@@ -63,6 +64,9 @@ export class PluginSimulator implements vscode.Disposable {
                 return simulate.launchServer(simulateOptions)
                     .then(simulateInfo => {
                         this.simulateInfo = simulateInfo;
+                        if (projectType.ionic2 && simulateOptions.platform && simulateOptions.platform !== "browser") {
+                            this.simulateInfo.appUrl = `${this.simulateInfo.appUrl}?ionicplatform=${simulateOptions.platform}`
+                        }
                         return this.simulateInfo;
                     });
             });

@@ -99,7 +99,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, generator);
+                                return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchAndroid(launchArgs, projectType);
                             }
@@ -108,7 +108,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, generator);
+                                return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchIos(launchArgs, projectType);
                             }
@@ -118,7 +118,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             return this.launchServe(launchArgs, projectType);
                         case 'browser':
                             generator.add('platform', platform, false);
-                            return this.launchSimulate(launchArgs, generator);
+                            return this.launchSimulate(launchArgs, projectType, generator);
                         default:
                             generator.add('unknownPlatform', platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
@@ -200,7 +200,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         // Verify if we are using Ionic livereload
         if (launchArgs.ionicLiveReload) {
-            if (projectType.ionic) {
+            if (projectType.ionic1 || projectType.ionic2) {
                 // Livereload is enabled, let Ionic do the launch
                 args.push('--livereload');
 
@@ -294,7 +294,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         if (launchArgs.target.toLowerCase() === 'device') {
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic) {
+                if (projectType.ionic1 || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
                     let ionicArgs = ['run', '--device', 'ios', '--livereload'];
 
@@ -362,7 +362,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic) {
+                if (projectType.ionic1 || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
                     emulateArgs.push('--livereload');
 
@@ -452,7 +452,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         });
     }
 
-    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<any> {
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, generator: TelemetryGenerator): Q.Promise<any> {
         let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
@@ -483,7 +483,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let launchSimulate = Q(void 0)
             .then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
-                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions]);
+                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions, projectType]);
             }).then((simInfo: simulate.SimulateInfo) => {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
@@ -575,8 +575,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
-        if (!projectType.ionic) {
-            let errorMessage = 'Serving to the browser is currently only supported for Ionic 1 projects';
+        if (!projectType.ionic1 && !projectType.ionic2) {
+            let errorMessage = 'Serving to the browser is currently only supported for Ionic projects';
 
             errorLogger(errorMessage);
 
@@ -636,6 +636,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let appDeferred = Q.defer<void>();
         let serverOut: string = '';
         let serverErr: string = '';
+        const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
         let getServerErrorMessage = (channel: string) => {
             let errorMatch = errorRegex.exec(channel);
 
@@ -773,6 +774,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // The dev server address is the captured group at index 1 of the match
             this.ionicDevServerUrl = match[1];
 
+            // When ionic 2 cli is installed, output includes ansi characters for color coded output.
+            this.ionicDevServerUrl = this.ionicDevServerUrl.replace(ansiRegex, '');
             return Q(this.ionicDevServerUrl);
         });
     }
