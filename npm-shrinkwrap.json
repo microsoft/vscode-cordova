@@ -1,6 +1,6 @@
 {
   "name": "cordova-tools",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "dependencies": {
     "accepts": {
       "version": "1.3.3",
@@ -350,9 +350,9 @@
       "resolved": "https://registry.npmjs.org/cordova-serve/-/cordova-serve-1.0.0.tgz"
     },
     "cordova-simulate": {
-      "version": "0.2.0-dev",
+      "version": "0.2.1",
       "from": "microsoft/cordova-simulate",
-      "resolved": "git://github.com/microsoft/cordova-simulate.git#87331709000863fc2715a888384b854ea080ace1",
+      "resolved": "https://registry.npmjs.org/cordova-simulate/-/cordova-simulate-0.2.1.tgz",
       "dependencies": {
         "depd": {
           "version": "1.0.1",
