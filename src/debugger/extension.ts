@@ -21,7 +21,7 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
     proc.on('error', (err: Error) => {
         deferred.reject(err);
     });
-    proc.on('exit', (code: number) => {
+    proc.on('close', (code: number) => {
         if (code !== 0) {
             errorLogger(stderr);
             errorLogger(stdout);
