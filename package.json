@@ -2,7 +2,7 @@
     "name": "cordova-tools",
     "displayName": "Cordova Tools",
     "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap)",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "private": true,
     "publisher": "vsmobile",
     "icon": "images/icon.png",
@@ -373,7 +373,7 @@
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "dependencies": {
-        "cordova-simulate": "microsoft/cordova-simulate#0.2.0",
+        "cordova-simulate": "^0.2.1",
         "elementtree": "^0.1.6",
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
