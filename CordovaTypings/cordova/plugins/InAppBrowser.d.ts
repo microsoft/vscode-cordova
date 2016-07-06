@@ -109,7 +109,7 @@ interface InAppBrowser extends Window {
      * @param callback  the function that executes when the event fires. The function is
      *                  passed an InAppBrowserEvent object as a parameter.
      */
-    addEventListener(type: string, callback: (event: InAppBrowserEvent) => void): void;
+    addEventListener(type: string, callback: (event: Event) => void): void;
     // removeEventListener overloads
     /**
      * Removes a listener for an event from the InAppBrowser.
@@ -165,7 +165,7 @@ interface InAppBrowser extends Window {
      * @param callback  the function that executes when the event fires. The function is
      *                  passed an InAppBrowserEvent object as a parameter.
      */
-    removeEventListener(type: string, callback: (event: InAppBrowserEvent) => void): void;
+    removeEventListener(type: string, callback: (event: Event) => void): void;
     /** Closes the InAppBrowser window. */
     close(): void;
     /**
