@@ -1,7 +1,7 @@
-// Type definitions for Apache Cordova InAppBrowser plugin 1.4.0.
+// Type definitions for Apache Cordova InAppBrowser plugin 1.4.0
 // Project: https://github.com/apache/cordova-plugin-inappbrowser
 // Definitions by: Microsoft Open Technologies, Inc. <http://msopentech.com>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 //
 // Copyright (c) Microsoft Open Technologies, Inc.
 // Licensed under the MIT license.
@@ -107,7 +107,7 @@ interface InAppBrowser extends Window {
      *                  loaderror: event fires when the InAppBrowser encounters an error when loading a URL.
      *                  exit: event fires when the InAppBrowser window is closed.
      * @param callback  the function that executes when the event fires. The function is
-     *                  passed an InAppBrowserEvent object as a parameter.
+     *                  passed an Event object as a parameter.
      */
     addEventListener(type: string, callback: (event: Event) => void): void;
     // removeEventListener overloads
@@ -163,7 +163,7 @@ interface InAppBrowser extends Window {
      *                  loaderror: event fires when the InAppBrowser encounters an error when loading a URL.
      *                  exit: event fires when the InAppBrowser window is closed.
      * @param callback  the function that executes when the event fires. The function is
-     *                  passed an InAppBrowserEvent object as a parameter.
+     *                  passed an Event object as a parameter.
      */
     removeEventListener(type: string, callback: (event: Event) => void): void;
     /** Closes the InAppBrowser window. */
