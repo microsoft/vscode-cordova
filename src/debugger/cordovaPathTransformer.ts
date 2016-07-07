@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as utils from '../../debugger/webkit/utilities';
+import {DebugProtocol} from 'vscode-debugprotocol';
+import {utils, logger, chromeUtils, ISetBreakpointsArgs, IDebugTransformer, IStackTraceResponseBody} from 'vscode-chrome-debug-core';
+import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from './cordovaDebugAdapter';
+
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -48,7 +51,7 @@ export class CordovaPathTransformer implements IDebugTransformer {
 
             if (utils.isURL(args.source.path)) {
                 // already a url, use as-is
-                utils.Logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
+                logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
                 resolve();
                 return;
             }
@@ -56,13 +59,13 @@ export class CordovaPathTransformer implements IDebugTransformer {
             const url = utils.canonicalizeUrl(args.source.path);
             if (this._clientPathToWebkitUrl.has(url)) {
                 args.source.path = this._clientPathToWebkitUrl.get(url);
-                utils.Logger.log(`Paths.setBP: Resolved ${url} to ${args.source.path}`);
+                logger.log(`Paths.setBP: Resolved ${url} to ${args.source.path}`);
                 resolve();
             } else if (this._shadowedClientPaths.has(url)) {
                 this._outputLogger(`Warning: Breakpoint set in overriden file ${url} will not be hit. Use ${this._shadowedClientPaths.get(url)} instead.`, true);
                 reject();
             } else {
-                utils.Logger.log(`Paths.setBP: No target url cached for client path: ${url}, waiting for target script to be loaded.`);
+                logger.log(`Paths.setBP: No target url cached for client path: ${url}, waiting for target script to be loaded.`);
                 args.source.path = url;
                 this._pendingBreakpointsByPath.set(args.source.path, { resolve, reject, args });
             }
@@ -84,9 +87,9 @@ export class CordovaPathTransformer implements IDebugTransformer {
         const clientPath = this.getClientPath(webkitUrl);
 
         if (!clientPath) {
-            utils.Logger.log(`Paths.scriptParsed: could not resolve ${webkitUrl} to a file in the workspace. webRoot: ${this._webRoot}`);
+            logger.log(`Paths.scriptParsed: could not resolve ${webkitUrl} to a file in the workspace. webRoot: ${this._webRoot}`);
         } else {
-            utils.Logger.log(`Paths.scriptParsed: resolved ${webkitUrl} to ${clientPath}. webRoot: ${this._webRoot}`);
+            logger.log(`Paths.scriptParsed: resolved ${webkitUrl} to ${clientPath}. webRoot: ${this._webRoot}`);
             this._clientPathToWebkitUrl.set(clientPath, webkitUrl);
             this._webkitUrlToClientPath.set(webkitUrl, clientPath);
 
@@ -94,7 +97,7 @@ export class CordovaPathTransformer implements IDebugTransformer {
         }
 
         if (this._pendingBreakpointsByPath.has(event.body.scriptUrl)) {
-            utils.Logger.log(`Paths.scriptParsed: Resolving pending breakpoints for ${event.body.scriptUrl}`);
+            logger.log(`Paths.scriptParsed: Resolving pending breakpoints for ${event.body.scriptUrl}`);
             const pendingBreakpoint = this._pendingBreakpointsByPath.get(event.body.scriptUrl);
             this._pendingBreakpointsByPath.delete(event.body.scriptUrl);
             this.setBreakpoints(pendingBreakpoint.args).then(pendingBreakpoint.resolve, pendingBreakpoint.reject);
@@ -132,7 +135,7 @@ export class CordovaPathTransformer implements IDebugTransformer {
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
         let defaultPath = '';
         [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
-            let mappedPath = utils.webkitUrlToClientPath(searchFolder, sourceUrl);
+            let mappedPath = chromeUtils.targetUrlToClientPath(searchFolder, sourceUrl);
 
             if (mappedPath) {
                 defaultPath = mappedPath;
