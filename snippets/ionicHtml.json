@@ -118,10 +118,7 @@
             "<ion-refresher",
             "\tpulling-text=\"${1:Pull to refresh...}\"",
             "\ton-refresh=\"${doRefresh()}\">",
-            "</ion-refresher>",
-            "<ion-list>",
-            "\t<ion-item ng-repeat=\"${2:item in items}\"></ion-item>",
-            "</ion-list>"
+            "</ion-refresher>"
         ],
         "description": "A snippet for an ion-refresher element"
     },
