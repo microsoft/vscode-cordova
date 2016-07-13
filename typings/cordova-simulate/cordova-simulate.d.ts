@@ -16,6 +16,7 @@ declare module "cordova-simulate" {
         forceprepare?: boolean;
         telemetry?: TelemetryModule;
         simulationpath?: string;
+        corsproxy?: boolean;
     }
 
     export interface TelemetryModule {

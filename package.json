@@ -309,6 +309,11 @@
                                 "type": "string",
                                 "description": "The directory where temporary browser simulation files are hosted.",
                                 "default": "${workspaceRoot}/.vscode/simulation"
+                            },
+                            "corsproxy": {
+                                "type": "boolean",
+                                "description": "When simulating in the browser, determines whether XHR requests are proxied to appear as though they originate from the same domain as the target.",
+                                "default": true
                             }
                         }
                     },

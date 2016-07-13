@@ -21,6 +21,7 @@ interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments
     livereload?: boolean;
     forceprepare?: boolean;
     simulateTempDir?: string;
+    corsproxy?: boolean;
 }
 
 interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
