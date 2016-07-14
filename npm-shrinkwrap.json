@@ -1361,9 +1361,9 @@
       "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.1.tgz"
     },
     "ws": {
-      "version": "0.8.0",
-      "from": "ws@0.8.0",
-      "resolved": "https://registry.npmjs.org/ws/-/ws-0.8.0.tgz"
+      "version": "1.0.1",
+      "from": "ws@1.0.1",
+      "resolved": "https://registry.npmjs.org/ws/-/ws-1.0.1.tgz"
     },
     "xmlbuilder": {
       "version": "0.4.3",

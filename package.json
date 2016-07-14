@@ -386,7 +386,7 @@
         "source-map": "^0.5.3",
         "vscode-extension-telemetry": "0.0.5",
         "winreg": "0.0.13",
-        "ws": "0.8.0"
+        "ws": "1.0.1"
     },
     "devDependencies": {
         "gulp": "^3.9.0",
