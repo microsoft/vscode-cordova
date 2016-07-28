@@ -7,6 +7,15 @@ import * as path from 'path';
 import * as Q from 'q';
 import * as semver from "semver";
 
+export interface IProjectType {
+    ionic: boolean;
+    ionic2: boolean;
+    meteor: boolean;
+    mobilefirst: boolean;
+    phonegap: boolean;
+    cordova: boolean;
+}
+
 export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_FOLDERNAME = "typings";
     private static PROJECT_TYPINGS_PLUGINS_FOLDERNAME = "plugins";

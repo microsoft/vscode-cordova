@@ -20,7 +20,8 @@ import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
 import {CordovaPathTransformer} from './cordovaPathTransformer';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
-import {IProjectType, ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
+import {ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
+import {IProjectType} from '../utils/cordovaProjectHelper';
 import {settingsHome} from '../utils/settingsHelper';
 import {Telemetry} from '../utils/telemetry';
 
@@ -200,7 +201,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         // Verify if we are using Ionic livereload
         if (launchArgs.ionicLiveReload) {
-            if (projectType.ionic1 || projectType.ionic2) {
+            if (projectType.ionic || projectType.ionic2) {
                 // Livereload is enabled, let Ionic do the launch
                 args.push('--livereload');
 
@@ -294,7 +295,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         if (launchArgs.target.toLowerCase() === 'device') {
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic1 || projectType.ionic2) {
+                if (projectType.ionic || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
                     let ionicArgs = ['run', '--device', 'ios', '--livereload'];
 
@@ -362,7 +363,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic1 || projectType.ionic2) {
+                if (projectType.ionic || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
                     emulateArgs.push('--livereload');
 
@@ -575,7 +576,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
-        if (!projectType.ionic1 && !projectType.ionic2) {
+        if (!projectType.ionic && !projectType.ionic2) {
             let errorMessage = 'Serving to the browser is currently only supported for Ionic projects';
 
             errorLogger(errorMessage);

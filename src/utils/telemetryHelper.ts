@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
 import {Telemetry} from './telemetry';
+import {IProjectType} from './cordovaProjectHelper';
 
 export interface ITelemetryPropertyInfo {
     value: any;
@@ -149,15 +150,6 @@ export class TelemetryGenerator extends TelemetryGeneratorBase {
     }
 }
 
-export interface IProjectType {
-    ionic1: boolean;
-    ionic2: boolean;
-    meteor: boolean;
-    mobilefirst: boolean;
-    phonegap: boolean;
-    cordova: boolean;
-}
-
 export interface ISimulateTelemetryProperties {
     platform?: string;
     target: string;
@@ -187,7 +179,7 @@ export class TelemetryHelper {
         let cordova = promiseExists(path.join(projectRoot, 'config.xml'));
         return Q.all([meteor, mobilefirst, phonegap, cordova])
             .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
-                return { ionic1: isIonic1, ionic2: isIonic2, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova };
+                return { ionic: isIonic1, ionic2: isIonic2, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova };
             });
     }
 

@@ -6,7 +6,6 @@ import * as Q from "q";
 import {PluginSimulator} from "./simulate";
 import {SimulateInfo, SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
-import {IProjectType} from '../utils/telemetryHelper';
 
 import {
     ErrorMarker,
@@ -15,7 +14,7 @@ import {
     MessageWithArguments
 } from "../common/extensionMessaging";
 
-import {CordovaProjectHelper} from "../utils/cordovaProjectHelper";
+import {IProjectType, CordovaProjectHelper} from "../utils/cordovaProjectHelper";
 import {Telemetry} from "../utils/telemetry";
 
 export class ExtensionServer implements vscode.Disposable {

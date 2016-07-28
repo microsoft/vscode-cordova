@@ -8,7 +8,7 @@ import * as cordovaServer from "cordova-serve";
 import * as path from "path";
 import * as simulate from "cordova-simulate";
 import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
-import {IProjectType} from '../utils/telemetryHelper';
+import {IProjectType} from '../utils/cordovaProjectHelper';
 import * as vscode from "vscode";
 
 /**
