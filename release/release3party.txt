@@ -155,7 +155,7 @@ This project incorporates components from the projects listed below. Microsoft l
 147.	minimatch version 2.0.10 (https://github.com/isaacs/minimatch)
 148.	minimist version 1.2.0 (https://github.com/substack/minimist)
 149.	module-deps version 3.9.1 (https://github.com/substack/module-deps)
-150. 	moment.js 2.8.4 (http://momentjs.com/) 
+150. 	moment.js 2.8.4 (http://momentjs.com/)
 151.	ms version 0.7.1 (https://github.com/rauchg/ms.js)
 152.	nan version 2.3.3 (https://github.com/nodejs/nan)
 153.	ncp version 2.0.0 (https://github.com/AvianFlu/ncp)
@@ -250,9 +250,9 @@ This project incorporates components from the projects listed below. Microsoft l
 242.	vary version 1.1.0 (https://github.com/jshttp/vary)
 243.	vm-browserify version 0.0.4 (https://github.com/substack/vm-browserify)
 244.	Vogue (https://github.com/andrewdavey/vogue)
-245.	VS Code - Debugger for Chrome (https://github.com/Microsoft/vscode-chrome-debug)
+245.	vscode-chrome-debug-core version 0.1.16 (https://github.com/Microsoft/vscode-chrome-debug-core)
 246.	vscode-extension-telemetry version 0.0.5 (https://github.com/Microsoft/vscode-extension-telemetry)
-247. 	webcomponents.js (https://github.com/webcomponents/webcomponentsjs) 	
+247. 	webcomponents.js (https://github.com/webcomponents/webcomponentsjs)
 248. 	Wii Opera SDK/HULLBREACH SDK (3D Math Class & Drawing Class) (http://wiioperasdk.com, http://hullbreachonline.com)
 249.	winreg version 0.0.13 (https://github.com/fresc81/node-winreg)
 250.	wrappy version 1.0.1 (https://github.com/npm/wrappy)
@@ -268,7 +268,7 @@ This project incorporates components from the projects listed below. Microsoft l
 
 %% accepts NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.1.4 
+version 1.1.4
 (The MIT License)
 
 
@@ -298,7 +298,7 @@ END OF accepts NOTICES AND INFORMATION
 
 %% accepts NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.2.13 
+version 1.2.13
 (The MIT License)
 
 Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>
@@ -390,7 +390,7 @@ END OF accounting.js NOTICES AND INFORMATION
 
 %% acorn NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 2.7.0 
+version 2.7.0
 The MIT License (MIT)
 
 Copyright (C) 2012-2016 by various contributors (see AUTHORS)
@@ -417,7 +417,7 @@ END OF acorn NOTICES AND INFORMATION
 
 %% acorn NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.2.2 
+version 1.2.2
 The MIT License (MIT)
 
 Copyright (C) 2012-2014 by various contributors (see AUTHORS)
@@ -1598,7 +1598,7 @@ END OF component-bind NOTICES AND INFORMATION
 
 %% component-emitter NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.1.2 
+version 1.1.2
 (The MIT License)
 
 Copyright (c) 2014 Component contributors <dev@component.io>
@@ -1628,7 +1628,7 @@ END OF component-emitter NOTICES AND INFORMATION
 
 %% component-emitter NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.2.0 
+version 1.2.0
 (The MIT License)
 
 Copyright (c) 2014 Component contributors <dev@component.io>
@@ -2086,7 +2086,7 @@ END OF cordova-serve NOTICES AND INFORMATION
 =========================================
 Copyright (c) Microsoft Corporation
 
-All rights reserved. 
+All rights reserved.
 
 MIT License
 
@@ -2238,7 +2238,7 @@ END OF date-now NOTICES AND INFORMATION
 
 %% debug NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 2.2.0 
+version 2.2.0
 (The MIT License)
 
 Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -2254,7 +2254,7 @@ END OF debug NOTICES AND INFORMATION
 
 %% debug NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 0.7.4 
+version 0.7.4
 (The MIT License)
 
 
@@ -2349,10 +2349,10 @@ END OF depd NOTICES AND INFORMATION
 
 %% depd NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.0.1 
+version 1.0.1
 (The MIT License)
 
-Copyright (c) 2014 Douglas Christopher Wilson 
+Copyright (c) 2014 Douglas Christopher Wilson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -2903,7 +2903,7 @@ END OF escape-html NOTICES AND INFORMATION
 
 %% escape-html NOTICES AND INFORMATION BEGIN HERE
 =========================================
-version 1.0.2 
+version 1.0.2
 (The MIT License)
 
 Copyright (c) 2012-2013 TJ Holowaychuk
@@ -4617,7 +4617,7 @@ Copyright (c) 2006-2013 by OpenLayers Contributors
 Published under the 2-clause BSD license.
 See http://openlayers.org/dev/license.txt for the full list of contributors.
 
-The BSD 2-Clause License 
+The BSD 2-Clause License
 Copyright (c) 2006-2013 by OpenLayers Contributors
 All rights reserved.
 
@@ -4638,9 +4638,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 /**
  * XMLHttpRequest.js <http://code.google.com/p/xmlhttprequest/>;
    https://github.com/openlayers/openlayers/blob/release-2.12/lib/OpenLayers/Request/XMLHttpRequest.js
-   
+
    Copyright (C) 2010 Sergey Ilinsky (http://www.ilinsky.com)
-   
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -4688,7 +4688,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 /**
    Contains portions of Rico <http://openrico.org/>
    Copyright 2005 Sabre Airline Solutions
-   
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -6935,7 +6935,7 @@ THE SOFTWARE.
 =========================================
 END OF Vogue NOTICES AND INFORMATION
 
-%% VS Code - Debugger for Chrome NOTICES AND INFORMATION BEGIN HERE
+%% vscode-chrome-debug-core NOTICES AND INFORMATION BEGIN HERE
 =========================================
 VS Code - Debugger for Chrome
 
@@ -6963,7 +6963,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 =========================================
-END OF VS Code - Debugger for Chrome NOTICES AND INFORMATION
+END OF vscode-chrome-debug-core NOTICES AND INFORMATION
 
 %% vscode-extension-telemetry NOTICES AND INFORMATION BEGIN HERE
 =========================================

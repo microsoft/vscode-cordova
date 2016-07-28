@@ -5,6 +5,16 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
+import * as semver from "semver";
+
+export interface IProjectType {
+    ionic: boolean;
+    ionic2: boolean;
+    meteor: boolean;
+    mobilefirst: boolean;
+    phonegap: boolean;
+    cordova: boolean;
+}
 
 export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_FOLDERNAME = "typings";
@@ -16,7 +26,6 @@ export class CordovaProjectHelper {
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
     private static IONIC_PROJECT_FILE: string = "ionic.project";
-    private static IONIC_CONFIG_JS_FILE: string = "ionic.config.js";
     private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
 
     /**
@@ -48,10 +57,10 @@ export class CordovaProjectHelper {
     /**
      *  Helper (synchronous) function to delete a directory recursively
      */
-    public static deleteDirectoryRecursive (dirPath: string) {
+    public static deleteDirectoryRecursive(dirPath: string) {
         if (fs.existsSync(dirPath)) {
             if (fs.lstatSync(dirPath).isDirectory()) {
-                fs.readdirSync(dirPath).forEach(function(file) {
+                fs.readdirSync(dirPath).forEach(function (file) {
                     var curPath = path.join(dirPath, file);
                     CordovaProjectHelper.deleteDirectoryRecursive(curPath);
                 });
@@ -70,15 +79,15 @@ export class CordovaProjectHelper {
         var deferred: Q.Deferred<any> = Q.defer();
         var destFile: fs.WriteStream = fs.createWriteStream(to, { encoding: encoding });
         var srcFile: fs.ReadStream = fs.createReadStream(from, { encoding: encoding });
-        destFile.on("finish", function(): void {
+        destFile.on("finish", function (): void {
             deferred.resolve({});
         });
 
-        destFile.on("error", function(e: Error): void {
+        destFile.on("error", function (e: Error): void {
             deferred.reject(e);
         });
 
-        srcFile.on("error", function(e: Error): void {
+        srcFile.on("error", function (e: Error): void {
             deferred.reject(e);
         });
 
@@ -166,9 +175,16 @@ export class CordovaProjectHelper {
     }
 
     /**
-     *  Helper function to determine whether the project is an Ionic 1 project or no
+     * Helper function to determine whether the project is an Ionic 1 or 2 project or not
      */
     public static isIonicProject(projectRoot: string): boolean {
+        return CordovaProjectHelper.isIonic1Project(projectRoot) || CordovaProjectHelper.isIonic2Project(projectRoot);
+    }
+
+    /**
+     *  Helper function to determine whether the project is an Ionic 1 project or no
+     */
+    public static isIonic1Project(projectRoot: string): boolean {
         // First look for "ionic.project" at the project root
         if (fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_PROJECT_FILE))) {
             return true;
@@ -183,6 +199,20 @@ export class CordovaProjectHelper {
      *  Helper function to determine whether the project is an Ionic 2 project or no. NOTE: we currently rely on "ionic.config.js" file, which may change as Ionic 2 continues development.
      */
     public static isIonic2Project(projectRoot: string): boolean {
-        return fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_CONFIG_JS_FILE));
+        const dependencies = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf-8')).dependencies;
+        const highestNotSupportedIonic2BetaVersion = "2.0.0-beta.9";
+
+        if (!!(dependencies && dependencies["ionic-angular"])) {
+            const ionicVersion = dependencies["ionic-angular"];
+            // If it's a valid version let's check it's greater than 2.0.0-beta-9
+            if (semver.valid(ionicVersion)) {
+                return semver.gt(ionicVersion, highestNotSupportedIonic2BetaVersion);
+            }
+            // If it's a valid range we check that the entire range is greater than 2.0.0-beta-9
+            if (semver.validRange(ionicVersion)) {
+                return semver.ltr(highestNotSupportedIonic2BetaVersion, ionicVersion);
+            }
+        }
+        return false;
     }
 }

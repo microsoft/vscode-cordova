@@ -12,7 +12,8 @@ import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
 import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from './utils/telemetry';
-import {IProjectType, TelemetryHelper} from './utils/telemetryHelper';
+import {TelemetryHelper} from './utils/telemetryHelper';
+import {IProjectType} from './utils/cordovaProjectHelper';
 import {TsdHelper} from './utils/tsdHelper';
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
@@ -82,7 +83,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     generator.add("visibleTextEditorsCount", vscode.window.visibleTextEditors.length, false);
                 });
         }).then(() => {
-            return simulator.simulate(options);
+            return simulator.simulate(options, projectType);
         });
     };
 
@@ -107,11 +108,15 @@ export function activate(context: vscode.ExtensionContext): void {
     // Install Ionic type definitions if necessary
     if (CordovaProjectHelper.isIonicProject(cordovaProjectRoot)) {
         let ionicTypings: string[] = [
-            path.join("angularjs", "angular.d.ts"),
             path.join("jquery", "jquery.d.ts"),
-            path.join("ionic", "ionic.d.ts"),
             path.join("cordova-ionic", "plugins", "keyboard.d.ts")
         ];
+        if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
+            ionicTypings.push[
+                path.join("angularjs", "angular.d.ts"),
+                path.join("ionic", "ionic.d.ts")
+            ];
+        }
         TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
     }
 

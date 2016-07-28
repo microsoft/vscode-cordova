@@ -13,17 +13,51 @@ import * as path from 'path';
 import * as Q from 'q';
 import * as simulate from 'cordova-simulate';
 
-
+import {DebugProtocol} from 'vscode-debugprotocol';
+import {ChromeDebugAdapter, ChromeConnection, IAttachRequestArgs} from 'vscode-chrome-debug-core';
+import * as Chrome from 'vscode-chrome-debug-core/lib/src/chrome/chromeDebugProtocol';
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
 import {CordovaPathTransformer} from './cordovaPathTransformer';
-import {WebKitDebugAdapter} from '../../debugger/webkit/webKitDebugAdapter';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
-import {IProjectType, ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
+import {ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
+import {IProjectType} from '../utils/cordovaProjectHelper';
 import {settingsHome} from '../utils/settingsHelper';
 import {Telemetry} from '../utils/telemetry';
 
-export class CordovaDebugAdapter extends WebKitDebugAdapter {
+export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
+    iosDebugProxyPort?: number;
+    appStepLaunchTimeout?: number;
+
+    // Ionic livereload properties
+    ionicLiveReload?: boolean;
+    devServerPort?: number;
+    devServerAddress?: string;
+    devServerTimeout?: number;
+
+    // Chrome debug properties
+    url?: string;
+    userDataDir?: string;
+
+    // Cordova-simulate properties
+    simulatePort?: number;
+    livereload?: boolean;
+    forceprepare?: boolean;
+    simulateTempDir?: string;
+    corsproxy?: boolean;
+}
+
+export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
+    cwd: string; /* Automatically set by VS Code to the currently opened folder */
+    platform: string;
+    target?: string;
+    webkitRangeMin?: number;
+    webkitRangeMax?: number;
+    attachAttempts?: number;
+    attachDelay?: number;
+}
+
+export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
     private static SIMULATE_TARGETS: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
@@ -38,8 +72,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
 
-    public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer) {
-        super();
+    public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer, chromeConnection: ChromeConnection) {
+        super(chromeConnection);
         this.outputLogger = outputLogger;
         this.cordovaPathTransformer = cdvPathTransformer;
         this.telemetryInitialized = false;
@@ -66,7 +100,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                             /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, generator);
+                                return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchAndroid(launchArgs, projectType);
                             }
@@ -75,7 +109,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                             /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, generator);
+                                return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchIos(launchArgs, projectType);
                             }
@@ -85,7 +119,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                             return this.launchServe(launchArgs, projectType);
                         case 'browser':
                             generator.add('platform', platform, false);
-                            return this.launchSimulate(launchArgs, generator);
+                            return this.launchSimulate(launchArgs, projectType, generator);
                         default:
                             generator.add('unknownPlatform', platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
@@ -137,7 +171,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                 }).then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
                     this.outputLogger('Attaching to app.');
                     this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
-                    return super.attach(processedAttachArgs, processedAttachArgs.url);
+                    return super.attach(processedAttachArgs);
                 });
         }).catch((err) => {
             this.outputLogger(err.message || err, true);
@@ -167,7 +201,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
         // Verify if we are using Ionic livereload
         if (launchArgs.ionicLiveReload) {
-            if (projectType.ionic) {
+            if (projectType.ionic || projectType.ionic2) {
                 // Livereload is enabled, let Ionic do the launch
                 args.push('--livereload');
 
@@ -241,7 +275,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
                     });
                 });
         }).then(() => {
-            let args: IAttachRequestArgs = { port: attachArgs.port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd };
+            let args: IAttachRequestArgs = { port: attachArgs.port, webRoot: attachArgs.cwd };
             return args;
         });
     }
@@ -261,7 +295,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         if (launchArgs.target.toLowerCase() === 'device') {
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic) {
+                if (projectType.ionic || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
                     let ionicArgs = ['run', '--device', 'ios', '--livereload'];
 
@@ -329,7 +363,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic) {
+                if (projectType.ionic || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
                     emulateArgs.push('--livereload');
 
@@ -419,7 +453,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         });
     }
 
-    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, generator: TelemetryGenerator): Q.Promise<any> {
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, generator: TelemetryGenerator): Q.Promise<any> {
         let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
@@ -450,7 +484,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let launchSimulate = Q(void 0)
             .then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
-                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions]);
+                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions, projectType]);
             }).then((simInfo: simulate.SimulateInfo) => {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
@@ -472,17 +506,17 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
     }
 
     private resetSimulateViewport(): Q.Promise<void> {
-        let jsPromise = this._webKitConnection.emulation_clearDeviceMetricsOverride().then(() => {
-            return this._webKitConnection.emulation_setEmulatedMedia('');
+        let jsPromise = this._chromeConnection.emulation_clearDeviceMetricsOverride().then(() => {
+            return this._chromeConnection.emulation_setEmulatedMedia('');
         }).then(() => {
-            return this._webKitConnection.emulation_resetScrollAndPageScaleFactor();
+            return this._chromeConnection.emulation_resetScrollAndPageScaleFactor();
         }).then(() => void 0);
 
         return Q(jsPromise);
     }
 
     private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
-        let jsPromise = this._webKitConnection.emulation_setDeviceMetricsOverride({
+        let jsPromise = this._chromeConnection.emulation_setDeviceMetricsOverride({
             width: data.width,
             height: data.height,
             deviceScaleFactor: 0,
@@ -542,8 +576,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
-        if (!projectType.ionic) {
-            let errorMessage = 'Serving to the browser is currently only supported for Ionic 1 projects';
+        if (!projectType.ionic && !projectType.ionic2) {
+            let errorMessage = 'Serving to the browser is currently only supported for Ionic projects';
 
             errorLogger(errorMessage);
 
@@ -603,6 +637,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         let appDeferred = Q.defer<void>();
         let serverOut: string = '';
         let serverErr: string = '';
+        const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
         let getServerErrorMessage = (channel: string) => {
             let errorMatch = errorRegex.exec(channel);
 
@@ -740,6 +775,8 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
             // The dev server address is the captured group at index 1 of the match
             this.ionicDevServerUrl = match[1];
 
+            // When ionic 2 cli is installed, output includes ansi characters for color coded output.
+            this.ionicDevServerUrl = this.ionicDevServerUrl.replace(ansiRegex, '');
             return Q(this.ionicDevServerUrl);
         });
     }
@@ -824,7 +861,7 @@ export class CordovaDebugAdapter extends WebKitDebugAdapter {
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
     }
 
-    protected onScriptParsed(script: WebKitProtocol.Debugger.Script): void {
+    protected onScriptParsed(script: Chrome.Debugger.Script): void {
         let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
 
         if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
