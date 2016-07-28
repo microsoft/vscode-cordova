@@ -191,6 +191,7 @@
                         "platform": "serve",
                         "cwd": "${workspaceRoot}",
                         "devServerAddress": "localhost",
+                        "sourceMaps": true,
                         "ionicLiveReload": true
                     },
                     {
@@ -201,6 +202,7 @@
                         "target": "chrome",
                         "simulatePort": 8000,
                         "livereload": true,
+                        "sourceMaps": true,
                         "cwd": "${workspaceRoot}"
                     },
                     {
@@ -211,6 +213,7 @@
                         "target": "chrome",
                         "simulatePort": 8000,
                         "livereload": true,
+                        "sourceMaps": true,
                         "cwd": "${workspaceRoot}"
                     }
                 ],
@@ -387,7 +390,8 @@
         "vscode-extension-telemetry": "0.0.5",
         "vscode-chrome-debug-core": "0.1.16",
         "winreg": "0.0.13",
-        "ws": "0.8.0"
+        "ws": "0.8.0",
+        "semver": "5.1.0"
     },
     "devDependencies": {
         "gulp": "^3.9.0",
