@@ -230,7 +230,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
         // Determine which device/emulator we are targeting
 
-        let adbDevicesResult = execCommand('adb', ['devices'], errorLogger)
+        let adbDevicesResult = this.runAdbCommand(['devices'], errorLogger)
             .then((devicesOutput) => {
                 if (attachArgs.target.toLowerCase() === 'device') {
                     let deviceMatch = /\n([^\t]+)\tdevice($|\n)/m.exec(devicesOutput.replace(/\r/g, ''));
@@ -263,14 +263,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return Q.all([packagePromise, adbDevicesResult]).spread((appPackageName, targetDevice) => {
             let getPidCommandArguments = ['-s', targetDevice, 'shell', `ps | grep ${appPackageName}`];
 
-            let findPidFunction = () => execCommand('adb', getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
+            let findPidFunction = () => this.runAdbCommand(getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
 
             return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match, 5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1])
                 .then((pid) => {
                     // Configure port forwarding to the app
                     let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
                     this.outputLogger('Forwarding debug port');
-                    return execCommand('adb', forwardSocketCommandArguments, errorLogger).then(() => {
+                    return this.runAdbCommand(forwardSocketCommandArguments, errorLogger).then(() => {
                         this.adbPortForwardingInfo = { targetDevice, port: attachArgs.port };
                     });
                 });
@@ -828,7 +828,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 ['-s', this.adbPortForwardingInfo.targetDevice,
                     'forward',
                     '--remove', `tcp:${this.adbPortForwardingInfo.port}`];
-            adbPortPromise = execCommand('adb', adbForwardStopArgs, errorLogger)
+            adbPortPromise = this.runAdbCommand(adbForwardStopArgs, errorLogger)
                 .then(() => void 0);
         } else {
             adbPortPromise = Q<void>(void 0);
@@ -938,6 +938,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             return null;
         }
+    }
+
+    private runAdbCommand(args, errorLogger): Q.Promise<string> {
+        const originalPath = process.env['PATH'];
+        if (process.env['ANDROID_HOME']) {
+            process.env['PATH'] += path.delimiter + path.join(process.env['ANDROID_HOME'], 'platform-tools');
+        }
+        return execCommand('adb', args, errorLogger).finally(() => {
+            process.env['PATH'] = originalPath;
+        })
     }
 
     private getErrorMessage(e: any): string {
