@@ -4,7 +4,8 @@
 import * as net from "net";
 import * as Q from "q";
 import {PluginSimulator} from "./simulate";
-import {SimulateInfo, SimulateOptions} from "cordova-simulate";
+import {SimulationInfo} from '../common/simulationInfo';
+import {SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
 
 import {
@@ -87,15 +88,10 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    private simulate(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulateInfo> {
-        var simInfo: SimulateInfo;
-
+    private simulate(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
         return this.launchSimulateServer(simulateOptions, projectType)
-            .then((simulateInfo: SimulateInfo) => {
-                simInfo = simulateInfo;
-                return this.launchSimHost();
-            }).then(() => {
-                return simInfo;
+            .then((simulateInfo: SimulationInfo) => {
+               return this.launchSimHost().then(() => simulateInfo);
             });
     }
 
@@ -104,7 +100,7 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    private launchSimulateServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulateInfo> {
+    private launchSimulateServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
         return this.pluginSimulator.launchServer(simulateOptions, projectType);
     }
 

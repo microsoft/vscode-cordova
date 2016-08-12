@@ -6,20 +6,23 @@ import * as http from "http";
 import * as Q from "q";
 import * as cordovaServer from "cordova-serve";
 import * as path from "path";
-import * as simulate from "cordova-simulate";
+import {Simulator, SimulateOptions, launchBrowser} from "cordova-simulate";
 import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
 import {IProjectType} from '../utils/cordovaProjectHelper';
+import {SimulationInfo} from '../common/simulationInfo';
 import * as vscode from "vscode";
 
 /**
  * Plugin simulation entry point.
  */
 export class PluginSimulator implements vscode.Disposable {
-    private simulateInfo: simulate.SimulateInfo;
     private registration: vscode.Disposable;
     private simulateProtocol: string;
     private simulateUri: vscode.Uri;
     private defaultSimulateTempDir: string;
+
+    private simulator: Simulator;
+    private simulationInfo: SimulationInfo;
 
     constructor() {
         this.simulateProtocol = "cordova-simulate-" + Hash.hashCode(vscode.workspace.rootPath);
@@ -27,64 +30,61 @@ export class PluginSimulator implements vscode.Disposable {
         this.defaultSimulateTempDir = path.join(vscode.workspace.rootPath, ".vscode", "simulate");
     }
 
-    public simulate(simulateOptions: simulate.SimulateOptions, projectType: IProjectType): Q.Promise<any> {
+    public simulate(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<any> {
         return this.launchServer(simulateOptions, projectType)
             .then(() => this.launchAppHost(simulateOptions.target))
             .then(() => this.launchSimHost());
     }
 
     public launchAppHost(target: string): Q.Promise<void> {
-        return simulate.launchBrowser(target, this.simulateInfo.appUrl);
+        return launchBrowser(target, this.simulationInfo.appHostUrl);
     }
 
     public launchSimHost(): Q.Promise<void> {
-        let provider = new SimHostContentProvider(this.simulateInfo.simHostUrl);
+        if (!this.simulator) {
+            return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
+        }
+        let provider = new SimHostContentProvider(this.simulator.simHostUrl());
         this.registration = vscode.workspace.registerTextDocumentContentProvider(this.simulateProtocol, provider);
 
         return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => void 0));
     }
 
-    public launchServer(simulateOptions: simulate.SimulateOptions, projectType: IProjectType): Q.Promise<simulate.SimulateInfo> {
+    public launchServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
         simulateOptions.dir = vscode.workspace.rootPath;
         if (!simulateOptions.simulationpath) {
             simulateOptions.simulationpath = this.defaultSimulateTempDir;
         }
 
-        return this.isServerRunning()
-            .then((isRunning: boolean) => {
-                if (isRunning) {
-                    /* close the server old instance */
-                    return Q({})
-                    .then(()=> simulate.stopSimulate());
-                }
-            }).then(() => {
+        return Q({}).then(() => {
+            if (this.isServerRunning()) {
+                /* close the server old instance */
+                return this.simulator.stopSimulation();
+            }
+        })
+        .then(() => {
                 let simulateTelemetryWrapper = new CordovaSimulateTelemetry();
                 simulateOptions.telemetry = simulateTelemetryWrapper;
 
-                return simulate.launchServer(simulateOptions)
-                    .then(simulateInfo => {
-                        this.simulateInfo = simulateInfo;
+                this.simulator = new Simulator(simulateOptions);
+
+                return this.simulator.startSimulation()
+                    .then(() => {
+                        this.simulationInfo = {
+                            appHostUrl: this.simulator.appUrl(),
+                            simHostUrl: this.simulator.simHostUrl(),
+                            urlRoot: this.simulator.urlRoot(),
+                        };
                         if (projectType.ionic2 && simulateOptions.platform && simulateOptions.platform !== "browser") {
-                            this.simulateInfo.appUrl = `${this.simulateInfo.appUrl}?ionicplatform=${simulateOptions.platform}`
+                            this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`
                         }
-                        return this.simulateInfo;
+                        return this.simulationInfo;
                     });
             });
     }
 
-    private isServerRunning(): Q.Promise<boolean> {
-        let deferred = Q.defer<boolean>();
-        if (this.simulateInfo) {
-            http.get(this.simulateInfo.simHostUrl, function (res) {
-                deferred.resolve(true);
-                res.resume();
-            }).on("error", (err: Error) => {
-                deferred.resolve(false);
-            });
-        } else {
-            deferred.resolve(false);
-        }
-        return deferred.promise;
+    private isServerRunning(): boolean {
+        return this.simulator && this.simulator.isRunning();
     }
 
     public dispose(): void {
@@ -93,8 +93,10 @@ export class PluginSimulator implements vscode.Disposable {
             this.registration = null;
         }
 
-        this.simulateInfo = null;
-        simulate.closeServer();
+        if (this.simulator) {
+            this.simulator.stopSimulation().done(()=>{}, () => {});
+            this.simulator = null;
+        }
     }
 }
 

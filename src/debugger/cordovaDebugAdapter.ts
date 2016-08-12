@@ -24,6 +24,7 @@ import {ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from 
 import {IProjectType} from '../utils/cordovaProjectHelper';
 import {settingsHome} from '../utils/settingsHelper';
 import {Telemetry} from '../utils/telemetry';
+import {SimulationInfo} from '../common/simulationInfo';
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
@@ -472,7 +473,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         generator.add('simulateOptions', simulateTelemetryPropts, false);
 
         let messageSender = new messaging.ExtensionMessageSender(launchArgs.cwd);
-        let simulateInfo: simulate.SimulateInfo;
+        let simulateInfo: SimulationInfo;
 
         let getEditorsTelemetry = messageSender.sendMessage(messaging.ExtensionMessage.GET_VISIBLE_EDITORS_COUNT)
             .then((editorsCount) => {
@@ -485,14 +486,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
                 return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions, projectType]);
-            }).then((simInfo: simulate.SimulateInfo) => {
+            }).then((simInfo: SimulationInfo) => {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
             }).then(() => {
                 return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST);
             }).then(() => {
                 // Launch Chrome and attach
-                launchArgs.url = simulateInfo.appUrl;
+                launchArgs.url = simulateInfo.appHostUrl;
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
                 this.outputLogger('Attaching to app');
 
@@ -527,7 +528,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return Q(jsPromise);
     }
 
-    private connectSimulateDebugHost(simulateInfo: simulate.SimulateInfo): Q.Promise<void> {
+    private connectSimulateDebugHost(simulateInfo: SimulationInfo): Q.Promise<void> {
         // Connect debug-host to cordova-simulate
         let viewportResizeFailMessage = 'Viewport resizing failed. Please try again.';
         let simulateDeferred: Q.Deferred<void> = Q.defer<void>();
