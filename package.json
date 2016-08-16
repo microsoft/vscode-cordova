@@ -390,7 +390,7 @@
         "vscode-extension-telemetry": "0.0.5",
         "vscode-chrome-debug-core": "0.1.16",
         "winreg": "0.0.13",
-        "ws": "0.8.0",
+        "ws": "1.0.1",
         "semver": "5.1.0"
     },
     "devDependencies": {

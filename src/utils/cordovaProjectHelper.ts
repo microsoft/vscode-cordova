@@ -199,7 +199,11 @@ export class CordovaProjectHelper {
      *  Helper function to determine whether the project is an Ionic 2 project or no. NOTE: we currently rely on "ionic.config.js" file, which may change as Ionic 2 continues development.
      */
     public static isIonic2Project(projectRoot: string): boolean {
-        const dependencies = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf-8')).dependencies;
+        const packageJsonPath = path.join(projectRoot, 'package.json');
+        if (!fs.existsSync(packageJsonPath)) {
+            return false;
+        }
+        const dependencies = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')).dependencies;
         const highestNotSupportedIonic2BetaVersion = "2.0.0-beta.9";
 
         if (!!(dependencies && dependencies["ionic-angular"])) {
