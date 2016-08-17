@@ -106,8 +106,8 @@ gulp.task('tslint', function(){
 });
 
 function test() {
-    return gulp.src('out/debugger/test/**/*.test.js', { read: false })
-        .pipe(mocha({ ui: 'tdd' }))
+    return gulp.src('out/test/debugger/**/*.js', { read: false })
+        .pipe(mocha({ ui: 'bdd' }))
         .on('error', function(e) {
             log(e ? e.toString() : 'error in test task!');
             this.emit('end');
@@ -145,12 +145,9 @@ gulp.task('release', ['build'], function () {
             fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/releaselicense.txt'));
             fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/release3party.txt'));
         }).then(()=>{
-            console.log("Removing dev dependencies...");
-            return executeCommand(path.resolve(__dirname), 'npm prune --production');
-        }).then(()=>{
             console.log("Creating release package...");
             return executeCommand(path.resolve(__dirname), 'vsce package');
-        }).then(function () {
+        }).finally(function () {
             /* restore backed up files */
             console.log("Restoring modified files...");
             licenseFiles.forEach(function (fileName) {
