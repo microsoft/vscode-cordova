@@ -1,1 +1,1 @@
-path %PATH%;node_modules\.bin
+path node_modules\.bin;%PATH%
