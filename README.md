@@ -6,7 +6,7 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 
 ## Install it
 
-0. Install NodeJS from https://nodejs.org
+0. Install [NodeJS](https://nodejs.org)
 1. Open a Terminal (on a Mac) or a Command Prompt (on a Windows computer).
 2. Run `npm install -g cordova`
 3. If you're planning on targeting iOS devices,
