@@ -15,6 +15,7 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 4. If you're planning on targeting Android devices,
  * Install latest Java SDK from http://www.oracle.com/technetwork/java/javase/downloads/index.html
  * Install Android SDK from https://developer.android.com/studio/index.html and add "SDK Platform" for android-23, latest "Android SDK Platform-tools" and latest "Android SDK Build-tools"
+ * On Windows, you also need to set environment variable "ANDROID_HOME" to your Android SDK installation folder.
 
 ## Add a platform to your Cordova project
 
