@@ -12,10 +12,7 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 3. If you're planning on targeting iOS devices,
  * Install [HomeBrew](http://brew.sh/) on your Mac.
  * Open a Terminal and run `brew install ideviceinstaller ios-webkit-debug-proxy`
-4. If you're planning on targeting Android devices,
- * Install latest Java SDK from http://www.oracle.com/technetwork/java/javase/downloads/index.html
- * Install Android SDK from https://developer.android.com/studio/index.html and add "SDK Platform" for android-23, latest "Android SDK Platform-tools" and latest "Android SDK Build-tools"
- * On Windows, you also need to set environment variable "ANDROID_HOME" to your Android SDK installation folder.
+4. If you're planning on targeting Android devices, set up your machine by following instructions at [Android Platform Guide from Apache Cordova](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
 
 ## Add a platform to your Cordova project
 
