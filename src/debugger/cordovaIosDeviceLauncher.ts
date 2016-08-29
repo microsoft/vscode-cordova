@@ -7,7 +7,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as net from 'net';
 import * as path from 'path';
-import * as pl from 'plist-with-patches';
+import * as pl from 'plist';
 import * as Q from 'q';
 
 let promiseExec = Q.denodeify(child_process.exec);
@@ -35,7 +35,8 @@ export class CordovaIosDeviceLauncher {
             }
             let xcodeprojfile = xcodeprojfiles[0];
             let projectName = /^(.*)\.xcodeproj/.exec(xcodeprojfile)[1];
-            let plist = pl.parseFileSync(path.join(projectRoot, 'platforms', 'ios', projectName, projectName + '-Info.plist'));
+            let filepath = path.join(projectRoot, 'platforms', 'ios', projectName, projectName + '-Info.plist');
+            let plist = pl.parse(fs.readFileSync(filepath, 'utf8'));
             return plist.CFBundleIdentifier;
         });
     }
@@ -99,7 +100,7 @@ export class CordovaIosDeviceLauncher {
                 throw new Error('Unable to list installed applications on device');
             }
 
-            let list: any[] = pl.parseFileSync(filename);
+            let list: any[] = pl.parse(fs.readFileSync(filename, 'utf8'));
             fs.unlink(filename);
             for (let i: number = 0; i < list.length; ++i) {
                 if (list[i].CFBundleIdentifier === packageId) {

@@ -383,7 +383,7 @@
     "dependencies": {
         "cordova-simulate": "^0.2.1",
         "elementtree": "^0.1.6",
-        "plist-with-patches": "^0.5.1",
+        "plist": "^2.0.1",
         "q": "^1.4.1",
         "socket.io-client": "^1.4.6",
         "source-map": "^0.5.3",
