@@ -23,7 +23,7 @@ describe('cordovaIosDeviceLauncher', function () {
         mockery.registerMock('net', {});
 
         mockery.registerMock('fs', fsMock);
-        mockery.registerMock('plist-with-patches', plistMock);
+        mockery.registerMock('plist', plistMock);
         CordovaIosDeviceLauncher = require('../../src/debugger/cordovaIosDeviceLauncher').CordovaIosDeviceLauncher;
     });
     after(() => {
@@ -42,8 +42,9 @@ describe('cordovaIosDeviceLauncher', function () {
     });
 
     it('should be able to find the bundle identifier', () => {
+        fsMock.readFileSync = (file: string) => '';
         fsMock.readdir = (path: string, callback: (err: Error, result: string[]) => void) => callback(null, ['foo', 'bar.xcodeproj']);
-        plistMock.parseFileSync = (file: string) => {
+        plistMock.parse = (file: string) => {
             return {CFBundleIdentifier: 'test.bundle.identifier'};
         };
 
