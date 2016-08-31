@@ -381,7 +381,7 @@
         "test": "node ./node_modules/mocha/bin/mocha --recursive -u tdd ./out/debugger/test/ ./out/test/debugger"
     },
     "dependencies": {
-        "cordova-simulate": "https://github.com/Microsoft/cordova-simulate.git",
+        "cordova-simulate": "^0.3.0",
         "elementtree": "^0.1.6",
         "plist-with-patches": "^0.5.1",
         "q": "^1.4.1",
