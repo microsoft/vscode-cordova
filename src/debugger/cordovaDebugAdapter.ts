@@ -948,7 +948,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
         return execCommand('adb', args, errorLogger).finally(() => {
             process.env['PATH'] = originalPath;
-        })
+        });
     }
 
     private getErrorMessage(e: any): string {
