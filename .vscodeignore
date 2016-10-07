@@ -28,3 +28,6 @@ test/**
 src/**
 debugger/**
 .gitignore
+.npmignore
+OSSREADME.json
+CONTRIBUTING.md
