@@ -9,912 +9,2268 @@
 // be inferred by tooling:
 
 {
-	// Reason: LICENSE file missing in repo
-	"name": "cordova-simulate",
-    "version": "0.2.0-dev",
-	"isLicense": true,
-	"licenseDetail": [
-		"",
-		"Tools for Apache Cordova CLI - Plugin Simulation",
-		"",
-		"Copyright (c) Microsoft Corporation",
-		"",
-		"All rights reserved. ",
-		"",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy",
-		"of this software and associated documentation files (the 'Software'), to deal",
-		"in the Software without restriction, including without limitation the rights",
-		"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
-		"copies of the Software, and to permit persons to whom the Software is",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in",
-		"all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
-		"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN",
-		"THE SOFTWARE."
-	]
+    // Reason: LICENSE file missing in repo
+    "name": "cordova-simulate",
+    "version": "0.3.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "",
+        "Tools for Apache Cordova CLI - Plugin Simulation",
+        "",
+        "Copyright (c) Microsoft Corporation",
+        "",
+        "All rights reserved. ",
+        "",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the 'Software'), to deal",
+        "in the Software without restriction, including without limitation the rights",
+        "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN",
+        "THE SOFTWARE."
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "arraybuffer.slice",
-    "version": "0.0.6",
-	"isLicense": true,
-	"licenseDetail": [
-		"Licence (MIT)",
-		"Copyright (C) 2013 Rase-",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "asn1.js",
-    "version": "4.6.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"This software is licensed under the MIT License.",
-		"",
-		"Copyright Fedor Indutny, 2013.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "blob",
-    "version": "0.0.4",
-	"isLicense": true,
-	"licenseDetail": [
-		"",
-		"MIT License",
-		"",
-		"Copyright (C) 2014 Rase-",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of",
-		"this software and associated documentation files (the 'Software'), to deal in",
-		"the Software without restriction, including without limitation the rights to",
-		"use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
-		"the Software, and to permit persons to whom the Software is furnished to do so,",
-		"subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all",
-		"copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
-		"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
-		"SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "bn.js",
-    "version": "4.11.3",
-	"isLicense": true,
-	"licenseDetail": [
-		"LICENSE",
-		"",
-		"This software is licensed under the MIT License.",
-		"",
-		"Copyright Fedor Indutny, 2015.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "brorand",
-    "version": "1.0.5",
-	"isLicense": true,
-	"licenseDetail": [
-		"LICENSE",
-		"",
-		"This software is licensed under the MIT License.",
-		"",
-		"Copyright Fedor Indutny, 2014.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "browserify-rsa",
-    "version": "4.0.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"The MIT License (MIT)",
-		"",
-		"Copyright (c) 2014-2016 Calvin Metcalf & contributors",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy",
-		"of this software and associated documentation files (the 'Software'), to deal",
-		"in the Software without restriction, including without limitation the rights",
-		"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
-		"copies of the Software, and to permit persons to whom the Software is",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all",
-		"copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
-		"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
-		"SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "browserify",
-    "version": "11.2.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"Some pieces from builtins/ taken from node core under this license:",
-		"",
-		"----",
-		"",
-		"Copyright Joyent, Inc. and other Node contributors.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a",
-		"copy of this software and associated documentation files (the",
-		"'Software'), to deal in the Software without restriction, including",
-		"without limitation the rights to use, copy, modify, merge, publish,",
-		"distribute, sublicense, and/or sell copies of the Software, and to permit",
-		"persons to whom the Software is furnished to do so, subject to the",
-		"following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included",
-		"in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS",
-		"OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
-		"MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN",
-		"NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,",
-		"DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR",
-		"OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE",
-		"USE OR OTHER DEALINGS IN THE SOFTWARE.",
-		"",
-		"----",
-		"",
-		"buffer_ieee754.js has this license in it:",
-		"",
-		"----",
-		"",
-		"Copyright (c) 2008-2015, Fair Oaks Labs, Inc.",
-		"All rights reserved.",
-		"",
-		"Redistribution and use in source and binary forms, with or without",
-		"modification, are permitted provided that the following conditions are met:",
-		"",
-		" * Redistributions of source code must retain the above copyright notice,",
-		" this list of conditions and the following disclaimer.",
-		"",
-		" * Redistributions in binary form must reproduce the above copyright notice,",
-		" this list of conditions and the following disclaimer in the documentation",
-		" and/or other materials provided with the distribution.",
-		"",
-		" * Neither the name of Fair Oaks Labs, Inc. nor the names of its contributors",
-		" may be used to endorse or promote products derived from this software",
-		" without specific prior written permission.",
-		"",
-		"THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'",
-		"AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE",
-		"IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE",
-		"ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE",
-		"LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR",
-		"CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF",
-		"SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS",
-		"INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN",
-		"CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)",
-		"ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE",
-		"POSSIBILITY OF SUCH DAMAGE.",
-		"",
-		"Modifications to writeIEEE754 to support negative zeroes made by Brian White",
-		"",
-		"----"
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "callsite",
-    "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT"
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "concat-stream",
-    "version": "1.4.10",
-	"isLicense": true,
-	"licenseDetail": [
-		"The MIT License",
-		"",
-		"Copyright (c) 2013 Max Ogden",
-		"",
-		"Permission is hereby granted, free of charge, ",
-		"to any person obtaining a copy of this software and ",
-		"associated documentation files (the 'Software'), to ",
-		"deal in the Software without restriction, including ",
-		"without limitation the rights to use, copy, modify, ",
-		"merge, publish, distribute, sublicense, and/or sell ",
-		"copies of the Software, and to permit persons to whom ",
-		"the Software is furnished to do so, ",
-		"subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice ",
-		"shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, ",
-		"EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES ",
-		"OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. ",
-		"IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ",
-		"ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, ",
-		"TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE ",
-		"SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "des.js",
-    "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"LICENSE",
-		"",
-		"This software is licensed under the MIT License.",
-		"",
-		"Copyright Fedor Indutny, 2015.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "domain-browser",
-    "version": "1.1.7",
-	"isLicense": true,
-	"licenseDetail": [
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "engine.io-parser",
-    "version": "1.2.4",
-	"isLicense": true,
-	"licenseDetail": [
-		"(The MIT License)",
-		"",
-		"Copyright (c) 2014 Automattic ",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining",
-		"a copy of this software and associated documentation files (the",
-		"'Software'), to deal in the Software without restriction, including",
-		"without limitation the rights to use, copy, modify, merge, publish,",
-		"distribute, sublicense, and/or sell copies of the Software, and to",
-		"permit persons to whom the Software is furnished to do so, subject to",
-		"the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be",
-		"included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,",
-		"EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
-		"MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.",
-		"IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY",
-		"CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,",
-		"TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE",
-		"SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "engine.io",
-    "version": "1.6.9",
-	"isLicense": true,
-	"licenseDetail": [
-		"(The MIT License)",
-		"",
-		"Copyright (c) 2014 Guillermo Rauch ",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software ",
-		"and associated documentation files (the 'Software'), to deal in the Software without restriction, ",
-		"including without limitation the rights to use, copy, modify, merge, publish, distribute, ",
-		"sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is ",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or ",
-		"substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING ",
-		"BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND ",
-		"NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, ",
-		"DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, ",
-		"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
-		""
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "has-cors@1.1.0",
-    "version": "has-cors@1.1.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"",
-		"MIT",
-		""
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "has",
-    "version": "1.0.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"Copyright (c) 2013 Thiago de Arruda",
-		"",
-		"Permission is hereby granted, free of charge, to any person",
-		"obtaining a copy of this software and associated documentation",
-		"files (the 'Software'), to deal in the Software without",
-		"restriction, including without limitation the rights to use,",
-		"copy, modify, merge, publish, distribute, sublicense, and/or sell",
-		"copies of the Software, and to permit persons to whom the",
-		"Software is furnished to do so, subject to the following",
-		"conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be",
-		"included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,",
-		"EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES",
-		"OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
-		"NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT",
-		"HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,",
-		"WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
-		"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR",
-		"OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "hash.js",
-    "version": "1.0.3",
-	"isLicense": true,
-	"licenseDetail": [
-		"LICENSE",
-		"This software is licensed under the MIT License.",
-		"",
-		"Copyright Fedor Indutny, 2014.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "indexof@0.0.1",
-    "version": "indexof@0.0.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT"
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "jsonify",
+    // Reason: LICENSE file missing in repo
+    "name": "array-map",
     "version": "0.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"license",
-		"public domain"
-	]
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "miller-rabin",
-    "version": "4.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"LICENSE",
-		"",
-		"This software is licensed under the MIT License.",
-		"",
-		"Copyright Fedor Indutny, 2014.",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
+    // Reason: LICENSE file missing in repo
+    "name": "array-reduce",
+    "version": "0.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "minimalistic-assert",
+    // Reason: LICENSE file missing in repo
+    "name": "arraybuffer.slice",
+    "version": "0.0.6",
+    "repositoryURL": "https://github.com/rase-/arraybuffer.slice",
+    "isLicense": true,
+    "licenseDetail": [
+        "Licence (MIT)",
+        "Copyright (C) 2013 Rase-",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "asn1.js",
+    "version": "4.8.0",
+    "repositoryURL": "https://github.com/indutny/asn1.js",
+    "isLicense": true,
+    "licenseDetail": [
+        "This software is licensed under the MIT License.",
+        "",
+        "Copyright Fedor Indutny, 2013.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: Licence file missing copyright statement
+    "name": "astw",
+    "version": "2.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) James Halliday",
+        "",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: Licence file missing copyright statement
+    "name": "base64-arraybuffer",
+    "version": "2.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) 2012 Niklas von Hertzen",
+        "",
+        "Permission is hereby granted, free of charge, to any person",
+        "obtaining a copy of this software and associated documentation",
+        "files (the \"Software\"), to deal in the Software without",
+        "restriction, including without limitation the rights to use,",
+        "copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the",
+        "Software is furnished to do so, subject to the following",
+        "conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES",
+        "OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
+        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT",
+        "HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,",
+        "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR",
+        "OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "blob",
+    "version": "0.0.4",
+    "repositoryURL": "http://github.com/webmodules/blob",
+    "isLicense": true,
+    "licenseDetail": [
+        "",
+        "MIT License",
+        "",
+        "Copyright (C) 2014 Rase-",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the 'Software'), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
+        "SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "bn.js",
+    "version": "4.11.6",
+    "repositoryURL": "http://github.com/indutny/bn.js",
+    "isLicense": true,
+    "licenseDetail": [
+        "LICENSE",
+        "",
+        "This software is licensed under the MIT License.",
+        "",
+        "Copyright Fedor Indutny, 2015.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "brorand",
+    "version": "1.0.5",
+    "repositoryURL": "https://github.com/indutny/brorand",
+    "isLicense": true,
+    "licenseDetail": [
+        "LICENSE",
+        "",
+        "This software is licensed under the MIT License.",
+        "",
+        "Copyright Fedor Indutny, 2014.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    "name": "browser-pack",
+    "version": "6.0.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "browserify-rsa",
+    "version": "4.0.1",
+    "repositoryURL": "https://github.com/crypto-browserify/browserify-rsa",
+    "isLicense": true,
+    "licenseDetail": [
+        "The MIT License (MIT)",
+        "",
+        "Copyright (c) 2014-2016 Calvin Metcalf & contributors",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the 'Software'), to deal",
+        "in the Software without restriction, including without limitation the rights",
+        "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
+        "SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "browserify",
+    "version": "13.1.0",
+    "repositoryURL": "https://github.com/substack/node-browserify",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) James Halliday",
+        "",
+        "Some pieces from builtins/ taken from node core under this license:",
+        "",
+        "----",
+        "",
+        "Copyright Joyent, Inc. and other Node contributors.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a",
+        "copy of this software and associated documentation files (the",
+        "'Software'), to deal in the Software without restriction, including",
+        "without limitation the rights to use, copy, modify, merge, publish,",
+        "distribute, sublicense, and/or sell copies of the Software, and to permit",
+        "persons to whom the Software is furnished to do so, subject to the",
+        "following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included",
+        "in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS",
+        "OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN",
+        "NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,",
+        "DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR",
+        "OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE",
+        "USE OR OTHER DEALINGS IN THE SOFTWARE.",
+        "",
+        "----",
+        "",
+        "buffer_ieee754.js has this license in it:",
+        "",
+        "----",
+        "",
+        "Copyright (c) 2008-2015, Fair Oaks Labs, Inc.",
+        "All rights reserved.",
+        "",
+        "Redistribution and use in source and binary forms, with or without",
+        "modification, are permitted provided that the following conditions are met:",
+        "",
+        " * Redistributions of source code must retain the above copyright notice,",
+        " this list of conditions and the following disclaimer.",
+        "",
+        " * Redistributions in binary form must reproduce the above copyright notice,",
+        " this list of conditions and the following disclaimer in the documentation",
+        " and/or other materials provided with the distribution.",
+        "",
+        " * Neither the name of Fair Oaks Labs, Inc. nor the names of its contributors",
+        " may be used to endorse or promote products derived from this software",
+        " without specific prior written permission.",
+        "",
+        "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'",
+        "AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE",
+        "IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE",
+        "ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE",
+        "LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR",
+        "CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF",
+        "SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS",
+        "INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN",
+        "CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)",
+        "ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE",
+        "POSSIBILITY OF SUCH DAMAGE.",
+        "",
+        "Modifications to writeIEEE754 to support negative zeroes made by Brian White",
+        "",
+        "----"
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "callsite",
     "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"ISC License:",
-		"Copyright (c) 2004-2010 by Internet Systems Consortium, Inc. ('ISC') ",
-		"Copyright (c) 1995-2003 by Internet Software Consortium",
-		"",
-		"Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS' AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE."
-	]
+    "repositoryURL": "https://github.com/tj/callsite",
+    "isLicense": true,
+    "licenseDetail": [
+    "(The MIT License)",
+    "",
+    "Copyright (c) 2011, 2013 TJ Holowaychuk <tj@vision-media.ca>",
+    "",
+    "Permission is hereby granted, free of charge, to any person obtaining",
+    "a copy of this software and associated documentation files (the",
+    "'Software'), to deal in the Software without restriction, including",
+    "without limitation the rights to use, copy, modify, merge, publish,",
+    "distribute, sublicense, and/or sell copies of the Software, and to",
+    "permit persons to whom the Software is furnished to do so, subject to",
+    "the following conditions:",
+    "",
+    "The above copyright notice and this permission notice shall be",
+    "included in all copies or substantial portions of the Software.",
+    "",
+    "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,",
+    "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+    "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.",
+    "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY",
+    "CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,",
+    "TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE",
+    "SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "object-component",
-    "version": "0.0.3",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT"
-	]
+    // Reason: LICENSE file missing in repo
+    "name": "concat-stream",
+    "version": "1.4.10",
+    "repositoryURL": "https://github.com/maxogden/concat-stream",
+    "isLicense": true,
+    "licenseDetail": [
+        "The MIT License",
+        "",
+        "Copyright (c) 2013 Max Ogden",
+        "",
+        "Permission is hereby granted, free of charge, ",
+        "to any person obtaining a copy of this software and ",
+        "associated documentation files (the 'Software'), to ",
+        "deal in the Software without restriction, including ",
+        "without limitation the rights to use, copy, modify, ",
+        "merge, publish, distribute, sublicense, and/or sell ",
+        "copies of the Software, and to permit persons to whom ",
+        "the Software is furnished to do so, ",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice ",
+        "shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, ",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES ",
+        "OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. ",
+        "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ",
+        "ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, ",
+        "TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE ",
+        "SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "parse-asn1",
-    "version": "5.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"ISC License:",
-		"Copyright (c) 2004-2010 by Internet Systems Consortium, Inc. ('ISC') ",
-		"Copyright (c) 1995-2003 by Internet Software Consortium",
-		"",
-		"Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS' AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "parsejson",
+    // Reason: LICENSE file missing in repo
+    "name": "concat-map",
     "version": "0.0.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"The MIT License (MIT)",
-		"",
-		"Copyright (c) 2015 Gal Koren",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy",
-		"of this software and associated documentation files (the 'Software'), to deal",
-		"in the Software without restriction, including without limitation the rights",
-		"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
-		"copies of the Software, and to permit persons to whom the Software is",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in",
-		"all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
-		"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN",
-		"THE SOFTWARE."
-	]
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) James Halliday",
+        "",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+        ""
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "q",
-    "version": "1.4.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"Copyright 2009–2016 Kristopher Michael Kowal. All rights reserved.",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy",
-		"of this software and associated documentation files (the 'Software'), to",
-		"deal in the Software without restriction, including without limitation the",
-		"rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
-		"sell copies of the Software, and to permit persons to whom the Software is",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in",
-		"all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
-		"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
-		"IN THE SOFTWARE."
-	]
+    "name": "cordova-registry-mapper",
+    "version": "1.1.15",
+    "isLicense": true,
+    "licenseDetail": [
+    "Copyright © Steve Gill",
+    "",
+    "Apache License",
+    "Version 2.0, January 2004",
+    "http://www.apache.org/licenses/",
+    "TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION",
+    "             1. Definitions.",
+    "             \"License\" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.",
+    "             \"Licensor\" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.",
+    "             \"Legal Entity\" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, \"control\" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.",
+    "             \"You\" (or \"Your\") shall mean an individual or Legal Entity exercising permissions granted by this License.",
+    "             \"Source\" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.",
+    "             \"Object\" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.",
+    "             \"Work\" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).",
+    "             \"Derivative Works\" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.",
+    "             \"Contribution\" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, \"submitted\" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as \"Not a Contribution.\"",
+    "             \"Contributor\" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.",
+    "             2. Grant of Copyright License.",
+    "             Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.",
+    "             3. Grant of Patent License.",
+    "             Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.",
+    "             4. Redistribution.",
+    "             You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:",
+    "             1.You must give any other recipients of the Work or Derivative Works a copy of this License; and",
+    "             2.You must cause any modified files to carry prominent notices stating that You changed the files; and",
+    "             3.You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and",
+    "             4.If the Work includes a \"NOTICE\" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.",
+    "             You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.",
+    "             5. Submission of Contributions.",
+    "             Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.",
+    "             6. Trademarks.",
+    "             This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.",
+    "             7. Disclaimer of Warranty.",
+    "             Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.",
+    "             8. Limitation of Liability.",
+    "             In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.",
+    "             9. Accepting Warranty or Additional Liability.",
+    "             While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.",
+    "             END OF TERMS AND CONDITIONS"
+
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "querystring",
-    "version": "0.2.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"Copyright 2012 Irakli Gozalishvili. All rights reserved.",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy",
-		"of this software and associated documentation files (the 'Software'), to",
-		"deal in the Software without restriction, including without limitation the",
-		"rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
-		"sell copies of the Software, and to permit persons to whom the Software is",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in",
-		"all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
-		"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
-		"IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "querystring-es3",
-    "version": "0.2.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"Copyright 2012 Irakli Gozalishvili. All rights reserved.",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy",
-		"of this software and associated documentation files (the 'Software'), to",
-		"deal in the Software without restriction, including without limitation the",
-		"rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
-		"sell copies of the Software, and to permit persons to whom the Software is",
-		"furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in",
-		"all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
-		"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
-		"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
-		"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
-		"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
-		"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
-		"IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "ripemd160",
-    "version": "1.0.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"LICENSE",
-		"",
-		"MIT"
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "utf-8-validate",
-    "version": "1.2.1",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"",
-		"MIT"
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "utf8",
-    "version": "2.1.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"",
-		"utf8.js is available under the MIT license."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "browserify-cipher",
-    "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "browserify-des",
-    "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "cipher-base",
-    "version": "1.0.2",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "cordova-serve",
-    "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"Licensed under the Apache License, Version 2.0 (the 'License'); you may not use this file except in compliance with the License. You may obtain a copy of the License at",
-		"",
-		"http://www.apache.org/licenses/LICENSE-2.0",
-		"",
-		"Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License."
-]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "create-ecdh",
-    "version": "4.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "create-hash",
-    "version": "1.1.2",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "create-hmac",
-    "version": "1.1.4",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "diffie-hellman",
-    "version": "5.0.2",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "elliptic",
-    "version": "6.2.3",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "evp_bytestokey",
-    "version": "1.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "has-binary",
-    "version": "0.1.6",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
-}
-,
-{
-	// Reason: LICENSE file missing in repo
-	"name": "parseqs",
+    "name": "csp-parse",
     "version": "0.0.2",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
+    "isLicense": true,
+    "licenseDetail": [
+    "ISC License (ISC)",
+        "",
+        "Copyright © c0nrad <c0nrad@c0nrad.io> (http://c0nrad.io/)",
+        "",
+        "Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE."
+
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "public-encrypt",
+    // Reason: LICENSE file missing in repo
+    "name": "des.js",
+    "version": "1.0.0",
+    "repositoryURL": "https://github.com/indutny/des.js",
+    "isLicense": true,
+    "licenseDetail": [
+        "LICENSE",
+        "",
+        "This software is licensed under the MIT License.",
+        "",
+        "Copyright Fedor Indutny, 2015.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "defined",
+    "version": "1.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "deps-sort",
+    "version": "2.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "detective",
+    "version": "4.3.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "domain-browser",
+    "version": "1.1.7",
+    "repositoryURL": "https://github.com/bevry/domain-browser",
+    "isLicense": true,
+    "licenseDetail": [
+        "Unless stated otherwise all works are:",
+        "*  Copyright © 2013+ Bevry Pty Ltd",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "elementtree",
+    "version": "0.1.6",
+    "isLicense": true,
+    "licenseDetail": [
+        "node-elementtree",
+        "Copyright (c) 2011, Rackspace, Inc.",
+        "",
+        "The ElementTree toolkit is Copyright (c) 1999-2007 by Fredrik Lundh",
+        "",
+        "Apache License",
+        "                           Version 2.0, January 2004",
+        "                        http://www.apache.org/licenses/",
+        "",
+        "   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION",
+        "",
+        "   1. Definitions.",
+        "",
+        "      \"License\" shall mean the terms and conditions for use, reproduction,",
+        "      and distribution as defined by Sections 1 through 9 of this document.",
+        "",
+        "      \"Licensor\" shall mean the copyright owner or entity authorized by",
+        "      the copyright owner that is granting the License.",
+        "",
+        "      \"Legal Entity\" shall mean the union of the acting entity and all",
+        "      other entities that control, are controlled by, or are under common",
+        "      control with that entity. For the purposes of this definition,",
+        "      \"control\" means (i) the power, direct or indirect, to cause the",
+        "      direction or management of such entity, whether by contract or",
+        "      otherwise, or (ii) ownership of fifty percent (50%) or more of the",
+        "      outstanding shares, or (iii) beneficial ownership of such entity.",
+        "",
+        "      \"You\" (or \"Your\") shall mean an individual or Legal Entity",
+        "      exercising permissions granted by this License.",
+        "",
+        "      \"Source\" form shall mean the preferred form for making modifications,",
+        "      including but not limited to software source code, documentation",
+        "      source, and configuration files.",
+        "",
+        "      \"Object\" form shall mean any form resulting from mechanical",
+        "      transformation or translation of a Source form, including but",
+        "      not limited to compiled object code, generated documentation,",
+        "      and conversions to other media types.",
+        "",
+        "      \"Work\" shall mean the work of authorship, whether in Source or",
+        "      Object form, made available under the License, as indicated by a",
+        "      copyright notice that is included in or attached to the work",
+        "      (an example is provided in the Appendix below).",
+        "",
+        "      \"Derivative Works\" shall mean any work, whether in Source or Object",
+        "      form, that is based on (or derived from) the Work and for which the",
+        "      editorial revisions, annotations, elaborations, or other modifications",
+        "      represent, as a whole, an original work of authorship. For the purposes",
+        "      of this License, Derivative Works shall not include works that remain",
+        "      separable from, or merely link (or bind by name) to the interfaces of,",
+        "      the Work and Derivative Works thereof.",
+        "",
+        "      \"Contribution\" shall mean any work of authorship, including",
+        "      the original version of the Work and any modifications or additions",
+        "      to that Work or Derivative Works thereof, that is intentionally",
+        "      submitted to Licensor for inclusion in the Work by the copyright owner",
+        "      or by an individual or Legal Entity authorized to submit on behalf of",
+        "      the copyright owner. For the purposes of this definition, \"submitted\"",
+        "      means any form of electronic, verbal, or written communication sent",
+        "      to the Licensor or its representatives, including but not limited to",
+        "      communication on electronic mailing lists, source code control systems,",
+        "      and issue tracking systems that are managed by, or on behalf of, the",
+        "      Licensor for the purpose of discussing and improving the Work, but",
+        "      excluding communication that is conspicuously marked or otherwise",
+        "      designated in writing by the copyright owner as \"Not a Contribution.\"",
+        "",
+        "      \"Contributor\" shall mean Licensor and any individual or Legal Entity",
+        "      on behalf of whom a Contribution has been received by Licensor and",
+        "      subsequently incorporated within the Work.",
+        "",
+        "   2. Grant of Copyright License. Subject to the terms and conditions of",
+        "      this License, each Contributor hereby grants to You a perpetual,",
+        "      worldwide, non-exclusive, no-charge, royalty-free, irrevocable",
+        "      copyright license to reproduce, prepare Derivative Works of,",
+        "      publicly display, publicly perform, sublicense, and distribute the",
+        "      Work and such Derivative Works in Source or Object form.",
+        "",
+        "   3. Grant of Patent License. Subject to the terms and conditions of",
+        "      this License, each Contributor hereby grants to You a perpetual,",
+        "      worldwide, non-exclusive, no-charge, royalty-free, irrevocable",
+        "      (except as stated in this section) patent license to make, have made,",
+        "      use, offer to sell, sell, import, and otherwise transfer the Work,",
+        "      where such license applies only to those patent claims licensable",
+        "      by such Contributor that are necessarily infringed by their",
+        "      Contribution(s) alone or by combination of their Contribution(s)",
+        "      with the Work to which such Contribution(s) was submitted. If You",
+        "      institute patent litigation against any entity (including a",
+        "      cross-claim or counterclaim in a lawsuit) alleging that the Work",
+        "      or a Contribution incorporated within the Work constitutes direct",
+        "      or contributory patent infringement, then any patent licenses",
+        "      granted to You under this License for that Work shall terminate",
+        "      as of the date such litigation is filed.",
+        "",
+        "   4. Redistribution. You may reproduce and distribute copies of the",
+        "      Work or Derivative Works thereof in any medium, with or without",
+        "      modifications, and in Source or Object form, provided that You",
+        "      meet the following conditions:",
+        "",
+        "      (a) You must give any other recipients of the Work or",
+        "          Derivative Works a copy of this License; and",
+        "",
+        "      (b) You must cause any modified files to carry prominent notices",
+        "          stating that You changed the files; and",
+        "",
+        "      (c) You must retain, in the Source form of any Derivative Works",
+        "          that You distribute, all copyright, patent, trademark, and",
+        "          attribution notices from the Source form of the Work,",
+        "          excluding those notices that do not pertain to any part of",
+        "          the Derivative Works; and",
+        "",
+        "      (d) If the Work includes a \"NOTICE\" text file as part of its",
+        "          distribution, then any Derivative Works that You distribute must",
+        "          include a readable copy of the attribution notices contained",
+        "          within such NOTICE file, excluding those notices that do not",
+        "          pertain to any part of the Derivative Works, in at least one",
+        "          of the following places: within a NOTICE text file distributed",
+        "          as part of the Derivative Works; within the Source form or",
+        "          documentation, if provided along with the Derivative Works; or,",
+        "          within a display generated by the Derivative Works, if and",
+        "          wherever such third-party notices normally appear. The contents",
+        "          of the NOTICE file are for informational purposes only and",
+        "          do not modify the License. You may add Your own attribution",
+        "          notices within Derivative Works that You distribute, alongside",
+        "          or as an addendum to the NOTICE text from the Work, provided",
+        "          that such additional attribution notices cannot be construed",
+        "          as modifying the License.",
+        "",
+        "      You may add Your own copyright statement to Your modifications and",
+        "      may provide additional or different license terms and conditions",
+        "      for use, reproduction, or distribution of Your modifications, or",
+        "      for any such Derivative Works as a whole, provided Your use,",
+        "      reproduction, and distribution of the Work otherwise complies with",
+        "      the conditions stated in this License.",
+        "",
+        "   5. Submission of Contributions. Unless You explicitly state otherwise,",
+        "      any Contribution intentionally submitted for inclusion in the Work",
+        "      by You to the Licensor shall be under the terms and conditions of",
+        "      this License, without any additional terms or conditions.",
+        "      Notwithstanding the above, nothing herein shall supersede or modify",
+        "      the terms of any separate license agreement you may have executed",
+        "      with Licensor regarding such Contributions.",
+        "",
+        "   6. Trademarks. This License does not grant permission to use the trade",
+        "      names, trademarks, service marks, or product names of the Licensor,",
+        "      except as required for reasonable and customary use in describing the",
+        "      origin of the Work and reproducing the content of the NOTICE file.",
+        "",
+        "   7. Disclaimer of Warranty. Unless required by applicable law or",
+        "      agreed to in writing, Licensor provides the Work (and each",
+        "      Contributor provides its Contributions) on an \"AS IS\" BASIS,",
+        "      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or",
+        "      implied, including, without limitation, any warranties or conditions",
+        "      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A",
+        "      PARTICULAR PURPOSE. You are solely responsible for determining the",
+        "      appropriateness of using or redistributing the Work and assume any",
+        "      risks associated with Your exercise of permissions under this License.",
+        "",
+        "   8. Limitation of Liability. In no event and under no legal theory,",
+        "      whether in tort (including negligence), contract, or otherwise,",
+        "      unless required by applicable law (such as deliberate and grossly",
+        "      negligent acts) or agreed to in writing, shall any Contributor be",
+        "      liable to You for damages, including any direct, indirect, special,",
+        "      incidental, or consequential damages of any character arising as a",
+        "      result of this License or out of the use or inability to use the",
+        "      Work (including but not limited to damages for loss of goodwill,",
+        "      work stoppage, computer failure or malfunction, or any and all",
+        "      other commercial damages or losses), even if such Contributor",
+        "      has been advised of the possibility of such damages.",
+        "",
+        "   9. Accepting Warranty or Additional Liability. While redistributing",
+        "      the Work or Derivative Works thereof, You may choose to offer,",
+        "      and charge a fee for, acceptance of support, warranty, indemnity,",
+        "      or other liability obligations and/or rights consistent with this",
+        "      License. However, in accepting such obligations, You may act only",
+        "      on Your own behalf and on Your sole responsibility, not on behalf",
+        "      of any other Contributor, and only if You agree to indemnify,",
+        "      defend, and hold each Contributor harmless for any liability",
+        "      incurred by, or claims asserted against, such Contributor by reason",
+        "      of your accepting any such warranty or additional liability.",
+        "",
+        "   END OF TERMS AND CONDITIONS",
+        "",
+        "   APPENDIX: How to apply the Apache License to your work.",
+        "",
+        "      To apply the Apache License to your work, attach the following",
+        "      boilerplate notice, with the fields enclosed by brackets \"[]\"",
+        "      replaced with your own identifying information. (Don't include",
+        "      the brackets!)  The text should be enclosed in the appropriate",
+        "      comment syntax for the file format. We also recommend that a",
+        "      file or class name and description of purpose be included on the",
+        "      same \"printed page\" as the copyright notice for easier",
+        "      identification within third-party archives.",
+        "",
+        "   Copyright [yyyy] [name of copyright owner]",
+        "",
+        "   Licensed under the Apache License, Version 2.0 (the \"License\");",
+        "   you may not use this file except in compliance with the License.",
+        "   You may obtain a copy of the License at",
+        "",
+        "       http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "   Unless required by applicable law or agreed to in writing, software",
+        "   distributed under the License is distributed on an \"AS IS\" BASIS,",
+        "   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "   See the License for the specific language governing permissions and",
+        "   limitations under the License."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "engine.io-parser",
+    "version": "1.2.4",
+    "repositoryURL": "https://github.com/socketio/engine.io-parser",
+    "isLicense": true,
+    "licenseDetail": [
+        "(The MIT License)",
+        "",
+        "Copyright (c) 2014 Automattic ",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining",
+        "a copy of this software and associated documentation files (the",
+        "'Software'), to deal in the Software without restriction, including",
+        "without limitation the rights to use, copy, modify, merge, publish,",
+        "distribute, sublicense, and/or sell copies of the Software, and to",
+        "permit persons to whom the Software is furnished to do so, subject to",
+        "the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.",
+        "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY",
+        "CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,",
+        "TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE",
+        "SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "engine.io",
+    "version": "1.6.9",
+    "repositoryURL": "https://github.com/socktio/engine.io",
+    "isLicense": true,
+    "licenseDetail": [
+        "(The MIT License)",
+        "",
+        "Copyright (c) 2014 Guillermo Rauch ",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software ",
+        "and associated documentation files (the 'Software'), to deal in the Software without restriction, ",
+        "including without limitation the rights to use, copy, modify, merge, publish, distribute, ",
+        "sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is ",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or ",
+        "substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING ",
+        "BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND ",
+        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, ",
+        "DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, ",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+        ""
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "has-cors@1.1.0",
+    "version": "has-cors@1.1.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "The MIT License (MIT)",
+        "",
+        "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "has",
+    "version": "1.0.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) 2013 Thiago de Arruda",
+        "",
+        "Permission is hereby granted, free of charge, to any person",
+        "obtaining a copy of this software and associated documentation",
+        "files (the 'Software'), to deal in the Software without",
+        "restriction, including without limitation the rights to use,",
+        "copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the",
+        "Software is furnished to do so, subject to the following",
+        "conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES",
+        "OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
+        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT",
+        "HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,",
+        "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR",
+        "OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "hash.js",
+    "version": "1.0.3",
+    "isLicense": true,
+    "licenseDetail": [
+        "LICENSE",
+        "This software is licensed under the MIT License.",
+        "",
+        "Copyright Fedor Indutny, 2014.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "indexof@0.0.1",
+    "version": "0.0.1",
+    "repositoryURL": "https://github.com/component/indexof",
+    "isLicense": true,
+    "licenseDetail": [
+        "The MIT License (MIT)",
+        "=====================",
+        "",
+        "Copyright (c) 2012 TJ Holowaychuk",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies",
+        "of the Software, and to permit persons to whom the Software is furnished to do",
+        "so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
+        "SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "insert-module-globals",
+    "version": "7.0.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "json-stable-stringify",
+    "version": "0.0.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "jsonify",
+    "version": "0.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "license",
+        "public domain"
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "labeled-stream-splicer",
+    "version": "2.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "lexical-scope",
+    "version": "1.2.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "miller-rabin",
     "version": "4.0.0",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
+    "repositoryURL": "https://github.com/indutny/miller-rabin",
+    "isLicense": true,
+    "licenseDetail": [
+        "LICENSE",
+        "",
+        "This software is licensed under the MIT License.",
+        "",
+        "Copyright Fedor Indutny, 2014.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
 }
 ,
 {
-	// Reason: LICENSE file missing in repo
-	"name": "randombytes",
+    // Reason: LICENSE file missing in repo
+    "name": "minimalistic-assert",
+    "version": "1.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "ISC License:",
+        "Copyright (c) 2004-2010 by Internet Systems Consortium, Inc. ('ISC') ",
+        "Copyright (c) 1995-2003 by Internet Software Consortium",
+        "",
+        "Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS' AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "minimist",
+    "version": "1.2.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "module-deps",
+    "version": "4.0.7",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "object-component",
+    "version": "0.0.3",
+    "repositoryURL": "https://npmjs.com/package/object-component",
+    "isLicense": true,
+    "licenseDetail": [
+        "(The MIT License)",
+        "",
+        "Copyright (c) 2011, 2013 TJ Holowaychuk <tj@vision-media.ca>",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining",
+        "a copy of this software and associated documentation files (the",
+        "'Software'), to deal in the Software without restriction, including",
+        "without limitation the rights to use, copy, modify, merge, publish,",
+        "distribute, sublicense, and/or sell copies of the Software, and to",
+        "permit persons to whom the Software is furnished to do so, subject to",
+        "the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.",
+        "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY",
+        "CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,",
+        "TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE",
+        "SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "parents",
+    "version": "1.0.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "parse-asn1",
+    "version": "5.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "ISC License:",
+        "Copyright (c) 2004-2010 by Internet Systems Consortium, Inc. ('ISC') ",
+        "Copyright (c) 1995-2003 by Internet Software Consortium",
+        "",
+        "Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS' AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "parsejson",
+    "version": "0.0.1",
+    "repositoryURL": "https://github.com/get/parsejson",
+    "isLicense": true,
+    "licenseDetail": [
+        "The MIT License (MIT)",
+        "",
+        "Copyright (c) 2015 Gal Koren",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the 'Software'), to deal",
+        "in the Software without restriction, including without limitation the rights",
+        "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN",
+        "THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "path-browserify",
+    "version": "0.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "path-platform",
+    "version": "0.11.15",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © Timothy J Fontaine <tjfontaine@gmail.com> (http://atxconsulting.com",
+        "MIT -- see https://github.com/joyent/node for license",
+        "This file is pulled directly from Node.js",
+        "",
+        "Node.js is licensed for use as follows:",
+        "",
+        "\"\"\"",
+        "Copyright Node.js contributors. All rights reserved.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the \"Software\"), to",
+        "deal in the Software without restriction, including without limitation the",
+        "rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
+        "sell copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
+        "IN THE SOFTWARE.",
+        "\"\"\"",
+        "",
+        "This license applies to parts of Node.js originating from the",
+        "https://github.com/joyent/node repository:",
+        "",
+        "\"\"\"",
+        "Copyright Joyent, Inc. and other Node contributors. All rights reserved.",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the \"Software\"), to",
+        "deal in the Software without restriction, including without limitation the",
+        "rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
+        "sell copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
+        "IN THE SOFTWARE.",
+        "\"\"\"",
+        "",
+        "The Node.js license applies to all parts of Node.js that are not externally",
+        "maintained libraries."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "q",
+    "version": "1.4.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright 2009–2016 Kristopher Michael Kowal. All rights reserved.",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the 'Software'), to",
+        "deal in the Software without restriction, including without limitation the",
+        "rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
+        "sell copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
+        "IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "querystring",
+    "version": "0.2.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright 2012 Irakli Gozalishvili. All rights reserved.",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the 'Software'), to",
+        "deal in the Software without restriction, including without limitation the",
+        "rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
+        "sell copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
+        "IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "querystring-es3",
+    "version": "0.2.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright 2012 Irakli Gozalishvili. All rights reserved.",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the 'Software'), to",
+        "deal in the Software without restriction, including without limitation the",
+        "rights to use, copy, modify, merge, publish, distribute, sublicense, and/or",
+        "sell copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in",
+        "all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS",
+        "IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "read-only-stream",
+    "version": "2.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "resolve",
+    "version": "1.1.7",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "ripemd160",
+    "version": "1.0.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "LICENSE",
+        "",
+        "MIT",
+        "",
+        "Copyright (c) ripemd160 project contributors",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "shell-quote",
+    "version": "1.6.1",
+    "repositoryURL": "https://github.com/substack/node-shell-quote",
+    "isLicense": true,
+    "licenseDetail": [
+    "The MIT License",
+    "",
+    "Copyright (c) 2013 James Halliday (mail@substack.net)",
+    "",
+    "Permission is hereby granted, free of charge,",
+    "to any person obtaining a copy of this software and",
+    "associated documentation files (the \"Software\"), to",
+    "deal in the Software without restriction, including",
+    "without limitation the rights to use, copy, modify,",
+    "merge, publish, distribute, sublicense, and/or sell",
+    "copies of the Software, and to permit persons to whom",
+    "the Software is furnished to do so,",
+    "subject to the following conditions:",
+    "",
+    "The above copyright notice and this permission notice",
+    "shall be included in all copies or substantial portions of the Software.",
+    "",
+    "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,",
+    "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES",
+    "OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.",
+    "                IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR",
+    "                ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,",
+    "                TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE",
+    "                SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "stream-splicer",
+    "version": "2.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "subarg",
+    "version": "1.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "syntax-error",
+    "version": "1.1.6",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "tty-browserify",
+    "version": "0.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "utf-8-validate",
+    "version": "1.2.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "License",
+        "",
+        "MIT"
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "utf8",
+    "version": "2.1.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "License",
+        "",
+        "utf8.js is available under the MIT license.",
+        "",
+        "Copyright Mathias Bynens <https://mathiasbynens.be/>",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining",
+        "a copy of this software and associated documentation files (the",
+        "\"Software\"), to deal in the Software without restriction, including",
+        "without limitation the rights to use, copy, modify, merge, publish,",
+        "distribute, sublicense, and/or sell copies of the Software, and to",
+        "permit persons to whom the Software is furnished to do so, subject to",
+        "the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
+        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE",
+        "LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION",
+        "OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION",
+        "WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "vm-browserify",
+    "version": "0.0.4",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © James Halliday",
+        "This software is released under the MIT license:",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of",
+        "this software and associated documentation files (the \"Software\"), to deal in",
+        "the Software without restriction, including without limitation the rights to",
+        "use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of",
+        "the Software, and to permit persons to whom the Software is furnished to do so,",
+        "subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS",
+        "FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR",
+        "COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER",
+        "IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN",
+        "CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "xmldom",
+    "version": "0.1.22",
+    "isLicense": true,
+    "licenseDetail": [
+        "The MIT License (MIT)",
+        "",
+        "Copyright (c) jindw <jindw@xidea.org> (http://www.xidea.org)\"",
+        "",
+        " Permission is hereby granted, free of charge, to any person",
+        " obtaining a copy of this software and associated documentation",
+        " files (the \"Software\"), to deal in the Software without",
+        " restriction, including without limitation the rights to use,",
+        " copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        " copies of the Software, and to permit persons to whom the",
+        " Software is furnished to do so, subject to the following",
+        " conditions:",
+        "",
+        " The above copyright notice and this permission notice shall be",
+        " included in all copies or substantial portions of the Software.",
+        "",
+        " THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,",
+        " EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES",
+        " OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
+        " NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT",
+        " HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,",
+        " WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING",
+        " FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR",
+        " OTHER DEALINGS IN THE SOFTWARE."
+
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "browserify-cipher",
+    "version": "1.0.0",
+    "repositoryURL": "https://github.com/crypto-browserify/browserify-cipher",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf <calvin.metcalf@gmail.com> & contributors",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "browserify-des",
+    "version": "1.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf <calvin.metcalf@gmail.com> & contributors",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    "name": "buffer-shims",
+    "version": "1.0.0",
+    "repositoryURL": "https://github.com/calvinmetcalf/buffer-shims",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) 2016 Calvin Metcalf",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+
+    ]
+
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "cipher-base",
+    "version": "1.0.2",
+    "isLicense": true,
+    "licenseDetail": [
+        "License",
+        "MIT License",
+        "",
+        "Copyright (c) Calvin Metcalf <calvin.metcalf@gmail.com>",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "cordova-serve",
+    "version": "1.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "# Licensed to the Apache Software Foundation (ASF) under one",
+        "# or more contributor license agreements.  See the NOTICE file",
+        "# distributed with this work for additional information",
+        "# regarding copyright ownership.  The ASF licenses this file",
+        "# to you under the Apache License, Version 2.0 (the",
+        "# \"License\"); you may not use this file except in compliance",
+        "# with the License.  You may obtain a copy of the License at",
+        "#",
+        "# http://www.apache.org/licenses/LICENSE-2.0",
+        "#",
+        "# Unless required by applicable law or agreed to in writing,",
+        "# software distributed under the License is distributed on an",
+        "# \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY",
+        "#  KIND, either express or implied.  See the License for the",
+        "# specific language governing permissions and limitations",
+        "# under the License. "
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "create-ecdh",
+    "version": "4.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf & contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "create-hash",
+    "version": "1.1.2",
+    "repositoryURL": "https://github.com/crypto-browserify/createHash",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf & contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "create-hmac",
+    "version": "1.1.4",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf & contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "diffie-hellman",
+    "version": "5.0.2",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf & contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "elliptic",
+    "version": "6.2.3",
+    "repositoryURL": "https://github.com/indutny/elliptic",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright Fedor Indutny, 2014.",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "evp_bytestokey",
+    "version": "1.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © Calvin Metcalf calvin.metcalf@gmail.com and contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "has-binary",
+    "version": "0.1.6",
+    "repositoryURL": "https://github.com/fis-components/has-binary",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © liaoxuezhi and has-binary author(s)",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "has-binary",
+    "version": "0.1.7",
+    "repositoryURL": "https://github.com/fis-components/has-binary",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © liaoxuezhi and has-binary author(s)",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "parseqs",
+    "version": "0.0.2",
+    "repositoryURL": "https://www.npmjs.com/package/parseqs",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) 2015 Gal Koren",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "public-encrypt",
+    "version": "4.0.0",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright © Calvin Metcalf calvin.metcalf@gmail.com and contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "punycode",
+    "version": "1.4.1",
+    "isLicense": true,
+    "licenseDetail": [
+        "Punycode.js is available under the [MIT](https://mths.be/mit) license.",
+        "",
+        "Copyright Mathias Bynens <https://mathiasbynens.be/>",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining",
+        "a copy of this software and associated documentation files (the",
+        "\"Software\"), to deal in the Software without restriction, including",
+        "without limitation the rights to use, copy, modify, merge, publish,",
+        "distribute, sublicense, and/or sell copies of the Software, and to",
+        "permit persons to whom the Software is furnished to do so, subject to",
+        "the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
+        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE",
+        "LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION",
+        "OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION",
+        "WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "punycode",
+    "version": "1.3.2",
+    "isLicense": true,
+    "licenseDetail": [
+        "Punycode.js is available under the [MIT](https://mths.be/mit) license.",
+        "",
+        "Copyright Mathias Bynens <https://mathiasbynens.be/>",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining",
+        "a copy of this software and associated documentation files (the",
+        "\"Software\"), to deal in the Software without restriction, including",
+        "without limitation the rights to use, copy, modify, merge, publish,",
+        "distribute, sublicense, and/or sell copies of the Software, and to",
+        "permit persons to whom the Software is furnished to do so, subject to",
+        "the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be",
+        "included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,",
+        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF",
+        "MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND",
+        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE",
+        "LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION",
+        "OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION",
+        "WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
+}
+,
+{
+    // Reason: LICENSE file missing in repo
+    "name": "randombytes",
     "version": "2.0.3",
-	"isLicense": true,
-	"licenseDetail": [
-		"License",
-		"MIT License",
-		"",
-		"Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
-		"",
-		"The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
-		"",
-		"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-	]
+    "repositoryURL": "https://github.com/crypto-browserify/randombytes",
+    "isLicense": true,
+    "licenseDetail": [
+        "Copyright (c) Calvin Metcalf <calvin.metcalf@gmail.com> & contributors",
+        "",
+        "License",
+        "MIT License",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    ]
 }
 ]
