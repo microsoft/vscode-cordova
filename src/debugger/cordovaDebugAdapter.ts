@@ -300,6 +300,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             if (fields.length < 8) {
                                 continue;
                             }
+                            // flag = 00010000 (16) -> accepting connection
+                            // state = 01 (1) -> unconnected
                             if (fields[3] !== '00010000' || fields[5] !== '01') {
                                 continue;
                             }
