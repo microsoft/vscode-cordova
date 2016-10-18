@@ -262,14 +262,69 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 return parsedFile.attrib[packageKey];
             });
         return Q.all([packagePromise, adbDevicesResult]).spread((appPackageName, targetDevice) => {
-            let getPidCommandArguments = ['-s', targetDevice, 'shell', `ps | grep ${appPackageName}`];
+            let getPidCommandArguments = ['-s', targetDevice, 'shell', 'ps'];
+            let getSocketsCommandArguments = ['-s', targetDevice, 'shell', 'cat /proc/net/unix'];
 
-            let findPidFunction = () => this.runAdbCommand(getPidCommandArguments, errorLogger).then((pidLine: string) => /^[^ ]+ +([^ ]+) /m.exec(pidLine));
+            let findAbstractNameFunction = () =>
+                // Get the pid from app package name
+                this.runAdbCommand(getPidCommandArguments, errorLogger)
+                .then((psResult) => {
+                    const lines = psResult.split('\n');
+                    for (const line of lines) {
+                        const fields = line.split(/[ \r]+/);
+                        if (fields.length < 9) {
+                            continue;
+                        }
+                        if (fields[8] === appPackageName) {
+                            return fields[1];
+                        }
+                    }
+                })
+                // Get the socket inodes from the pid
+                .then(pid => !pid ? [] :
+                    this.runAdbCommand(['-s', targetDevice, 'shell', `ls -l /proc/${pid}/fd`], errorLogger)
+                    .then(lsProcFdResult =>
+                        lsProcFdResult
+                        .split('\n')
+                        .map(line => line.match(/socket:\[(\d+)\]/))
+                        .filter(match => !!match)
+                        .map(match => parseInt(match[1], 10)))
+                    )
+                // Get the "_devtools_remote" abstract name by filtering /proc/net/unix with process inodes
+                .then(socketsInodes => !socketsInodes || socketsInodes.length === 0 ? undefined :
+                    this.runAdbCommand(getSocketsCommandArguments, errorLogger)
+                    .then((getSocketsResult) => {
+                        const lines = getSocketsResult.split('\n');
+                        for (const line of lines) {
+                            const fields = line.split(/[ \r]/);
+                            if (fields.length < 8) {
+                                continue;
+                            }
+                            // flag = 00010000 (16) -> accepting connection
+                            // state = 01 (1) -> unconnected
+                            if (fields[3] !== '00010000' || fields[5] !== '01') {
+                                continue;
+                            }
+                            const pathField = fields[7];
+                            if (pathField.length < 1 || pathField[0] !== '@') {
+                                continue;
+                            }
+                            if (pathField.indexOf('_devtools_remote') === -1) {
+                                continue;
+                            }
 
-            return CordovaDebugAdapter.retryAsync(findPidFunction, (match) => !!match, 5, 1, 5000, 'Unable to find pid of cordova app').then((match: RegExpExecArray) => match[1])
-                .then((pid) => {
+                            if (socketsInodes.indexOf(parseInt(fields[6], 10)) === -1) {
+                                continue;
+                            }
+                            return pathField.substr(1);
+                        }
+                    })
+                );
+
+            return CordovaDebugAdapter.retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, 'Unable to find localabstract name of cordova app')
+                .then((abstractName) => {
                     // Configure port forwarding to the app
-                    let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:webview_devtools_remote_${pid}`];
+                    let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
                     this.outputLogger('Forwarding debug port');
                     return this.runAdbCommand(forwardSocketCommandArguments, errorLogger).then(() => {
                         this.adbPortForwardingInfo = { targetDevice, port: attachArgs.port };
