@@ -10,6 +10,7 @@ import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
+import * as semver from 'semver';
 import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
@@ -213,6 +214,24 @@ function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: stri
 
 function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     let installedPlugins: string[] = CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot);
+
+    const nodeModulesDir = path.resolve(cordovaProjectRoot, 'node_modules');
+    if (semver.gte(vscode.version, '1.7.2-insider') && fs.existsSync(nodeModulesDir)) {
+        // Read installed node modules and filter out plugins that have been already installed in node_modules
+        // This happens if user has used '--fetch' option to install plugin. In this case VSCode will provide
+        // own intellisense for these plugins using ATA (automatic typings acquisition)
+        try {
+            const installedNpmModules: string[] = fs.readdirSync(nodeModulesDir);
+            installedPlugins = installedPlugins
+                .filter(pluginId => {
+                    // plugins with `forceInstallTypings` flag don't have typings on NPM yet,
+                    // so we still need to install these even if they present in 'node_modules'
+                    return getPluginTypingsJson()[pluginId].forceInstallTypings ||
+                        installedNpmModules.indexOf(pluginId) === -1;
+                });
+        } catch (e) { }
+    }
+
     let newTypeDefs = getNewTypeDefinitions(installedPlugins);
     let cordovaPluginTypesFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(cordovaProjectRoot);
     let ionicPluginTypesFolder = CordovaProjectHelper.getIonicPluginTypeDefsPath(cordovaProjectRoot);

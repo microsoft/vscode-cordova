@@ -57,10 +57,12 @@
         "typingFile": "cordova/plugins/WebSQL.d.ts"
     },
     "cordova-plugin-x-toast": {
-        "typingFile": "cordova/plugins/Toast.d.ts"
+        "typingFile": "cordova/plugins/Toast.d.ts",
+        "forceInstallTypings": true
     },
     "ionic-plugin-keyboard": {
-        "typingFile": "cordova-ionic/plugins/keyboard.d.ts"
+        "typingFile": "cordova-ionic/plugins/keyboard.d.ts",
+        "forceInstallTypings": true
     },
     "phonegap-plugin-barcodescanner": {
         "typingFile": "cordova/plugins/BarcodeScanner.d.ts"
