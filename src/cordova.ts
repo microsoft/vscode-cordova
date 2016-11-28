@@ -213,6 +213,12 @@ function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: stri
 }
 
 function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
+    // We don't need to install typings for Ionic2 since it has own TS
+    // wrapper around core plugins
+    if (CordovaProjectHelper.isIonic2Project(cordovaProjectRoot)) {
+        return;
+    }
+
     let installedPlugins: string[] = CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot);
 
     const nodeModulesDir = path.resolve(cordovaProjectRoot, 'node_modules');
