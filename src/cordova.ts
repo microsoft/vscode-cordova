@@ -214,8 +214,12 @@ function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: stri
 
 function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     // We don't need to install typings for Ionic2 since it has own TS
-    // wrapper around core plugins
-    if (CordovaProjectHelper.isIonic2Project(cordovaProjectRoot)) {
+    // wrapper around core plugins. We also won't try to manage typings
+    // in typescript projects as it might break compilation due to conflicts
+    // between typings we install and user-installed ones.
+    if (CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) ||
+        CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
+
         return;
     }
 
@@ -226,16 +230,20 @@ function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
         // Read installed node modules and filter out plugins that have been already installed in node_modules
         // This happens if user has used '--fetch' option to install plugin. In this case VSCode will provide
         // own intellisense for these plugins using ATA (automatic typings acquisition)
+        let installedNpmModules: string[] = [];
         try {
-            const installedNpmModules: string[] = fs.readdirSync(nodeModulesDir);
-            installedPlugins = installedPlugins
-                .filter(pluginId => {
-                    // plugins with `forceInstallTypings` flag don't have typings on NPM yet,
-                    // so we still need to install these even if they present in 'node_modules'
-                    return getPluginTypingsJson()[pluginId].forceInstallTypings ||
-                        installedNpmModules.indexOf(pluginId) === -1;
-                });
+            installedNpmModules = fs.readdirSync(nodeModulesDir);
         } catch (e) { }
+
+        const pluginTypingsJson = getPluginTypingsJson() || {};
+        installedPlugins = installedPlugins.filter(pluginId => {
+            // plugins with `forceInstallTypings` flag don't have typings on NPM yet,
+            // so we still need to install these even if they present in 'node_modules'
+            const forceInstallTypings = pluginTypingsJson[pluginId] &&
+                pluginTypingsJson[pluginId].forceInstallTypings;
+
+            return forceInstallTypings || installedNpmModules.indexOf(pluginId) === -1;
+        });
     }
 
     let newTypeDefs = getNewTypeDefinitions(installedPlugins);
