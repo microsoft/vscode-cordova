@@ -25,7 +25,7 @@ export class CordovaPathTransformer implements IDebugTransformer {
     private _webkitUrlToClientPath = new Map<string, string>();
     private _shadowedClientPaths = new Map<string, string>();
     private _pendingBreakpointsByPath = new Map<string, IPendingBreakpoint>();
-    private _outputLogger: (message: string, error?: boolean) => void;
+    private _outputLogger: (message: string, error?: boolean | string) => void;
 
     constructor(outputLogger: (message: string) => void) {
         this._outputLogger = outputLogger;
