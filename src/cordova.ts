@@ -190,22 +190,16 @@ function addPluginTypeDefinitions(projectRoot: string, installedPlugins: string[
         return pluginTypings[pluginName].typingFile;
     });
 
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd, CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath));
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot),
+        typingsToAdd, CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath));
 }
 
 function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: string[], newTypeDefs: string[]): void {
     // Find the type definition files that need to be removed
-    currentTypeDefs.forEach((typeDef: string) => {
-        if (newTypeDefs.indexOf(typeDef) < 0) {
-            var fileToDelete = path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typeDef);
-            fs.unlink(fileToDelete, (err: Error) => {
-                if (err) {
-                    // Debug-only message
-                    console.log("Failed to delete file " + fileToDelete);
-                }
-            });
-        }
-    });
+    let typeDefsToRemove = currentTypeDefs
+        .filter((typeDef: string) => newTypeDefs.indexOf(typeDef) < 0)
+
+    TsdHelper.removeTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typeDefsToRemove, projectRoot);
 }
 
 function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: string, typeDefinitionFile: string) {
