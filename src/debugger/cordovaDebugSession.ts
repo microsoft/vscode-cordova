@@ -37,7 +37,19 @@ export class CordovaDebugSession extends DebugSession {
     public constructor(targetLinesStartAt1: boolean, isServer: boolean = false, opts: IChromeDebugSessionOpts = {}) {
         super(targetLinesStartAt1, isServer);
 
-        let outputLogger = (message: string, error: boolean = false) => this.sendEvent(new OutputEvent(message + '\n', error ? 'stderr' : 'console'));
+        let outputLogger = (message: string, error?: boolean | string) => {
+            var category = "console";
+            if (error === true) {
+                category = "stderr";
+            }
+
+            if (typeof error === 'string') {
+                category = error;
+            }
+
+            this.sendEvent(new OutputEvent(message + '\n', category));
+        }
+
         let cdvPathTransformer = new CordovaPathTransformer(outputLogger);
         const connection = new ChromeConnection(chromeTargetDiscoveryStrategy.getChromeTargetWebSocketURL, opts.targetFilter);
         const adapter = opts.adapter || new CordovaDebugAdapter(outputLogger, cdvPathTransformer, connection);
