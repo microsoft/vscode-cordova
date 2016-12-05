@@ -63,7 +63,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
     private static SIMULATE_TARGETS: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
 
-    private outputLogger: (message: string, error?: boolean) => void;
+    private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
     private ionicLivereloadProcess: child_process.ChildProcess;
     private ionicDevServerUrl: string;
@@ -73,7 +73,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
 
-    public constructor(outputLogger: (message: string, error?: boolean) => void, cdvPathTransformer: CordovaPathTransformer, chromeConnection: ChromeConnection) {
+    public constructor(outputLogger: (message: string, error?: boolean | string) => void, cdvPathTransformer: CordovaPathTransformer, chromeConnection: ChromeConnection) {
         super(chromeConnection);
         this.outputLogger = outputLogger;
         this.cordovaPathTransformer = cdvPathTransformer;
@@ -221,6 +221,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 errorLogger(stderr);
                 throw new Error(`Error running android`);
             }
+            this.outputLogger(runOutput, "stdout");
             this.outputLogger('App successfully launched');
         });
 
@@ -363,9 +364,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(['build', 'ios', '--device'], errorLogger, workingDirectory).then(() => {
+            return cordovaRunCommand(['build', 'ios', '--device'], errorLogger, workingDirectory).then((output) => {
                 let buildFolder = path.join(workingDirectory, 'platforms', 'ios', 'build', 'device');
 
+                this.outputLogger(output[0], "stdout");
                 this.outputLogger('Installing app on device');
 
                 let installPromise = Q.nfcall(fs.readdir, buildFolder).then((files: string[]) => {
@@ -429,7 +431,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }
             }
 
-            return cordovaRunCommand(emulateArgs, errorLogger, workingDirectory).then(() => void 0).catch((err) => {
+            return cordovaRunCommand(emulateArgs, errorLogger, workingDirectory).then((output) => {
+                this.outputLogger(output[0], "stdout");
+            }).catch((err) => {
                 if (target) {
                     return cordovaRunCommand(['emulate', 'ios', '--list'], errorLogger, workingDirectory).then((output) => {
                         // List out available targets
