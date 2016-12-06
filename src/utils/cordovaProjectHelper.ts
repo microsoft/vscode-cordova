@@ -219,4 +219,12 @@ export class CordovaProjectHelper {
         }
         return false;
     }
+
+    /**
+     * Helper function to determine whether the project has a tsconfig.json
+     * manifest and can be considered as a typescript project.
+     */
+    public static isTypescriptProject(projectRoot: string): boolean {
+        return fs.existsSync(path.resolve(projectRoot, 'tsconfig.json'));
+    }
 }

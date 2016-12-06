@@ -10,6 +10,7 @@ import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
 import * as Q from "q";
+import * as semver from 'semver';
 import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
@@ -112,10 +113,10 @@ export function activate(context: vscode.ExtensionContext): void {
             path.join("cordova-ionic", "plugins", "keyboard.d.ts")
         ];
         if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
-            ionicTypings.push[
+            ionicTypings = ionicTypings.concat([
                 path.join("angularjs", "angular.d.ts"),
                 path.join("ionic", "ionic.d.ts")
-            ];
+            ]);
         }
         TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
     }
@@ -189,22 +190,16 @@ function addPluginTypeDefinitions(projectRoot: string, installedPlugins: string[
         return pluginTypings[pluginName].typingFile;
     });
 
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typingsToAdd, CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath));
+    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot),
+        typingsToAdd, CordovaProjectHelper.getCordovaProjectRoot(vscode.workspace.rootPath));
 }
 
 function removePluginTypeDefinitions(projectRoot: string, currentTypeDefs: string[], newTypeDefs: string[]): void {
     // Find the type definition files that need to be removed
-    currentTypeDefs.forEach((typeDef: string) => {
-        if (newTypeDefs.indexOf(typeDef) < 0) {
-            var fileToDelete = path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typeDef);
-            fs.unlink(fileToDelete, (err: Error) => {
-                if (err) {
-                    // Debug-only message
-                    console.log("Failed to delete file " + fileToDelete);
-                }
-            });
-        }
-    });
+    let typeDefsToRemove = currentTypeDefs
+        .filter((typeDef: string) => newTypeDefs.indexOf(typeDef) < 0)
+
+    TsdHelper.removeTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), typeDefsToRemove, projectRoot);
 }
 
 function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: string, typeDefinitionFile: string) {
@@ -212,7 +207,39 @@ function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: stri
 }
 
 function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
+    // We don't need to install typings for Ionic2 since it has own TS
+    // wrapper around core plugins. We also won't try to manage typings
+    // in typescript projects as it might break compilation due to conflicts
+    // between typings we install and user-installed ones.
+    if (CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) ||
+        CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
+
+        return;
+    }
+
     let installedPlugins: string[] = CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot);
+
+    const nodeModulesDir = path.resolve(cordovaProjectRoot, 'node_modules');
+    if (semver.gte(vscode.version, '1.7.2-insider') && fs.existsSync(nodeModulesDir)) {
+        // Read installed node modules and filter out plugins that have been already installed in node_modules
+        // This happens if user has used '--fetch' option to install plugin. In this case VSCode will provide
+        // own intellisense for these plugins using ATA (automatic typings acquisition)
+        let installedNpmModules: string[] = [];
+        try {
+            installedNpmModules = fs.readdirSync(nodeModulesDir);
+        } catch (e) { }
+
+        const pluginTypingsJson = getPluginTypingsJson() || {};
+        installedPlugins = installedPlugins.filter(pluginId => {
+            // plugins with `forceInstallTypings` flag don't have typings on NPM yet,
+            // so we still need to install these even if they present in 'node_modules'
+            const forceInstallTypings = pluginTypingsJson[pluginId] &&
+                pluginTypingsJson[pluginId].forceInstallTypings;
+
+            return forceInstallTypings || installedNpmModules.indexOf(pluginId) === -1;
+        });
+    }
+
     let newTypeDefs = getNewTypeDefinitions(installedPlugins);
     let cordovaPluginTypesFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(cordovaProjectRoot);
     let ionicPluginTypesFolder = CordovaProjectHelper.getIonicPluginTypeDefsPath(cordovaProjectRoot);
