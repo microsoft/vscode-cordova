@@ -1,3 +1,6 @@
+## 1.2.5
+* Changed how we look for the webview debugging connection to work on devices with restricted permissions
+
 ## 1.2.4
 * Changed how we add typings for intellisense to work with typescript 2 automatic typings acquisition
 * Now all cordova command output will be included in the debug console

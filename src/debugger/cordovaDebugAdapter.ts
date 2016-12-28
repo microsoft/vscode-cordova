@@ -281,18 +281,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         }
                     }
                 })
-                // Get the socket inodes from the pid
-                .then(pid => !pid ? [] :
-                    this.runAdbCommand(['-s', targetDevice, 'shell', `ls -l /proc/${pid}/fd`], errorLogger)
-                    .then(lsProcFdResult =>
-                        lsProcFdResult
-                        .split('\n')
-                        .map(line => line.match(/socket:\[(\d+)\]/))
-                        .filter(match => !!match)
-                        .map(match => parseInt(match[1], 10)))
-                    )
                 // Get the "_devtools_remote" abstract name by filtering /proc/net/unix with process inodes
-                .then(socketsInodes => !socketsInodes || socketsInodes.length === 0 ? undefined :
+                .then(pid =>
                     this.runAdbCommand(getSocketsCommandArguments, errorLogger)
                     .then((getSocketsResult) => {
                         const lines = getSocketsResult.split('\n');
@@ -314,10 +304,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                                 continue;
                             }
 
-                            if (socketsInodes.indexOf(parseInt(fields[6], 10)) === -1) {
-                                continue;
+                            if (pathField === "@webview_devtools_remote_" + pid) {
+                                // Matches the plain cordova webview format
+                                return pathField.substr(1);
                             }
-                            return pathField.substr(1);
+
+                            if (pathField === "@" + appPackageName + "_devtools_remote") {
+                                // Matches the crosswalk format of "@PACKAGENAME_devtools_remote
+                                return pathField.substr(1);
+                            }
+                            // No match, keep searching
                         }
                     })
                 );
