@@ -5,6 +5,8 @@ import {DebugProtocol} from 'vscode-debugprotocol';
 import {utils, logger, chromeUtils, ISetBreakpointsArgs, IDebugTransformer, IStackTraceResponseBody} from 'vscode-chrome-debug-core';
 import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from './cordovaDebugAdapter';
 
+import {BasePathTransformer} from 'vscode-chrome-debug-core';
+
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -17,7 +19,7 @@ interface IPendingBreakpoint {
 /**
  * Converts a local path from Code to a path on the target.
  */
-export class CordovaPathTransformer implements IDebugTransformer {
+export class CordovaPathTransformer extends BasePathTransformer {
     private _cordovaRoot: string;
     private _platform: string;
     private _webRoot: string;
@@ -28,17 +30,20 @@ export class CordovaPathTransformer implements IDebugTransformer {
     private _outputLogger: (message: string, error?: boolean | string) => void;
 
     constructor(outputLogger: (message: string) => void) {
+        super();
         this._outputLogger = outputLogger;
+        (<any>global).cordovaPathTransformer = this;
     }
 
-    public launch(args: ICordovaLaunchRequestArgs): void {
-        this.attach(args);
+    public launch(args: ICordovaLaunchRequestArgs): Promise<void> {
+        return this.attach(args);
     }
 
-    public attach(args: ICordovaAttachRequestArgs): void {
+    public attach(args: ICordovaAttachRequestArgs): Promise<void> {
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
         this._webRoot = args.webRoot || this._cordovaRoot;
+        return;
     }
 
     public setBreakpoints(args: ISetBreakpointsArgs): Promise<void> {
@@ -82,8 +87,8 @@ export class CordovaPathTransformer implements IDebugTransformer {
         this._shadowedClientPaths = new Map<string, string>();
     }
 
-    public scriptParsed(event: DebugProtocol.Event): void {
-        const webkitUrl: string = event.body.scriptUrl;
+    public scriptParsed(scriptPath: string): string {
+        const webkitUrl: string = scriptPath;
         const clientPath = this.getClientPath(webkitUrl);
 
         if (!clientPath) {
@@ -93,15 +98,16 @@ export class CordovaPathTransformer implements IDebugTransformer {
             this._clientPathToWebkitUrl.set(clientPath, webkitUrl);
             this._webkitUrlToClientPath.set(webkitUrl, clientPath);
 
-            event.body.scriptUrl = clientPath;
+            scriptPath = clientPath;
         }
 
-        if (this._pendingBreakpointsByPath.has(event.body.scriptUrl)) {
-            logger.log(`Paths.scriptParsed: Resolving pending breakpoints for ${event.body.scriptUrl}`);
-            const pendingBreakpoint = this._pendingBreakpointsByPath.get(event.body.scriptUrl);
-            this._pendingBreakpointsByPath.delete(event.body.scriptUrl);
+        if (this._pendingBreakpointsByPath.has(scriptPath)) {
+            logger.log(`Paths.scriptParsed: Resolving pending breakpoints for ${scriptPath}`);
+            const pendingBreakpoint = this._pendingBreakpointsByPath.get(scriptPath);
+            this._pendingBreakpointsByPath.delete(scriptPath);
             this.setBreakpoints(pendingBreakpoint.args).then(pendingBreakpoint.resolve, pendingBreakpoint.reject);
         }
+        return scriptPath;
     }
 
     public stackTraceResponse(response: IStackTraceResponseBody): void {

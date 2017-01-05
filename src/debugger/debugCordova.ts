@@ -1,7 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {CordovaDebugSession} from './cordovaDebugSession';
-import {DebugSession} from 'vscode-debugadapter';
+import {ChromeDebugSession, BaseSourceMapTransformer, BasePathTransformer} from 'vscode-chrome-debug-core';
+import {CordovaDebugAdapter} from './cordovaDebugAdapter';
+import {CordovaPathTransformer} from './cordovaPathTransformer';
 
-DebugSession.run(CordovaDebugSession);
+ChromeDebugSession.run(ChromeDebugSession.getSession({
+    adapter: CordovaDebugAdapter,
+    extensionName: 'cordova-tools',
+    pathTransformer: <typeof BasePathTransformer><any>CordovaPathTransformer,
+    sourceMapTransformer: BaseSourceMapTransformer
+}));

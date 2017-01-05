@@ -58,7 +58,7 @@ var sources = [
 
 var projectConfig = {
     noImplicitAny: false,
-    target: 'ES5',
+    target: 'es6',
     module: 'commonjs',
     declarationFiles: true,
     typescript: typescript

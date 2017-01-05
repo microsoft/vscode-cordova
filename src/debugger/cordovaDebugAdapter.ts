@@ -14,8 +14,9 @@ import * as Q from 'q';
 import * as simulate from 'cordova-simulate';
 
 import {DebugProtocol} from 'vscode-debugprotocol';
-import {ChromeDebugAdapter, ChromeConnection, IAttachRequestArgs} from 'vscode-chrome-debug-core';
-import * as Chrome from 'vscode-chrome-debug-core/lib/src/chrome/chromeDebugProtocol';
+import {OutputEvent} from 'vscode-debugadapter';
+import {ChromeDebugAdapter, ChromeConnection, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from 'vscode-chrome-debug-core';
+import {Crdp} from 'vscode-chrome-debug-core/lib/crdp/crdp'
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
 import {CordovaPathTransformer} from './cordovaPathTransformer';
@@ -39,6 +40,8 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     // Chrome debug properties
     url?: string;
     userDataDir?: string;
+    runtimeExecutable?: string;
+    runtimeArgs?: string[];
 
     // Cordova-simulate properties
     simulatePort?: number;
@@ -58,6 +61,15 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     attachDelay?: number;
 }
 
+const WIN_APPDATA = process.env.LOCALAPPDATA || '/';
+const DEFAULT_CHROME_PATH = {
+    LINUX: '/usr/bin/google-chrome',
+    OSX: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    WIN: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Google\\Chrome\\Application\\chrome.exe'),
+    WINx86: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+};
+
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
@@ -73,11 +85,25 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
 
-    public constructor(outputLogger: (message: string, error?: boolean | string) => void, cdvPathTransformer: CordovaPathTransformer, chromeConnection: ChromeConnection) {
-        super(chromeConnection);
-        this.outputLogger = outputLogger;
-        this.cordovaPathTransformer = cdvPathTransformer;
+    private chromeProc: child_process.ChildProcess;
+
+    public constructor(opts: IChromeDebugSessionOpts, debugSession: ChromeDebugSession) {
+        super(opts, debugSession);
+        // Bit of a hack, but chrome-debug-adapter-core no longer provides a way to access the transformer.
+        this.cordovaPathTransformer = (<any>global).cordovaPathTransformer;
         this.telemetryInitialized = false;
+        this.outputLogger = (message: string, error?: boolean | string) => {
+            var category = "console";
+            if (error === true) {
+                category = "stderr";
+            }
+
+            if (typeof error === 'string') {
+                category = error;
+            }
+
+            debugSession.sendEvent(new OutputEvent(message + '\n', category));
+        };
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
@@ -183,10 +209,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }).done(resolve, reject)));
     }
 
-    public disconnect(): Promise<void> {
-        return super.disconnect().then(() => {
-            return this.cleanUp();
-        });
+    public disconnect(): void {
+        this.cleanUp();
+        return super.disconnect();
+    }
+
+    public commonArgs(args: ICommonRequestArgs): void {
+        args.skipFileRegExps = ['^chrome-extension:.*'];
+        super.commonArgs(args);
     }
 
     private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
@@ -552,7 +582,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
                 this.outputLogger('Attaching to app');
 
-                return super.launch(launchArgs);
+                return this.launchChrome(launchArgs);
             }).catch((e) => {
                 this.outputLogger('An error occurred while attaching to the debugger. ' + this.getErrorMessage(e));
                 throw e;
@@ -562,17 +592,17 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     private resetSimulateViewport(): Q.Promise<void> {
-        let jsPromise = this._chromeConnection.emulation_clearDeviceMetricsOverride().then(() => {
-            return this._chromeConnection.emulation_setEmulatedMedia('');
+        let jsPromise = this.chrome.Emulation.clearDeviceMetricsOverride().then(() => {
+            return this.chrome.Emulation.setEmulatedMedia({media: ''});
         }).then(() => {
-            return this._chromeConnection.emulation_resetScrollAndPageScaleFactor();
+            return this.chrome.Emulation.resetPageScaleFactor();
         }).then(() => void 0);
 
         return Q(jsPromise);
     }
 
     private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
-        let jsPromise = this._chromeConnection.emulation_setDeviceMetricsOverride({
+        let jsPromise = this.chrome.Emulation.setDeviceMetricsOverride({
             width: data.width,
             height: data.height,
             deviceScaleFactor: 0,
@@ -660,7 +690,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Launch Chrome and attach
             this.outputLogger('Attaching to app');
-            return super.launch(launchArgs);
+            return this.launchChrome(launchArgs);
         });
     }
 
@@ -872,6 +902,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private cleanUp(): Q.Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
+        if (this.chromeProc) {
+            this.chromeProc.kill('SIGINT');
+            this.chromeProc = null;
+        }
+
         // Clean up this session's attach and launch args
         this.previousLaunchArgs = null;
         this.previousAttachArgs = null;
@@ -917,7 +952,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
     }
 
-    protected onScriptParsed(script: Chrome.Debugger.Script): void {
+    protected onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): void {
         let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
 
         if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
@@ -935,6 +970,61 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
 
         super.onScriptParsed(script);
+    }
+
+    private launchChrome(args: ICordovaLaunchRequestArgs): Promise<void> {
+        return super.launch(args).then(() => {
+            const chromePath: string = args.runtimeExecutable || CordovaDebugAdapter.getBrowserPath();
+            if (!chromePath) {
+                return Promise.reject(new Error(`Can't find Chrome - install it or set the "runtimeExecutable" field in the launch config.`));
+            }
+
+            const port = args.port || 9222;
+            const chromeArgs: string[] = ['--remote-debugging-port='+port];
+
+            chromeArgs.push(...['--no-first-run', '--no-default-browser-check']);
+            if(args.runtimeArgs) {
+                chromeArgs.push(...args.runtimeArgs);
+            }
+
+            if(args.userDataDir) {
+                chromeArgs.push('--user-data-dir=' + args.userDataDir);
+            }
+
+            const launchUrl = args.url;
+            chromeArgs.push(launchUrl);
+
+            this.chromeProc = child_process.spawn(chromePath, chromeArgs, {
+                detached: true,
+                stdio: ['ignore']
+            });
+            this.chromeProc.unref();
+            this.chromeProc.on('error', (err) => {
+                const errMsg = 'Chrome error: ' + err;
+                this.terminateSession(errMsg);
+            });
+
+            return this.doAttach(port, launchUrl, args.address);
+        });
+    }
+
+    private static getBrowserPath(): string {
+        const platform = ChromeDebugCoreUtils.getPlatform();
+        if (platform === ChromeDebugCoreUtils.Platform.OSX) {
+            return ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.OSX) ? DEFAULT_CHROME_PATH.OSX : null;
+        } else if (platform === ChromeDebugCoreUtils.Platform.Windows) {
+            if (ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.WINx86)) {
+                return DEFAULT_CHROME_PATH.WINx86;
+            } else if (ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.WIN)) {
+                return DEFAULT_CHROME_PATH.WIN;
+            } else if (ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.WIN_LOCALAPPDATA)) {
+                return DEFAULT_CHROME_PATH.WIN_LOCALAPPDATA;
+            } else {
+                return null;
+            }
+        } else {
+            return ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.LINUX) ? DEFAULT_CHROME_PATH.LINUX : null;
+        }
     }
 
     /**
