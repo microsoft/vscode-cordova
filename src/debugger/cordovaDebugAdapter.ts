@@ -687,10 +687,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let errorRegex: RegExp = /error:.*/i;
         let serverReady: boolean = false;
         let appReady: boolean = false;
-        let serverReadyTimeout: number = launchArgs.devServerTimeout || 20000;
+        let serverReadyTimeout: number = launchArgs.devServerTimeout || 30000;
         let appReadyTimeout: number = 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverDeferred = Q.defer<void>();
-        let appDeferred = Q.defer<void>();
+        let appDeferred = Q.defer<string>();
         let serverOut: string = '';
         let serverErr: string = '';
         const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
@@ -742,9 +742,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let serverOutputHandler = (data: Buffer) => {
             serverOut += data.toString();
 
-            // Listen for the server to be ready. We check for the "Ionic server commands" string to decide that.
+            // Listen for the server to be ready. We check for the "Running dev server:  http://localhost:<port>/" and "dev server running: http://localhost:<port>/" strings to decide that.
             //
-            // Exemple output of Ionic dev server:
+            // Example output of Ionic dev server:
             //
             // Running live reload server: undefined
             // Watching: 0=www/**/*, 1=!www/lib/**/*
@@ -757,7 +757,31 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // quit or q to shutdown the server and exit
             //
             // ionic $
-            if (!serverReady && /Ionic server commands/.test(serverOut)) {
+
+            // Example output of Ionic dev server (for Ionic2):
+            //
+            // > ionic-hello-world@ ionic:serve <path>
+            // > ionic-app-scripts serve "--v2" "--address" "0.0.0.0" "--port" "8100" "--livereload-port" "35729"
+            // ionic-app-scripts
+            // watch started
+            // build dev started
+            // clean started
+            // clean finished
+            // copy started
+            // transpile started
+            // transpile finished
+            // webpack started
+            // copy finished
+            // webpack finished
+            // sass started
+            // sass finished
+            // build dev finished
+            // watch ready
+            // dev server running: http://localhost:8100/
+
+            const SERVER_URL_RE  = /(dev server running|Running dev server):.*(http:\/\/.[^\s]*)/gmi;
+            let matchResult = SERVER_URL_RE.exec(serverOut);
+            if (!serverReady && matchResult) {
                 serverReady = true;
                 serverDeferred.resolve(void 0);
             }
@@ -773,7 +797,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                 if (isServe || regex.test(serverOut)) {
                     appReady = true;
-                    appDeferred.resolve(void 0);
+                    appDeferred.resolve(matchResult[2]);
                 }
             }
 
@@ -820,16 +844,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             this.outputLogger('Building and deploying app');
 
             return appDeferred.promise.timeout(appReadyTimeout, `Building and deploying the app timed out (${appReadyTimeout} ms)`);
-        }).then(() => {
-            // Find the dev server full URL
-            let match: string[] = /Running dev server:.*(http:\/\/.*)/gm.exec(serverOut);
+        }).then((ionicDevServerUrl: string) => {
 
-            if (!match || match.length < 2) {
+            if (!ionicDevServerUrl) {
                 return Q.reject<string>(new Error('Unable to determine the Ionic dev server address, please try re-launching the debugger'));
             }
 
             // The dev server address is the captured group at index 1 of the match
-            this.ionicDevServerUrl = match[1];
+            this.ionicDevServerUrl = ionicDevServerUrl
 
             // When ionic 2 cli is installed, output includes ansi characters for color coded output.
             this.ionicDevServerUrl = this.ionicDevServerUrl.replace(ansiRegex, '');
@@ -895,7 +917,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         if (this.ionicLivereloadProcess) {
             this.ionicLivereloadProcess.removeAllListeners('exit');
-            killServePromise = killChildProcess(this.ionicLivereloadProcess, errorLogger).finally(() => {
+            killServePromise = killChildProcess(this.ionicLivereloadProcess).finally(() => {
                 this.ionicLivereloadProcess = null;
             });
         } else {
