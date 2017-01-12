@@ -153,6 +153,10 @@ export class CordovaIosDeviceLauncher {
                         deferred1.resolve(socket);
                     } else if (initState === 2) {
                         deferred2.resolve(socket);
+                    } else if (initState === 3) {
+                        // iOS 10 no longer responds with output O message, so we assume the app is started after the device acknowledges our request to begin execution.
+                        deferred3.resolve(socket);
+                        initState++;
                     }
                 } else if (data[1] === 'O') {
                     // STDOUT was written to, and the rest of the input until reaching a '#' is a hex-encoded string of that output
