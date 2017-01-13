@@ -10,242 +10,250 @@ This project incorporates components from the projects listed below. Microsoft l
 3.	acorn version 2.7.0 (https://github.com/ternjs/acorn)
 4.	acorn version 1.2.2 (https://github.com/ternjs/acorn)
 5.	after version 0.8.1 (https://github.com/Raynos/after)
-6.	ansi-regex version 2.0.0 (https://github.com/chalk/ansi-regex)
-7.	ansi-styles version 2.2.1 (https://github.com/chalk/ansi-styles)
-8.	applicationinsights version 0.15.6 (https://github.com/Microsoft/ApplicationInsights-node.js)
-9.	array-filter version 0.0.1 (https://github.com/juliangruber/array-filter)
-10.	array-flatten version 1.1.1 (https://github.com/blakeembrey/array-flatten)
-11.	array-map (https://github.com/substack/array-map)
-12.	array-reduce (https://github.com/substack/array-reduce)
-13.	arraybuffer.slice version 0.0.6 (https://github.com/rase-/arraybuffer.slice)
-14.	asn1.js version 4.8.0 (https://github.com/indutny/asn1.js)
-15.	assert version 1.3.0 (https://github.com/defunctzombie/commonjs-assert)
-16.	astw version 2.0.0 (https://github.com/substack/astw)
-17.	backo2 version 1.0.2 (https://github.com/mokesmokes/backo)
-18.	balanced-match version 0.4.2 (https://github.com/juliangruber/balanced-match)
-19.	base64-arraybuffer version 0.1.2 (https://github.com/niklasvh/base64-arraybuffer)
-20.	base64-js version 1.1.2 (https://github.com/beatgammit/base64-js)
-21.	base64id version 0.1.0 (https://github.com/faeldt/base64id)
-22.	benchmark version 1.0.0 (https://github.com/bestiejs/benchmark.js)
-23.	better-assert version 1.0.2 (https://github.com/tj/better-assert)
-24.	blob version 0.0.4 (http://github.com/webmodules/blob)
-25.	bn.js version 4.11.6 (https://github.com/indutny/bn.js)
-26.	brace-expansion version 1.1.6 (https://github.com/juliangruber/brace-expansion)
-27.	brorand version 1.0.5 (https://github.com/indutny/brorand)
-28.	browser-pack version 6.0.1 (https://github.com/substack/browser-pack)
-29.	browser-resolve version 1.11.2 (https://github.com/defunctzombie/node-browser-resolve)
-30.	browserify version 13.1.0 (https://github.com/substack/node-browserify)
-31.	browserify-aes version 1.0.6 (https://github.com/crypto-browserify/browserify-aes)
-32.	browserify-cipher version 1.0.0 (https://github.com/crypto-browserify/browserify-cipher)
-33.	browserify-des version 1.0.0 (https://github.com/crypto-browserify/browserify-des)
-34.	browserify-rsa version 4.0.1 (https://github.com/crypto-browserify/browserify-rsa)
-35.	browserify-sign version 4.0.0 (https://github.com/crypto-browserify/browserify-sign)
-36.	browserify-zlib version 0.1.4 (https://github.com/devongovett/browserify-zlib)
-37.	buffer version 4.9.1 (https://github.com/feross/buffer)
-38.	buffer-shims version 1.0.0 (https://github.com/calvinmetcalf/buffer-shims)
-39.	buffer-xor version 1.0.3 (https://github.com/crypto-browserify/buffer-xor)
-40.	builtin-status-codes version 2.0.0 (https://github.com/bendrucker/builtin-status-codes)
-41.	bytes version 2.3.0 (https://github.com/visionmedia/bytes.js)
-42.	callsite version 1.0.0 (https://github.com/tj/callsite)
-43.	chalk version 1.1.3 (https://github.com/chalk/chalk)
-44.	cipher-base version 1.0.2 (https://github.com/crypto-browserify/cipher-base)
-45.	combine-source-map version 0.7.2 (https://github.com/thlorenz/combine-source-map)
-46.	component-bind version 1.0.0 (https://github.com/component/bind)
-47.	component-emitter version 1.2.0 (https://github.com/component/emitter)
-48.	component-emitter version 1.1.2 (https://github.com/component/emitter)
-49.	component-inherit version 0.0.3 (https://github.com/component/inherit)
-50.	compressible version 2.0.8 (https://github.com/jshttp/compressible)
-51.	compression version 1.6.2 (https://github.com/expressjs/compression)
-52.	concat-map version 0.0.1 (https://github.com/substack/node-concat-map)
-53.	concat-stream version 1.5.2 (https://github.com/maxogden/concat-stream)
-54.	console-browserify version 1.1.0 (https://github.com/Raynos/console-browserify)
-55.	constants-browserify version 1.0.0 (https://github.com/juliangruber/constants-browserify)
-56.	content-disposition version 0.5.1 (https://github.com/jshttp/content-disposition)
-57.	content-type version 1.0.2 (https://github.com/jshttp/content-type)
-58.	convert-source-map version 1.1.3 (https://github.com/thlorenz/convert-source-map)
-59.	cookie version 0.3.1 (https://github.com/jshttp/cookie)
-60.	cookie-signature version 1.0.6 (https://github.com/tj/node-cookie-signature)
-61.	cordova-registry-mapper version 1.1.15 (https://github.com/stevengill/cordova-registry-mapper)
-62.	cordova-serve version 1.0.0 (https://git-wip-us.apache.org/repos/asf/cordova-lib)
-63.	cordova-simulate version 0.3.0 (https://github.com/Microsoft/cordova-simulate)
-64.	core-util-is version 1.0.2 (https://github.com/isaacs/core-util-is)
-65.	create-ecdh version 4.0.0 (https://github.com/crypto-browserify/createECDH)
-66.	create-hash version 1.1.2 (https ://github.com/crypto-browserify/createHash)
-67.	create-hmac version 1.1.4 (https://github.com/crypto-browserify/createHmac)
-68.	crypto-browserify version 3.11.0 (https://github.com/crypto-browserify/crypto-browserify)
-69.	csp-parse version 0.0.2 (https://github.com/c0nrad/csp-parse)
-70.	date-now version 0.1.4 (https://github.com/Colingo/date-now)
-71.	debug version 2.2.0 (https://github.com/visionmedia/debug)
-72.	debug version 0.7.4 (https://github.com/visionmedia/debug)
-73.	defined version 1.0.0 (https://github.com/substack/defined)
-74.	depd version 1.1.0 (https://github.com/dougwilson/nodejs-depd)
-75.	deps-sort version 2.0.0 (https://github.com/substack/deps-sort)
-76.	des.js version 1.0.0 (https://github.com/indutny/des.js)
-77.	destroy version 1.0.4 (https://github.com/stream-utils/destroy)
-78.	detective version 4.3.1 (https://github.com/substack/node-detective)
-79.	diffie-hellman version 5.0.2 (https://github.com/crypto-browserify/diffie-hellman)
-80.	domain-browser version 1.1.7 (https://github.com/bevry/domain-browser)
-81.	duplexer2 version 0.1.4 (https://github.com/deoxxa/duplexer2)
-82.	ee-first version 1.1.1 (https://github.com/jonathanong/ee-first)
-83.	elementtree version 0.1.6 (https://github.com/racker/node-elementtree)
-84.	elliptic version 6.3.1 (https://github.com/indutny/elliptic)
-85.	encodeurl version 1.0.1 (https://github.com/pillarjs/encodeurl)
-86.	engine.io version 1.6.11 (https://github.com/socketio/engine.io)
-87.	engine.io-client version 1.6.11 (https://github.com/socketio/engine.io-client)
-88.	engine.io-parser version 1.2.4 (https://github.com/Automattic/engine.io-parser)
-89.	escape-html version 1.0.3 (https://github.com/component/escape-html)
-90.	escape-string-regexp version 1.0.5 (https://github.com/sindresorhus/escape-string-regexp)
-91.	etag version 1.7.0 (https://github.com/jshttp/etag)
-92.	events version 1.1.1 (https://github.com/Gozala/events)
-93.	evp_bytestokey version 1.0.0 (https://github.com/crypto-browserify/EVP_BytesToKey)
-94.	express version 4.14.0 (https://github.com/expressjs/express)
-95.	finalhandler version 0.5.0 (https://github.com/pillarjs/finalhandler)
-96.	forwarded version 0.1.0 (https://github.com/jshttp/forwarded)
-97.	fresh version 0.3.0 (https://github.com/jshttp/fresh)
-98.	fs.realpath version 1.0.0 (https://github.com/isaacs/fs.realpath)
-99.	function-bind version 1.1.0 (https://github.com/Raynos/function-bind)
-100.	glob version 7.0.6 (https://github.com/isaacs/node-glob)
-101.	glob version 5.0.15 (https://github.com/isaacs/node-glob)
-102.	has version 1.0.1 (https://github.com/tarruda/has)
-103.	has-ansi version 2.0.0 (https://github.com/chalk/has-ansi)
-104.	has-binary version 0.1.7 (https://github.com/fis-components/has-binary)
-105.	has-binary version 0.1.6 (https://github.com/fis-components/has-binary)
-106.	has-cors version 1.1.0 (https://github.com/component/has-cors)
-107.	hash.js version 1.0.3 (https://github.com/indutny/hash.js)
-108.	htmlescape version 1.1.1 (https://github.com/zertosh/htmlescape)
-109.	http-errors version 1.5.0 (https://github.com/jshttp/http-errors)
-110.	https-browserify version 0.0.1 (https://github.com/substack/https-browserify)
-111.	ieee754 version 1.1.6 (https://github.com/feross/ieee754)
-112.	indexof version 0.0.1 (https://github.com/component/indexof)
-113.	inflight version 1.0.5 (https://github.com/npm/inflight)
-114.	inherits version 2.0.1 (https://github.com/isaacs/inherits)
-115.	inline-source-map version 0.6.2 (https://github.com/thlorenz/inline-source-map)
-116.	insert-module-globals version 7.0.1 (https://github.com/substack/insert-module-globals)
-117.	ipaddr.js version 1.1.1 (https://github.com/whitequark/ipaddr.js)
-118.	is-buffer version 1.1.4 (https://github.com/feross/is-buffer)
-119.	isarray version 0.0.1 (https://github.com/juliangruber/isarray)
-120.	isarray version 1.0.0 (https://github.com/juliangruber/isarray)
-121.	json-stable-stringify version 0.0.1 (https://github.com/substack/json-stable-stringify)
-122.	json3 version 3.2.6 (https://github.com/bestiejs/json3)
-123.	json3 version 3.3.2 (https://github.com/bestiejs/json3)
-124.	jsonify (https://github.com/substack/jsonify)
-125.	jsonparse version 1.2.0 (https://github.com/creationix/jsonparse)
-126.	JSONStream version 1.1.4 (https://github.com/dominictarr/JSONStream)
-127.	labeled-stream-splicer version 2.0.0 (https://github.com/substack/labeled-stream-splicer)
-128.	lexical-scope version 1.2.0 (https://github.com/substack/lexical-scope)
-129.	lodash.memoize version 3.0.4 (https://github.com/lodash/lodash)
-130.	media-typer version 0.3.0 (https://github.com/jshttp/media-typer)
-131.	merge-descriptors version 1.0.1 (https://github.com/component/merge-descriptors)
-132.	methods version 1.1.2 (https://github.com/jshttp/methods)
-133.	miller-rabin version 4.0.0 (https://github.com/indutny/miller-rabin)
-134.	mime version 1.3.4 (https://github.com/broofa/node-mime)
-135.	mime-db version 1.12.0 (https://github.com/jshttp/mime-db)
-136.	mime-db version 1.23.0 (https://github.com/jshttp/mime-db)
-137.	mime-types version 2.0.14 (https://github.com/jshttp/mime-types)
-138.	mime-types version 2.1.11 (https://github.com/jshttp/mime-types)
-139.	minimalistic-assert version 1.0.0 (https://github.com/calvinmetcalf/minimalistic-assert)
-140.	minimatch version 3.0.3 (https://github.com/isaacs/minimatch)
-141.	minimist version 1.2.0 (https://github.com/substack/minimist)
-142.	module-deps version 4.0.7 (https://github.com/substack/module-deps)
-143.	ms version 0.7.1 (https://github.com/zeit/ms)
-144.	ncp version 2.0.0 (https://github.com/AvianFlu/ncp)
-145.	negotiator version 0.6.1 (https://github.com/jshttp/negotiator)
-146.	negotiator version 0.4.9 (https://github.com/jshttp/negotiator)
-147.	object-assign version 4.1.0 (https://github.com/sindresorhus/object-assign)
-148.	object-component version 0.0.3 (https://npmjs.com/package/object-component)
-149.	on-finished version 2.3.0 (https://github.com/jshttp/on-finished)
-150.	on-headers version 1.0.1 (https://github.com/jshttp/on-headers)
-151.	once version 1.3.3 (https://github.com/isaacs/once)
-152.	options version 0.0.6 (https://github.com/einaros/options.js)
-153.	os-browserify version 0.1.2 (https://github.com/CoderPuppy/os-browserify)
-154.	pako version 0.2.9 (https://github.com/nodeca/pako)
-155.	parents version 1.0.1 (https://github.com/substack/node-parents)
-156.	parse-asn1 version 5.0.0 (https://github.com/crypto-browserify/parse-asn1)
-157.	parsejson version 0.0.1 (https://github.com/get/parsejson)
-158.	parseqs version 0.0.2 (https://www.npmjs.com/package/parseqs)
-159.	parseuri version 0.0.4 (https://github.com/get/parseuri)
-160.	parseurl version 1.3.1 (https://github.com/pillarjs/parseurl)
-161.	path-browserify (https://github.com/substack/path-browserify)
-162.	path-is-absolute version 1.0.0 (https://github.com/sindresorhus/path-is-absolute)
-163.	path-platform version 0.11.15 (https://github.com/tjfontaine/node-path-platform)
-164.	path-to-regexp version 0.1.7 (https://github.com/component/path-to-regexp)
-165.	pbkdf2 version 3.0.4 (https://github.com/crypto-browserify/pbkdf2)
-166.	plist version 2.0.1 (https://github.com/TooTallNate/plist.js)
-167.	process version 0.11.9 (https://github.com/defunctzombie/node-process)
-168.	process-nextick-args version 1.0.7 (https://github.com/calvinmetcalf/process-nextick-args)
-169.	proxy-addr version 1.1.2 (https://github.com/jshttp/proxy-addr)
-170.	public-encrypt version 4.0.0 (https://github.com/crypto-browserify/publicEncrypt)
-171.	punycode version 1.3.2 (https://github.com/bestiejs/punycode.js)
-172.	punycode version 1.4.1 (https://github.com/bestiejs/punycode.js)
-173.	q version 1.4.1 (https://github.com/kriskowal/q)
-174.	qs version 6.2.0 (https://github.com/ljharb/qs)
-175.	querystring version 0.2.0 (https://github.com/Gozala/querystring)
-176.	querystring-es3 version 0.2.1 (https://github.com/mike-spainhower/querystring)
-177.	randombytes version 2.0.3 (https://github.com/crypto-browserify/randombytes)
-178.	range-parser version 1.2.0 (https://github.com/jshttp/range-parser)
-179.	read-only-stream version 2.0.0 (https://github.com/substack/read-only-stream)
-180.	readable-stream version 2.0.6 (https://github.com/nodejs/readable-stream)
-181.	readable-stream version 2.1.5 (https://github.com/nodejs/readable-stream)
-182.	replacestream version 4.0.2 (https://github.com/eugeneware/replacestream)
-183.	resolve version 1.1.7 (https://github.com/substack/node-resolve)
-184.	ripemd160 version 1.0.1 (https://github.com/crypto-browserify/ripemd160)
-185.	sax version 0.3.5 (https://github.com/isaacs/sax-js)
-186.	semver version 5.1.0 (https://github.com/npm/node-semver)
-187.	send version 0.14.1 (https://github.com/pillarjs/send)
-188.	send-transform version 0.14.1 (https://github.com/timbarham/send)
-189.	serve-static version 1.11.1 (https://github.com/expressjs/serve-static)
-190.	setprototypeof version 1.0.1 (https://github.com/wesleytodd/setprototypeof)
-191.	sha.js version 2.4.5 (https://github.com/crypto-browserify/sha.js)
-192.	shasum version 1.0.2 (https://github.com/dominictarr/shasum)
-193.	shell-quote version 1.6.1 (https://github.com/substack/node-shell-quote)
-194.	socket.io version 1.4.8 (https://github.com/socketio/socket.io)
-195.	socket.io-adapter version 0.4.0 (https://github.com/socketio/socket.io-adapter)
-196.	socket.io-client version 1.4.8 (https://github.com/socketio/socket.io-client)
-197.	socket.io-parser version 2.2.6 (https://github.com/socketio/socket.io-parser)
-198.	socket.io-parser version 2.2.2 (https://github.com/socketio/socket.io-parser)
-199.	source-map version 0.5.6 (https://github.com/mozilla/source-map)
-200.	statuses version 1.3.0 (https://github.com/jshttp/statuses)
-201.	stream-browserify version 2.0.1 (https://github.com/substack/stream-browserify)
-202.	stream-combiner2 version 1.1.1 (https://github.com/substack/stream-combiner2)
-203.	stream-http version 2.3.1 (https://github.com/jhiesey/stream-http)
-204.	stream-splicer version 2.0.0 (https://github.com/substack/stream-splicer)
-205.	string_decoder version 0.10.31 (https://github.com/rvagg/string_decoder)
-206.	strip-ansi version 3.0.1 (https://github.com/chalk/strip-ansi)
-207.	subarg version 1.0.0 (https://github.com/substack/subarg)
-208.	supports-color version 2.0.0 (https://github.com/chalk/supports-color)
-209.	syntax-error version 1.1.6 (https://github.com/substack/node-syntax-error)
-210.	through version 2.3.8 (https://github.com/dominictarr/through)
-211.	through2 version 2.0.1 (https://github.com/rvagg/through2)
-212.	timers-browserify version 1.4.2 (https://github.com/jryans/timers-browserify)
-213.	to-array version 0.1.4 (https://github.com/Raynos/to-array)
-214.	to-arraybuffer version 1.0.1 (https://github.com/jhiesey/to-arraybuffer)
-215.	tty-browserify (https://github.com/substack/tty-browserify)
-216.	type-is version 1.6.13 (https://github.com/jshttp/type-is)
-217.	typedarray version 0.0.6 (https://github.com/substack/typedarray)
-218.	ultron version 1.0.2 (https://github.com/unshiftio/ultron)
-219.	umd version 3.0.1 (https://github.com/ForbesLindesay/umd)
-220.	unpipe version 1.0.0 (https://github.com/stream-utils/unpipe)
-221.	url version 0.11.0 (https://github.com/defunctzombie/node-url)
-222.	utf8 version 2.1.0 (https://github.com/mathiasbynens/utf8.js)
-223.	util version 0.10.3 (https://github.com/defunctzombie/node-util)
-224.	util-deprecate version 1.0.2 (https://github.com/TooTallNate/util-deprecate)
-225.	utils-merge version 1.0.0 (https://github.com/jaredhanson/utils-merge)
-226.	vary version 1.1.0 (https://github.com/jshttp/vary)
-227.	vm-browserify version 0.0.4 (https://github.com/substack/vm-browserify)
-228.	vscode-chrome-debug-core version 0.1.16 (https://github.com/Microsoft/vscode-chrome-debug-core)
-229.	vscode-debugadapter version 1.12.0 (https://github.com/Microsoft/vscode-debugadapter-node)
-230.	vscode-debugprotocol version 1.12.0 (https://github.com/Microsoft/vscode-debugadapter-node)
-231.	vscode-extension-telemetry version 0.0.5 (https://github.com/Microsoft/vscode-extension-telemetry)
-232.	winreg version 0.0.13 (https://github.com/fresc81/node-winreg)
-233.	wrappy version 1.0.2 (https://github.com/npm/wrappy)
-234.	ws version 1.0.1 (https://github.com/websockets/ws)
-235.	ws version 1.1.0 (https://github.com/websockets/ws)
-236.	ws version 1.1.1 (https://github.com/websockets/ws)
-237.	xmlbuilder version 8.2.2 (https://github.com/oozcitak/xmlbuilder-js)
-238.	xmldom version 0.1.22 (https://github.com/jindw/xmldom)
-239.	xmlhttprequest-ssl version 1.5.1 (https://github.com/mjwwit/node-XMLHttpRequest)
-240.	xtend version 4.0.1 (https://github.com/Raynos/xtend)
-241.	yeast version 0.1.2 (https://github.com/unshiftio/yeast)
+6.	agent-base version 1.0.2 (https://github.com/TooTallNate/node-agent-base)
+7.	ansi-regex version 2.0.0 (https://github.com/chalk/ansi-regex)
+8.	ansi-styles version 2.2.1 (https://github.com/chalk/ansi-styles)
+9.	applicationinsights version 0.15.6 (https://github.com/Microsoft/ApplicationInsights-node.js)
+10.	array-filter version 0.0.1 (https://github.com/juliangruber/array-filter)
+11.	array-flatten version 1.1.1 (https://github.com/blakeembrey/array-flatten)
+12.	array-map (https://github.com/substack/array-map)
+13.	array-reduce (https://github.com/substack/array-reduce)
+14.	arraybuffer.slice version 0.0.6 (https@github.com:rase-/arraybuffer.slice)
+15.	asn1.js version 4.8.0 (https+ssh://git@github.com/indutny/asn1.js)
+16.	assert version 1.3.0 (https://github.com/defunctzombie/commonjs-assert)
+17.	astw version 2.0.0 (https://github.com/substack/astw)
+18.	backo2 version 1.0.2 (https://github.com/mokesmokes/backo)
+19.	balanced-match version 0.4.2 (https://github.com/juliangruber/balanced-match)
+20.	base64-arraybuffer version 0.1.2 (https://github.com/niklasvh/base64-arraybuffer)
+21.	base64-js version 1.1.2 (https://github.com/beatgammit/base64-js)
+22.	base64id version 0.1.0 (https://github.com/faeldt/base64id)
+23.	benchmark version 1.0.0 (https://github.com/bestiejs/benchmark.js)
+24.	better-assert version 1.0.2 (https://github.com/tj/better-assert)
+25.	blob version 0.0.4 (https@github.com:rase-/blob)
+26.	bn.js version 4.11.6 (https+ssh://git@github.com/indutny/bn.js)
+27.	brace-expansion version 1.1.6 (https://github.com/juliangruber/brace-expansion)
+28.	brorand version 1.0.5 (https@github.com:indutny/brorand)
+29.	browser-pack version 6.0.1 (https://github.com/substack/browser-pack)
+30.	browser-resolve version 1.11.2 (https://github.com/defunctzombie/node-browser-resolve)
+31.	browserify version 13.1.0 (https+ssh://git@github.com/substack/node-browserify)
+32.	browserify-aes version 1.0.6 (https://github.com/crypto-browserify/browserify-aes)
+33.	browserify-cipher version 1.0.0 (https+ssh://git@github.com/crypto-browserify/browserify-cipher)
+34.	browserify-des version 1.0.0 (https://github.com/crypto-browserify/browserify-des)
+35.	browserify-rsa version 4.0.1 (https+ssh://git@github.com/crypto-browserify/browserify-rsa)
+36.	browserify-sign version 4.0.0 (https://github.com/crypto-browserify/browserify-sign)
+37.	browserify-zlib version 0.1.4 (https://github.com/devongovett/browserify-zlib)
+38.	buffer version 4.9.1 (https://github.com/feross/buffer)
+39.	buffer-shims version 1.0.0 (https@github.com:calvinmetcalf/buffer-shims)
+40.	buffer-xor version 1.0.3 (https://github.com/crypto-browserify/buffer-xor)
+41.	builtin-status-codes version 2.0.0 (https://github.com/bendrucker/builtin-status-codes)
+42.	bytes version 2.3.0 (https://github.com/visionmedia/bytes.js)
+43.	callsite version 1.0.0 (null)
+44.	chalk version 1.1.3 (https://github.com/chalk/chalk)
+45.	cipher-base version 1.0.2 (https://github.com/crypto-browserify/cipher-base)
+46.	combine-source-map version 0.7.2 (https://github.com/thlorenz/combine-source-map)
+47.	component-bind version 1.0.0 (https://github.com/component/bind)
+48.	component-emitter version 1.2.0 (https://github.com/component/emitter)
+49.	component-emitter version 1.1.2 (https://github.com/component/emitter)
+50.	component-inherit version 0.0.3 (https://github.com/component/inherit)
+51.	compressible version 2.0.8 (https://github.com/jshttp/compressible)
+52.	compression version 1.6.2 (https://github.com/expressjs/compression)
+53.	concat-map version 0.0.1 (https://github.com/substack/node-concat-map)
+54.	concat-stream version 1.5.2 (https+ssh://git@github.com/maxogden/concat-stream)
+55.	console-browserify version 1.1.0 (https://github.com/Raynos/console-browserify)
+56.	constants-browserify version 1.0.0 (https://github.com/juliangruber/constants-browserify)
+57.	content-disposition version 0.5.1 (https://github.com/jshttp/content-disposition)
+58.	content-type version 1.0.2 (https://github.com/jshttp/content-type)
+59.	convert-source-map version 1.1.3 (https://github.com/thlorenz/convert-source-map)
+60.	cookie version 0.3.1 (https://github.com/jshttp/cookie)
+61.	cookie-signature version 1.0.6 (https://github.com/tj/node-cookie-signature)
+62.	cordova-registry-mapper version 1.1.15 (https://github.com/stevengill/cordova-registry-mapper)
+63.	cordova-serve version 1.0.0 (https://git-wip-us.apache.org/repos/asf/cordova-lib)
+64.	cordova-simulate version 0.3.0 (https://github.com/Microsoft/cordova-simulate)
+65.	core-util-is version 1.0.2 (https://github.com/isaacs/core-util-is)
+66.	create-ecdh version 4.0.0 (https://github.com/crypto-browserify/createECDH)
+67.	create-hash version 1.1.2 (https+ssh://git@github.com/crypto-browserify/createHash)
+68.	create-hmac version 1.1.4 (https://github.com/crypto-browserify/createHmac)
+69.	crypto-browserify version 3.11.0 (https://github.com/crypto-browserify/crypto-browserify)
+70.	csp-parse version 0.0.2 (https://github.com/c0nrad/csp-parse)
+71.	date-now version 0.1.4 (https://github.com/Colingo/date-now)
+72.	debug version 2.2.0 (https://github.com/visionmedia/debug)
+73.	debug version 0.7.4 (https://github.com/visionmedia/debug)
+74.	defined version 1.0.0 (https://github.com/substack/defined)
+75.	depd version 1.1.0 (https://github.com/dougwilson/nodejs-depd)
+76.	deps-sort version 2.0.0 (https://github.com/substack/deps-sort)
+77.	des.js version 1.0.0 (https+ssh://git@github.com/indutny/des.js)
+78.	destroy version 1.0.4 (https://github.com/stream-utils/destroy)
+79.	detective version 4.3.1 (https://github.com/substack/node-detective)
+80.	diffie-hellman version 5.0.2 (https://github.com/crypto-browserify/diffie-hellman)
+81.	domain-browser version 1.1.7 (https+ssh://git@github.com/bevry/domain-browser)
+82.	duplexer2 version 0.1.4 (https://github.com/deoxxa/duplexer2)
+83.	ee-first version 1.1.1 (https://github.com/jonathanong/ee-first)
+84.	elementtree version 0.1.6 (https://github.com/racker/node-elementtree)
+85.	elliptic version 6.3.1 (https+ssh://git@github.com/indutny/elliptic)
+86.	encodeurl version 1.0.1 (https://github.com/pillarjs/encodeurl)
+87.	engine.io version 1.6.11 (https+ssh://git@github.com/socketio/engine.io)
+88.	engine.io-client version 1.6.11 (https://github.com/socketio/engine.io-client)
+89.	engine.io-parser version 1.2.4 (https+ssh://git@github.com/Automattic/engine.io-parser)
+90.	escape-html version 1.0.3 (https://github.com/component/escape-html)
+91.	escape-string-regexp version 1.0.5 (https://github.com/sindresorhus/escape-string-regexp)
+92.	etag version 1.7.0 (https://github.com/jshttp/etag)
+93.	events version 1.1.1 (https://github.com/Gozala/events)
+94.	evp_bytestokey version 1.0.0 (https://github.com/crypto-browserify/EVP_BytesToKey)
+95.	express version 4.14.0 (https://github.com/expressjs/express)
+96.	extend version 3.0.0 (https://github.com/justmoon/node-extend)
+97.	finalhandler version 0.5.0 (https://github.com/pillarjs/finalhandler)
+98.	forwarded version 0.1.0 (https://github.com/jshttp/forwarded)
+99.	fresh version 0.3.0 (https://github.com/jshttp/fresh)
+100.	fs.realpath version 1.0.0 (https://github.com/isaacs/fs.realpath)
+101.	function-bind version 1.1.0 (https://github.com/Raynos/function-bind)
+102.	glob version 5.0.15 (https://github.com/isaacs/node-glob)
+103.	glob version 7.0.6 (https://github.com/isaacs/node-glob)
+104.	has version 1.0.1 (https://github.com/tarruda/has)
+105.	has-ansi version 2.0.0 (https://github.com/chalk/has-ansi)
+106.	has-binary version 0.1.6 (null)
+107.	has-binary version 0.1.7 (null)
+108.	has-cors version 1.1.0 (https://github.com/component/has-cors)
+109.	hash.js version 1.0.3 (https+ssh://git@github.com/indutny/hash.js)
+110.	htmlescape version 1.1.1 (https://github.com/zertosh/htmlescape)
+111.	http-errors version 1.5.0 (https://github.com/jshttp/http-errors)
+112.	http-proxy-agent version 0.2.7 (https://github.com/TooTallNate/node-http-proxy-agent)
+113.	https-browserify version 0.0.1 (https://github.com/substack/https-browserify)
+114.	https-proxy-agent version 0.3.6 (https://github.com/TooTallNate/node-https-proxy-agent)
+115.	ieee754 version 1.1.6 (https://github.com/feross/ieee754)
+116.	indexof version 0.0.1 (null)
+117.	inflight version 1.0.5 (https://github.com/npm/inflight)
+118.	inherits version 2.0.1 (https://github.com/isaacs/inherits)
+119.	inline-source-map version 0.6.2 (https://github.com/thlorenz/inline-source-map)
+120.	insert-module-globals version 7.0.1 (https://github.com/substack/insert-module-globals)
+121.	ipaddr.js version 1.1.1 (https://github.com/whitequark/ipaddr.js)
+122.	is-buffer version 1.1.4 (https://github.com/feross/is-buffer)
+123.	isarray version 0.0.1 (https://github.com/juliangruber/isarray)
+124.	isarray version 1.0.0 (https://github.com/juliangruber/isarray)
+125.	json-stable-stringify version 0.0.1 (https://github.com/substack/json-stable-stringify)
+126.	json3 version 3.2.6 (https://github.com/bestiejs/json3)
+127.	json3 version 3.3.2 (https://github.com/bestiejs/json3)
+128.	jsonify (https://github.com/substack/jsonify)
+129.	jsonparse version 1.2.0 (https://github.com/creationix/jsonparse)
+130.	JSONStream version 1.1.4 (https://github.com/dominictarr/JSONStream)
+131.	labeled-stream-splicer version 2.0.0 (https://github.com/substack/labeled-stream-splicer)
+132.	lexical-scope version 1.2.0 (https://github.com/substack/lexical-scope)
+133.	lodash.memoize version 3.0.4 (https://github.com/lodash/lodash)
+134.	media-typer version 0.3.0 (https://github.com/jshttp/media-typer)
+135.	merge-descriptors version 1.0.1 (https://github.com/component/merge-descriptors)
+136.	methods version 1.1.2 (https://github.com/jshttp/methods)
+137.	miller-rabin version 4.0.0 (https+ssh://git@github.com/indutny/miller-rabin)
+138.	mime version 1.3.4 (https://github.com/broofa/node-mime)
+139.	mime-db version 1.12.0 (https://github.com/jshttp/mime-db)
+140.	mime-db version 1.23.0 (https://github.com/jshttp/mime-db)
+141.	mime-types version 2.0.14 (https://github.com/jshttp/mime-types)
+142.	mime-types version 2.1.11 (https://github.com/jshttp/mime-types)
+143.	minimalistic-assert version 1.0.0 (https://github.com/calvinmetcalf/minimalistic-assert)
+144.	minimatch version 3.0.3 (https://github.com/isaacs/minimatch)
+145.	minimist version 1.2.0 (https://github.com/substack/minimist)
+146.	module-deps version 4.0.7 (https://github.com/substack/module-deps)
+147.	ms version 0.7.1 (https://github.com/zeit/ms)
+148.	ncp version 2.0.0 (https://github.com/AvianFlu/ncp)
+149.	negotiator version 0.6.1 (https://github.com/jshttp/negotiator)
+150.	negotiator version 0.4.9 (https://github.com/jshttp/negotiator)
+151.	noice-json-rpc version 1.0.0 (https+ssh://git@github.com/nojvek/noice-json-rpc)
+152.	object-assign version 4.1.0 (https://github.com/sindresorhus/object-assign)
+153.	object-component version 0.0.3 (null)
+154.	on-finished version 2.3.0 (https://github.com/jshttp/on-finished)
+155.	on-headers version 1.0.1 (https://github.com/jshttp/on-headers)
+156.	once version 1.3.3 (https://github.com/isaacs/once)
+157.	options version 0.0.6 (https://github.com/einaros/options.js)
+158.	os-browserify version 0.1.2 (https://github.com/CoderPuppy/os-browserify)
+159.	pako version 0.2.9 (https://github.com/nodeca/pako)
+160.	parents version 1.0.1 (https://github.com/substack/node-parents)
+161.	parse-asn1 version 5.0.0 (https://github.com/crypto-browserify/parse-asn1)
+162.	parsejson version 0.0.1 (null)
+163.	parseqs version 0.0.2 (null)
+164.	parseuri version 0.0.4 (https://github.com/get/parseuri)
+165.	parseurl version 1.3.1 (https://github.com/pillarjs/parseurl)
+166.	path-browserify (https://github.com/substack/path-browserify)
+167.	path-is-absolute version 1.0.0 (https://github.com/sindresorhus/path-is-absolute)
+168.	path-platform version 0.11.15 (https://github.com/tjfontaine/node-path-platform)
+169.	path-to-regexp version 0.1.7 (https://github.com/component/path-to-regexp)
+170.	pbkdf2 version 3.0.4 (https://github.com/crypto-browserify/pbkdf2)
+171.	plist version 2.0.1 (https://github.com/TooTallNate/plist.js)
+172.	process version 0.11.9 (https://github.com/defunctzombie/node-process)
+173.	process-nextick-args version 1.0.7 (https://github.com/calvinmetcalf/process-nextick-args)
+174.	proxy-addr version 1.1.2 (https://github.com/jshttp/proxy-addr)
+175.	public-encrypt version 4.0.0 (https://github.com/crypto-browserify/publicEncrypt)
+176.	punycode version 1.3.2 (https://github.com/bestiejs/punycode.js)
+177.	punycode version 1.4.1 (https://github.com/bestiejs/punycode.js)
+178.	q version 1.4.1 (https://github.com/kriskowal/q)
+179.	qs version 6.2.0 (https://github.com/ljharb/qs)
+180.	querystring version 0.2.0 (https://github.com/Gozala/querystring)
+181.	querystring-es3 version 0.2.1 (https://github.com/mike-spainhower/querystring)
+182.	randombytes version 2.0.3 (https+ssh://git@github.com/crypto-browserify/randombytes)
+183.	range-parser version 1.2.0 (https://github.com/jshttp/range-parser)
+184.	read-only-stream version 2.0.0 (https://github.com/substack/read-only-stream)
+185.	readable-stream version 2.0.6 (https://github.com/nodejs/readable-stream)
+186.	readable-stream version 2.1.5 (https://github.com/nodejs/readable-stream)
+187.	replacestream version 4.0.2 (https://github.com/eugeneware/replacestream)
+188.	request-light version 0.1.0 (https://github.com/Microsoft/node-request-light)
+189.	resolve version 1.1.7 (https://github.com/substack/node-resolve)
+190.	ripemd160 version 1.0.1 (https://github.com/crypto-browserify/ripemd160)
+191.	sax version 0.3.5 (https://github.com/isaacs/sax-js)
+192.	semver version 5.1.0 (https://github.com/npm/node-semver)
+193.	send version 0.14.1 (https://github.com/pillarjs/send)
+194.	send-transform version 0.14.1 (https://github.com/timbarham/send)
+195.	serve-static version 1.11.1 (https://github.com/expressjs/serve-static)
+196.	setprototypeof version 1.0.1 (https://github.com/wesleytodd/setprototypeof)
+197.	sha.js version 2.4.5 (https://github.com/crypto-browserify/sha.js)
+198.	shasum version 1.0.2 (https://github.com/dominictarr/shasum)
+199.	shell-quote version 1.6.1 (https+ssh://git@github.com/substack/node-shell-quote)
+200.	socket.io version 1.4.8 (https://github.com/socketio/socket.io)
+201.	socket.io-adapter version 0.4.0 (https://github.com/socketio/socket.io-adapter)
+202.	socket.io-client version 1.4.8 (https://github.com/socketio/socket.io-client)
+203.	socket.io-parser version 2.2.2 (https://github.com/socketio/socket.io-parser)
+204.	socket.io-parser version 2.2.6 (https://github.com/socketio/socket.io-parser)
+205.	source-map version 0.5.6 (https://github.com/mozilla/source-map)
+206.	statuses version 1.3.0 (https://github.com/jshttp/statuses)
+207.	stream-browserify version 2.0.1 (https://github.com/substack/stream-browserify)
+208.	stream-combiner2 version 1.1.1 (https://github.com/substack/stream-combiner2)
+209.	stream-http version 2.3.1 (https://github.com/jhiesey/stream-http)
+210.	stream-splicer version 2.0.0 (https://github.com/substack/stream-splicer)
+211.	string_decoder version 0.10.31 (https://github.com/rvagg/string_decoder)
+212.	strip-ansi version 3.0.1 (https://github.com/chalk/strip-ansi)
+213.	subarg version 1.0.0 (https://github.com/substack/subarg)
+214.	supports-color version 2.0.0 (https://github.com/chalk/supports-color)
+215.	syntax-error version 1.1.6 (https://github.com/substack/node-syntax-error)
+216.	through version 2.3.8 (https://github.com/dominictarr/through)
+217.	through2 version 2.0.1 (https://github.com/rvagg/through2)
+218.	timers-browserify version 1.4.2 (https://github.com/jryans/timers-browserify)
+219.	to-array version 0.1.4 (https://github.com/Raynos/to-array)
+220.	to-arraybuffer version 1.0.1 (https://github.com/jhiesey/to-arraybuffer)
+221.	tree-kill version 1.1.0 (https://github.com/pkrumins/node-tree-kill)
+222.	tty-browserify (https://github.com/substack/tty-browserify)
+223.	type-is version 1.6.13 (https://github.com/jshttp/type-is)
+224.	typedarray version 0.0.6 (https://github.com/substack/typedarray)
+225.	ultron version 1.0.2 (https://github.com/unshiftio/ultron)
+226.	umd version 3.0.1 (https://github.com/ForbesLindesay/umd)
+227.	unpipe version 1.0.0 (https://github.com/stream-utils/unpipe)
+228.	url version 0.11.0 (https://github.com/defunctzombie/node-url)
+229.	utf8 version 2.1.0 (https://github.com/mathiasbynens/utf8.js)
+230.	util version 0.10.3 (https://github.com/defunctzombie/node-util)
+231.	util-deprecate version 1.0.2 (https://github.com/TooTallNate/util-deprecate)
+232.	utils-merge version 1.0.0 (https://github.com/jaredhanson/utils-merge)
+233.	vary version 1.1.0 (https://github.com/jshttp/vary)
+234.	vm-browserify version 0.0.4 (https://github.com/substack/vm-browserify)
+235.	vscode-chrome-debug-core version 3.8.2 (https://github.com/Microsoft/vscode-chrome-debug-core)
+236.	vscode-debugadapter version 1.15.0 (https://github.com/Microsoft/vscode-debugadapter-node)
+237.	vscode-debugprotocol version 1.15.0 (https://github.com/Microsoft/vscode-debugadapter-node)
+239.	vscode-extension-telemetry version 0.0.5 (https://github.com/Microsoft/vscode-extension-telemetry)
+240.	vscode-nls version 1.0.7 (https://github.com/Microsoft/vscode-nls)
+241.	winreg version 0.0.13 (https://github.com/fresc81/node-winreg)
+242.	wrappy version 1.0.2 (https://github.com/npm/wrappy)
+243.	ws version 1.0.1 (https://github.com/websockets/ws)
+244.	ws version 1.1.0 (https://github.com/websockets/ws)
+245.	ws version 1.1.1 (https://github.com/websockets/ws)
+246.	xmlbuilder version 8.2.2 (https://github.com/oozcitak/xmlbuilder-js)
+247.	xmldom version 0.1.22 (https://github.com/jindw/xmldom)
+248.	xmlhttprequest-ssl version 1.5.1 (https://github.com/mjwwit/node-XMLHttpRequest)
+249.	xtend version 4.0.1 (https://github.com/Raynos/xtend)
+250.	yeast version 0.1.2 (https://github.com/unshiftio/yeast)
 
 
 %% accepts NOTICES AND INFORMATION BEGIN HERE
@@ -381,6 +389,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 =========================================
 END OF after NOTICES AND INFORMATION
+
+%% agent-base NOTICES AND INFORMATION BEGIN HERE
+=========================================
+(The MIT License)
+
+Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF agent-base NOTICES AND INFORMATION
 
 %% ansi-regex NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -2764,6 +2799,33 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF express NOTICES AND INFORMATION
 
+%% extend NOTICES AND INFORMATION BEGIN HERE
+=========================================
+The MIT License (MIT)
+
+Copyright (c) 2014 Stefan Thomas
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF extend NOTICES AND INFORMATION
+
 %% finalhandler NOTICES AND INFORMATION BEGIN HERE
 =========================================
 (The MIT License)
@@ -3106,6 +3168,33 @@ THE SOFTWARE.
 =========================================
 END OF http-errors NOTICES AND INFORMATION
 
+%% http-proxy-agent NOTICES AND INFORMATION BEGIN HERE
+=========================================
+(The MIT License)
+
+Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF http-proxy-agent NOTICES AND INFORMATION
+
 %% https-browserify NOTICES AND INFORMATION BEGIN HERE
 =========================================
 This software is released under the MIT license:
@@ -3130,6 +3219,33 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF https-browserify NOTICES AND INFORMATION
+
+%% https-proxy-agent NOTICES AND INFORMATION BEGIN HERE
+=========================================
+(The MIT License)
+
+Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF https-proxy-agent NOTICES AND INFORMATION
 
 %% ieee754 NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -4070,6 +4186,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF negotiator NOTICES AND INFORMATION
 
+%% noice-json-rpc NOTICES AND INFORMATION BEGIN HERE
+=========================================
+
+=========================================
+END OF noice-json-rpc NOTICES AND INFORMATION
+
 %% object-assign NOTICES AND INFORMATION BEGIN HERE
 =========================================
 The MIT License (MIT)
@@ -5004,6 +5126,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =========================================
 END OF replacestream NOTICES AND INFORMATION
 
+%% request-light NOTICES AND INFORMATION BEGIN HERE
+=========================================
+The MIT License (MIT)
+
+Copyright (c) Microsoft
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+=========================================
+END OF request-light NOTICES AND INFORMATION
+
 %% resolve NOTICES AND INFORMATION BEGIN HERE
 =========================================
 Copyright © James Halliday
@@ -5913,6 +6061,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF to-arraybuffer NOTICES AND INFORMATION
 
+%% tree-kill NOTICES AND INFORMATION BEGIN HERE
+=========================================
+
+=========================================
+END OF tree-kill NOTICES AND INFORMATION
+
 %% tty-browserify NOTICES AND INFORMATION BEGIN HERE
 =========================================
 Copyright © James Halliday
@@ -6360,6 +6514,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 =========================================
 END OF vscode-extension-telemetry NOTICES AND INFORMATION
+
+%% vscode-nls NOTICES AND INFORMATION BEGIN HERE
+=========================================
+The MIT License (MIT)
+
+Copyright (c) Microsoft Corporation
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF vscode-nls NOTICES AND INFORMATION
 
 %% winreg NOTICES AND INFORMATION BEGIN HERE
 =========================================
