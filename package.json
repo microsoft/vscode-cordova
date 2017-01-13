@@ -2,7 +2,7 @@
     "name": "cordova-tools",
     "displayName": "Cordova Tools",
     "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework.",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "private": true,
     "publisher": "vsmobile",
     "icon": "images/icon.png",
