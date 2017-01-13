@@ -267,7 +267,7 @@ export class TelemetryHelper {
         }
     }
 
-    private static addMultiValuedTelemetryEventProperty(event: Telemetry.TelemetryEvent, propertyName: string, propertyValue: string, isPii: boolean): void {
+    private static addMultiValuedTelemetryEventProperty(event: Telemetry.TelemetryEvent, propertyName: string, propertyValue: string[], isPii: boolean): void {
         for (var i: number = 0; i < propertyValue.length; i++) {
             TelemetryHelper.setTelemetryEventProperty(event, propertyName + i, propertyValue[i], isPii);
         }

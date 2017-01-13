@@ -69,7 +69,7 @@ export class TsdHelper {
                 CordovaProjectHelper.makeDirectoryRecursive(typingsFolder);
             }
 
-            let references = CordovaProjectHelper.existsSync(indexFile) ? fs.readFileSync(indexFile, 'utf8') : [];
+            let references = CordovaProjectHelper.existsSync(indexFile) ? fs.readFileSync(indexFile, 'utf8') : '';
             let referencesToAdd = installedTypeDefs
                 // Do not add references to typedefs that are not exist,
                 // this rarely happens if typedef file fails to copy
