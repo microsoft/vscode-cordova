@@ -85,11 +85,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
 
+    private attachedDeferred: Q.Deferred<void>;
+
     private chromeProc: child_process.ChildProcess;
 
     public constructor(opts: IChromeDebugSessionOpts, debugSession: ChromeDebugSession) {
         super(opts, debugSession);
         // Bit of a hack, but chrome-debug-adapter-core no longer provides a way to access the transformer.
+
         this.cordovaPathTransformer = (<any>global).cordovaPathTransformer;
         this.telemetryInitialized = false;
         this.outputLogger = (message: string, error?: boolean | string) => {
@@ -104,6 +107,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             debugSession.sendEvent(new OutputEvent(message + '\n', category));
         };
+        this.attachedDeferred = Q.defer<void>();
     }
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
@@ -198,7 +202,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }).then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
                     this.outputLogger('Attaching to app.');
                     this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
-                    return super.attach(processedAttachArgs);
+                    return super.attach(processedAttachArgs).then(() => {
+                        this.attachedDeferred.resolve(void 0);
+                    });
                 });
         }).catch((err) => {
             this.outputLogger(err.message || err, true);
@@ -215,7 +221,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     public commonArgs(args: ICommonRequestArgs): void {
-        args.skipFileRegExps = ['^chrome-extension:.*'];
+        // If we specify skipFileRegExps or skipFiles then vscode-chrome-debug-core attempts to call Debugger.setBlackboxPatterns
+        // however in older targets that API is not implemented, and results in errors.
+        args.skipFileRegExps = args.skipFiles = null;
         super.commonArgs(args);
     }
 
@@ -358,7 +366,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     });
                 });
         }).then(() => {
-            let args: IAttachRequestArgs = { port: attachArgs.port, webRoot: attachArgs.cwd };
+            let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
+            args.webRoot = attachArgs.cwd;
             return args;
         });
     }
@@ -535,7 +544,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     });
             });
         }).then(({port, url}) => {
-            return { port: port, webRoot: attachArgs.cwd, cwd: attachArgs.cwd, url: url };
+            let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
+            args.port = port;
+            args.webRoot = attachArgs.cwd;
+            args.url = url;
+            return args;
         });
     }
 
@@ -592,25 +605,25 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     private resetSimulateViewport(): Q.Promise<void> {
-        let jsPromise = this.chrome.Emulation.clearDeviceMetricsOverride().then(() => {
-            return this.chrome.Emulation.setEmulatedMedia({media: ''});
-        }).then(() => {
-            return this.chrome.Emulation.resetPageScaleFactor();
-        }).then(() => void 0);
-
-        return Q(jsPromise);
+        return this.attachedDeferred.promise.then(() =>
+            this.chrome.Emulation.clearDeviceMetricsOverride()
+        ).then(() =>
+            this.chrome.Emulation.setEmulatedMedia({media: ''})
+        ).then(() =>
+            this.chrome.Emulation.resetPageScaleFactor()
+        );
     }
 
     private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
-        let jsPromise = this.chrome.Emulation.setDeviceMetricsOverride({
-            width: data.width,
-            height: data.height,
-            deviceScaleFactor: 0,
-            mobile: true,
-            fitWindow: true
-        }).then(() => void 0);
-
-        return Q(jsPromise);
+        return this.attachedDeferred.promise.then(() =>
+            this.chrome.Emulation.setDeviceMetricsOverride({
+                width: data.width,
+                height: data.height,
+                deviceScaleFactor: 0,
+                mobile: true,
+                fitWindow: true
+            })
+        );
     }
 
     private connectSimulateDebugHost(simulateInfo: SimulationInfo): Q.Promise<void> {
@@ -1004,7 +1017,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 this.terminateSession(errMsg);
             });
 
-            return this.doAttach(port, launchUrl, args.address);
+            return this.doAttach(port, launchUrl, args.address).then(() => {
+                this.attachedDeferred.resolve(void 0);
+            });
         });
     }
 
