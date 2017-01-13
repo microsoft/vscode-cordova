@@ -1,3 +1,7 @@
+## 1.2.6
+* Updated to use newer chrome debugger
+* Fixed an issue with launching apps on iOS 10.X devices
+
 ## 1.2.5
 * Changed how we look for the webview debugging connection to work on devices with restricted permissions
 
