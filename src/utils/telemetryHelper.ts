@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {CordovaProjectHelper} from './cordovaProjectHelper';
-import {IPluginDetails} from './cordovaProjectHelper';
+import {CordovaProjectHelper, IPluginDetails} from './cordovaProjectHelper';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
@@ -275,16 +274,12 @@ export class TelemetryHelper {
             return;
         }
 
-        var pluginDetails : Object[] = new Array<Object>();
         // Send telemetry event with list of new plugins
-        newPlugins.forEach(pluginName => {
-            let pluginDetail : IPluginDetails = CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName);
-            if (pluginDetail) {
-                pluginDetails.push(pluginDetail);
-            }
-        });
+        let pluginDetails: IPluginDetails[] =
+            newPlugins.map(pluginName => CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName))
+            .filter(detail => !!detail);
 
-        let pluginEvent = new Telemetry.TelemetryEvent('plugins', { plugins: JSON.stringify(newPlugins) });
+        let pluginEvent = new Telemetry.TelemetryEvent('plugins', { plugins: JSON.stringify(pluginDetails) });
         Telemetry.send(pluginEvent);
 
         // Write out new list of previousPlugins
