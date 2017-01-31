@@ -16,6 +16,12 @@ export interface IProjectType {
     cordova: boolean;
 }
 
+export interface IPluginDetails {
+    PluginId: string;
+    PluginType: string;
+    Version: string;
+}
+
 export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_FOLDERNAME = "typings";
     private static PROJECT_TYPINGS_PLUGINS_FOLDERNAME = "plugins";
@@ -27,6 +33,38 @@ export class CordovaProjectHelper {
     private static PROJECT_PLUGINS_DIR: string = "plugins";
     private static IONIC_PROJECT_FILE: string = "ionic.project";
     private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
+
+    private static CORE_PLUGIN_LIST: string[] = ["cordova-plugin-battery-status",
+                                                "cordova-plugin-camera",
+                                                "cordova-plugin-console",
+                                                "cordova-plugin-contacts",
+                                                "cordova-plugin-device",
+                                                "cordova-plugin-device-motion",
+                                                "cordova-plugin-device-orientation",
+                                                "cordova-plugin-dialogs",
+                                                "cordova-plugin-file",
+                                                "cordova-plugin-file-transfer",
+                                                "cordova-plugin-geolocation",
+                                                "cordova-plugin-globalization",
+                                                "cordova-plugin-inappbrowser",
+                                                "cordova-plugin-media",
+                                                "cordova-plugin-media-capture",
+                                                "cordova-plugin-network-information",
+                                                "cordova-plugin-splashscreen",
+                                                "cordova-plugin-statusbar",
+                                                "cordova-plugin-vibration",
+                                                "cordova-plugin-ms-azure-mobile-apps",
+                                                "cordova-plugin-hockeyapp",
+                                                "cordova-plugin-code-push",
+                                                "cordova-plugin-bluetoothle",
+                                                "phonegap-plugin-push",
+                                                "cordova-plugin-ms-azure-mobile-engagement",
+                                                "cordova-plugin-whitelist",
+                                                "cordova-plugin-crosswalk-webview",
+                                                "cordova-plugin-ms-adal",
+                                                "com-intel-security-cordova-plugin",
+                                                "cordova-sqlite-storage",
+                                                "cordova-plugin-ms-intune-mam" ];
 
     /**
      *  Helper function check if a file exists.
@@ -112,6 +150,29 @@ export class CordovaProjectHelper {
         } catch (error) {
             console.error(error);
             return [];
+        }
+    }
+
+    public static getInstalledPluginDetails(projectRoot: string, pluginId: string): IPluginDetails {
+        let packageJsonPath: string = path.resolve(projectRoot, CordovaProjectHelper.PROJECT_PLUGINS_DIR, pluginId, 'package.json');
+
+        if (!CordovaProjectHelper.existsSync(packageJsonPath)) {
+            return null;
+        }
+
+        try {
+            let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+            let details: IPluginDetails = {
+                PluginId: packageJson.name,
+                Version: packageJson.version,
+                PluginType: CordovaProjectHelper.CORE_PLUGIN_LIST.indexOf(pluginId) >= 0 ? 'Core' : 'Npm'
+            };
+
+            return details;
+        } catch (error) {
+            console.error(error);
+            return null;
         }
     }
 

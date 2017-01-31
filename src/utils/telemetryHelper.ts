@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {CordovaProjectHelper} from './cordovaProjectHelper';
+import {CordovaProjectHelper, IPluginDetails} from './cordovaProjectHelper';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
@@ -237,6 +237,54 @@ export class TelemetryHelper {
     public static generate<T>(name: string, codeGeneratingTelemetry: { (telemetry: TelemetryGenerator): Thenable<T> }): Q.Promise<T> {
         var generator: TelemetryGenerator = new TelemetryGenerator(name);
         return generator.time(null, () => codeGeneratingTelemetry(generator)).finally(() => generator.send());
+    }
+
+    public static sendPluginsList(projectRoot: string, pluginsList: string[]): void {
+        // Load list of previously sent plugins = previousPlugins
+        var pluginFilePath = path.join(projectRoot, ".vscode", "plugins.json");
+        var pluginFileJson : any;
+
+        if (CordovaProjectHelper.existsSync(pluginFilePath)) {
+            try {
+                let pluginFileJsonContents = fs.readFileSync(pluginFilePath, 'utf8').toString();
+                pluginFileJson = JSON.parse(pluginFileJsonContents);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Get list of plugins in pluginsList but not in previousPlugins
+        var pluginsFileList : string[] = new Array<string>();
+        if (pluginFileJson && pluginFileJson.plugins) {
+            pluginsFileList = pluginFileJson.plugins;
+        } else {
+            pluginFileJson = new Object();
+        }
+
+        var newPlugins : string[] = new Array<string>();
+        pluginsList.forEach(plugin => {
+            if (pluginsFileList.indexOf(plugin) < 0) {
+                newPlugins.push(plugin);
+                pluginsFileList.push(plugin);
+            }
+        });
+
+        // If none, return
+        if (newPlugins.length == 0) {
+            return;
+        }
+
+        // Send telemetry event with list of new plugins
+        let pluginDetails: IPluginDetails[] =
+            newPlugins.map(pluginName => CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName))
+            .filter(detail => !!detail);
+
+        let pluginEvent = new Telemetry.TelemetryEvent('plugins', { plugins: JSON.stringify(pluginDetails) });
+        Telemetry.send(pluginEvent);
+
+        // Write out new list of previousPlugins
+        pluginFileJson.plugins = pluginsFileList;
+        fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson), 'utf8');
     }
 
     private static addTelemetryProperties(telemetryProperties: ICommandTelemetryProperties, newProps: Telemetry.ITelemetryProperties): void {

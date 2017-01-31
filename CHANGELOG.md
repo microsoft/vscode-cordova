@@ -1,3 +1,6 @@
+## 1.2.7
+* Added telemetry reporting for which plugins are installed for the project
+
 ## 1.2.6
 * Updated to use newer chrome debugger
 * Fixed an issue with launching apps on iOS 10.X devices

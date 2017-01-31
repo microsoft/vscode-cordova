@@ -121,6 +121,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
 
+            TelemetryHelper.sendPluginsList(launchArgs.cwd, CordovaProjectHelper.getInstalledPlugins(launchArgs.cwd));
+
             return TelemetryHelper.determineProjectTypes(launchArgs.cwd)
                 .then((projectType) => {
                     generator.add('projectType', projectType, false);
@@ -183,6 +185,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             attachArgs.target = attachArgs.target || 'emulator';
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
+
+            TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
             return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
                 .then((projectType) => generator.add('projectType', projectType, false))
