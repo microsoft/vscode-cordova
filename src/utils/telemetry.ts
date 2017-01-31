@@ -101,43 +101,45 @@ export module Telemetry {
             }
         }
 
-        export function send(event: TelemetryEvent, ignoreOptIn: boolean = false): void {
-            if (Telemetry.isOptedIn || ignoreOptIn) {
-                TelemetryUtils.addCommonProperties(event);
+        export function send(event: TelemetryEvent, ignoreOptIn: boolean = false): Q.Promise<void> {
+            return TelemetryUtils.initDeferred.promise.then(function() {
+                if (Telemetry.isOptedIn || ignoreOptIn) {
+                    TelemetryUtils.addCommonProperties(event);
 
-                try {
-                    if (event instanceof TelemetryActivity) {
-                        (<TelemetryActivity> event).end();
+                    try {
+                        if (event instanceof TelemetryActivity) {
+                            (<TelemetryActivity> event).end();
+                        }
+
+                        if (Telemetry.reporter) {
+                            var properties: ITelemetryEventProperties = {};
+                            var measures: ITelemetryEventMeasures = {};
+
+                            Object.keys(event.properties || {}).forEach(function (key: string) {
+                                var propertyValue = event.properties[key];
+
+                                switch (typeof propertyValue) {
+                                    case "string":
+                                        properties[key] = <string>propertyValue;
+                                        break;
+
+                                    case "number":
+                                        measures[key] = <number>propertyValue;
+                                        break;
+
+                                    default:
+                                        properties[key] = JSON.stringify(propertyValue);
+                                        break;
+                                }
+                            });
+
+                            Telemetry.reporter.sendTelemetryEvent(event.name, properties, measures);
+                        }
+                    } catch (err) {
+                        console.error(err);
                     }
-
-                    if (Telemetry.reporter) {
-                        var properties: ITelemetryEventProperties = {};
-                        var measures: ITelemetryEventMeasures = {};
-
-                        Object.keys(event.properties || {}).forEach(function (key: string) {
-                            var propertyValue = event.properties[key];
-
-                            switch (typeof propertyValue) {
-                                case "string":
-                                    properties[key] = <string>propertyValue;
-                                    break;
-
-                                case "number":
-                                    measures[key] = <number>propertyValue;
-                                    break;
-
-                                default:
-                                    properties[key] = JSON.stringify(propertyValue);
-                                    break;
-                            }
-                        });
-
-                        Telemetry.reporter.sendTelemetryEvent(event.name, properties, measures);
-                    }
-                } catch (err) {
-                    console.error(err);
                 }
-            }
+            });
         }
 
         export function isInternal(): boolean {
@@ -166,6 +168,7 @@ export module Telemetry {
             public static userType: string;
             public static sessionId: string;
             public static optInCollectedForCurrentSession: boolean;
+            public static initDeferred: Q.Deferred<any> = Q.defer<any>();
 
             private static userId: string;
             private static telemetrySettings: ITelemetrySettings = null;
@@ -191,14 +194,16 @@ export module Telemetry {
                     Telemetry.reporter = new ExtensionTelemetryReporter(Telemetry.appName, appVersion, TelemetryUtils.APPINSIGHTS_INSTRUMENTATIONKEY, initOptions.projectRoot);
                 }
 
-                return TelemetryUtils.getUserId()
+                TelemetryUtils.getUserId()
                 .then(function (userId: string): void {
                     TelemetryUtils.userId = userId;
                     TelemetryUtils.userType = TelemetryUtils.getUserType();
 
                     Telemetry.isOptedIn = TelemetryUtils.getTelemetryOptInSetting();
                     TelemetryUtils.saveSettings();
+                    TelemetryUtils.initDeferred.resolve(void 0);
                 });
+                return TelemetryUtils.initDeferred.promise;
             }
 
             public static addCommonProperties(event: any): void {

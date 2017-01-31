@@ -239,6 +239,58 @@ export class TelemetryHelper {
         return generator.time(null, () => codeGeneratingTelemetry(generator)).finally(() => generator.send());
     }
 
+    public static sendPluginsList(projectRoot: string, pluginsList: string[]): void {
+        // Load list of previously sent plugins = previousPlugins
+        var pluginFilePath = path.join(projectRoot, ".vscode", "plugins.json");
+        var pluginFileJson : any;
+
+        if (CordovaProjectHelper.existsSync(pluginFilePath)) {
+            try {
+                let pluginFileJsonContents = fs.readFileSync(pluginFilePath, 'utf8').toString();
+                pluginFileJson = JSON.parse(pluginFileJsonContents);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Get list of plugins in pluginsList but not in previousPlugins
+        var pluginsFileList : string[] = new Array<string>();
+        if (pluginFileJson && pluginFileJson.plugins) {
+            pluginsFileList = pluginFileJson.plugins;
+        } else {
+            pluginFileJson = new Object();
+        }
+
+        var newPlugins : string[] = new Array<string>();
+        pluginsList.forEach(plugin => {
+            if (pluginsFileList.indexOf(plugin) < 0) {
+                newPlugins.push(plugin);
+                pluginsFileList.push(plugin);
+            }
+        });
+
+        // If none, return
+        if (newPlugins.length == 0) {
+            return;
+        }
+
+        var pluginDetails : Object[] = new Array<Object>();
+        // Send telemetry event with list of new plugins
+        newPlugins.forEach(pluginName => {
+            let pluginDetail = CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName);
+            if (pluginDetail) {
+                pluginDetails.push(pluginDetail);
+            }
+        });
+
+        let pluginEvent = new Telemetry.TelemetryEvent('plugins', { plugins: JSON.stringify(newPlugins) });
+        Telemetry.send(pluginEvent);
+
+        // Write out new list of previousPlugins
+        pluginFileJson.plugins = pluginsFileList;
+        fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson), 'utf8');
+    }
+
     private static addTelemetryProperties(telemetryProperties: ICommandTelemetryProperties, newProps: Telemetry.ITelemetryProperties): void {
         Object.keys(newProps).forEach(function (propName: string): void {
             telemetryProperties[propName] = TelemetryHelper.telemetryProperty(newProps[propName]);

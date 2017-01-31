@@ -132,6 +132,13 @@ export function activate(context: vscode.ExtensionContext): void {
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
 
+    var pluginFilePath = path.join(cordovaProjectRoot, ".vscode", "plugins.json");
+    if (fs.existsSync(pluginFilePath)) {
+        fs.unlinkSync(pluginFilePath);
+    }
+
+    TelemetryHelper.sendPluginsList(cordovaProjectRoot, CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot));
+
     // In VSCode 0.10.10+, if the root doesn't contain jsconfig.json or tsconfig.json, intellisense won't work for files without /// typing references, so add a jsconfig.json here if necessary
     let jsconfigPath: string = path.join(vscode.workspace.rootPath, JSCONFIG_FILENAME);
     let tsconfigPath: string = path.join(vscode.workspace.rootPath, TSCONFIG_FILENAME);
