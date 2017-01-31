@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import {CordovaProjectHelper} from './cordovaProjectHelper';
+import {IPluginDetails} from './cordovaProjectHelper';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
@@ -277,7 +278,7 @@ export class TelemetryHelper {
         var pluginDetails : Object[] = new Array<Object>();
         // Send telemetry event with list of new plugins
         newPlugins.forEach(pluginName => {
-            let pluginDetail = CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName);
+            let pluginDetail : IPluginDetails = CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName);
             if (pluginDetail) {
                 pluginDetails.push(pluginDetail);
             }

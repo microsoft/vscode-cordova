@@ -16,6 +16,12 @@ export interface IProjectType {
     cordova: boolean;
 }
 
+export interface IPluginDetails {
+    PluginId: string;
+    PluginType: string;
+    Version: string;
+}
+
 export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_FOLDERNAME = "typings";
     private static PROJECT_TYPINGS_PLUGINS_FOLDERNAME = "plugins";
@@ -147,20 +153,22 @@ export class CordovaProjectHelper {
         }
     }
 
-    public static getInstalledPluginDetails(projectRoot: string, pluginId: string): any {
+    public static getInstalledPluginDetails(projectRoot: string, pluginId: string): IPluginDetails {
         let packageJsonPath: string = path.resolve(projectRoot, CordovaProjectHelper.PROJECT_PLUGINS_DIR, pluginId, 'package.json');
 
         if (!CordovaProjectHelper.existsSync(packageJsonPath)) {
             return null;
         }
 
-        let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-        let details: any = new Object();
-
         try {
-            details.PluginId = packageJson.name;
-            details.Version = packageJson.version;
-            details.PluginType = CordovaProjectHelper.CORE_PLUGIN_LIST.indexOf(pluginId) >= 0 ? 'Core' : 'Npm';
+            let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+            let details: IPluginDetails = {
+                PluginId: packageJson.name,
+                Version: packageJson.version,
+                PluginType: CordovaProjectHelper.CORE_PLUGIN_LIST.indexOf(pluginId) >= 0 ? 'Core' : 'Npm'
+            };
+
             return details;
         } catch (error) {
             console.error(error);
