@@ -730,7 +730,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let isServe: boolean = cliArgs[0] === 'serve';
         let isIosDevice: boolean = cliArgs.indexOf('ios') !== -1 && cliArgs.indexOf('--device') !== -1;
         let iosDeviceAppReadyRegex: RegExp = /\(lldb\)\W+run\r?\nsuccess/;
-        let appReadyRegex: RegExp = /Ionic server commands(?:.*\r?\n)*.*Ionic server commands/;
+        let appReadyRegex: RegExp = /launch success/i;
         let errorRegex: RegExp = /error:.*/i;
         let serverReady: boolean = false;
         let appReady: boolean = false;
@@ -834,9 +834,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             if (serverReady && !appReady) {
-                // Now that the server is ready, listen for the app to be ready as well. For "serve", this is always true, because no build and deploy is involved. For "run" and "emulate", we need to
-                // wait until we encounter the "Ionic server commands" string a second time. The reason for that is that the output of the server will be the same as above, plus the build output, and
-                // finally the "Ionic server commands" part will be printed again at the very end. However, for iOS device, the server output is different and instead we need to look for:
+                // Now that the server is ready, listen for the app to be ready as well. For "serve", this is always true, because no build and deploy is involved. For android, we need to
+                // wait until we encounter the "launch success", for iOS device, the server output is different and instead we need to look for:
                 //
                 // (lldb)     run
                 // success
