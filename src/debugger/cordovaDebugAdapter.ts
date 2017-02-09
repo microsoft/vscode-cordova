@@ -991,7 +991,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
     }
 
-    protected onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): void {
+    protected onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): Promise<void> {
         let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
 
         if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
@@ -1008,7 +1008,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
         }
 
-        super.onScriptParsed(script);
+        return super.onScriptParsed(script);
     }
 
     private launchChrome(args: ICordovaLaunchRequestArgs): Promise<void> {
