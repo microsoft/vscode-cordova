@@ -1,5 +1,8 @@
 ## 1.2.7
 * Added telemetry reporting for which plugins are installed for the project
+* Enabled logging ionic serve output to debug console
+* Updated chrome-debug-core
+* Fixed integration with ionic serve
 
 ## 1.2.6
 * Updated to use newer chrome debugger
