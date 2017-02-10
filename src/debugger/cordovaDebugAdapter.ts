@@ -788,6 +788,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         let serverOutputHandler = (data: Buffer) => {
             serverOut += data.toString();
+            this.outputLogger(data.toString(), "stdout");
 
             // Listen for the server to be ready. We check for the "Running dev server:  http://localhost:<port>/" and "dev server running: http://localhost:<port>/" strings to decide that.
             //
