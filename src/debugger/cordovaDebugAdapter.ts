@@ -752,7 +752,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         };
 
         this.ionicLivereloadProcess = cordovaStartCommand(cliArgs, launchArgs.cwd);
-        this.ionicLivereloadProcess.on('error', (err) => {
+        this.ionicLivereloadProcess.on('error', (err: { code: string }) => {
             if (err.code === 'ENOENT') {
                 serverDeferred.reject(new Error('Ionic not found, please run \'npm install –g ionic\' to install it globally'));
             } else {

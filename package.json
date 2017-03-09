@@ -17,10 +17,11 @@
   "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
-    "vscode": "^0.10.7"
+    "vscode": "^1.8.0"
   },
   "categories": [
     "Debuggers",
+    "Snippets",
     "Other"
   ],
   "activationEvents": [
@@ -74,16 +75,6 @@
         "command": "cordova.run",
         "key": "ctrl+f5",
         "mac": "cmd+f5"
-      }
-    ],
-    "snippets": [
-      {
-        "language": "javascript",
-        "path": "./snippets/ionicJs.json"
-      },
-      {
-        "language": "html",
-        "path": "./snippets/ionicHtml.json"
       }
     ],
     "debuggers": [
@@ -396,6 +387,10 @@
     "ws": "1.0.1"
   },
   "devDependencies": {
+    "@types/mocha": "^2.2.39",
+    "@types/node": "^6.0.64",
+    "@types/q": "0.0.32",
+    "@types/socket.io-client": "^1.4.29",
     "gulp": "^3.9.0",
     "gulp-mocha": "^2.1.3",
     "gulp-sourcemaps": "^1.5.2",
@@ -409,9 +404,8 @@
     "sinon": "^1.17.2",
     "tslint": "^2.5.1",
     "typescript": "^2.1.4",
-    "vscode": "^0.11.0",
-    "vscode-debugprotocol": "^1.15.0",
     "vsce": "^1.8.0",
-    "typings": "1.3.1"
+    "vscode": "^1.0.5",
+    "vscode-debugprotocol": "^1.15.0"
   }
 }
