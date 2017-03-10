@@ -728,9 +728,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
 
         let isServe: boolean = cliArgs[0] === 'serve';
-        let isIosDevice: boolean = cliArgs.indexOf('ios') !== -1 && cliArgs.indexOf('--device') !== -1;
-        let iosDeviceAppReadyRegex: RegExp = /\(lldb\)\W+run\r?\nsuccess/;
-        let appReadyRegex: RegExp = /launch success/i;
         let errorRegex: RegExp = /error:.*/i;
         let serverReady: boolean = false;
         let appReady: boolean = false;
@@ -750,6 +747,34 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             return null;
         };
+
+        let getRegexToResolveAppDefer = (cliArgs: string[]): RegExp => {
+            // Now that the server is ready, listen for the app to be ready as well. For "serve", this is always true, because no build and deploy is involved. For android, we need to
+            // wait until we encounter the "launch success", for iOS device, the server output is different and instead we need to look for:
+            //
+            // ios devices:
+            // (lldb)     run
+            // success
+            //
+            // ios simulators:
+            // "build succeeded"
+
+            let isIosDevice: boolean = cliArgs.indexOf('ios') !== -1 && cliArgs.indexOf('--device') !== -1;
+            let isIosSimulator: boolean = cliArgs.indexOf('ios') !== -1 && cliArgs.indexOf('emulate') !== -1;
+            let iosDeviceAppReadyRegex: RegExp = /\(lldb\)\W+run\r?\nsuccess/;
+            let iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
+            let appReadyRegex: RegExp = /launch success/i;
+
+            if (isIosDevice) {
+                return iosDeviceAppReadyRegex;
+            }
+
+            if (isIosSimulator) {
+                return iosSimulatorAppReadyRegex;
+            }
+
+            return appReadyRegex;
+        }
 
         this.ionicLivereloadProcess = cordovaStartCommand(cliArgs, launchArgs.cwd);
         this.ionicLivereloadProcess.on('error', (err) => {
@@ -835,12 +860,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             if (serverReady && !appReady) {
-                // Now that the server is ready, listen for the app to be ready as well. For "serve", this is always true, because no build and deploy is involved. For android, we need to
-                // wait until we encounter the "launch success", for iOS device, the server output is different and instead we need to look for:
-                //
-                // (lldb)     run
-                // success
-                let regex: RegExp = isIosDevice ? iosDeviceAppReadyRegex : appReadyRegex;
+                let regex: RegExp = getRegexToResolveAppDefer(cliArgs);
 
                 if (isServe || regex.test(serverOut)) {
                     appReady = true;
