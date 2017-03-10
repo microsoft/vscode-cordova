@@ -170,6 +170,11 @@ export class CordovaIosDeviceLauncher {
                     deferred2.reject('Unable to launch application.');
                     deferred3.reject('Unable to launch application.');
                 }
+            } else if (data === '' && initState === 3) {
+                // On iOS 10.2.1 (and maybe others) after 'c' message debug server doesn't respond with '$OK', see also
+                // http://www.embecosm.com/appnotes/ean4/embecosm-howto-rsp-server-ean4-issue-2.html#sec_exchange_cont
+                deferred3.resolve(socket);
+                initState++;
             }
         });
 
@@ -252,12 +257,14 @@ export class CordovaIosDeviceLauncher {
 
     private static getDiskImage(): Q.Promise<string> {
         // Attempt to find the OS version of the iDevice, e.g. 7.1
-        let versionInfo: Q.Promise<any> = promiseExec('ideviceinfo -s -k ProductVersion').spread<string>(function (stdout: string, stderr: string): string {
-            return stdout.trim().substring(0, 3); // Versions for DeveloperDiskImage seem to be X.Y, while some device versions are X.Y.Z
-            // NOTE: This will almost certainly be wrong in the next few years, once we hit version 10.0
-        }, function (): string {
-            throw new Error('Unable to get device OS version');
-        });
+        let versionInfo: Q.Promise<any> = promiseExec('ideviceinfo -s -k ProductVersion')
+            .spread<string>(function (stdout: string, stderr: string): string {
+                // Versions for DeveloperDiskImage seem to be X.Y, while some device versions are X.Y.Z
+                return /^(\d+\.\d+)(?:\.\d+)?$/gm.exec(stdout.trim())[1];
+            })
+            .catch(function (): string {
+                throw new Error('Unable to get device OS version');
+            });
 
         // Attempt to find the path where developer resources exist.
         let pathInfo: Q.Promise<any> = promiseExec('xcrun -sdk iphoneos --show-sdk-platform-path').spread<string>(function (stdout: string, stderr: string): string {
