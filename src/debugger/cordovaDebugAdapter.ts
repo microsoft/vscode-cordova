@@ -333,7 +333,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     .then((getSocketsResult) => {
                         const lines = getSocketsResult.split('\n');
                         for (const line of lines) {
-                            const fields = line.split(/[ \r]/);
+                            const fields = line.split(/[ \r]+/);
                             if (fields.length < 8) {
                                 continue;
                             }
