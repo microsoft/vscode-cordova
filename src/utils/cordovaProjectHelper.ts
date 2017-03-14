@@ -29,6 +29,7 @@ export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME = "cordova-ionic";
     private static VSCODE_DIR: string = ".vscode";
     private static PLUGINS_FETCH_FILENAME: string = "fetch.json";
+    private static PLATFORMS_PATH: string = "platforms/platforms.json";
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
     private static IONIC_PROJECT_FILE: string = "ionic.project";
@@ -147,6 +148,23 @@ export class CordovaProjectHelper {
             let fetchJsonContents = fs.readFileSync(fetchJsonPath).toString();
             let fetchJson = JSON.parse(fetchJsonContents);
             return Object.keys(fetchJson);
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
+    public static getInstalledPlatforms(projectRoot: string): string[] {
+        let platformJsonPath: string = path.resolve(projectRoot,  CordovaProjectHelper.PLATFORMS_PATH);
+
+        if (!CordovaProjectHelper.existsSync(platformJsonPath)) {
+            return [];
+        }
+
+        try {
+            let platformJsonContents = fs.readFileSync(platformJsonPath).toString();
+            let platformJson = JSON.parse(platformJsonContents);
+            return Object.keys(platformJson);
         } catch (error) {
             console.error(error);
             return [];
