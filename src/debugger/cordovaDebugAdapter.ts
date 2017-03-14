@@ -257,12 +257,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let cordovaResult = cordovaRunCommand(args, errorLogger, workingDirectory).then((output) => {
             let runOutput = output[0];
             let stderr = output[1];
-            let errorMatch = /(ERROR.*)/.exec(runOutput);
+
+            // Ionic ends process with zero code, so we need to look for
+            // strings with error content to detect failed process
+            let errorMatch = /(ERROR.*)/.test(runOutput) || /error:.*/i.test(stderr);
             if (errorMatch) {
                 errorLogger(runOutput);
                 errorLogger(stderr);
                 throw new Error(`Error running android`);
             }
+
             this.outputLogger(runOutput, "stdout");
             this.outputLogger('App successfully launched');
         });
