@@ -8,7 +8,7 @@ import * as cordovaServer from "cordova-serve";
 import * as path from "path";
 import {Simulator, SimulateOptions, launchBrowser} from "cordova-simulate";
 import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
-import {IProjectType} from '../utils/cordovaProjectHelper';
+import {IProjectType, CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import {SimulationInfo} from '../common/simulationInfo';
 import * as vscode from "vscode";
 
@@ -67,6 +67,19 @@ export class PluginSimulator implements vscode.Disposable {
                 simulateOptions.telemetry = simulateTelemetryWrapper;
 
                 this.simulator = new Simulator(simulateOptions);
+                let platforms = CordovaProjectHelper.getInstalledPlatforms(vscode.workspace.rootPath);
+
+                let platform = simulateOptions.platform;
+                let isPlatformMissing = platform && platforms.indexOf(platform) < 0;
+
+                if (isPlatformMissing) {
+                     let command = "cordova";
+                     if (projectType.ionic || projectType.ionic2) {
+                        command = "ionic";
+                     }
+
+                    throw new Error(`Couldn't find platform ${platform} in project, please install it using '${command} platform add ${platform}'`);
+                }
 
                 return this.simulator.startSimulation()
                     .then(() => {
@@ -75,7 +88,7 @@ export class PluginSimulator implements vscode.Disposable {
                             simHostUrl: this.simulator.simHostUrl(),
                             urlRoot: this.simulator.urlRoot(),
                         };
-                        if (projectType.ionic2 && simulateOptions.platform && simulateOptions.platform !== "browser") {
+                        if (projectType.ionic2 && platform && platform !== "browser") {
                             this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`
                         }
                         return this.simulationInfo;
