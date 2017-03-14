@@ -32,7 +32,7 @@ interface IHasErrorCode {
 export abstract class TelemetryGeneratorBase {
     protected telemetryProperties: ICommandTelemetryProperties = {};
     private componentName: string;
-    private currentStepStartTime: number[];
+    private currentStepStartTime: [number, number];
     private currentStep: string = 'initialStep';
     private errorIndex: number = -1; // In case we have more than one error (We start at -1 because we increment it before using it)
 
@@ -80,7 +80,7 @@ export abstract class TelemetryGeneratorBase {
     }
 
     public time<T>(name: string, codeToMeasure: { (): Thenable<T> }): Q.Promise<T> {
-        var startTime: number[] = process.hrtime();
+        var startTime: [number, number] = process.hrtime();
         return Q(codeToMeasure()).finally(() => this.finishTime(name, startTime)).fail((reason: any): Q.Promise<T> => {
             this.addError(reason);
             throw reason;
@@ -138,8 +138,8 @@ export abstract class TelemetryGeneratorBase {
         return nonNullComponents.join('.');
     }
 
-    private finishTime(name: string, startTime: number[]): void {
-        var endTime: number[] = process.hrtime(startTime);
+    private finishTime(name: string, startTime: [number, number]): void {
+        var endTime: [number, number] = process.hrtime(startTime);
         this.add(this.combine(name, 'time'), String(endTime[0] * 1000 + endTime[1] / 1000000), /*isPii*/ false);
     }
 }

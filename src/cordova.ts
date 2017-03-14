@@ -15,7 +15,9 @@ import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from './utils/telemetry';
 import {TelemetryHelper} from './utils/telemetryHelper';
 import {IProjectType} from './utils/cordovaProjectHelper';
-import {TsdHelper} from './utils/tsdHelper';
+import { TsdHelper } from './utils/tsdHelper';
+
+import { IonicCompletionProvider } from './extension/completionProviders';
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -87,6 +89,19 @@ export function activate(context: vscode.ExtensionContext): void {
             return simulator.simulate(options, projectType);
         });
     };
+
+    // In case of Ionic 1 project register completions providers for html and javascript snippets
+    if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
+        context.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                IonicCompletionProvider.JS_DOCUMENT_SELECTOR,
+                new IonicCompletionProvider(path.resolve(__dirname, '../../snippets/ionicJs.json'))));
+
+        context.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                IonicCompletionProvider.HTML_DOCUMENT_SELECTOR,
+                new IonicCompletionProvider(path.resolve(__dirname, '../../snippets/ionicHtml.json'))));
+    }
 
     // Register Cordova commands
     context.subscriptions.push(vscode.commands.registerCommand('cordova.prepare',
