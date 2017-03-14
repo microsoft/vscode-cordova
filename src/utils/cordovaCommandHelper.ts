@@ -32,6 +32,14 @@ export class CordovaCommandHelper {
             generator.add('command', command, false);
             let outputChannel = window.createOutputChannel("cordova");
             let commandToExecute = cliCommandName + " " + command;
+
+            if (useIonic && os.platform() === 'win32' && ['build', 'run'].indexOf(command) >= 0) {
+                // ionic build/run commands use 'ios' as default platform, even on Windows, which
+                // causes them to fail w/ odd “You cannot run iOS unless you are on Mac OSX” error.
+                // To prevent this we enforce these commands to use 'android' in such case
+                commandToExecute += ' android';
+            }
+
             outputChannel.appendLine("########### EXECUTING: " + commandToExecute + " ###########");
             outputChannel.show();
             let process = child_process.exec(commandToExecute, { cwd: projectRoot });
