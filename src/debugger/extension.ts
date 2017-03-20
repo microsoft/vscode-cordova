@@ -36,7 +36,8 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
 
 export function cordovaRunCommand(args: string[], errorLogger: (message: string) => void, cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
-    let cliName = CordovaProjectHelper.isIonicProject(cordovaRootPath) ? 'ionic' : 'cordova';
+    let isIonicProject = CordovaProjectHelper.isIonicProject(cordovaRootPath);
+    let cliName = isIonicProject ? 'ionic' : 'cordova';
     let output = '';
     let stderr = '';
     let process = cordovaStartCommand(args, cordovaRootPath);
@@ -46,6 +47,9 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
     });
     process.stdout.on('data', data => {
         output += data.toString();
+        if (isIonicProject && data.toString().indexOf('LAUNCH SUCCESS') >= 0) {
+            defer.resolve([output, stderr]);
+        }
     });
     process.on('exit', exitCode => {
         if (exitCode) {
