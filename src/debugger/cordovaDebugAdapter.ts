@@ -96,16 +96,19 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         this.cordovaPathTransformer = (<any>global).cordovaPathTransformer;
         this.telemetryInitialized = false;
         this.outputLogger = (message: string, error?: boolean | string) => {
-            var category = "console";
+            let category = 'console';
             if (error === true) {
-                category = "stderr";
+                category = 'stderr';
             }
-
             if (typeof error === 'string') {
                 category = error;
             }
 
-            debugSession.sendEvent(new OutputEvent(message + '\n', category));
+            let newLine = '\n';
+            if (category === 'stdout' || category === 'stderr') {
+                newLine = '';
+            }
+            debugSession.sendEvent(new OutputEvent(message + newLine, category));
         };
         this.attachedDeferred = Q.defer<void>();
     }
@@ -233,7 +236,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
         let workingDirectory = launchArgs.cwd;
-        let errorLogger = (message) => this.outputLogger(message, true);
 
         // Prepare the command line args
         let isDevice = launchArgs.target.toLowerCase() === 'device';
@@ -254,7 +256,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
         }
 
-        let cordovaResult = cordovaRunCommand(args, errorLogger, workingDirectory).then((output) => {
+        let cordovaResult = cordovaRunCommand(args, workingDirectory).then((output) => {
             let runOutput = output[0];
             let stderr = output[1];
 
@@ -262,13 +264,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // strings with error content to detect failed process
             let errorMatch = /(ERROR.*)/.test(runOutput) || /error:.*/i.test(stderr);
             if (errorMatch) {
-                errorLogger(runOutput);
-                errorLogger(stderr);
                 throw new Error(`Error running android`);
             }
 
-            this.outputLogger(runOutput, "stdout");
             this.outputLogger('App successfully launched');
+        }, undefined, (progress) => {
+            this.outputLogger(progress[0], progress[1]);
         });
 
         return cordovaResult;
@@ -407,10 +408,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(['build', 'ios', '--device'], errorLogger, workingDirectory).then((output) => {
+            return cordovaRunCommand(['build', 'ios', '--device'], workingDirectory).then((output) => {
                 let buildFolder = path.join(workingDirectory, 'platforms', 'ios', 'build', 'device');
 
-                this.outputLogger(output[0], "stdout");
                 this.outputLogger('Installing app on device');
 
                 let installPromise = Q.nfcall(fs.readdir, buildFolder).then((files: string[]) => {
@@ -445,6 +445,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 });
 
                 return Q.all([CordovaIosDeviceLauncher.getBundleIdentifier(workingDirectory), installPromise]);
+            }, undefined, (progress) => {
+                this.outputLogger(progress[0], progress[1]);
             }).spread((appBundleId) => {
                 // App is now built and installed. Try to launch
                 this.outputLogger('Launching app');
@@ -474,11 +476,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }
             }
 
-            return cordovaRunCommand(emulateArgs, errorLogger, workingDirectory).then((output) => {
-                this.outputLogger(output[0], "stdout");
+            return cordovaRunCommand(emulateArgs, workingDirectory)
+            .progress((progress) => {
+                this.outputLogger(progress[0], progress[1]);
             }).catch((err) => {
                 if (target) {
-                    return cordovaRunCommand(['emulate', 'ios', '--list'], errorLogger, workingDirectory).then((output) => {
+                    return cordovaRunCommand(['emulate', 'ios', '--list'], workingDirectory).then((output) => {
                         // List out available targets
                         errorLogger('Unable to run with given target.');
                         errorLogger(output[0].replace(/\*+[^*]+\*+/g, '')); // Print out list of targets, without ** RUN SUCCEEDED **

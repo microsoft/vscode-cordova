@@ -34,7 +34,7 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
     return deferred.promise;
 }
 
-export function cordovaRunCommand(args: string[], errorLogger: (message: string) => void, cordovaRootPath: string): Q.Promise<string[]> {
+export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
     let isIonicProject = CordovaProjectHelper.isIonicProject(cordovaRootPath);
     let cliName = isIonicProject ? 'ionic' : 'cordova';
@@ -44,17 +44,17 @@ export function cordovaRunCommand(args: string[], errorLogger: (message: string)
 
     process.stderr.on('data', data => {
         stderr += data.toString();
+        defer.notify([data.toString(), 'stderr']);
     });
     process.stdout.on('data', data => {
         output += data.toString();
+        defer.notify([data.toString(), 'stdout']);
         if (isIonicProject && data.toString().indexOf('LAUNCH SUCCESS') >= 0) {
             defer.resolve([output, stderr]);
         }
     });
     process.on('exit', exitCode => {
         if (exitCode) {
-            errorLogger(stderr);
-            errorLogger(output);
             defer.reject(new Error(util.format('\'%s %s\' failed with exit code %d', cliName, args.join(' '), exitCode)));
         } else {
             defer.resolve([output, stderr]);
