@@ -41,9 +41,16 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
     let output = '';
     let stderr = '';
     let process = cordovaStartCommand(args, cordovaRootPath);
+    // suppress the following strings because they are not actual errors:
+    let stringsToSuppress = ['Run an Ionic project on a connected device'];
 
     process.stderr.on('data', data => {
         stderr += data.toString();
+        for (var i = 0; i < stringsToSuppress.length; i++) {
+            if (data.toString().indexOf(stringsToSuppress[i]) >= 0) {
+                return;
+            }
+        }
         defer.notify([data.toString(), 'stderr']);
     });
     process.stdout.on('data', data => {
