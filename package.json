@@ -379,7 +379,6 @@
     "semver": "5.1.0",
     "socket.io-client": "^1.4.6",
     "source-map": "^0.5.3",
-    "tree-kill": "^1.1.0",
     "vscode-chrome-debug-core": "^3.12.6",
     "vscode-debugadapter": "^1.15.0",
     "vscode-extension-telemetry": "0.0.5",

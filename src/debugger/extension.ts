@@ -5,8 +5,8 @@ import * as child_process from 'child_process';
 import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import * as os from 'os';
 import * as Q from 'q';
+import * as path from 'path';
 import * as util from 'util';
-import * as TreeKill from 'tree-kill';
 
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
@@ -74,7 +74,18 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
     return child_process.spawn(command, args, { cwd: cordovaRootPath });
 }
 
+export function killTree(processId: number): void {
+    const cmd = process.platform === 'win32' ?
+        `taskkill.exe /F /T /PID` :
+        path.join(__dirname, '../../../scripts/terminateProcess.sh')
+
+    try {
+        child_process.execSync(`${cmd} ${processId}`);
+    } catch (err) {
+    }
+}
+
 export function killChildProcess(childProcess: child_process.ChildProcess): Q.Promise<void> {
-    TreeKill(childProcess.pid, 'SIGKILL');
+    killTree(childProcess.pid);
     return Q<void>(void 0);
 }
