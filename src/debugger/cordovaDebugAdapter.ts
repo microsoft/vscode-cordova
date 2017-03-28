@@ -209,9 +209,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }).then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
                     this.outputLogger('Attaching to app.');
                     this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
-                    return super.attach(processedAttachArgs).then(() => {
-                        this.attachedDeferred.resolve(void 0);
-                    });
+                    return super.attach(processedAttachArgs)
+                        .then(() => {
+                            // Safari remote inspector protocol requires setBreakpointsActive
+                            // method to be called for breakpoints to work (see #193 and #247)
+                            // In case of error do not reject promise but continue debugging
+                            super.chrome.Debugger.setBreakpointsActive({ active: true })
+                                .catch(err => this.outputLogger('Failed to call "setBreakpointsActive" of debugging frontend. Debugging will continue...'));
+
+                            this.attachedDeferred.resolve(void 0);
+                        });
                 });
         }).catch((err) => {
             this.outputLogger(err.message || err, true);
