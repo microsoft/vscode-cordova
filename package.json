@@ -69,12 +69,14 @@
       {
         "command": "cordova.build",
         "key": "f6",
-        "mac": "f6"
+        "mac": "f6",
+        "when": "!inDebugMode"
       },
       {
         "command": "cordova.run",
         "key": "ctrl+f5",
-        "mac": "cmd+f5"
+        "mac": "cmd+f5",
+        "when": "!inDebugMode"
       }
     ],
     "debuggers": [
