@@ -210,6 +210,63 @@
             "cwd": "${workspaceRoot}"
           }
         ],
+        "configurationSnippets": [
+          {
+            "label": "Cordova: Run",
+            "description": "Run and debug Cordova app on device/emulator",
+            "body": {
+              "name": "${3:Run ${1:android|ios} on ${2:device|emulator}}",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "${1:android|ios}",
+              "target": "${2:device|emulator}",
+              "sourceMaps": true,
+              "cwd": "^\"\\${workspaceRoot}\""
+            }
+          },
+          {
+            "label": "Cordova: Attach",
+            "description": "Attach to running Cordova app on device/emulator",
+            "body": {
+              "name": "${3:Attach to ${1:android|ios} on ${2:device|emulator}}",
+              "type": "cordova",
+              "request": "attach",
+              "platform": "${1:android|ios}",
+              "target": "${2:device|emulator}",
+              "cwd": "^\"\\${workspaceRoot}\"",
+              "sourceMaps": true
+            }
+          },
+          {
+            "label": "Cordova: Serve",
+            "description": "Serve to the browser (currently supported only for Ionic)",
+            "body": {
+              "name": "${1:Serve to the browser (ionic serve)}",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "serve",
+              "devServerAddress": "${2:localhost}",
+              "sourceMaps": true,
+              "ionicLiveReload": true,
+              "cwd": "^\"\\${workspaceRoot}\""
+            }
+          },
+          {
+            "label": "Cordova: Simulate",
+            "description": "Simulate Cordova Android/iOS application in browser",
+            "body": {
+              "name": "${2:Simulate ${1:android|ios} in browser}",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "${1:android|ios}",
+              "target": "chrome",
+              "simulatePort": 8000,
+              "livereload": true,
+              "cwd": "^\"\\${workspaceRoot}\"",
+              "sourceMaps": true
+            }
+          }
+        ],
         "configurationAttributes": {
           "launch": {
             "required": [
