@@ -303,6 +303,23 @@ export class CordovaProjectHelper {
     }
 
     /**
+     *  Helper function to determine whether the project is an Ionic project using cli-plugin-cordova that add Cordova commands to an namespace
+     */
+    public static isIonicCordovaCLINamespacedProject(projectRoot: string): boolean {
+        // First look if is an Ionic project, because cli-plugin-cordova didn't depend which Ionic version of project
+        if (CordovaProjectHelper.isIonicProject(projectRoot)) {
+            const packageJsonPath = path.join(projectRoot, 'package.json');
+            if (!fs.existsSync(packageJsonPath)) {
+                return false;
+            }
+            const devDependencies = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')).devDependencies;
+
+            return !!(devDependencies && devDependencies['@ionic/cli-plugin-cordova']);
+        }
+        return false;
+    }
+
+    /**
      * Helper function to determine whether the project has a tsconfig.json
      * manifest and can be considered as a typescript project.
      */
