@@ -79,7 +79,9 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
     let commandExtension = os.platform() === 'win32' ? '.cmd' : '';
     let command = cliName + commandExtension;
 
-    if (CordovaProjectHelper.isIonicCordovaCLINamespacedProject(cordovaRootPath)) {
+    let isIonicServe:boolean = args.indexOf("serve") >= 0;
+
+    if (CordovaProjectHelper.isIonicCordovaCLINamespacedProject(cordovaRootPath) && !isIonicServe) {
         // add cordova namespace to Ionic projects that uses cli-plugin-cordova
         args.unshift('cordova');
     }
