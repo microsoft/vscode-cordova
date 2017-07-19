@@ -1,3 +1,21 @@
+## 1.2.8
+
+* Fixed debugging of Ionic CLIv3 projects
+* Added launch.json configurations snippets
+* Fixed numerous issues with debugging on iOS 10 devices/emulators
+* Fixed numerous issues caused by changes in Ionic CLI
+  - Fix running iOS on simulator with enabled livereload
+  - Fixed Ionic run hang on Android
+  - Show app launch logs continuously
+  - Suppress irrelevant stderr output from Ionic
+
+* Other usability improvements:
+  - Now ignoring "cordova build/run" commands while debugging
+  - Changed error messages format when platform is missing to be more informative
+  - Android is now default platform for Ionic on Windows
+  - Ionic snippets are now shown only for Ionic v1 projects
+
+
 ## 1.2.7
 * Added telemetry reporting for which plugins are installed for the project
 * Enabled logging ionic serve output to debug console
