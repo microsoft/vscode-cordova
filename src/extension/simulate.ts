@@ -44,10 +44,10 @@ export class PluginSimulator implements vscode.Disposable {
         if (!this.simulator) {
             return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
         }
-        let provider = new SimHostContentProvider(this.simulator.simHostUrl());
+        let provider = new SimHostContentProvider(this.simulator.simHostUrl(), this.simulateUri);
         this.registration = vscode.workspace.registerTextDocumentContentProvider(this.simulateProtocol, provider);
 
-        return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => void 0));
+        return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => provider.fireChange()));
     }
 
     public launchServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
@@ -118,12 +118,24 @@ export class PluginSimulator implements vscode.Disposable {
  */
 class SimHostContentProvider implements vscode.TextDocumentContentProvider {
     private simHostUrl: string;
+    private simulateUri: vscode.Uri;
+    private changeEmitter = new vscode.EventEmitter<vscode.Uri>();
 
-    constructor(simHostUrl: string) {
+    constructor(simHostUrl: string, simulateUri: vscode.Uri) {
         this.simHostUrl = simHostUrl;
+        this.simulateUri = simulateUri;
+    }
+
+    get onDidChange() {
+        return this.changeEmitter.event;
+    }
+
+    public fireChange() {
+        this.changeEmitter.fire(this.simulateUri);
     }
 
     public provideTextDocumentContent(uri: vscode.Uri): string {
+        // always return different html so that the tab is properly reloaded and events are fired
         return `<!DOCTYPE html>
                 <html>
                 <head>
@@ -145,6 +157,9 @@ class SimHostContentProvider implements vscode.TextDocumentContentProvider {
                     </style>
                 </head>
                 <body>
+                    <div style="display: none">
+                        Always be changing ${Math.random()}
+                    </div>
                     <div class="intrinsic-container">
                         <iframe src="${this.simHostUrl}" ></iframe>
                     </div>
