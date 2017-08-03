@@ -445,7 +445,7 @@
   "devDependencies": {
     "@types/mocha": "^2.2.39",
     "@types/node": "^6.0.64",
-    "@types/q": "0.0.32",
+    "@types/q": "^1.0.3",
     "@types/socket.io-client": "^1.4.29",
     "gulp": "^3.9.0",
     "gulp-mocha": "^2.1.3",

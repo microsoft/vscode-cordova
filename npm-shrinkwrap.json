@@ -27,9 +27,9 @@
       "dev": true
     },
     "@types/q": {
-      "version": "0.0.32",
-      "resolved": "https://registry.npmjs.org/@types/q/-/q-0.0.32.tgz",
-      "integrity": "sha1-vShOV8hPEyXacCur/IKlMoGQwMU=",
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/@types/q/-/q-1.0.3.tgz",
+      "integrity": "sha512-2zIRejmyT1zrdVY4y4r3O4i5y+1BjCcHyRFYsNsWO50duB7zh0DpgYUCRPYGGq1UQafHdk+wqBbmKiVVohXWBw==",
       "dev": true
     },
     "@types/socket.io-client": {
