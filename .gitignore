@@ -1,6 +1,8 @@
 .DS_Store
+.idea
 node_modules/
 out/
 test/testProject/.vscode/
 test/testProject/platforms/
 test/testProject/plugins/
+test/testProject/typings/

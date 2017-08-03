@@ -437,12 +437,10 @@
     "q": "^1.4.1",
     "semver": "5.1.0",
     "socket.io-client": "^1.4.6",
-    "source-map": "^0.5.3",
     "vscode-chrome-debug-core": "^3.16.4",
     "vscode-debugadapter": "^1.22.0",
     "vscode-extension-telemetry": "0.0.5",
-    "winreg": "0.0.13",
-    "ws": "1.0.1"
+    "winreg": "0.0.13"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.39",
@@ -459,7 +457,6 @@
     "mockery": "^1.4.0",
     "rimraf": "^2.5.0",
     "should": "^4.6.5",
-    "sinon": "^1.17.2",
     "tslint": "^2.5.1",
     "typescript": "^2.1.4",
     "vsce": "^1.8.0",
