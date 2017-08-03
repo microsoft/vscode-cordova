@@ -438,8 +438,8 @@
     "semver": "5.1.0",
     "socket.io-client": "^1.4.6",
     "source-map": "^0.5.3",
-    "vscode-chrome-debug-core": "^3.12.6",
-    "vscode-debugadapter": "^1.15.0",
+    "vscode-chrome-debug-core": "^3.16.4",
+    "vscode-debugadapter": "^1.22.0",
     "vscode-extension-telemetry": "0.0.5",
     "winreg": "0.0.13",
     "ws": "1.0.1"
@@ -464,6 +464,6 @@
     "typescript": "^2.1.4",
     "vsce": "^1.8.0",
     "vscode": "^1.0.5",
-    "vscode-debugprotocol": "^1.15.0"
+    "vscode-debugprotocol": "^1.22.0"
   }
 }
