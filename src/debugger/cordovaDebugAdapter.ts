@@ -15,7 +15,7 @@ import * as simulate from 'cordova-simulate';
 
 import {DebugProtocol} from 'vscode-debugprotocol';
 import {OutputEvent} from 'vscode-debugadapter';
-import {ChromeDebugAdapter, ChromeConnection, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from 'vscode-chrome-debug-core';
+import {ChromeDebugAdapter, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from 'vscode-chrome-debug-core';
 import {Crdp} from 'vscode-chrome-debug-core/lib/crdp/crdp'
 import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
@@ -231,7 +231,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     public disconnect(): void {
         this.cleanUp();
-        return super.disconnect();
+        return super.disconnect({});
     }
 
     public commonArgs(args: ICommonRequestArgs): void {
