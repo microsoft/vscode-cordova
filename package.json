@@ -208,6 +208,17 @@
             "livereload": true,
             "sourceMaps": true,
             "cwd": "${workspaceRoot}"
+          },
+          {
+            "name": "Run Browser",
+            "type": "cordova",
+            "request": "launch",
+            "platform": "browser",
+            "target": "chrome",
+            "simulatePort": 8000,
+            "livereload": true,
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}"
           }
         ],
         "configurationSnippets": [
@@ -284,7 +295,7 @@
               },
               "target": {
                 "type": "string",
-                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome'.",
+                "description": "Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome' or 'chromium'.",
                 "default": "emulator"
               },
               "sourceMaps": {

@@ -69,6 +69,14 @@ const DEFAULT_CHROME_PATH = {
     WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Google\\Chrome\\Application\\chrome.exe'),
     WINx86: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
 };
+const DEFAULT_CHROMIUM_PATH = {
+    LINUX: '/usr/bin/chromium-browser',
+    OSX: '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    WIN: 'C:\\Program Files\\Chromium\\Application\\chrome.exe',
+    WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Chromium\\Application\\chrome.exe'),
+    WINx86: 'C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe',
+}
+
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -1047,7 +1055,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     private launchChrome(args: ICordovaLaunchRequestArgs): Promise<void> {
         return super.launch(args).then(() => {
-            const chromePath: string = args.runtimeExecutable || CordovaDebugAdapter.getBrowserPath();
+            const chromePath: string = args.runtimeExecutable || CordovaDebugAdapter.getBrowserPath(args.target);
             if (!chromePath) {
                 return Promise.reject(new Error(`Can't find Chrome - install it or set the "runtimeExecutable" field in the launch config.`));
             }
@@ -1083,22 +1091,23 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         });
     }
 
-    private static getBrowserPath(): string {
+    private static getBrowserPath(target: string): string {
         const platform = ChromeDebugCoreUtils.getPlatform();
+        let defaultPaths = target === 'chromium' ? DEFAULT_CHROMIUM_PATH : DEFAULT_CHROME_PATH;
         if (platform === ChromeDebugCoreUtils.Platform.OSX) {
-            return ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.OSX) ? DEFAULT_CHROME_PATH.OSX : null;
+            return ChromeDebugCoreUtils.existsSync(defaultPaths.OSX) ? defaultPaths.OSX : null;
         } else if (platform === ChromeDebugCoreUtils.Platform.Windows) {
-            if (ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.WINx86)) {
-                return DEFAULT_CHROME_PATH.WINx86;
-            } else if (ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.WIN)) {
-                return DEFAULT_CHROME_PATH.WIN;
-            } else if (ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.WIN_LOCALAPPDATA)) {
-                return DEFAULT_CHROME_PATH.WIN_LOCALAPPDATA;
+            if (ChromeDebugCoreUtils.existsSync(defaultPaths.WINx86)) {
+                return defaultPaths.WINx86;
+            } else if (ChromeDebugCoreUtils.existsSync(defaultPaths.WIN)) {
+                return defaultPaths.WIN;
+            } else if (ChromeDebugCoreUtils.existsSync(defaultPaths.WIN_LOCALAPPDATA)) {
+                return defaultPaths.WIN_LOCALAPPDATA;
             } else {
                 return null;
             }
         } else {
-            return ChromeDebugCoreUtils.existsSync(DEFAULT_CHROME_PATH.LINUX) ? DEFAULT_CHROME_PATH.LINUX : null;
+            return ChromeDebugCoreUtils.existsSync(defaultPaths.LINUX) ? defaultPaths.LINUX : null;
         }
     }
 
