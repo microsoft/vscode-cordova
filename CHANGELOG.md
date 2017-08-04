@@ -1,3 +1,9 @@
+## 1.2.9
+
+* Added chromium to valid "simulate" targets
+* Fixed "Error processing "completions"" constantly popping up in debug console
+* Fixed cordova-simulate tab to properly update
+
 ## 1.2.8
 
 * Fixed debugging of Ionic CLIv3 projects
