@@ -220,6 +220,15 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     this.outputLogger('Attaching to app.');
                     this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
                     return super.attach(processedAttachArgs)
+                        .catch((err) => {
+                            if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                                // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
+                                // just ignore it
+                                // https://github.com/Microsoft/vscode-cordova/issues/297
+                                return void 0;
+                            }
+                            throw err;
+                        })
                         .then(() => {
                             // Safari remote inspector protocol requires setBreakpointsActive
                             // method to be called for breakpoints to work (see #193 and #247)
@@ -228,15 +237,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                                 .catch(err => this.outputLogger('Failed to call "setBreakpointsActive" of debugging frontend. Debugging will continue...'));
 
                             this.attachedDeferred.resolve(void 0);
-                        })
-                        .catch((err) => {
-                            if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
-                                // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
-                                // just ignore it
-                                // https://github.com/Microsoft/vscode-cordova/issues/297
-                                return this.attachedDeferred.resolve(void 0);
-                            }
-                            throw err;
                         });
                 });
         }).catch((err) => {
@@ -1097,17 +1097,17 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             });
 
             return this.doAttach(port, launchUrl, args.address)
-                .then(() => {
-                    this.attachedDeferred.resolve(void 0);
-                })
                 .catch((err) => {
                     if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
                         // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
                         // just ignore it
                         // https://github.com/Microsoft/vscode-cordova/issues/297
-                        return this.attachedDeferred.resolve(void 0);
+                        return void 0;
                     }
                     throw err;
+                })
+                .then(() => {
+                    this.attachedDeferred.resolve(void 0);
                 });
         });
     }
