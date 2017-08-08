@@ -27,6 +27,8 @@ import {settingsHome} from '../utils/settingsHelper';
 import {Telemetry} from '../utils/telemetry';
 import {SimulationInfo} from '../common/simulationInfo';
 
+const MISSING_API_ERROR = 'Debugger.setAsyncCallStackDepth';
+
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
     appStepLaunchTimeout?: number;
@@ -218,6 +220,15 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     this.outputLogger('Attaching to app.');
                     this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
                     return super.attach(processedAttachArgs)
+                        .catch((err) => {
+                            if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                                // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
+                                // just ignore it
+                                // https://github.com/Microsoft/vscode-cordova/issues/297
+                                return void 0;
+                            }
+                            throw err;
+                        })
                         .then(() => {
                             // Safari remote inspector protocol requires setBreakpointsActive
                             // method to be called for breakpoints to work (see #193 and #247)
@@ -1085,9 +1096,19 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 this.terminateSession(errMsg);
             });
 
-            return this.doAttach(port, launchUrl, args.address).then(() => {
-                this.attachedDeferred.resolve(void 0);
-            });
+            return this.doAttach(port, launchUrl, args.address)
+                .catch((err) => {
+                    if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                        // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
+                        // just ignore it
+                        // https://github.com/Microsoft/vscode-cordova/issues/297
+                        return void 0;
+                    }
+                    throw err;
+                })
+                .then(() => {
+                    this.attachedDeferred.resolve(void 0);
+                });
         });
     }
 
