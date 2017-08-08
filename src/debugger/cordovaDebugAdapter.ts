@@ -231,9 +231,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         })
                         .catch((err) => {
                             if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                                // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
+                                // just ignore it
+                                // https://github.com/Microsoft/vscode-cordova/issues/297
                                 return this.attachedDeferred.resolve(void 0);
                             }
-                            return err;
+                            throw err;
                         });
                 });
         }).catch((err) => {
@@ -1099,9 +1102,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 })
                 .catch((err) => {
                     if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                        // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
+                        // just ignore it
+                        // https://github.com/Microsoft/vscode-cordova/issues/297
                         return this.attachedDeferred.resolve(void 0);
                     }
-                    return err;
+                    throw err;
                 });
         });
     }
