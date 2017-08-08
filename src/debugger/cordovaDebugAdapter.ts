@@ -27,6 +27,8 @@ import {settingsHome} from '../utils/settingsHelper';
 import {Telemetry} from '../utils/telemetry';
 import {SimulationInfo} from '../common/simulationInfo';
 
+const MISSING_API_ERROR = 'Debugger.setAsyncCallStackDepth';
+
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
     appStepLaunchTimeout?: number;
@@ -226,6 +228,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                                 .catch(err => this.outputLogger('Failed to call "setBreakpointsActive" of debugging frontend. Debugging will continue...'));
 
                             this.attachedDeferred.resolve(void 0);
+                        })
+                        .catch((err) => {
+                            if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                                return this.attachedDeferred.resolve(void 0);
+                            }
+                            return err;
                         });
                 });
         }).catch((err) => {
@@ -1085,9 +1093,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 this.terminateSession(errMsg);
             });
 
-            return this.doAttach(port, launchUrl, args.address).then(() => {
-                this.attachedDeferred.resolve(void 0);
-            });
+            return this.doAttach(port, launchUrl, args.address)
+                .then(() => {
+                    this.attachedDeferred.resolve(void 0);
+                })
+                .catch((err) => {
+                    if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                        return this.attachedDeferred.resolve(void 0);
+                    }
+                    return err;
+                });
         });
     }
 
