@@ -141,8 +141,15 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
     }
 
-    // Install the type defintion files for Cordova
-    TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], cordovaProjectRoot);
+    // Skip adding typings for cordova in case of Typescript or Ionic2 projects
+    // to avoid conflicts between typings we install and user-installed ones.
+    if (!CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) &&
+        !CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
+
+        // Install the type defintion files for Cordova
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot),
+            [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], cordovaProjectRoot);
+    }
 
     // Install type definition files for the currently installed plugins
     updatePluginTypeDefinitions(cordovaProjectRoot);
