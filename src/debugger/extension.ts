@@ -7,6 +7,9 @@ import * as os from 'os';
 import * as Q from 'q';
 import * as path from 'path';
 import * as util from 'util';
+import * as semver from 'semver';
+
+const IONIC_CLI_RE = /ionic\s\(Ionic\sCLI\)\s:\s([0-9]\.[0-9]\.[0-9])/;
 
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
@@ -79,11 +82,16 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
     let commandExtension = os.platform() === 'win32' ? '.cmd' : '';
     let command = cliName + commandExtension;
 
-    let isIonicServe:boolean = args.indexOf("serve") >= 0;
-
-    if (CordovaProjectHelper.isIonicCordovaCLINamespacedProject(cordovaRootPath) && !isIonicServe) {
-        // add cordova namespace to Ionic projects that uses cli-plugin-cordova
-        args.unshift('cordova');
+    if (cliName === 'ionic') {
+        try {
+            let ionicInfo = child_process.spawnSync(command, ['info']);
+            let ionicCLI = ionicInfo.output.toString().match(IONIC_CLI_RE);
+            if (semver.gte(ionicCLI[1], '3.0.0')) {
+                args.unshift('cordova');
+            }
+        } catch (err) {
+            console.error('Error while detecting Ionic CLI version', err);
+        }
     }
 
     return child_process.spawn(command, args, { cwd: cordovaRootPath });
