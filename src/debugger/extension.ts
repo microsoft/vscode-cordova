@@ -9,8 +9,6 @@ import * as path from 'path';
 import * as util from 'util';
 import * as semver from 'semver';
 
-const IONIC_CLI_RE = /ionic\s\(Ionic\sCLI\)\s:\s([0-9]\.[0-9]\.[0-9])/;
-
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
     let proc = child_process.spawn(command, args, { stdio: 'pipe' });
@@ -81,12 +79,13 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
     let cliName = CordovaProjectHelper.isIonicProject(cordovaRootPath) ? 'ionic' : 'cordova';
     let commandExtension = os.platform() === 'win32' ? '.cmd' : '';
     let command = cliName + commandExtension;
+    let isIonicServe: boolean = args.indexOf('serve') >= 0;
 
-    if (cliName === 'ionic') {
+    if (cliName === 'ionic' && !isIonicServe) {
         try {
-            let ionicInfo = child_process.spawnSync(command, ['info']);
-            let ionicCLI = ionicInfo.output.toString().match(IONIC_CLI_RE);
-            if (semver.gte(ionicCLI[1], '3.0.0')) {
+            let ionicInfo = child_process.spawnSync(command, ['-v']);
+            let ionicVersion = ionicInfo.stdout.toString().trim();
+            if (semver.gte(ionicVersion, '3.0.0')) {
                 args.unshift('cordova');
             }
         } catch (err) {
