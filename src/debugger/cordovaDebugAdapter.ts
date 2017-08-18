@@ -79,7 +79,7 @@ const DEFAULT_CHROMIUM_PATH = {
     WINx86: 'C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe',
 }
 
-const PS_FIELSD_SPLITTER_RE = /[\s\rRSIDZTW<NL]+/; // `RSIDZTW<NL` - process status codes, should skip they
+const PS_FIELDS_SPLITTER_RE = /[\s\r]+|[RSIDZTW<NL](?=[\s\r])/; // `RSIDZTW<NL` - process status codes, should skip they
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -349,7 +349,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     const nameIdx = keys.indexOf('NAME');
                     const pidIdx = keys.indexOf('PID');
                     for (const line of lines) {
-                        const fields = line.split(PS_FIELSD_SPLITTER_RE);
+                        const fields = line.split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
                         if (fields.length < nameIdx) {
                             continue;
                         }
