@@ -1,3 +1,11 @@
+## 1.2.10
+
+* Fixed debugger can't find "localabstract name" issue by better parsing of `adb shell ps` output
+* Cleaned up noisy Ionic output in debug console
+* Improved detection of latest Ionic CLI to better handle 'ionic cordova' plugin/integration
+* Improved handling of typings in typescript projects
+* Fixed annoying `Debugger.setAsyncCallStackDepth` error appeared after upgrading vscode-chrome-debug-core
+
 ## 1.2.9
 
 * Added chromium to valid "simulate" targets
