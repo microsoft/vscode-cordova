@@ -46,7 +46,10 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
     let stderr = '';
     let cordovaProcess = cordovaStartCommand(args, cordovaRootPath);
 
+    // Prevent these lines to be shown more than once
+    // to prevent debug console pollution
     let isShown = {
+        'Running command': false,
         'cordova prepare': false,
         'cordova platform add': false
     };
