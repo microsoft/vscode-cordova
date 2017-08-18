@@ -9,6 +9,9 @@ import * as path from 'path';
 import * as util from 'util';
 import * as semver from 'semver';
 
+// suppress the following strings because they are not actual errors:
+const errorsToSuppress = ['Run an Ionic project on a connected device'];
+
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
     let proc = child_process.spawn(command, args, { stdio: 'pipe' });
@@ -41,34 +44,51 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
     let cliName = isIonicProject ? 'ionic' : 'cordova';
     let output = '';
     let stderr = '';
-    let process = cordovaStartCommand(args, cordovaRootPath);
-    // suppress the following strings because they are not actual errors:
-    let stringsToSuppress = ['Run an Ionic project on a connected device'];
+    let cordovaProcess = cordovaStartCommand(args, cordovaRootPath);
 
-    process.stderr.on('data', data => {
+    // Prevent these lines to be shown more than once
+    // to prevent debug console pollution
+    let isShown = {
+        'Running command': false,
+        'cordova prepare': false,
+        'cordova platform add': false
+    };
+
+    cordovaProcess.stderr.on('data', data => {
         stderr += data.toString();
-        for (var i = 0; i < stringsToSuppress.length; i++) {
-            if (data.toString().indexOf(stringsToSuppress[i]) >= 0) {
+        for (var i = 0; i < errorsToSuppress.length; i++) {
+            if (data.toString().indexOf(errorsToSuppress[i]) >= 0) {
                 return;
             }
         }
         defer.notify([data.toString(), 'stderr']);
     });
-    process.stdout.on('data', data => {
-        output += data.toString();
-        defer.notify([data.toString(), 'stdout']);
-        if (isIonicProject && data.toString().indexOf('LAUNCH SUCCESS') >= 0) {
+    cordovaProcess.stdout.on('data', (data: Buffer) => {
+        let str = data.toString().replace(/\u001b/g, '').replace(/\[2K\[G/g, ''); // Erasing `[2K[G` artifacts from DEBUG CONSOLE output
+        output += str;
+        for (let message in isShown)  {
+            if (str.indexOf(message) > -1) {
+                if (!isShown[message]) {
+                    isShown[message] = true;
+                    defer.notify([str, 'stdout']);
+                }
+                return;
+            }
+        }
+        defer.notify([str, 'stdout']);
+
+        if (isIonicProject && str.indexOf('LAUNCH SUCCESS') >= 0) {
             defer.resolve([output, stderr]);
         }
     });
-    process.on('exit', exitCode => {
+    cordovaProcess.on('exit', exitCode => {
         if (exitCode) {
             defer.reject(new Error(util.format('\'%s %s\' failed with exit code %d', cliName, args.join(' '), exitCode)));
         } else {
             defer.resolve([output, stderr]);
         }
     });
-    process.on('error', error => {
+    cordovaProcess.on('error', error => {
         defer.reject(error);
     });
 
