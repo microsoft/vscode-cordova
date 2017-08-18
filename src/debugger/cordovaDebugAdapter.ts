@@ -79,6 +79,8 @@ const DEFAULT_CHROMIUM_PATH = {
     WINx86: 'C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe',
 }
 
+// `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
+const PS_FIELDS_SPLITTER_RE = /[\s\r]+|[RSIDZTW<NL](?=[\s\r])/;
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -344,13 +346,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 this.runAdbCommand(getPidCommandArguments, errorLogger)
                 .then((psResult) => {
                     const lines = psResult.split('\n');
+                    const keys = lines.shift().split(/[\s\r]+/);
+                    const nameIdx = keys.indexOf('NAME');
+                    const pidIdx = keys.indexOf('PID');
                     for (const line of lines) {
-                        const fields = line.split(/[ \r]+/);
-                        if (fields.length < 9) {
+                        const fields = line.split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
+                        if (fields.length < nameIdx) {
                             continue;
                         }
-                        if (fields[8] === appPackageName) {
-                            return fields[1];
+                        if (fields[nameIdx] === appPackageName) {
+                            return fields[pidIdx];
                         }
                     }
                 })
@@ -359,17 +364,21 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     this.runAdbCommand(getSocketsCommandArguments, errorLogger)
                     .then((getSocketsResult) => {
                         const lines = getSocketsResult.split('\n');
+                        const keys = lines.shift().split(/[\s\r]+/);
+                        const flagsIdx = keys.indexOf('Flags');
+                        const stIdx = keys.indexOf('St');
+                        const pathIdx = keys.indexOf('Path');
                         for (const line of lines) {
-                            const fields = line.split(/[ \r]+/);
+                            const fields = line.split(/[\s\r]+/);
                             if (fields.length < 8) {
                                 continue;
                             }
                             // flag = 00010000 (16) -> accepting connection
                             // state = 01 (1) -> unconnected
-                            if (fields[3] !== '00010000' || fields[5] !== '01') {
+                            if (fields[flagsIdx] !== '00010000' || fields[stIdx] !== '01') {
                                 continue;
                             }
-                            const pathField = fields[7];
+                            const pathField = fields[pathIdx];
                             if (pathField.length < 1 || pathField[0] !== '@') {
                                 continue;
                             }
@@ -377,12 +386,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                                 continue;
                             }
 
-                            if (pathField === "@webview_devtools_remote_" + pid) {
+                            if (pathField === `@webview_devtools_remote_${pid}`) {
                                 // Matches the plain cordova webview format
                                 return pathField.substr(1);
                             }
 
-                            if (pathField === "@" + appPackageName + "_devtools_remote") {
+                            if (pathField === `@${appPackageName}_devtools_remote`) {
                                 // Matches the crosswalk format of "@PACKAGENAME_devtools_remote
                                 return pathField.substr(1);
                             }
