@@ -304,40 +304,48 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     private attachAndroid(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
-        let errorLogger = (message) => this.outputLogger(message, true);
+        let errorLogger = (message: string) => this.outputLogger(message, true);
         // Determine which device/emulator we are targeting
 
-        let adbDevicesResult = this.runAdbCommand(['devices'], errorLogger)
-            .then((devicesOutput) => {
-                if (attachArgs.target.toLowerCase() === 'device') {
-                    let deviceMatch = /\n([^\t]+)\tdevice($|\n)/m.exec(devicesOutput.replace(/\r/g, ''));
-                    if (!deviceMatch) {
-                        errorLogger(devicesOutput);
-                        throw new Error('Unable to find device');
-                    }
-                    return deviceMatch[1];
-                } else {
-                    let emulatorMatch = /\n(emulator[^\t]+)\tdevice($|\n)/m.exec(devicesOutput.replace(/\r/g, ''));
-                    if (!emulatorMatch) {
-                        errorLogger(devicesOutput);
-                        throw new Error('Unable to find emulator');
-                    }
-                    return emulatorMatch[1];
+        // For devices we look for "device" string but skip lines with "emulator"
+        const deviceFilter = (line: string) => /\w+\tdevice/.test(line) && !/emulator/.test(line);
+        const emulatorFilter = (line: string) => /device/.test(line) && /emulator/.test(line);
+
+        let adbDevicesResult: Q.Promise<string> = this.runAdbCommand(['devices'], errorLogger)
+            .then<string>((devicesOutput) => {
+
+                const targetFilter = attachArgs.target.toLowerCase() === 'device' ? deviceFilter :
+                    attachArgs.target.toLowerCase() === 'emulator' ? emulatorFilter :
+                        (line: string) => line.match(attachArgs.target);
+
+                const result = devicesOutput.split('\n')
+                    .filter(targetFilter)
+                    .map(line => line.replace(/\tdevice/, '').replace('\r', ''))[0];
+
+                if (!result) {
+                    errorLogger(devicesOutput);
+                    throw new Error(`Unable to find target ${attachArgs.target}`);
                 }
+
+                return result;
             }, (err: Error): any => {
                 let errorCode: string = (<any>err).code;
                 if (errorCode && errorCode === 'ENOENT') {
                     throw new Error('Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code');
                 }
+
                 throw err;
             });
-        let packagePromise = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml'))
+
+        let packagePromise: Q.Promise<string> = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml'))
             .then((manifestContents) => {
                 let parsedFile = elementtree.XML(manifestContents.toString());
                 let packageKey = 'package';
                 return parsedFile.attrib[packageKey];
             });
-        return Q.all([packagePromise, adbDevicesResult]).spread((appPackageName, targetDevice) => {
+
+        return Q.all([packagePromise, adbDevicesResult])
+            .spread((appPackageName: string, targetDevice: string) => {
             let getPidCommandArguments = ['-s', targetDevice, 'shell', 'ps'];
             let getSocketsCommandArguments = ['-s', targetDevice, 'shell', 'cat /proc/net/unix'];
 
