@@ -80,7 +80,7 @@ const DEFAULT_CHROMIUM_PATH = {
 }
 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
-const PS_FIELDS_SPLITTER_RE = /[\s\r]+|[RSIDZTW<NL](?=[\s\r])/;
+const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -358,7 +358,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     const nameIdx = keys.indexOf('NAME');
                     const pidIdx = keys.indexOf('PID');
                     for (const line of lines) {
-                        const fields = line.split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
+                        const fields = line.trim().split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
                         if (fields.length < nameIdx) {
                             continue;
                         }
