@@ -1,3 +1,7 @@
+## 1.2.12
+
+* Fixed application debug port detection on Android Oreo
+
 ## 1.2.11
 
 * Fixed attach failure when both device and emulator are connected
