@@ -1,3 +1,8 @@
+## 1.2.11
+
+* Fixed attach failure when both device and emulator are connected
+* Fixed problem with attaching debugger to apps with some specific names
+
 ## 1.2.10
 
 * Fixed debugger can't find "localabstract name" issue by better parsing of `adb shell ps` output
