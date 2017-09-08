@@ -354,7 +354,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 this.runAdbCommand(getPidCommandArguments, errorLogger)
                 .then((psResult) => {
                     const lines = psResult.split('\n');
-                    const keys = lines.shift().split(/[\s\r]+/);
+                    const keys = lines.shift().split(PS_FIELDS_SPLITTER_RE);
                     const nameIdx = keys.indexOf('NAME');
                     const pidIdx = keys.indexOf('PID');
                     for (const line of lines) {
