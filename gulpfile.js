@@ -125,7 +125,7 @@ gulp.task('watch-build-test', ['build', 'build-test'], function() {
     return gulp.watch(sources, ['build', 'build-test']);
 });
 
-gulp.task('release', ['build'], function () {
+gulp.task('release', function () {
     var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt"];
     var backupFolder = path.resolve(path.join(os.tmpdir(), 'vscode-cordova'));
     if (!fs.existsSync(backupFolder)) {

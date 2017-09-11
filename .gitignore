@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+*.vsix
 node_modules/
 out/
 test/testProject/.vscode/

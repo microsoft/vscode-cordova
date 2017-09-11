@@ -439,7 +439,8 @@
   "scripts": {
     "compile": "node ./node_modules/gulp/bin/gulp",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/mocha/bin/mocha --recursive -u bdd ./out/test/debugger"
+    "test": "node ./node_modules/mocha/bin/mocha --recursive -u bdd ./out/test/debugger",
+    "vscode:prepublish": "gulp"
   },
   "dependencies": {
     "cordova-simulate": "^0.3.0",
