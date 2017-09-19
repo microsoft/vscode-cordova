@@ -51,6 +51,7 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     forceprepare?: boolean;
     simulateTempDir?: string;
     corsproxy?: boolean;
+    runArguments?: string[];
 }
 
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
@@ -267,21 +268,29 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         // Prepare the command line args
         let isDevice = launchArgs.target.toLowerCase() === 'device';
-        let args = ['run', 'android', isDevice ? '--device' : '--emulator', '--verbose'];
-        if (['device', 'emulator'].indexOf(launchArgs.target.toLowerCase()) === -1) {
-            args.push(`--target=${launchArgs.target}`);
+        let args = ['run', 'android'];
+
+        if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
+            args.push(...launchArgs.runArguments);
+        } else {
+            args.push(isDevice ? '--device' : '--emulator', '--verbose');
+            if (['device', 'emulator'].indexOf(launchArgs.target.toLowerCase()) === -1) {
+                args.push(`--target=${launchArgs.target}`);
+            }
+
+            // Verify if we are using Ionic livereload
+            if (launchArgs.ionicLiveReload) {
+                if (projectType.ionic || projectType.ionic2) {
+                    // Livereload is enabled, let Ionic do the launch
+                    args.push('--livereload');
+                } else {
+                    this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
+                }
+            }
         }
 
-        // Verify if we are using Ionic livereload
-        if (launchArgs.ionicLiveReload) {
-            if (projectType.ionic || projectType.ionic2) {
-                // Livereload is enabled, let Ionic do the launch
-                args.push('--livereload');
-
-                return this.startIonicDevServer(launchArgs, args).then(() => void 0);
-            } else {
-                this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
-            }
+        if (args.indexOf('--livereload') > -1) {
+            return this.startIonicDevServer(launchArgs, args).then(() => void 0);
         }
 
         let cordovaResult = cordovaRunCommand(args, workingDirectory).then((output) => {
@@ -437,21 +446,33 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let appStepLaunchTimeout = launchArgs.appStepLaunchTimeout || 5000;
         // Launch the app
         if (launchArgs.target.toLowerCase() === 'device') {
-            // Verify if we are using Ionic livereload
-            if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic || projectType.ionic2) {
-                    // Livereload is enabled, let Ionic do the launch
-                    let ionicArgs = ['run', '--device', 'ios', '--livereload'];
+            let args = ['build', 'ios'];
 
-                    return this.startIonicDevServer(launchArgs, ionicArgs).then(() => void 0);
-                } else {
-                    this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
+            if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
+                args.push(...launchArgs.runArguments);
+            } else {
+                args.push('--device');
+                // Verify if we are using Ionic livereload
+                if (launchArgs.ionicLiveReload) {
+                    if (projectType.ionic || projectType.ionic2) {
+                        // Livereload is enabled, let Ionic do the launch
+                        args = ['run', 'ios', '--device', '--livereload'];
+                    } else {
+                        this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
+                    }
                 }
+            }
+
+            if (args.indexOf('--livereload') > -1) {
+                if (args[0] === 'build') {
+                    args[0] = 'run';
+                }
+                return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(['build', 'ios', '--device'], workingDirectory).then((output) => {
+            return cordovaRunCommand(args, workingDirectory).then((output) => {
                 let buildFolder = path.join(workingDirectory, 'platforms', 'ios', 'build', 'device');
 
                 this.outputLogger('Installing app on device');
@@ -499,41 +520,44 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === 'emulator' ? null : launchArgs.target;
-            let emulateArgs = ['emulate'];
+            let args = ['emulate', 'ios'];
 
-            if (target) {
-                emulateArgs.push('--target=' + target);
-            }
-
-            emulateArgs.push('ios');
-
-            // Verify if we are using Ionic livereload
-            if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic || projectType.ionic2) {
-                    // Livereload is enabled, let Ionic do the launch
-                    emulateArgs.push('--livereload');
-
-                    return this.startIonicDevServer(launchArgs, emulateArgs).then(() => void 0);
-                } else {
-                    this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
-                }
-            }
-
-            return cordovaRunCommand(emulateArgs, workingDirectory)
-            .progress((progress) => {
-                this.outputLogger(progress[0], progress[1]);
-            }).catch((err) => {
+            if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
+                args.push(...launchArgs.runArguments);
+            } else {
                 if (target) {
-                    return cordovaRunCommand(['emulate', 'ios', '--list'], workingDirectory).then((output) => {
-                        // List out available targets
-                        errorLogger('Unable to run with given target.');
-                        errorLogger(output[0].replace(/\*+[^*]+\*+/g, '')); // Print out list of targets, without ** RUN SUCCEEDED **
-                        throw err;
-                    });
+                    args.push('--target=' + target);
                 }
+                // Verify if we are using Ionic livereload
+                if (launchArgs.ionicLiveReload) {
+                    if (projectType.ionic || projectType.ionic2) {
+                        // Livereload is enabled, let Ionic do the launch
+                        args.push('--livereload');
+                    } else {
+                        this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
+                    }
+                }
+            }
 
-                throw err;
-            });
+            if (args.indexOf('--livereload') > -1) {
+                return this.startIonicDevServer(launchArgs, args).then(() => void 0);
+            }
+
+            return cordovaRunCommand(args, workingDirectory)
+                .progress((progress) => {
+                    this.outputLogger(progress[0], progress[1]);
+                }).catch((err) => {
+                    if (target) {
+                        return cordovaRunCommand(['emulate', 'ios', '--list'], workingDirectory).then((output) => {
+                            // List out available targets
+                            errorLogger('Unable to run with given target.');
+                            errorLogger(output[0].replace(/\*+[^*]+\*+/g, '')); // Print out list of targets, without ** RUN SUCCEEDED **
+                            throw err;
+                        });
+                    }
+
+                    throw err;
+                });
         }
     }
 
@@ -737,19 +761,23 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             return Q.reject<void>(new Error(errorMessage));
         }
 
-        // Set up "ionic serve" args
-        let ionicServeArgs: string[] = [
-            'serve',
-            '--nobrowser'
-        ];
+        let args = ['serve'];
 
-        if (!launchArgs.ionicLiveReload) {
-            ionicServeArgs.push('--nolivereload');
+        if (launchArgs.runArguments && launchArgs.runArguments.length > -1) {
+            args.push(...launchArgs.runArguments);
+        } else {
+            // Set up "ionic serve" args
+            args.push('--nobrowser');
+
+            if (!launchArgs.ionicLiveReload) {
+                args.push('--nolivereload');
+            }
         }
+
 
         // Deploy app to browser
         return Q(void 0).then(() => {
-            return this.startIonicDevServer(launchArgs, ionicServeArgs);
+            return this.startIonicDevServer(launchArgs, args);
         }).then((devServerUrl: string) => {
             // Prepare Chrome launch args
             launchArgs.url = devServerUrl;
@@ -765,15 +793,17 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
      * Starts an Ionic livereload server ("serve" or "run / emulate --livereload"). Returns a promise fulfilled with the full URL to the server.
      */
     private startIonicDevServer(launchArgs: ICordovaLaunchRequestArgs, cliArgs: string[]): Q.Promise<string> {
-        if (launchArgs.devServerAddress) {
-            cliArgs.push('--address', launchArgs.devServerAddress);
-        }
+        if (!launchArgs.runArguments || launchArgs.runArguments.length === 0) {
+            if (launchArgs.devServerAddress) {
+                cliArgs.push('--address', launchArgs.devServerAddress);
+            }
 
-        if (launchArgs.hasOwnProperty('devServerPort')) {
-            if (typeof launchArgs.devServerPort === 'number' && launchArgs.devServerPort >= 0 && launchArgs.devServerPort <= 65535) {
-                cliArgs.push('--port', launchArgs.devServerPort.toString());
-            } else {
-                return Q.reject<string>(new Error('The value for "devServerPort" must be a number between 0 and 65535'));
+            if (launchArgs.hasOwnProperty('devServerPort')) {
+                if (typeof launchArgs.devServerPort === 'number' && launchArgs.devServerPort >= 0 && launchArgs.devServerPort <= 65535) {
+                    cliArgs.push('--port', launchArgs.devServerPort.toString());
+                } else {
+                    return Q.reject<string>(new Error('The value for "devServerPort" must be a number between 0 and 65535'));
+                }
             }
         }
 
