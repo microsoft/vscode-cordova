@@ -57,6 +57,7 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
     cwd: string; /* Automatically set by VS Code to the currently opened folder */
     platform: string;
+    request?: string,
     target?: string;
     webkitRangeMin?: number;
     webkitRangeMax?: number;
@@ -442,11 +443,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         this.outputLogger('Launching app (This may take a while)...');
 
-        let iosDebugProxyPort = launchArgs.iosDebugProxyPort || 9221;
-        let appStepLaunchTimeout = launchArgs.appStepLaunchTimeout || 5000;
         // Launch the app
         if (launchArgs.target.toLowerCase() === 'device') {
-            let args = ['build', 'ios'];
+            let args = ['run', 'ios'];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
@@ -456,7 +455,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 if (launchArgs.ionicLiveReload) {
                     if (projectType.ionic || projectType.ionic2) {
                         // Livereload is enabled, let Ionic do the launch
-                        args = ['run', 'ios', '--device', '--livereload'];
+                        args.push('--livereload');
                     } else {
                         this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
                     }
@@ -464,60 +463,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             if (args.indexOf('--livereload') > -1) {
-                if (args[0] === 'build') {
-                    args[0] = 'run';
-                }
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
+            this.outputLogger('Installing app on device');
+
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(args, workingDirectory).then((output) => {
-                let buildFolder = path.join(workingDirectory, 'platforms', 'ios', 'build', 'device');
-
-                this.outputLogger('Installing app on device');
-
-                let installPromise = Q.nfcall(fs.readdir, buildFolder).then((files: string[]) => {
-                    let ipaFiles = files.filter((file) => /\.ipa$/.test(file));
-
-                    if (ipaFiles.length !== 0) {
-                        return path.join(buildFolder, ipaFiles[0]);
-                    }
-
-                    // No .ipa was found, look for a .app to convert to .ipa using xcrun
-                    let appFiles = files.filter((file) => /\.app$/.test(file));
-
-                    if (appFiles.length === 0) {
-                        throw new Error('Unable to find a .app or a .ipa to install');
-                    }
-
-                    let appFile = path.join(buildFolder, appFiles[0]);
-                    let ipaFile = path.join(buildFolder, path.basename(appFile, path.extname(appFile)) + '.ipa'); // Convert [path]/foo.app to [path]/foo.ipa
-                    let execArgs = ['-v', '-sdk', 'iphoneos', 'PackageApplication', `${appFile}`, '-o', `${ipaFile}`];
-
-                    return execCommand('xcrun', execArgs, errorLogger).then(() => ipaFile).catch((err): string => {
-                        throw new Error(`Error converting ${path.basename(appFile)} to .ipa`);
-                    });
-                }).then((ipaFile: string) => {
-                    return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error): any => {
-                        let errorCode: string = (<any>err).code;
-                        if (errorCode && errorCode === 'ENOENT') {
-                            throw new Error('Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code');
-                        }
-                        throw err;
-                    });
-                });
-
-                return Q.all([CordovaIosDeviceLauncher.getBundleIdentifier(workingDirectory), installPromise]);
-            }, undefined, (progress) => {
+            return cordovaRunCommand(args, workingDirectory).then(() => void (0), undefined, (progress) => {
                 this.outputLogger(progress[0], progress[1]);
-            }).spread((appBundleId) => {
-                // App is now built and installed. Try to launch
-                this.outputLogger('Launching app');
-                return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort).then(() => {
-                    return CordovaIosDeviceLauncher.startApp(appBundleId, iosDebugProxyPort, appStepLaunchTimeout);
-                });
-            }).then(() => void (0));
+            });
         } else {
             let target = launchArgs.target.toLowerCase() === 'emulator' ? null : launchArgs.target;
             let args = ['emulate', 'ios'];

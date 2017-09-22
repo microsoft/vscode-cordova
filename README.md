@@ -12,7 +12,15 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 3. If you're planning on targeting iOS devices,
  * Set up your machine by following instructions at [iOS Platform Guide from Apache Cordova](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html)
  * Install [HomeBrew](http://brew.sh/) on your Mac.
- * Open a Terminal and run `brew install ideviceinstaller ios-webkit-debug-proxy`
+ * Open a Terminal and run
+ ```
+ brew update
+ brew unlink libimobiledevice ios-webkit-debug-proxy ideviceinstaller
+ brew uninstall --force libimobiledevice ios-webkit-debug-proxy ideviceinstaller
+ brew install --HEAD libimobiledevice
+ brew install --HEAD ios-webkit-debug-proxy
+ brew install ideviceinstaller
+ ```
 4. If you're planning on targeting Android devices, set up your machine by following instructions at [Android Platform Guide from Apache Cordova](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
 
 ## Add a platform to your Cordova project
@@ -203,6 +211,19 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 ### OS X / Linux
 
 * Edit VSCodeTelemetrySettings.json file at ~/.vscode-cordova and add "optIn":false.
+
+## Troubleshooting
+
+### Debugging on iOS device
+* `Could not connect to lockdownd`
+```
+brew update
+brew unlink libimobiledevice ios-webkit-debug-proxy
+brew uninstall --force libimobiledevice ios-webkit-debug-proxy
+brew install --HEAD libimobiledevice
+brew install --HEAD ios-webkit-debug-proxy
+```
+More info [here](https://github.com/google/ios-webkit-debug-proxy#troubleshooting)
 
 ## Known Issues
 
