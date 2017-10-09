@@ -57,7 +57,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
     cwd: string; /* Automatically set by VS Code to the currently opened folder */
     platform: string;
-    request?: string,
     target?: string;
     webkitRangeMin?: number;
     webkitRangeMax?: number;
