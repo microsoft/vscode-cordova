@@ -86,6 +86,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
     private static SIMULATE_TARGETS: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
+    private static pidofNotFoundError = '/system/bin/sh: pidof: not found';
+
 
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
@@ -346,67 +348,82 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         return Q.all([packagePromise, adbDevicesResult])
             .spread((appPackageName: string, targetDevice: string) => {
+            let pidofCommandArguments = ['-s', targetDevice, 'shell', 'pidof', appPackageName];
             let getPidCommandArguments = ['-s', targetDevice, 'shell', 'ps'];
             let getSocketsCommandArguments = ['-s', targetDevice, 'shell', 'cat /proc/net/unix'];
 
             let findAbstractNameFunction = () =>
                 // Get the pid from app package name
-                this.runAdbCommand(getPidCommandArguments, errorLogger)
-                .then((psResult) => {
-                    const lines = psResult.split('\n');
-                    const keys = lines.shift().split(PS_FIELDS_SPLITTER_RE);
-                    const nameIdx = keys.indexOf('NAME');
-                    const pidIdx = keys.indexOf('PID');
-                    for (const line of lines) {
-                        const fields = line.trim().split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
-                        if (fields.length < nameIdx) {
-                            continue;
+                this.runAdbCommand(pidofCommandArguments, errorLogger)
+                    .then((pid) => {
+                        if (pid && /^[0-9]+$/.test(pid.trim())) {
+                            return pid.trim();
                         }
-                        if (fields[nameIdx] === appPackageName) {
-                            return fields[pidIdx];
-                        }
-                    }
-                })
-                // Get the "_devtools_remote" abstract name by filtering /proc/net/unix with process inodes
-                .then(pid =>
-                    this.runAdbCommand(getSocketsCommandArguments, errorLogger)
-                    .then((getSocketsResult) => {
-                        const lines = getSocketsResult.split('\n');
-                        const keys = lines.shift().split(/[\s\r]+/);
-                        const flagsIdx = keys.indexOf('Flags');
-                        const stIdx = keys.indexOf('St');
-                        const pathIdx = keys.indexOf('Path');
-                        for (const line of lines) {
-                            const fields = line.split(/[\s\r]+/);
-                            if (fields.length < 8) {
-                                continue;
-                            }
-                            // flag = 00010000 (16) -> accepting connection
-                            // state = 01 (1) -> unconnected
-                            if (fields[flagsIdx] !== '00010000' || fields[stIdx] !== '01') {
-                                continue;
-                            }
-                            const pathField = fields[pathIdx];
-                            if (pathField.length < 1 || pathField[0] !== '@') {
-                                continue;
-                            }
-                            if (pathField.indexOf('_devtools_remote') === -1) {
-                                continue;
-                            }
 
-                            if (pathField === `@webview_devtools_remote_${pid}`) {
-                                // Matches the plain cordova webview format
-                                return pathField.substr(1);
-                            }
+                        throw Error(CordovaDebugAdapter.pidofNotFoundError);
 
-                            if (pathField === `@${appPackageName}_devtools_remote`) {
-                                // Matches the crosswalk format of "@PACKAGENAME_devtools_remote
-                                return pathField.substr(1);
-                            }
-                            // No match, keep searching
+                    }).catch((err) => {
+                        if (err.message !== CordovaDebugAdapter.pidofNotFoundError) {
+                            throw err;
                         }
+
+                        return this.runAdbCommand(getPidCommandArguments, errorLogger)
+                            .then((psResult) => {
+                                const lines = psResult.split('\n');
+                                const keys = lines.shift().split(PS_FIELDS_SPLITTER_RE);
+                                const nameIdx = keys.indexOf('NAME');
+                                const pidIdx = keys.indexOf('PID');
+                                for (const line of lines) {
+                                    const fields = line.trim().split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
+                                    if (fields.length < nameIdx) {
+                                        continue;
+                                    }
+                                    if (fields[nameIdx] === appPackageName) {
+                                        return fields[pidIdx];
+                                    }
+                                }
+                            });
                     })
-                );
+                    // Get the "_devtools_remote" abstract name by filtering /proc/net/unix with process inodes
+                    .then(pid =>
+                        this.runAdbCommand(getSocketsCommandArguments, errorLogger)
+                            .then((getSocketsResult) => {
+                                const lines = getSocketsResult.split('\n');
+                                const keys = lines.shift().split(/[\s\r]+/);
+                                const flagsIdx = keys.indexOf('Flags');
+                                const stIdx = keys.indexOf('St');
+                                const pathIdx = keys.indexOf('Path');
+                                for (const line of lines) {
+                                    const fields = line.split(/[\s\r]+/);
+                                    if (fields.length < 8) {
+                                        continue;
+                                    }
+                                    // flag = 00010000 (16) -> accepting connection
+                                    // state = 01 (1) -> unconnected
+                                    if (fields[flagsIdx] !== '00010000' || fields[stIdx] !== '01') {
+                                        continue;
+                                    }
+                                    const pathField = fields[pathIdx];
+                                    if (pathField.length < 1 || pathField[0] !== '@') {
+                                        continue;
+                                    }
+                                    if (pathField.indexOf('_devtools_remote') === -1) {
+                                        continue;
+                                    }
+
+                                    if (pathField === `@webview_devtools_remote_${pid}`) {
+                                        // Matches the plain cordova webview format
+                                        return pathField.substr(1);
+                                    }
+
+                                    if (pathField === `@${appPackageName}_devtools_remote`) {
+                                        // Matches the crosswalk format of "@PACKAGENAME_devtools_remote
+                                        return pathField.substr(1);
+                                    }
+                                    // No match, keep searching
+                                }
+                            })
+                    );
 
             return CordovaDebugAdapter.retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, 'Unable to find localabstract name of cordova app')
                 .then((abstractName) => {
