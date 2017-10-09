@@ -328,16 +328,6 @@
                 "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
                 "default": 1000
               },
-              "iosDebugProxyPort": {
-                "type": "number",
-                "description": "Port to use for connecting to iOS native debugger when launching app",
-                "default": 9221
-              },
-              "appStepLaunchTimeout": {
-                "type": "number",
-                "description": "Timeout in milliseconds for individual steps when launching iOS app",
-                "default": 5000
-              },
               "ionicLiveReload": {
                 "type": "boolean",
                 "description": "Whether or not to start an Ionic live reload session (this is currently only supported for Ionic 1 projects)",

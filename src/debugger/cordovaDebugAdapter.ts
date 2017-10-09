@@ -30,8 +30,6 @@ import {SimulationInfo} from '../common/simulationInfo';
 const MISSING_API_ERROR = 'Debugger.setAsyncCallStackDepth';
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
-    iosDebugProxyPort?: number;
-    appStepLaunchTimeout?: number;
 
     // Ionic livereload properties
     ionicLiveReload?: boolean;
@@ -57,7 +55,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
     cwd: string; /* Automatically set by VS Code to the currently opened folder */
     platform: string;
-    request?: string,
     target?: string;
     webkitRangeMin?: number;
     webkitRangeMax?: number;
@@ -468,11 +465,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             this.outputLogger('Installing app on device');
 
-            // cordova run ios does not terminate, so we do not know when to try and attach.
-            // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(args, workingDirectory).then(() => void (0), undefined, (progress) => {
-                this.outputLogger(progress[0], progress[1]);
-            });
+            return cordovaRunCommand(args, workingDirectory)
+                .then(() => void (0), undefined, (progress) => {
+                    this.outputLogger(progress[0], progress[1]);
+                });
         } else {
             let target = launchArgs.target.toLowerCase() === 'emulator' ? null : launchArgs.target;
             let args = ['emulate', 'ios'];
