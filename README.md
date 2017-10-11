@@ -54,8 +54,6 @@ Name                               | Description                                
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
 `attachAttempts`                   | The maximum number of times that you want the debugger to attempt to attach to a running iOS app.                                             | 5
 `attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
-`iosDebugProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
-`appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
 `ionicLiveReload`                  | Set to true to enable Ionic live reload.                                                                                                      | false
 `devServerAddress`                 | For Ionic live reload scenario specify the IP address the device can use to contact the Ionic server.                                         | n/a
 `devServerPort`                    | For Ionic live reload scenario specify the port the device can use to contact the Ionic server.                                               | n/a
