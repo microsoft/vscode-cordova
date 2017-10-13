@@ -75,7 +75,7 @@ export class PluginSimulator implements vscode.Disposable {
                 if (isPlatformMissing) {
                      let command = "cordova";
                      if (projectType.ionic || projectType.ionic2) {
-                        command = "ionic";
+                        command = "ionic cordova";
                      }
 
                     throw new Error(`Couldn't find platform ${platform} in project, please install it using '${command} platform add ${platform}'`);
