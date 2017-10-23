@@ -8,6 +8,7 @@ import * as Q from 'q';
 import * as path from 'path';
 import * as util from 'util';
 import * as semver from 'semver';
+import { CordovaCommandHelper } from '../utils/cordovaCommandHelper';
 
 // suppress the following strings because they are not actual errors:
 const errorsToSuppress = ['Run an Ionic project on a connected device'];
@@ -44,7 +45,8 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
     let cliName = isIonicProject ? 'ionic' : 'cordova';
     let output = '';
     let stderr = '';
-    let cordovaProcess = cordovaStartCommand(args, cordovaRootPath);
+    const runArguments = CordovaCommandHelper.getRunArguments();
+    let cordovaProcess = cordovaStartCommand(runArguments.length ? runArguments : args, cordovaRootPath);
 
     // Prevent these lines to be shown more than once
     // to prevent debug console pollution

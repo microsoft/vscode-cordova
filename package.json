@@ -434,6 +434,18 @@
           }
         }
       }
+    ],
+    "configuration":[
+      {
+        "title": "Cordova Tools",
+        "properties": {
+          "cordova.runArguments": {
+            "type": "array",
+            "default": [],
+            "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command"
+          }
+        }
+      }
     ]
   },
   "scripts": {

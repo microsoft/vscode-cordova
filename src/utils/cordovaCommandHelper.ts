@@ -5,9 +5,10 @@ import * as child_process from 'child_process';
 import * as Q from 'q';
 import * as os from 'os';
 import * as util from 'util';
-import {window} from 'vscode';
+import { window, WorkspaceConfiguration, workspace } from 'vscode';
 
 import {TelemetryHelper} from './telemetryHelper';
+import { ConfigurationReader } from '../common/configurationReader';
 
 export class CordovaCommandHelper {
     private static CORDOVA_CMD_NAME = os.platform() === "win32" ? "cordova.cmd" : "cordova";
@@ -40,6 +41,11 @@ export class CordovaCommandHelper {
                 commandToExecute += ' android';
             }
 
+            const runArgs = CordovaCommandHelper.getRunArguments();
+            if (runArgs.length) {
+                commandToExecute += ' ' + runArgs.join(' ');
+            }
+
             outputChannel.appendLine("########### EXECUTING: " + commandToExecute + " ###########");
             outputChannel.show();
             let process = child_process.exec(commandToExecute, { cwd: projectRoot });
@@ -70,5 +76,18 @@ export class CordovaCommandHelper {
                 .then((projectType) => generator.add('projectType', projectType, false))
                 .then(() => deferred.promise);
         });
+    }
+
+    /**
+     * Get command line run arguments from settings.json
+     */
+    public static getRunArguments(): string[] {
+        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration();
+        const configKey: string = 'cordova.runArguments';
+        if (workspaceConfiguration.has(configKey)) {
+            return ConfigurationReader.readArray(workspaceConfiguration.get(configKey));
+        }
+
+        return [];
     }
 }

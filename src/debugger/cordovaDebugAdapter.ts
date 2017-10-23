@@ -765,6 +765,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
      * Starts an Ionic livereload server ("serve" or "run / emulate --livereload"). Returns a promise fulfilled with the full URL to the server.
      */
     private startIonicDevServer(launchArgs: ICordovaLaunchRequestArgs, cliArgs: string[]): Q.Promise<string> {
+        return CordovaDebugAdapter.getRunArguments(launchArgs.cwd).then(runArguments =>
+            this.startIonicDevServerProcess(launchArgs, runArguments.length ? runArguments : cliArgs)
+        );
+    }
+
+    private startIonicDevServerProcess(launchArgs: ICordovaLaunchRequestArgs, cliArgs: string[]): Q.Promise<string> {
         if (launchArgs.devServerAddress) {
             cliArgs.push('--address', launchArgs.devServerAddress);
         }
@@ -1220,5 +1226,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     private getErrorMessage(e: any): string {
         return e.message || e.error || e.data || e;
+    }
+
+    public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS);
     }
 }

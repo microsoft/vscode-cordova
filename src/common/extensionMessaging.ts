@@ -16,7 +16,8 @@ export enum ExtensionMessage {
     LAUNCH_SIM_HOST,
     SEND_TELEMETRY,
     SIMULATE,
-    START_SIMULATE_SERVER
+    START_SIMULATE_SERVER,
+    GET_RUN_ARGUMENTS
 }
 
 export interface MessageWithArguments {

@@ -17,6 +17,7 @@ import {
 
 import {IProjectType, CordovaProjectHelper} from "../utils/cordovaProjectHelper";
 import {Telemetry} from "../utils/telemetry";
+import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 
 export class ExtensionServer implements vscode.Disposable {
     private serverInstance: net.Server = null;
@@ -35,6 +36,7 @@ export class ExtensionServer implements vscode.Disposable {
         this.messageHandlerDictionary[ExtensionMessage.SIMULATE] = this.simulate;
         this.messageHandlerDictionary[ExtensionMessage.START_SIMULATE_SERVER] = this.launchSimulateServer;
         this.messageHandlerDictionary[ExtensionMessage.GET_VISIBLE_EDITORS_COUNT] = this.getVisibleEditorsCount;
+        this.messageHandlerDictionary[ExtensionMessage.GET_RUN_ARGUMENTS] = this.getRunArguments;
     }
 
     /**
@@ -177,5 +179,9 @@ export class ExtensionServer implements vscode.Disposable {
                 clientSocket.end();
             });
         }
+    }
+
+    private getRunArguments(): Q.Promise<string[]> {
+        return Q.resolve(CordovaCommandHelper.getRunArguments());
     }
 }
