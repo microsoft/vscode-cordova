@@ -117,6 +117,12 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
         }
     }
 
+    if (cliName === 'ionic') {
+        args.push('--no-interactive');
+    } else {
+        args.push('--no-update-notifier');
+    }
+
     return child_process.spawn(command, args, { cwd: cordovaRootPath });
 }
 

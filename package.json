@@ -378,6 +378,10 @@
                 "type": "boolean",
                 "description": "When simulating in the browser, determines whether XHR requests are proxied to appear as though they originate from the same domain as the target.",
                 "default": true
+              },
+              "runArguments": {
+                "type": "array",
+                "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command(Override all other configuration params)"
               }
             }
           },

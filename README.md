@@ -198,11 +198,11 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ### Windows
 
-* Edit VSCodeTelemetrySettings.json file at %appdata%\vscode-cordova and add "optIn":false.
+* Edit VSCodeTelemetrySettings.json file at `%appdata%\vscode-cordova` and add "optIn":false.
 
 ### OS X / Linux
 
-* Edit VSCodeTelemetrySettings.json file at ~/.vscode-cordova and add "optIn":false.
+* Edit VSCodeTelemetrySettings.json file at `~/.vscode-cordova` and add "optIn":false.
 
 ## Known Issues
 
