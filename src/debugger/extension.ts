@@ -8,7 +8,7 @@ import * as Q from 'q';
 import * as path from 'path';
 import * as util from 'util';
 import * as semver from 'semver';
-import { CordovaCommandHelper } from '../utils/cordovaCommandHelper';
+import { ExtensionMessageSender, ExtensionMessage } from '../common/extensionMessaging';
 
 // suppress the following strings because they are not actual errors:
 const errorsToSuppress = ['Run an Ionic project on a connected device'];
@@ -40,13 +40,18 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
 }
 
 export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Promise<string[]> {
+    return new ExtensionMessageSender(cordovaRootPath)
+        .sendMessage(ExtensionMessage.GET_RUN_ARGUMENTS)
+        .then(runArguments => runCommand(runArguments.length ? runArguments : args, cordovaRootPath));
+}
+
+function runCommand(args: string[], cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
     let isIonicProject = CordovaProjectHelper.isIonicProject(cordovaRootPath);
     let cliName = isIonicProject ? 'ionic' : 'cordova';
     let output = '';
     let stderr = '';
-    const runArguments = CordovaCommandHelper.getRunArguments();
-    let cordovaProcess = cordovaStartCommand(runArguments.length ? runArguments : args, cordovaRootPath);
+    let cordovaProcess = cordovaStartCommand(args, cordovaRootPath);
 
     // Prevent these lines to be shown more than once
     // to prevent debug console pollution
