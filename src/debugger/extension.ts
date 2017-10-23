@@ -40,12 +40,6 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
 }
 
 export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Promise<string[]> {
-    return new ExtensionMessageSender(cordovaRootPath)
-        .sendMessage(ExtensionMessage.GET_RUN_ARGUMENTS)
-        .then(runArguments => runCommand(runArguments.length ? runArguments : args, cordovaRootPath));
-}
-
-function runCommand(args: string[], cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
     let isIonicProject = CordovaProjectHelper.isIonicProject(cordovaRootPath);
     let cliName = isIonicProject ? 'ionic' : 'cordova';
