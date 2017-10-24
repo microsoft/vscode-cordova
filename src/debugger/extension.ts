@@ -8,6 +8,7 @@ import * as Q from 'q';
 import * as path from 'path';
 import * as util from 'util';
 import * as semver from 'semver';
+import { ExtensionMessageSender, ExtensionMessage } from '../common/extensionMessaging';
 
 // suppress the following strings because they are not actual errors:
 const errorsToSuppress = ['Run an Ionic project on a connected device'];

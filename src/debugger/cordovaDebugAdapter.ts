@@ -141,8 +141,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             TelemetryHelper.sendPluginsList(launchArgs.cwd, CordovaProjectHelper.getInstalledPlugins(launchArgs.cwd));
 
-            return TelemetryHelper.determineProjectTypes(launchArgs.cwd)
-                .then((projectType) => {
+            return Q.all([
+                TelemetryHelper.determineProjectTypes(launchArgs.cwd),
+                CordovaDebugAdapter.getRunArguments(launchArgs.cwd)
+            ])
+                .then(([projectType, runArguments]) => {
+
                     generator.add('projectType', projectType, false);
                     this.outputLogger(`Launching for ${platform} (This may take a while)...`);
 
@@ -153,7 +157,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
-                                return this.launchAndroid(launchArgs, projectType);
+                                return this.launchAndroid(launchArgs, projectType, runArguments);
                             }
                         /* tslint:enable:no-switch-case-fall-through */
                         case 'ios':
@@ -162,12 +166,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
-                                return this.launchIos(launchArgs, projectType);
+                                return this.launchIos(launchArgs, projectType, runArguments);
                             }
                         /* tslint:enable:no-switch-case-fall-through */
                         case 'serve':
                             generator.add('platform', platform, false);
-                            return this.launchServe(launchArgs, projectType);
+                            return this.launchServe(launchArgs, projectType, runArguments);
                         case 'browser':
                             generator.add('platform', platform, false);
                             return this.launchSimulate(launchArgs, projectType, generator);
@@ -265,7 +269,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         super.commonArgs(args);
     }
 
-    private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
+    private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         let workingDirectory = launchArgs.cwd;
 
         // Prepare the command line args
@@ -274,6 +278,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
             args.push(...launchArgs.runArguments);
+        } else if (runArguments && runArguments.length) {
+            args.push(...runArguments);
         } else {
             args.push(isDevice ? '--device' : '--emulator', '--verbose');
             if (['device', 'emulator'].indexOf(launchArgs.target.toLowerCase()) === -1) {
@@ -450,7 +456,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         });
     }
 
-    private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
+    private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         if (os.platform() !== 'darwin') {
             return Q.reject<void>('Unable to launch iOS on non-mac machines');
         }
@@ -467,6 +473,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
+            } else if (runArguments && runArguments.length) {
+                args.push(...runArguments);
             } else {
                 args.push('--device');
                 // Verify if we are using Ionic livereload
@@ -541,6 +549,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
+            } else if (runArguments && runArguments.length) {
+                args.push(...runArguments);
             } else {
                 if (target) {
                     args.push('--target=' + target);
@@ -766,7 +776,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return result;
     }
 
-    private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType): Q.Promise<void> {
+    private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
@@ -782,6 +792,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         if (launchArgs.runArguments && launchArgs.runArguments.length > -1) {
             args.push(...launchArgs.runArguments);
+        } else if (runArguments && runArguments.length) {
+            args.push(...runArguments);
         } else {
             // Set up "ionic serve" args
             args.push('--nobrowser');
@@ -1267,5 +1279,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     private getErrorMessage(e: any): string {
         return e.message || e.error || e.data || e;
+    }
+
+    public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS);
     }
 }
