@@ -1,3 +1,8 @@
+## 1.2.13
+
+* Added `runArguments` configuration option to allow passing custom arguments to `cordova run/build` or `ionic serve` commands
+* Fixed problem with cordova/ionic check updates
+
 ## 1.2.12
 
 * Fixed application debug port detection on Android Oreo
