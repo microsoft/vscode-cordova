@@ -28,7 +28,6 @@ let TSCONFIG_FILENAME = 'tsconfig.json';
 let projectsCache: {[key: string]: any} = {};
 
 export function activate(context: vscode.ExtensionContext): void {
-    console.error(123);
     context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
 
     const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
@@ -332,7 +331,7 @@ function registerCordovaCommands(context: vscode.ExtensionContext): void {
                 return launchSimulateCommand(project.cordovaProjectRoot,  { dir: project.folder.uri.fsPath, target: 'chrome', platform: 'android' });
             });
     }));
-    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.android', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('cordova.simulate.ios', () => {
         return selectProject()
             .then((project) => {
                 return launchSimulateCommand(project.cordovaProjectRoot,  { dir: project.folder.uri.fsPath, target: 'chrome', platform: 'ios' });
