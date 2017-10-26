@@ -17,7 +17,7 @@
   "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
-    "vscode": "^1.8.0"
+    "vscode": "^1.17.1"
   },
   "categories": [
     "Debuggers",
@@ -439,7 +439,7 @@
         }
       }
     ],
-    "configuration":[
+    "configuration": [
       {
         "title": "Cordova Tools",
         "properties": {
@@ -488,7 +488,7 @@
     "tslint": "^2.5.1",
     "typescript": "^2.1.4",
     "vsce": "^1.8.0",
-    "vscode": "^1.0.5",
+    "vscode": "^1.1.6",
     "vscode-debugprotocol": "^1.22.0"
   }
 }

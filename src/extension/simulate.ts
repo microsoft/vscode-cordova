@@ -17,43 +17,41 @@ import * as vscode from "vscode";
  */
 export class PluginSimulator implements vscode.Disposable {
     private registration: vscode.Disposable;
-    private simulateProtocol: string;
-    private simulateUri: vscode.Uri;
-    private defaultSimulateTempDir: string;
 
     private simulator: Simulator;
     private simulationInfo: SimulationInfo;
 
-    constructor() {
-        this.simulateProtocol = "cordova-simulate-" + Hash.hashCode(vscode.workspace.rootPath);
-        this.simulateUri = vscode.Uri.parse(this.simulateProtocol + "://authority/cordova-simulate");
-        this.defaultSimulateTempDir = path.join(vscode.workspace.rootPath, ".vscode", "simulate");
-    }
-
-    public simulate(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<any> {
-        return this.launchServer(simulateOptions, projectType)
+    public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<any> {
+        return this.launchServer(fsPath, simulateOptions, projectType)
             .then(() => this.launchAppHost(simulateOptions.target))
-            .then(() => this.launchSimHost());
+            .then(() => this.launchSimHost(fsPath));
     }
 
     public launchAppHost(target: string): Q.Promise<void> {
         return launchBrowser(target, this.simulationInfo.appHostUrl);
     }
 
-    public launchSimHost(): Q.Promise<void> {
+    public launchSimHost(fsPath: string): Q.Promise<void> {
+        const uri = vscode.Uri.file(fsPath);
+        const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
+        const simulateProtocol = 'cordova-simulate-' + Hash.hashCode(workspaceFolder.uri.fsPath);
+        const simulateUri = vscode.Uri.parse(simulateProtocol + '://authority/cordova-simulate');
+
         if (!this.simulator) {
             return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
         }
-        let provider = new SimHostContentProvider(this.simulator.simHostUrl(), this.simulateUri);
-        this.registration = vscode.workspace.registerTextDocumentContentProvider(this.simulateProtocol, provider);
+        let provider = new SimHostContentProvider(this.simulator.simHostUrl(), simulateUri);
+        this.registration = vscode.workspace.registerTextDocumentContentProvider(simulateProtocol, provider);
 
-        return Q(vscode.commands.executeCommand("vscode.previewHtml", this.simulateUri, vscode.ViewColumn.Two).then(() => provider.fireChange()));
+        return Q(vscode.commands.executeCommand("vscode.previewHtml", simulateUri, vscode.ViewColumn.Two).then(() => provider.fireChange()));
     }
 
-    public launchServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
-        simulateOptions.dir = vscode.workspace.rootPath;
+    public launchServer(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
+        const uri = vscode.Uri.file(fsPath);
+        const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
+        simulateOptions.dir = workspaceFolder.uri.fsPath;
         if (!simulateOptions.simulationpath) {
-            simulateOptions.simulationpath = this.defaultSimulateTempDir;
+            simulateOptions.simulationpath = path.join(workspaceFolder.uri.fsPath, '.vscode', 'simulate');;
         }
 
         return Q({}).then(() => {
@@ -67,7 +65,7 @@ export class PluginSimulator implements vscode.Disposable {
                 simulateOptions.telemetry = simulateTelemetryWrapper;
 
                 this.simulator = new Simulator(simulateOptions);
-                let platforms = CordovaProjectHelper.getInstalledPlatforms(vscode.workspace.rootPath);
+                let platforms = CordovaProjectHelper.getInstalledPlatforms(workspaceFolder.uri.fsPath);
 
                 let platform = simulateOptions.platform;
                 let isPlatformMissing = platform && platforms.indexOf(platform) < 0;
