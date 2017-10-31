@@ -21,7 +21,7 @@ import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 
 export class ExtensionServer implements vscode.Disposable {
     private serverInstance: net.Server = null;
-    private pluginSimulator: PluginSimulator;
+    public pluginSimulator: PluginSimulator;
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
 
@@ -90,10 +90,10 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    private simulate(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
-        return this.launchSimulateServer(simulateOptions, projectType)
+    private simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
+        return this.launchSimulateServer(fsPath, simulateOptions, projectType)
             .then((simulateInfo: SimulationInfo) => {
-               return this.launchSimHost().then(() => simulateInfo);
+               return this.launchSimHost(fsPath).then(() => simulateInfo);
             });
     }
 
@@ -102,15 +102,15 @@ export class ExtensionServer implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    private launchSimulateServer(simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
-        return this.pluginSimulator.launchServer(simulateOptions, projectType);
+    private launchSimulateServer(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
+        return this.pluginSimulator.launchServer(fsPath, simulateOptions, projectType);
     }
 
     /**
      * Launches sim-host using an already running simulate server.
      */
-    private launchSimHost(): Q.Promise<void> {
-        return this.pluginSimulator.launchSimHost();
+    private launchSimHost(fsPath: string): Q.Promise<void> {
+        return this.pluginSimulator.launchSimHost(fsPath);
     }
 
     /**
