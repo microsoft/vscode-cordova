@@ -5,7 +5,7 @@ import * as child_process from 'child_process';
 import * as Q from 'q';
 import * as os from 'os';
 import * as util from 'util';
-import { window, WorkspaceConfiguration, workspace } from 'vscode';
+import { window, WorkspaceConfiguration, workspace, Uri } from 'vscode';
 
 import {TelemetryHelper} from './telemetryHelper';
 import { ConfigurationReader } from '../common/configurationReader';
@@ -41,7 +41,7 @@ export class CordovaCommandHelper {
                 commandToExecute += ' android';
             }
 
-            const runArgs = CordovaCommandHelper.getRunArguments();
+            const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
             if (runArgs.length) {
                 commandToExecute += ' ' + runArgs.join(' ');
             }
@@ -81,9 +81,10 @@ export class CordovaCommandHelper {
     /**
      * Get command line run arguments from settings.json
      */
-    public static getRunArguments(): string[] {
-        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration();
-        const configKey: string = 'cordova.runArguments';
+    public static getRunArguments(fsPath: string): string[] {
+        let uri = Uri.file(fsPath);
+        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration("cordova", uri);
+        const configKey: string = 'runArguments';
         if (workspaceConfiguration.has(configKey)) {
             return ConfigurationReader.readArray(workspaceConfiguration.get(configKey));
         }
