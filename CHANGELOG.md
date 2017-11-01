@@ -1,3 +1,7 @@
+## 1.3.0
+
+* Multi-root workspaces support
+
 ## 1.2.13
 
 * Added `runArguments` configuration option to allow passing custom arguments to `cordova run/build` or `ionic serve` commands
