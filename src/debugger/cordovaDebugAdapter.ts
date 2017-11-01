@@ -688,12 +688,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let launchSimulate = Q(void 0)
             .then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
-                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [simulateOptions, projectType]);
+                return messageSender.sendMessage(messaging.ExtensionMessage.START_SIMULATE_SERVER, [launchArgs.cwd, simulateOptions, projectType]);
             }).then((simInfo: SimulationInfo) => {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
             }).then(() => {
-                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST);
+                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd]);
             }).then(() => {
                 // Launch Chrome and attach
                 launchArgs.url = simulateInfo.appHostUrl;
@@ -1282,6 +1282,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS);
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS, [projectRoot]);
     }
 }

@@ -2,7 +2,12 @@
   "name": "cordova-tools",
   "displayName": "Cordova Tools",
   "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework.",
-  "version": "1.2.13",
+  "keywords": [
+    "cordova",
+    "ionic",
+    "multi-root ready"
+  ],
+  "version": "1.3.0",
   "private": true,
   "publisher": "vsmobile",
   "icon": "images/icon.png",
@@ -446,7 +451,8 @@
           "cordova.runArguments": {
             "type": "array",
             "default": [],
-            "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command"
+            "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command",
+            "scope": "resource"
           }
         }
       }

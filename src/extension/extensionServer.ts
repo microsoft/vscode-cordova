@@ -181,7 +181,7 @@ export class ExtensionServer implements vscode.Disposable {
         }
     }
 
-    private getRunArguments(): Q.Promise<string[]> {
-        return Q.resolve(CordovaCommandHelper.getRunArguments());
+    private getRunArguments(fsPath: string): Q.Promise<string[]> {
+        return Q.resolve(CordovaCommandHelper.getRunArguments(fsPath));
     }
 }
