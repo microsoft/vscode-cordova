@@ -387,6 +387,11 @@
               "runArguments": {
                 "type": "array",
                 "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command(Override all other configuration params)"
+              },
+              "skipFiles": {
+                "type": "array",
+                "description": "An array of file or folder names, or path globs, to skip when debugging.",
+                "default": []
               }
             }
           },
@@ -438,6 +443,11 @@
                 "type": "number",
                 "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
                 "default": 1000
+              },
+              "skipFiles": {
+                "type": "array",
+                "description": "An array of file or folder names, or path globs, to skip when debugging.",
+                "default": []
               }
             }
           }
