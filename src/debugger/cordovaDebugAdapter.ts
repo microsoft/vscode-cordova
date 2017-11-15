@@ -379,7 +379,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                     }).catch((err) => {
                         if (err.message !== CordovaDebugAdapter.pidofNotFoundError) {
-                            throw err;
+                            return;
                         }
 
                         return this.runAdbCommand(getPidCommandArguments, errorLogger)
