@@ -115,8 +115,6 @@ Here is a [video demo](https://www.youtube.com/watch?v=LdFT6xxhSbw) of the featu
 ## Support for Ionic
 
 * The debug target includes the ability to serve to the browser for use with Ionic projects. You can now deploy and debug directly to Chrome, live reload is enabled by default.
-> **Note:**
-Ionic 2 Beta is not currently supported.
 
 * We've included a number of useful JavaScript and HTML code snippets for your project, try typing `ion_` in the editor to see what's available.
 
