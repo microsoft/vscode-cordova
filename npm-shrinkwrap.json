@@ -1,6 +1,6 @@
 {
   "name": "cordova-tools",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
@@ -42,6 +42,15 @@
       "version": "0.1.29",
       "resolved": "https://registry.npmjs.org/@types/source-map/-/source-map-0.1.29.tgz",
       "integrity": "sha1-1wSKYBgLCfiqbVO9oxHGtRy9cBg="
+    },
+    "JSONStream": {
+      "version": "1.3.1",
+      "resolved": "https://registry.npmjs.org/JSONStream/-/JSONStream-1.3.1.tgz",
+      "integrity": "sha1-cH92HgHa6eFvG8+TcDt4xwlmV5o=",
+      "requires": {
+        "jsonparse": "1.3.1",
+        "through": "2.3.8"
+      }
     },
     "accepts": {
       "version": "1.3.3",
@@ -375,9 +384,9 @@
       "resolved": "https://registry.npmjs.org/browser-pack/-/browser-pack-6.0.2.tgz",
       "integrity": "sha1-+GzWzvT1MAyOY+B6TVEvZfv/RTE=",
       "requires": {
+        "JSONStream": "1.3.1",
         "combine-source-map": "0.7.2",
         "defined": "1.0.0",
-        "JSONStream": "1.3.1",
         "through2": "2.0.3",
         "umd": "3.0.1"
       }
@@ -408,6 +417,7 @@
       "resolved": "https://registry.npmjs.org/browserify/-/browserify-13.3.0.tgz",
       "integrity": "sha1-tanJAgJD8McORnW+yCI7xifkFc4=",
       "requires": {
+        "JSONStream": "1.3.1",
         "assert": "1.4.1",
         "browser-pack": "6.0.2",
         "browser-resolve": "1.11.2",
@@ -429,7 +439,6 @@
         "https-browserify": "0.0.1",
         "inherits": "2.0.3",
         "insert-module-globals": "7.0.1",
-        "JSONStream": "1.3.1",
         "labeled-stream-splicer": "2.0.0",
         "module-deps": "4.1.1",
         "os-browserify": "0.1.2",
@@ -3168,10 +3177,10 @@
       "resolved": "https://registry.npmjs.org/insert-module-globals/-/insert-module-globals-7.0.1.tgz",
       "integrity": "sha1-wDv04BywhtW15azorQr+eInWOMM=",
       "requires": {
+        "JSONStream": "1.3.1",
         "combine-source-map": "0.7.2",
         "concat-stream": "1.5.2",
         "is-buffer": "1.1.5",
-        "JSONStream": "1.3.1",
         "lexical-scope": "1.2.0",
         "process": "0.11.10",
         "through2": "2.0.3",
@@ -3465,15 +3474,6 @@
       "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.1.tgz",
       "integrity": "sha1-T9kss04OnbPInIYi7PUfm5eMbLk=",
       "dev": true
-    },
-    "JSONStream": {
-      "version": "1.3.1",
-      "resolved": "https://registry.npmjs.org/JSONStream/-/JSONStream-1.3.1.tgz",
-      "integrity": "sha1-cH92HgHa6eFvG8+TcDt4xwlmV5o=",
-      "requires": {
-        "jsonparse": "1.3.1",
-        "through": "2.3.8"
-      }
     },
     "jsprim": {
       "version": "1.4.1",
@@ -3957,6 +3957,7 @@
       "resolved": "https://registry.npmjs.org/module-deps/-/module-deps-4.1.1.tgz",
       "integrity": "sha1-IyFYM/HaE/1gbMuAh7RIUty4If0=",
       "requires": {
+        "JSONStream": "1.3.1",
         "browser-resolve": "1.11.2",
         "cached-path-relative": "1.0.1",
         "concat-stream": "1.5.2",
@@ -3964,7 +3965,6 @@
         "detective": "4.5.0",
         "duplexer2": "0.1.4",
         "inherits": "2.0.3",
-        "JSONStream": "1.3.1",
         "parents": "1.0.1",
         "readable-stream": "2.3.3",
         "resolve": "1.4.0",
