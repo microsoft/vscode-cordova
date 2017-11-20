@@ -56,6 +56,7 @@ Name                               | Description                                
 `livereload`                       | When simulating in the browser, determines whether live reload is enabled.                                                                    | true
 `forceprepare`                     | When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading.                            | false
 `simulateTempDir`                  | The directory where temporary browser simulation files are hosted.                                                                            | `${workspaceRoot}`/.vscode/simulation
+`runArguments`                     | Run arguments (array) to be passed to 'cordova run/build <platform>' or 'ionic serve' command (Override all other configuration params).      | n/a
 
 
 ## Debug your Cordova-based project
