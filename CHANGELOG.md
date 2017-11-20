@@ -1,3 +1,7 @@
+## 1.3.1
+
+* Granted permissions to scripts
+
 ## 1.3.0
 
 * Multi-root workspaces support
