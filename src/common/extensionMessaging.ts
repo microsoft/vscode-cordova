@@ -17,7 +17,8 @@ export enum ExtensionMessage {
     SEND_TELEMETRY,
     SIMULATE,
     START_SIMULATE_SERVER,
-    GET_RUN_ARGUMENTS
+    GET_RUN_ARGUMENTS,
+    GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING
 }
 
 export interface MessageWithArguments {

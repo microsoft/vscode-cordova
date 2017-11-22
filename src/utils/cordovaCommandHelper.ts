@@ -82,13 +82,18 @@ export class CordovaCommandHelper {
      * Get command line run arguments from settings.json
      */
     public static getRunArguments(fsPath: string): string[] {
-        let uri = Uri.file(fsPath);
-        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration("cordova", uri);
-        const configKey: string = 'runArguments';
-        if (workspaceConfiguration.has(configKey)) {
-            return ConfigurationReader.readArray(workspaceConfiguration.get(configKey));
-        }
+        return CordovaCommandHelper.getSetting(fsPath, 'runArguments') || [];
+    }
 
-        return [];
+    public static getSimulatorInExternalBrowserSetting(fsPath: string): boolean {
+        return CordovaCommandHelper.getSetting(fsPath, 'simulatorInExternalBrowser') === true;
+    }
+
+    private static getSetting(fsPath: string, configKey: string): any {
+        let uri = Uri.file(fsPath);
+        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration('cordova', uri);
+        if (workspaceConfiguration.has(configKey)) {
+            return workspaceConfiguration.get(configKey);
+        }
     }
 }

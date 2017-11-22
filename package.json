@@ -453,6 +453,12 @@
             "default": [],
             "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command",
             "scope": "resource"
+          },
+          "cordova.simulatorInExternalBrowser": {
+            "type": "boolean",
+            "default": false,
+            "description": "Launch Cordova simulator in browser instead of tab in VS Code",
+            "scope": "resource"
           }
         }
       }
