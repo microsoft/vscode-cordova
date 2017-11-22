@@ -286,11 +286,10 @@ export class CordovaProjectHelper {
             return false;
         }
         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-        const dependencies = packageJson.dependencies;
-        const devDependencies = packageJson.devDependencies;
+        const dependencies = packageJson.dependencies || {};
+        const devDependencies = packageJson.devDependencies || {};
         const highestNotSupportedIonic2BetaVersion = "2.0.0-beta.9";
-        if ((!!(dependencies && dependencies["ionic-angular"])) &&
-            ((!!(devDependencies && devDependencies["@ionic/app-scripts"]))) || (!!(dependencies && dependencies["@ionic/app-scripts"]))) {
+        if ((dependencies["ionic-angular"]) && (devDependencies["@ionic/app-scripts"] || dependencies["@ionic/app-scripts"])) {
             const ionicVersion = dependencies["ionic-angular"];
             // If it's a valid version let's check it's greater than 2.0.0-beta-9
             if (semver.valid(ionicVersion)) {
