@@ -387,6 +387,11 @@
               "runArguments": {
                 "type": "array",
                 "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command(Override all other configuration params)"
+              },
+              "simulatorInExternalBrowser": {
+                "type": "boolean",
+                "description": "Launch Cordova simulator in browser instead of tab in VS Code",
+                "default": false
               }
             }
           },

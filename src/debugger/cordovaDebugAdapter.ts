@@ -62,6 +62,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     webkitRangeMax?: number;
     attachAttempts?: number;
     attachDelay?: number;
+    simulatorInExternalBrowser?: boolean;
 }
 
 const WIN_APPDATA = process.env.LOCALAPPDATA || '/';
@@ -695,14 +696,17 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => {
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
                 return CordovaDebugAdapter.getSimulatorInExternalBrowserSetting(launchArgs.cwd)
-                    .then(simulatorInExternalBrowser => {
-                        if (simulatorInExternalBrowser) {
+                    .then(simulatorInExternalBrowserSetting => {
+                        const isSetInLaunchArgs = launchArgs.simulatorInExternalBrowser;
+                        const isSetInSettings = simulatorInExternalBrowserSetting
+                            && launchArgs.simulatorInExternalBrowser !== false;
+                        if (isSetInLaunchArgs || isSetInSettings) {
                             return this.launchChrome({
                                 ...launchArgs,
                                 url: simulateInfo.simHostUrl
                             });
                         }
-                        return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd]);
+                        return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd, launchArgs.target, isSetInLaunchArgs]);
                     });
             }).then(() => {
                 // Launch Chrome and attach
