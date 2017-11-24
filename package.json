@@ -7,7 +7,7 @@
     "ionic",
     "multi-root ready"
   ],
-  "version": "1.3.0",
+  "version": "1.3.1",
   "private": true,
   "publisher": "vsmobile",
   "icon": "images/icon.png",
@@ -392,6 +392,11 @@
                 "type": "boolean",
                 "description": "Launch Cordova simulator in browser instead of tab in VS Code",
                 "default": false
+              },
+              "skipFiles": {
+                "type": "array",
+                "description": "An array of file or folder names, or path globs, to skip when debugging.",
+                "default": []
               }
             }
           },
@@ -443,6 +448,11 @@
                 "type": "number",
                 "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
                 "default": 1000
+              },
+              "skipFiles": {
+                "type": "array",
+                "description": "An array of file or folder names, or path globs, to skip when debugging.",
+                "default": []
               }
             }
           }
