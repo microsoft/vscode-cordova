@@ -56,6 +56,7 @@ Name                               | Description                                
 `livereload`                       | When simulating in the browser, determines whether live reload is enabled.                                                                    | true
 `forceprepare`                     | When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading.                            | false
 `simulateTempDir`                  | The directory where temporary browser simulation files are hosted.                                                                            | `${workspaceRoot}`/.vscode/simulation
+`runArguments`                     | Run arguments (array) to be passed to 'cordova run/build <platform>' or 'ionic serve' command (Override all other configuration params).      | n/a
 
 
 ## Debug your Cordova-based project
@@ -115,8 +116,6 @@ Here is a [video demo](https://www.youtube.com/watch?v=LdFT6xxhSbw) of the featu
 ## Support for Ionic
 
 * The debug target includes the ability to serve to the browser for use with Ionic projects. You can now deploy and debug directly to Chrome, live reload is enabled by default.
-> **Note:**
-Ionic 2 Beta is not currently supported.
 
 * We've included a number of useful JavaScript and HTML code snippets for your project, try typing `ion_` in the editor to see what's available.
 
