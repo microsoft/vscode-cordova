@@ -388,6 +388,11 @@
                 "type": "array",
                 "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command(Override all other configuration params)"
               },
+              "simulatorInExternalBrowser": {
+                "type": "boolean",
+                "description": "Launch Cordova simulator in browser instead of tab in VS Code",
+                "default": false
+              },
               "skipFiles": {
                 "type": "array",
                 "description": "An array of file or folder names, or path globs, to skip when debugging.",
@@ -462,6 +467,12 @@
             "type": "array",
             "default": [],
             "description": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command",
+            "scope": "resource"
+          },
+          "cordova.simulatorInExternalBrowser": {
+            "type": "boolean",
+            "default": false,
+            "description": "Launch Cordova simulator in browser instead of tab in VS Code",
             "scope": "resource"
           }
         }

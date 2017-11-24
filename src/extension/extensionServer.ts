@@ -37,6 +37,7 @@ export class ExtensionServer implements vscode.Disposable {
         this.messageHandlerDictionary[ExtensionMessage.START_SIMULATE_SERVER] = this.launchSimulateServer;
         this.messageHandlerDictionary[ExtensionMessage.GET_VISIBLE_EDITORS_COUNT] = this.getVisibleEditorsCount;
         this.messageHandlerDictionary[ExtensionMessage.GET_RUN_ARGUMENTS] = this.getRunArguments;
+        this.messageHandlerDictionary[ExtensionMessage.GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING] = this.getSimulatorInExternalBrowserSetting;
     }
 
     /**
@@ -93,7 +94,7 @@ export class ExtensionServer implements vscode.Disposable {
     private simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
         return this.launchSimulateServer(fsPath, simulateOptions, projectType)
             .then((simulateInfo: SimulationInfo) => {
-               return this.launchSimHost(fsPath).then(() => simulateInfo);
+               return this.launchSimHost(fsPath, simulateOptions.target).then(() => simulateInfo);
             });
     }
 
@@ -109,8 +110,8 @@ export class ExtensionServer implements vscode.Disposable {
     /**
      * Launches sim-host using an already running simulate server.
      */
-    private launchSimHost(fsPath: string): Q.Promise<void> {
-        return this.pluginSimulator.launchSimHost(fsPath);
+    private launchSimHost(fsPath: string, target: string, runInBrowser?: boolean): Q.Promise<void> {
+        return this.pluginSimulator.launchSimHost(fsPath, target, runInBrowser);
     }
 
     /**
@@ -183,5 +184,9 @@ export class ExtensionServer implements vscode.Disposable {
 
     private getRunArguments(fsPath: string): Q.Promise<string[]> {
         return Q.resolve(CordovaCommandHelper.getRunArguments(fsPath));
+    }
+
+    private getSimulatorInExternalBrowserSetting(fsPath: string): Q.Promise<boolean> {
+        return Q.resolve(CordovaCommandHelper.getSimulatorInExternalBrowserSetting(fsPath));
     }
 }

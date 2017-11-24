@@ -11,6 +11,7 @@ import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
 import {IProjectType, CordovaProjectHelper} from '../utils/cordovaProjectHelper';
 import {SimulationInfo} from '../common/simulationInfo';
 import * as vscode from "vscode";
+import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 
 /**
  * Plugin simulation entry point.
@@ -23,23 +24,32 @@ export class PluginSimulator implements vscode.Disposable {
 
     public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<any> {
         return this.launchServer(fsPath, simulateOptions, projectType)
-            .then(() => this.launchAppHost(simulateOptions.target))
-            .then(() => this.launchSimHost(fsPath));
+            .then(() => this.launchSimHost(fsPath, simulateOptions.target))
+            .then(() => this.launchAppHost(simulateOptions.target));
     }
 
     public launchAppHost(target: string): Q.Promise<void> {
         return launchBrowser(target, this.simulationInfo.appHostUrl);
     }
 
-    public launchSimHost(fsPath: string): Q.Promise<void> {
+    public launchSimHost(fsPath: string, target: string, runInBrowser?: boolean): Q.Promise<void> {
+        if (!this.simulator) {
+            return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
+        }
+
+        const isSetInLaunchArgs = runInBrowser;
+        const isSetInSettings = CordovaCommandHelper.getSimulatorInExternalBrowserSetting(fsPath)
+            && runInBrowser !== false;
+
+        if (isSetInLaunchArgs || isSetInSettings) {
+            return launchBrowser(target, this.simulator.simHostUrl());
+        }
+
         const uri = vscode.Uri.file(fsPath);
         const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
         const simulateProtocol = 'cordova-simulate-' + Hash.hashCode(workspaceFolder.uri.fsPath);
         const simulateUri = vscode.Uri.parse(simulateProtocol + '://authority/cordova-simulate');
 
-        if (!this.simulator) {
-            return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
-        }
         let provider = new SimHostContentProvider(this.simulator.simHostUrl(), simulateUri);
         this.registration = vscode.workspace.registerTextDocumentContentProvider(simulateProtocol, provider);
 

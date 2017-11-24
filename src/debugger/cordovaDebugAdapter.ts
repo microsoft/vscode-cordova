@@ -62,6 +62,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     webkitRangeMax?: number;
     attachAttempts?: number;
     attachDelay?: number;
+    simulatorInExternalBrowser?: boolean;
 }
 
 const WIN_APPDATA = process.env.LOCALAPPDATA || '/';
@@ -693,11 +694,23 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
             }).then(() => {
-                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd]);
+                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
+                return CordovaDebugAdapter.getSimulatorInExternalBrowserSetting(launchArgs.cwd)
+                    .then(simulatorInExternalBrowserSetting => {
+                        const isSetInLaunchArgs = launchArgs.simulatorInExternalBrowser;
+                        const isSetInSettings = simulatorInExternalBrowserSetting
+                            && launchArgs.simulatorInExternalBrowser !== false;
+                        if (isSetInLaunchArgs || isSetInSettings) {
+                            return this.launchChrome({
+                                ...launchArgs,
+                                url: simulateInfo.simHostUrl
+                            });
+                        }
+                        return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd, launchArgs.target, isSetInLaunchArgs]);
+                    });
             }).then(() => {
                 // Launch Chrome and attach
                 launchArgs.url = simulateInfo.appHostUrl;
-                launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
                 this.outputLogger('Attaching to app');
 
                 return this.launchChrome(launchArgs);
@@ -1283,5 +1296,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
         return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS, [projectRoot]);
+    }
+
+    public static getSimulatorInExternalBrowserSetting(projectRoot: string): Q.Promise<boolean> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING, [projectRoot]);
     }
 }
