@@ -108,7 +108,11 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
                 cwd: cordovaRootPath
             });
             let ionicVersion = ionicInfo.stdout.toString().trim();
-            if (semver.gte(ionicVersion, '3.0.0')) {
+
+            // Assuming for now that latest version is > 3
+            const isLatestIonic = (ionicVersion === 'latest' || ionicVersion === 'nightly');
+
+            if (isLatestIonic || semver.gte(ionicVersion, '3.0.0')) {
                 args.unshift('cordova');
             }
         } catch (err) {

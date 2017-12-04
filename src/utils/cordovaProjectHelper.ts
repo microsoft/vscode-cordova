@@ -291,6 +291,12 @@ export class CordovaProjectHelper {
         const highestNotSupportedIonic2BetaVersion = "2.0.0-beta.9";
         if ((dependencies["ionic-angular"]) && (devDependencies["@ionic/app-scripts"] || dependencies["@ionic/app-scripts"])) {
             const ionicVersion = dependencies["ionic-angular"];
+
+            // Assuming for now that latest version is > 3
+            if (ionicVersion === 'latest' || ionicVersion === 'nightly') {
+                return true;
+            }
+
             // If it's a valid version let's check it's greater than 2.0.0-beta-9
             if (semver.valid(ionicVersion)) {
                 return semver.gt(ionicVersion, highestNotSupportedIonic2BetaVersion);
