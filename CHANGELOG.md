@@ -1,4 +1,4 @@
-## 1.3.1
+## 1.3.2
 
 * Allow "non Ionic-CLI projects" to use the extension even with ionic-angular installed
 * Adds `cordova.simulatorInExternalBrowser` setting that makes Cordova simulator to launch in default browser instead of tab in VS Code
