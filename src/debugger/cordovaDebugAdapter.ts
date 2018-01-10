@@ -938,8 +938,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             this.outputLogger(data.toString(), "stdout");
 
             // Listen for the server to be ready. We check for the "Running dev server:  http://localhost:<port>/" and "dev server running: http://localhost:<port>/" strings to decide that.
+
+            // Example output of Ionic 1 dev server:
             //
-            // Example output of Ionic dev server:
+            // [OK] Development server running!
+            //      Local: http://localhost:8100
+            //      External: http://10.0.75.1:8100, http://172.28.124.161:8100, http://169.254.80.80:8100, http://192.169.8.39:8100
+
+            // Example output of Ionic 2 dev server:
             //
             // Running live reload server: undefined
             // Watching: 0=www/**/*, 1=!www/lib/**/*
@@ -974,7 +980,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // watch ready
             // dev server running: http://localhost:8100/
 
-            const SERVER_URL_RE  = /(dev server running|Running dev server):.*(http:\/\/.[^\s]*)/gmi;
+            const SERVER_URL_RE  = /(dev server running|Running dev server|Local):.*(http:\/\/.[^\s]*)/gmi;
             let matchResult = SERVER_URL_RE.exec(serverOut);
             if (!serverReady && matchResult) {
                 serverReady = true;
