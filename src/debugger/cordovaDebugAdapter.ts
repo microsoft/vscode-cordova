@@ -746,8 +746,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 width: data.width,
                 height: data.height,
                 deviceScaleFactor: 0,
-                mobile: true,
-                fitWindow: true
+                mobile: true
             })
         );
     }

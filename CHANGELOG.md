@@ -1,5 +1,13 @@
 ## 1.3.1
 
+* Allow "non Ionic-CLI projects" to use the extension even with ionic-angular installed
+* Adds `cordova.simulatorInExternalBrowser` setting that makes Cordova simulator to launch in default browser instead of tab in VS Code
+* Support new path of AndroidManifest.xml in Cordova 8.0.0
+* Fix ionic nightly version detection
+* Fix Ionic 1 livereload server detection
+
+## 1.3.1
+
 * Granted permissions to scripts
 
 ## 1.3.0
