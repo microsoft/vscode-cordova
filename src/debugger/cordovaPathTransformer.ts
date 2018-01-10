@@ -87,7 +87,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
         this._shadowedClientPaths = new Map<string, string>();
     }
 
-    public scriptParsed(scriptPath: string): string {
+    public scriptParsed(scriptPath: string): Promise<string> {
         const webkitUrl: string = scriptPath;
         const clientPath = this.getClientPath(webkitUrl);
 
@@ -107,7 +107,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
             this._pendingBreakpointsByPath.delete(scriptPath);
             this.setBreakpoints(pendingBreakpoint.args).then(pendingBreakpoint.resolve, pendingBreakpoint.reject);
         }
-        return scriptPath;
+        return Promise.resolve(scriptPath);
     }
 
     public stackTraceResponse(response: IStackTraceResponseBody): void {
