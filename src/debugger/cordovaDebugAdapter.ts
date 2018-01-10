@@ -28,6 +28,8 @@ import {Telemetry} from '../utils/telemetry';
 import {SimulationInfo} from '../common/simulationInfo';
 
 const MISSING_API_ERROR = 'Debugger.setAsyncCallStackDepth';
+const ANDROID_MANIFEST_PATH = path.join('platforms', 'android', 'AndroidManifest.xml');
+const ANDROID_MANIFEST_PATH_8 = path.join('platforms', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
@@ -355,7 +357,13 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 throw err;
             });
 
-        let packagePromise: Q.Promise<string> = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, 'platforms', 'android', 'AndroidManifest.xml'))
+        let packagePromise: Q.Promise<string> = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, ANDROID_MANIFEST_PATH))
+            .catch((err) => {
+                if (err && err.code === 'ENOENT') {
+                    return Q.nfcall(fs.readFile, path.join(attachArgs.cwd, ANDROID_MANIFEST_PATH_8));
+                }
+                throw err;
+            })
             .then((manifestContents) => {
                 let parsedFile = elementtree.XML(manifestContents.toString());
                 let packageKey = 'package';
