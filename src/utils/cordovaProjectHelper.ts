@@ -28,7 +28,7 @@ export class CordovaProjectHelper {
     private static PROJECT_TYPINGS_CORDOVA_FOLDERNAME = "cordova";
     private static PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME = "cordova-ionic";
     private static VSCODE_DIR: string = ".vscode";
-    private static PLATFORMS_PATH: string = "platforms/platforms.json";
+    private static PLATFORMS_PATH: string = "platforms";
     private static PLUGINS_FETCH_FILENAME: string = "fetch.json";
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
@@ -158,16 +158,15 @@ export class CordovaProjectHelper {
      *  Helper function to get the list of platforms installed for the project.
      */
     public static getInstalledPlatforms(projectRoot: string): string[] {
-        let platformJsonPath: string = path.resolve(projectRoot,  CordovaProjectHelper.PLATFORMS_PATH);
+        let platformsPath: string = path.resolve(projectRoot,  CordovaProjectHelper.PLATFORMS_PATH);
 
-        if (!CordovaProjectHelper.existsSync(platformJsonPath)) {
+        if (!CordovaProjectHelper.existsSync(platformsPath)) {
             return [];
         }
 
         try {
-            let platformJsonContents = fs.readFileSync(platformJsonPath, 'utf8');
-            let platformJson = JSON.parse(platformJsonContents);
-            return Object.keys(platformJson);
+            let platformsDirContents = fs.readdirSync(platformsPath);
+            return platformsDirContents;
         } catch (error) {
             console.error(error);
             return [];
