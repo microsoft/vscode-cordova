@@ -104,7 +104,7 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
 
     if (cliName === 'ionic' && !isIonicServe) {
         try {
-            let ionicInfo = child_process.spawnSync(command, ['-v', '--quiet'], {
+            let ionicInfo = child_process.spawnSync(command, ['-v', '--quiet', '--no-interactive'], {
                 cwd: cordovaRootPath
             });
             let ionicVersion = ionicInfo.stdout.toString().trim();
