@@ -104,10 +104,15 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
 
     if (cliName === 'ionic' && !isIonicServe) {
         try {
-            let ionicInfo = child_process.spawnSync(command, ['-v', '--quiet', '--no-interactive'], {
-                cwd: cordovaRootPath
+            let ionicInfo = child_process.spawnSync(command, ['-v', '--quiet'], {
+                cwd: cordovaRootPath,
+                env: {
+                    ...process.env,
+                    CI: "Hack to disable Ionic autoupdate prompt"
+                }
             });
-            let ionicVersion = ionicInfo.stdout.toString().trim();
+            // A warning might appear on second line
+            let ionicVersion = ionicInfo.stdout.toString().split('\n')[0].trim();
 
             // Assuming for now that latest version is > 3
             const isLatestIonic = (ionicVersion === 'latest' || ionicVersion === 'nightly');
