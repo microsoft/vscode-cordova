@@ -252,7 +252,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         });
                 });
         }).catch((err) => {
-            this.outputLogger(err.message || err, true);
+            this.outputLogger(err.message || err.format || err, true);
 
             return this.cleanUp().then(() => {
                 throw err;
