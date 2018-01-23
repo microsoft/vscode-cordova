@@ -91,6 +91,10 @@ export class PluginSimulator implements vscode.Disposable {
 
                 return this.simulator.startSimulation()
                     .then(() => {
+                        if (!this.simulator.isRunning()) {
+                            throw new Error("Error starting the simulation");
+                        }
+
                         this.simulationInfo = {
                             appHostUrl: this.simulator.appUrl(),
                             simHostUrl: this.simulator.simHostUrl(),
