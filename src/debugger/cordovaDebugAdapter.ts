@@ -96,7 +96,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
     private ionicLivereloadProcess: child_process.ChildProcess;
-    private ionicDevServerUrl: string;
+    private ionicDevServerUrls: string[];
     private cordovaPathTransformer: CordovaPathTransformer;
     private previousLaunchArgs: ICordovaLaunchRequestArgs;
     private previousAttachArgs: ICordovaAttachRequestArgs;
@@ -252,7 +252,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         });
                 });
         }).catch((err) => {
-            this.outputLogger(err.message || err, true);
+            this.outputLogger(err.message || err.format || err, true);
 
             return this.cleanUp().then(() => {
                 throw err;
@@ -600,11 +600,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private attachIos(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
         attachArgs.webkitRangeMin = attachArgs.webkitRangeMin || 9223;
         attachArgs.webkitRangeMax = attachArgs.webkitRangeMax || 9322;
-        attachArgs.attachAttempts = attachArgs.attachAttempts || 5;
+        attachArgs.attachAttempts = attachArgs.attachAttempts || 20;
         attachArgs.attachDelay = attachArgs.attachDelay || 1000;
         // Start the tunnel through to the webkit debugger on the device
         this.outputLogger('Configuring debugging proxy');
-        return CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax).then(() => {
+
+        const retry = function<T> (func, condition, retryCount): Q.Promise<T> {
+            return CordovaDebugAdapter.retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, 'Unable to find webview');
+        };
+
+        const getBundleIdentifier = (): Q.IWhenable<string> => {
             if (attachArgs.target.toLowerCase() === 'device') {
                 return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
                     .then(CordovaIosDeviceLauncher.getPathOnDevice)
@@ -619,7 +624,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     }
                 });
             }
-        }).then((packagePath) => {
+        };
+
+        const getSimulatorProxyPort = (packagePath): Q.IWhenable<{ packagePath: string; targetPort: number }> => {
             return this.promiseGet(`http://localhost:${attachArgs.port}/json`, 'Unable to communicate with ios_webkit_debug_proxy').then((response: string) => {
                 try {
                     let endpointsList = JSON.parse(response);
@@ -629,41 +636,66 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     );
                     let device = devices[0];
                     // device.url is of the form 'localhost:port'
-                    return parseInt(device.url.split(':')[1], 10);
+                    return {
+                        packagePath,
+                        targetPort: parseInt(device.url.split(':')[1], 10)
+                    };
                 } catch (e) {
                     throw new Error('Unable to find iOS target device/simulator. Please check that "Settings > Safari > Advanced > Web Inspector = ON" or try specifying a different "port" parameter in launch.json');
                 }
-            }).then((targetPort) => {
-                let findWebviewFunc = () => {
-                    return this.promiseGet(`http://localhost:${targetPort}/json`, 'Unable to communicate with target')
-                        .then((response: string) => {
-                            try {
-                                let webviewsList = JSON.parse(response);
-                                return webviewsList.filter((entry) => {
-                                    if (this.ionicDevServerUrl) {
-                                        return entry.url.indexOf(this.ionicDevServerUrl) === 0;
-                                    } else {
-                                        return entry.url.indexOf(encodeURIComponent(packagePath)) !== -1;
-                                    }
-                                });
-                            } catch (e) {
+            });
+        };
+
+        const findWebViews = ({ packagePath, targetPort }) => {
+            return retry(() =>
+                this.promiseGet(`http://localhost:${targetPort}/json`, 'Unable to communicate with target')
+                    .then((response: string) => {
+                        try {
+                            const webviewsList = JSON.parse(response);
+                            const foundWebViews = webviewsList.filter((entry) => {
+                                if (this.ionicDevServerUrls) {
+                                    return this.ionicDevServerUrls.some(url => entry.url.indexOf(url) === 0);
+                                } else {
+                                    return entry.url.indexOf(encodeURIComponent(packagePath)) !== -1;
+                                }
+                            });
+                            if (!foundWebViews.length && webviewsList.length === 1) {
+                                this.outputLogger("Unable to find target app webview, trying to fallback to the only running webview");
+                                return {
+                                    relevantViews: webviewsList,
+                                    targetPort
+                                };
+                            }
+                            if (!foundWebViews.length) {
                                 throw new Error('Unable to find target app');
                             }
-                        });
-                };
+                            return {
+                                relevantViews: foundWebViews,
+                                targetPort
+                            };
+                        } catch (e) {
+                            throw new Error('Unable to find target app');
+                        }
+                    }), (result) => result.relevantViews.length > 0, 5);
+        };
 
-                return CordovaDebugAdapter.retryAsync(findWebviewFunc, (webviewList) => webviewList.length > 0, attachArgs.attachAttempts, 1, attachArgs.attachDelay, 'Unable to find webview')
-                    .then((relevantViews) => {
-                        return { port: targetPort, url: relevantViews[0].url };
-                    });
-            });
-        }).then(({port, url}) => {
-            let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
-            args.port = port;
-            args.webRoot = attachArgs.cwd;
-            args.url = url;
-            return args;
-        });
+        const getAttachRequestArgs = (): Q.Promise<IAttachRequestArgs> =>
+            CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax)
+                .then(getBundleIdentifier)
+                .then(getSimulatorProxyPort)
+                .then(findWebViews)
+                .then(({ relevantViews, targetPort }) => {
+                    return { port: targetPort, url: relevantViews[0].url };
+                })
+                .then(({ port, url }) => {
+                    const args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
+                    args.port = port;
+                    args.webRoot = attachArgs.cwd;
+                    args.url = url;
+                    return args;
+                });
+
+        return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts);
     }
 
     private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, generator: TelemetryGenerator): Q.Promise<any> {
@@ -827,9 +859,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         // Deploy app to browser
         return Q(void 0).then(() => {
             return this.startIonicDevServer(launchArgs, args);
-        }).then((devServerUrl: string) => {
+        }).then((devServerUrls: string[]) => {
             // Prepare Chrome launch args
-            launchArgs.url = devServerUrl;
+            launchArgs.url = devServerUrls[0];
             launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
 
             // Launch Chrome and attach
@@ -841,7 +873,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     /**
      * Starts an Ionic livereload server ("serve" or "run / emulate --livereload"). Returns a promise fulfilled with the full URL to the server.
      */
-    private startIonicDevServer(launchArgs: ICordovaLaunchRequestArgs, cliArgs: string[]): Q.Promise<string> {
+    private startIonicDevServer(launchArgs: ICordovaLaunchRequestArgs, cliArgs: string[]): Q.Promise<string[]> {
         if (!launchArgs.runArguments || launchArgs.runArguments.length === 0) {
             if (launchArgs.devServerAddress) {
                 cliArgs.push('--address', launchArgs.devServerAddress);
@@ -851,7 +883,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 if (typeof launchArgs.devServerPort === 'number' && launchArgs.devServerPort >= 0 && launchArgs.devServerPort <= 65535) {
                     cliArgs.push('--port', launchArgs.devServerPort.toString());
                 } else {
-                    return Q.reject<string>(new Error('The value for "devServerPort" must be a number between 0 and 65535'));
+                    return Q.reject<string[]>(new Error('The value for "devServerPort" must be a number between 0 and 65535'));
                 }
             }
         }
@@ -861,9 +893,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let serverReady: boolean = false;
         let appReady: boolean = false;
         let serverReadyTimeout: number = launchArgs.devServerTimeout || 30000;
-        let appReadyTimeout: number = 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
+        let appReadyTimeout: number = launchArgs.devServerTimeout || 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverDeferred = Q.defer<void>();
-        let appDeferred = Q.defer<string>();
+        let appDeferred = Q.defer<string[]>();
         let serverOut: string = '';
         let serverErr: string = '';
         const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
@@ -988,8 +1020,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // dev server running: http://localhost:8100/
 
             const SERVER_URL_RE  = /(dev server running|Running dev server|Local):.*(http:\/\/.[^\s]*)/gmi;
-            let matchResult = SERVER_URL_RE.exec(serverOut);
-            if (!serverReady && matchResult) {
+            let localServerMatchResult = SERVER_URL_RE.exec(serverOut);
+            if (!serverReady && localServerMatchResult) {
                 serverReady = true;
                 serverDeferred.resolve(void 0);
             }
@@ -999,7 +1031,13 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                 if (isServe || regex.test(serverOut)) {
                     appReady = true;
-                    appDeferred.resolve(matchResult[2]);
+                    const serverUrls = [localServerMatchResult[2]];
+                    const externalUrls = /External:\s(.*)$/im.exec(serverOut);
+                    if (externalUrls) {
+                        const urls = externalUrls[1].split(', ').map(x => x.trim());
+                        serverUrls.push(...urls);
+                    }
+                    appDeferred.resolve(serverUrls);
                 }
             }
 
@@ -1046,33 +1084,39 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             this.outputLogger('Building and deploying app');
 
             return appDeferred.promise.timeout(appReadyTimeout, `Building and deploying the app timed out (${appReadyTimeout} ms)`);
-        }).then((ionicDevServerUrl: string) => {
+        }).then((ionicDevServerUrls: string[]) => {
 
-            if (!ionicDevServerUrl) {
-                return Q.reject<string>(new Error('Unable to determine the Ionic dev server address, please try re-launching the debugger'));
+            if (!ionicDevServerUrls || !ionicDevServerUrls.length) {
+                return Q.reject<string[]>(new Error('Unable to determine the Ionic dev server address, please try re-launching the debugger'));
             }
 
             // The dev server address is the captured group at index 1 of the match
-            this.ionicDevServerUrl = ionicDevServerUrl
+            this.ionicDevServerUrls = ionicDevServerUrls
 
             // When ionic 2 cli is installed, output includes ansi characters for color coded output.
-            this.ionicDevServerUrl = this.ionicDevServerUrl.replace(ansiRegex, '');
-            return Q(this.ionicDevServerUrl);
+            this.ionicDevServerUrls = this.ionicDevServerUrls.map(url => url.replace(ansiRegex, ''));
+            return Q(this.ionicDevServerUrls);
         });
     }
 
     private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
-        return func().then(result => {
-            if (condition(result)) {
-                return result;
-            }
-
+        const retry = () => {
             if (iteration < maxRetries) {
                 return Q.delay(delay).then(() => CordovaDebugAdapter.retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
             }
 
             throw new Error(failure);
-        });
+        };
+
+        return func()
+            .then(result => {
+                if (condition(result)) {
+                    return result;
+                }
+
+                retry();
+            },
+            retry);
     }
 
     private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
@@ -1132,8 +1176,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
 
         // Clear the Ionic dev server URL if necessary
-        if (this.ionicDevServerUrl) {
-            this.ionicDevServerUrl = null;
+        if (this.ionicDevServerUrls) {
+            this.ionicDevServerUrls = null;
         }
 
         // Close the simulate debug-host socket if necessary
