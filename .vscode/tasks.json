@@ -6,7 +6,7 @@
        {
             "taskName": "watch",
             "args": [],
-            "isBuildCommand": true,
+            "isBuildCommand": false,
             "isWatching": true,
             "problemMatcher": [
                 "$tsc"

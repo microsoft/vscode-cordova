@@ -7,8 +7,8 @@ import * as os from 'os';
 import * as Q from 'q';
 import * as path from 'path';
 import * as util from 'util';
-import * as semver from 'semver';
 import { ExtensionMessageSender, ExtensionMessage } from '../common/extensionMessaging';
+import { CordovaCommandHelper } from '../utils/cordovaCommandHelper';
 
 // suppress the following strings because they are not actual errors:
 const errorsToSuppress = ['Run an Ionic project on a connected device'];
@@ -97,35 +97,19 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
 }
 
 export function cordovaStartCommand(args: string[], cordovaRootPath: string): child_process.ChildProcess {
-    let cliName = CordovaProjectHelper.isIonicProject(cordovaRootPath) ? 'ionic' : 'cordova';
-    let commandExtension = os.platform() === 'win32' ? '.cmd' : '';
-    let command = cliName + commandExtension;
-    let isIonicServe: boolean = args.indexOf('serve') >= 0;
+    const command = CordovaProjectHelper.getCliCommand(cordovaRootPath);
+    const isIonic = CordovaProjectHelper.isIonicProject(cordovaRootPath);
+    const isIonicServe: boolean = args.indexOf('serve') >= 0;
 
-    if (cliName === 'ionic' && !isIonicServe) {
-        try {
-            let ionicInfo = child_process.spawnSync(command, ['-v', '--quiet'], {
-                cwd: cordovaRootPath,
-                env: {
-                    ...process.env,
-                    CI: "Hack to disable Ionic autoupdate prompt"
-                }
-            });
-            // A warning might appear on second line
-            let ionicVersion = ionicInfo.stdout.toString().split('\n')[0].trim();
+    if (isIonic && !isIonicServe) {
+        const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(cordovaRootPath);
 
-            // Assuming for now that latest version is > 3
-            const isLatestIonic = (ionicVersion === 'latest' || ionicVersion === 'nightly');
-
-            if (isLatestIonic || semver.gte(ionicVersion, '3.0.0')) {
-                args.unshift('cordova');
-            }
-        } catch (err) {
-            console.error('Error while detecting Ionic CLI version', err);
+        if (isIonicCliVersionGte3) {
+            args.unshift('cordova');
         }
     }
 
-    if (cliName === 'ionic') {
+    if (isIonic) {
         args.push('--no-interactive');
     } else {
         args.push('--no-update-notifier');

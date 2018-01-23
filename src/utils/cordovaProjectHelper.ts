@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Q from 'q';
 import * as semver from "semver";
+import * as os from 'os';
 
 export interface IProjectType {
     ionic: boolean;
@@ -314,5 +315,35 @@ export class CordovaProjectHelper {
      */
     public static isTypescriptProject(projectRoot: string): boolean {
         return fs.existsSync(path.resolve(projectRoot, 'tsconfig.json'));
+    }
+
+    public static getCliCommand(fsPath: string) {
+        const cliName = CordovaProjectHelper.isIonicProject(fsPath) ? 'ionic' : 'cordova';
+        const commandExtension = os.platform() === 'win32' ? '.cmd' : '';
+        const command = cliName + commandExtension;
+        return command;
+    }
+
+    public static getIonicCliVersion(fsPath: string): string {
+        const command = CordovaProjectHelper.getCliCommand(fsPath);
+        const ionicInfo = child_process.spawnSync(command, ['-v', '--quiet'], {
+            cwd: fsPath,
+            env: {
+                ...process.env,
+                CI: "Hack to disable Ionic autoupdate prompt"
+            }
+        });
+        // A warning might appear on second line
+        return ionicInfo.stdout.toString().split('\n')[0].trim();
+    }
+
+    public static isIonicCliVersionGte3(fsPath: string): boolean {
+        try {
+            const ionicVersion = CordovaProjectHelper.getIonicCliVersion(fsPath);
+            return semver.gte(ionicVersion, '3.0.0');
+        } catch (err) {
+            console.error('Error while detecting Ionic CLI version', err);
+        }
+        return true;
     }
 }
