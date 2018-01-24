@@ -1,3 +1,11 @@
+## 1.3.3
+
+* Fix platforms detection according to new files structure
+* Fix error message if browser simulation fails
+* Fix Ionic projects launch and attach for iOS simulator
+* Fix Ionic CLI version detection if CLI update is available
+* Fix missing platform error message for Ionic
+
 ## 1.3.2
 
 * Allow "non Ionic-CLI projects" to use the extension even with ionic-angular installed
