@@ -1,3 +1,9 @@
+## We want to hear from you! 
+Feedback helps us determine what's most important to you! Share your thoughts and help steer the extension into the future.
+
+[https://aka.ms/cordova-survey](https://aka.ms/cordova-survey)
+
+
 # Cordova Tools Extension
 
 Debug your code, find commands in the Command Palette, and use IntelliSense to browse objects, functions, and parameters in plugin APIs. This extension works with any Cordova-based project.
