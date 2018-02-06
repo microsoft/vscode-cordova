@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
+import {CommandPaletteHandler} from './extension/commandPaletteHandler';
 import * as Q from 'q';
 import * as semver from 'semver';
 import {PluginSimulator} from './extension/simulate';
@@ -34,7 +35,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     if (workspaceFolders) {
         registerCordovaCommands(context);
-        registerAppCneterCommands(context);
+        registerAppCenterCommands(context);
         workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
             onFolderAdded(context, folder);
         });
