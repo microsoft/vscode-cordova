@@ -14,4 +14,16 @@ export class ConfigurationReader {
     private static isArray(value: any): boolean {
         return Array.isArray(value);
     }
+
+    private static isString(value: any): boolean {
+        return typeof value === "string";
+    }
+
+    public static readString(value: any): string {
+        if (this.isString(value)) {
+            return value;
+        } else {
+            throw `Expected a string. Couldn't read ${value}`;
+        }
+    }
 }
