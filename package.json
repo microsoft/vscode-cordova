@@ -68,6 +68,31 @@
       {
         "command": "ionic.prepare",
         "title": "Ionic: Prepare"
+      },
+			{
+				"command": "appcenter.login",
+				"title": "Login",
+				"category": "Cordova Code Push"
+			},
+			{
+				"command": "appcenter.logout",
+				"title": "Logout",
+				"category": "Cordova Code Push"
+			},
+			{
+				"command": "appcenter.whoami",
+				"title": "WhoAmI",
+				"category": "Cordova Code Push"
+			},
+			{
+				"command": "appcenter.setcurrentapp",
+				"title": "Set Current App",
+				"category": "Cordova Code Push"
+			},
+			{
+				"command": "appcenter.getcurrentapp",
+				"title": "Get Current App",
+				"category": "Cordova Code Push"
       }
     ],
     "keybindings": [
@@ -486,6 +511,7 @@
     "vscode:prepublish": "gulp"
   },
   "dependencies": {
+    "app-center-node-client": "file:lib/app-center-node-client",
     "cordova-simulate": "^0.3.0",
     "elementtree": "^0.1.6",
     "plist": "^2.0.1",

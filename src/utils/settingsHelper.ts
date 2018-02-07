@@ -25,8 +25,8 @@ export class SettingsHelper {
     public static getAppCenterLoginEndpoint(): string {
         const workspaceConfiguration = vscode.workspace.getConfiguration();
         const defaultLoginEndPoint = "https://appcenter.ms/cli-login";
-        if (workspaceConfiguration.has("react-native-tools.appcenter.loginendpoint")) {
-            let loginEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get("react-native-tools.appcenter.loginendpoint"));
+        if (workspaceConfiguration.has("cordova-tools.appcenter.loginendpoint")) {
+            let loginEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get("cordova-tools.appcenter.loginendpoint"));
             return loginEndpoint;
         }
         return defaultLoginEndPoint;
@@ -38,8 +38,8 @@ export class SettingsHelper {
    public static getAppCenterAPIEndpoint(): string {
        const workspaceConfiguration = vscode.workspace.getConfiguration();
        const defaulAPIEndPoint = "https://api.appcenter.ms";
-       if (workspaceConfiguration.has("react-native-tools.appcenter.api.endpoint")) {
-           let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get("react-native-tools.appcenter.api.endpoint"));
+       if (workspaceConfiguration.has("cordova-tools.appcenter.api.endpoint")) {
+           let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get("cordova-tools.appcenter.api.endpoint"));
            return apiEndpoint;
        }
        return defaulAPIEndPoint;
