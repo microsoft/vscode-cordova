@@ -33,7 +33,7 @@ export class ExtensionMessageSender {
     private hash: string;
 
     constructor(projectRoot: string) {
-        this.hash = Hash.hashCode(projectRoot);
+        this.hash = Hash.hashCode(projectRoot.toLocaleLowerCase());
     }
 
     public getExtensionPipePath(): string {
@@ -61,7 +61,7 @@ export class ExtensionMessageSender {
         });
 
         socket.on("error", function (data: any) {
-            deferred.reject(new Error("An error occurred while handling message: " + ExtensionMessage[message]));
+            deferred.reject(new Error("An error occurred while handling message: " + ExtensionMessage[message] + data));
         });
 
         socket.on("end", function () {
