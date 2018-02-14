@@ -1,6 +1,6 @@
 ## 1.3.4
 
-* Fixed issue with lanuch args in vscode 1.20.0
+* Fixed issue with launch args in vscode 1.20.0
 * Added survey to README
 
 ## 1.3.3
