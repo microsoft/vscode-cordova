@@ -262,8 +262,8 @@ export class CordovaIosDeviceLauncher {
                 // Versions for DeveloperDiskImage seem to be X.Y, while some device versions are X.Y.Z
                 return /^(\d+\.\d+)(?:\.\d+)?$/gm.exec(stdout.trim())[1];
             })
-            .catch(function (): string {
-                throw new Error('Unable to get device OS version');
+            .catch(function (e): string {
+                throw new Error('Unable to get device OS version. Details: ' + e.message);
             });
 
         // Attempt to find the path where developer resources exist.
