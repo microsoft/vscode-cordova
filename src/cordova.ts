@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import {CordovaProjectHelper} from './utils/cordovaProjectHelper';
 import {CordovaCommandHelper} from './utils/cordovaCommandHelper';
 import {ExtensionServer} from './extension/extensionServer';
+import {CommandPaletteHandler} from './extension/commandPaletteHandler';
 import * as Q from 'q';
 import * as semver from 'semver';
 import {PluginSimulator} from './extension/simulate';
@@ -34,6 +35,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     if (workspaceFolders) {
         registerCordovaCommands(context);
+        registerAppCenterCommands(context);
         workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
             onFolderAdded(context, folder);
         });
@@ -337,6 +339,12 @@ function registerCordovaCommands(context: vscode.ExtensionContext): void {
                 return launchSimulateCommand(project.cordovaProjectRoot,  { dir: project.folder.uri.fsPath, target: 'chrome', platform: 'ios' });
             });
     }));
+}
+
+function registerAppCenterCommands(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(vscode.commands.registerCommand('appcenter.login', () => CommandPaletteHandler.appCenterLogin()));
+    context.subscriptions.push(vscode.commands.registerCommand('appcenter.logout', () => CommandPaletteHandler.appCenterLogout()));
+    context.subscriptions.push(vscode.commands.registerCommand('appcenter.whoami', () => CommandPaletteHandler.appCenterWhoAmI()));
 }
 
 function selectProject(): Q.Promise<any> {
