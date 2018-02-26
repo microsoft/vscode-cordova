@@ -263,7 +263,7 @@ export class CordovaIosDeviceLauncher {
                 return /^(\d+\.\d+)(?:\.\d+)?$/gm.exec(stdout.trim())[1];
             })
             .catch(function (e): string {
-                throw new Error('Unable to get device OS version. Details: ' + e.message);
+                throw new Error('Unable to get device OS version. Details: ${e.message}');
             });
 
         // Attempt to find the path where developer resources exist.
