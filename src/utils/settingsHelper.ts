@@ -45,4 +45,12 @@ export class SettingsHelper {
        return defaulAPIEndPoint;
    }
 
+   public static getLegacyCodePushEndpoint(): string {
+       return '';
+   }
+
+   public static getLegacyCodePushServiceEnabled(): boolean {
+       return true;
+   }
+
 }

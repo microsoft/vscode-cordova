@@ -13,6 +13,7 @@
         "CordovaTypings",
         "out",
         "test/testProject",
-		"lib"
+        "lib",
+        "src/extension/appcenter/lib"
     ]
 }
