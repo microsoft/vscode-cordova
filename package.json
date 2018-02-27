@@ -93,6 +93,31 @@
         "command": "appcenter.getcurrentapp",
         "title": "Get Current App",
         "category": "Cordova Code Push"
+      },
+      {
+        "command": "appcenter.setcurrentdeployment",
+        "title": "Set Current Deployment",
+        "category": "Cordova Code Push"
+      },
+      {
+        "command": "appcenter.releasecordova",
+        "title": "Release Cordova",
+        "category": "Cordova Code Push"
+      },
+      {
+        "command": "appcenter.switchMandatoryPropForRelease",
+        "title": "Switch Code Push release mandatory property",
+        "category": "Cordova Code Push"
+      },
+      {
+        "command": "appcenter.setTargetBinaryVersion",
+        "title": "Set Code Push release target binary verison",
+        "category": "Cordova Code Push"
+      },
+      {
+        "command": "appcenter.showmenu",
+        "title": "Show Menu",
+        "category": "Cordova Code Push"
       }
     ],
     "keybindings": [
@@ -498,6 +523,30 @@
             "type": "boolean",
             "default": false,
             "description": "Launch Cordova simulator in browser instead of tab in VS Code",
+            "scope": "resource"
+          },
+          "cordova.appcenter.loginendpoint": {
+            "description": "Endpoint to login to appcenter",
+            "type": "string",
+            "default": "https://appcenter.ms/cli-login",
+            "scope": "resource"
+          },
+          "cordova.appcenter.api.endpoint": {
+            "description": "API Endpoint to appcenter",
+            "type": "string",
+            "default": "https://api.appcenter.ms",
+            "scope": "resource"
+          },
+          "cordova.appcenter.legacycodepushservice": {
+            "description": "Legacy codepush service endpoint",
+            "type": "string",
+            "default": "https://codepush-management.azurewebsites.net/",
+            "scope": "resource"
+          },
+          "cordova.appcenter.legacycodepushserviceenabled": {
+            "description": "Select if legacy service is used for CodePush release",
+            "type": "boolean",
+            "default": true,
             "scope": "resource"
           }
         }

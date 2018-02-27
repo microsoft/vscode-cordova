@@ -3,8 +3,9 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import * as vscode from "vscode";
-import {ConfigurationReader} from "../common/configurationReader";
+import * as vscode from 'vscode';
+import {ConfigurationReader} from '../common/configurationReader';
+import {ACConstants} from '../extension/appcenter/appCenterConstants';
 
 export function settingsHome(): string {
     switch (os.platform()) {
@@ -24,33 +25,43 @@ export class SettingsHelper {
      */
     public static getAppCenterLoginEndpoint(): string {
         const workspaceConfiguration = vscode.workspace.getConfiguration();
-        const defaultLoginEndPoint = "https://appcenter.ms/cli-login";
-        if (workspaceConfiguration.has("cordova-tools.appcenter.loginendpoint")) {
-            let loginEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get("cordova-tools.appcenter.loginendpoint"));
+        if (workspaceConfiguration.has('cordova.appcenter.loginendpoint')) {
+            let loginEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get('cordova.appcenter.loginendpoint'));
             return loginEndpoint;
         }
-        return defaultLoginEndPoint;
+        return ACConstants.DefaultLoginEndPoint;
     }
 
     /**
      * Get appcenter api endpoint setting
      */
    public static getAppCenterAPIEndpoint(): string {
-       const workspaceConfiguration = vscode.workspace.getConfiguration();
-       const defaulAPIEndPoint = "https://api.appcenter.ms";
-       if (workspaceConfiguration.has("cordova-tools.appcenter.api.endpoint")) {
-           let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get("cordova-tools.appcenter.api.endpoint"));
-           return apiEndpoint;
-       }
-       return defaulAPIEndPoint;
+        const workspaceConfiguration = vscode.workspace.getConfiguration();
+        if (workspaceConfiguration.has('cordova.appcenter.api.endpoint')) {
+            let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get('cordova.appcenter.api.endpoint'));
+            return apiEndpoint;
+        }
+        return ACConstants.DefaulAPIEndPoint;
    }
 
-   public static getLegacyCodePushEndpoint(): string {
-       return '';
-   }
+    /**
+     * Get old codepush endpoint setting
+     */
+    public static getLegacyCodePushEndpoint(): string {
+        const workspaceConfiguration = vscode.workspace.getConfiguration();
+        if (workspaceConfiguration.has('cordova.appcenter.legacycodepushservice')) {
+            let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get('cordova.appcenter.legacycodepushservice'));
+            return apiEndpoint;
+        }
+        return ACConstants.DefaultLegacyCodePushService;
+    }
 
    public static getLegacyCodePushServiceEnabled(): boolean {
-       return true;
+        const workspaceConfiguration = vscode.workspace.getConfiguration();
+        if (workspaceConfiguration.has('cordova.appcenter.legacycodepushserviceenabled')) {
+            let enabled: boolean = ConfigurationReader.readBoolean(workspaceConfiguration.get('cordova.appcenter.legacycodepushserviceenabled'));
+            return enabled;
+        }
+        return true;
    }
-
 }

@@ -12,7 +12,7 @@ export const tokenFile = 'VSCodeAppCenterTokens.json';
 
 let store: TokenStore;
 
-const tokenDirName: string = '.vscode-react-native';
+const tokenDirName: string = '.vscode-cordova';
 
 function getTokenDir(): string {
   const tokenDir = path.join(getTokenDirParent(), tokenDirName);
