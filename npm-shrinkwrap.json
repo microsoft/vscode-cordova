@@ -499,6 +499,11 @@
         "inherits": "2.0.3"
       }
     },
+    "bluebird": {
+      "version": "3.3.5",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.3.5.tgz",
+      "integrity": "sha1-XudH8ce9lnZYtoOTZDCu51OVWjQ="
+    },
     "bn.js": {
       "version": "4.11.8",
       "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-4.11.8.tgz",
@@ -2445,6 +2450,25 @@
         "natives": "1.1.1"
       }
     },
+    "gradle-to-js": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/gradle-to-js/-/gradle-to-js-1.0.1.tgz",
+      "integrity": "sha1-VXmcRoyw7OFsnRJ86d752lLPxlI=",
+      "requires": {
+        "bluebird": "3.3.5",
+        "deep-assign": "2.0.0"
+      },
+      "dependencies": {
+        "deep-assign": {
+          "version": "2.0.0",
+          "resolved": "https://registry.npmjs.org/deep-assign/-/deep-assign-2.0.0.tgz",
+          "integrity": "sha1-6+BrHwfwja5ZdiDj3RYi83GhxXI=",
+          "requires": {
+            "is-obj": "1.0.1"
+          }
+        }
+      }
+    },
     "growl": {
       "version": "1.9.2",
       "resolved": "https://registry.npmjs.org/growl/-/growl-1.9.2.tgz",
@@ -4055,8 +4079,7 @@
     "is-obj": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/is-obj/-/is-obj-1.0.1.tgz",
-      "integrity": "sha1-PkcprB9f3gJc19g6iW2rn09n2w8=",
-      "dev": true
+      "integrity": "sha1-PkcprB9f3gJc19g6iW2rn09n2w8="
     },
     "is-odd": {
       "version": "1.0.0",
@@ -5018,6 +5041,11 @@
       "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.1.tgz",
       "integrity": "sha1-KzJxhOiZIQEXeyhWP7XnECrNDKk="
     },
+    "node-noop": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/node-noop/-/node-noop-1.0.0.tgz",
+      "integrity": "sha1-R6Pn2Az/qmRYNkvSLthcqzMHvnk="
+    },
     "node.extend": {
       "version": "1.1.6",
       "resolved": "https://registry.npmjs.org/node.extend/-/node.extend-1.1.6.tgz",
@@ -5620,6 +5648,11 @@
       "version": "1.0.7",
       "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz",
       "integrity": "sha1-FQ4gt1ZZCtP5EJPyWk8q2L/zC6M="
+    },
+    "properties": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/properties/-/properties-1.2.1.tgz",
+      "integrity": "sha1-Dul6f8AgsaKlW4ZZ7aSqjYaQlL0="
     },
     "proxy-addr": {
       "version": "2.0.2",

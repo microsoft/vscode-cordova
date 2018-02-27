@@ -58,7 +58,7 @@ export class ACStrings {
         if (app) {
             return `Release '${app.appName}' to '${app.currentAppDeployments.currentDeploymentName}' deployment`;
         } else {
-            return `Release react (please specify current app first)`;
+            return `Release cordova (please specify current app first)`;
         }
     }
 

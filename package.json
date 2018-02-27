@@ -70,52 +70,52 @@
         "title": "Ionic: Prepare"
       },
       {
-        "command": "appcenter.login",
+        "command": "cordova.appcenter.login",
         "title": "Login",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.logout",
+        "command": "cordova.appcenter.logout",
         "title": "Logout",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.whoami",
+        "command": "cordova.appcenter.whoami",
         "title": "WhoAmI",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.setcurrentapp",
+        "command": "cordova.appcenter.setcurrentapp",
         "title": "Set Current App",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.getcurrentapp",
+        "command": "cordova.appcenter.getcurrentapp",
         "title": "Get Current App",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.setcurrentdeployment",
+        "command": "cordova.appcenter.setcurrentdeployment",
         "title": "Set Current Deployment",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.releasecordova",
+        "command": "cordova.appcenter.releasecordova",
         "title": "Release Cordova",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.switchMandatoryPropForRelease",
+        "command": "cordova.appcenter.switchMandatoryPropForRelease",
         "title": "Switch Code Push release mandatory property",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.setTargetBinaryVersion",
+        "command": "cordova.appcenter.setTargetBinaryVersion",
         "title": "Set Code Push release target binary verison",
         "category": "Cordova Code Push"
       },
       {
-        "command": "appcenter.showmenu",
+        "command": "cordova.appcenter.showmenu",
         "title": "Show Menu",
         "category": "Cordova Code Push"
       }
@@ -565,12 +565,15 @@
     "cordova-simulate": "^0.3.0",
     "date-fns": "^1.29.0",
     "elementtree": "^0.1.6",
+    "gradle-to-js": "^1.0.1",
     "jsonwebtoken": "^8.1.1",
     "mkdirp": "^0.5.1",
     "ms-rest": "^2.2.5",
+    "node-noop": "^1.0.0",
     "open": "0.0.5",
     "opener": "^1.4.3",
     "plist": "^2.0.1",
+    "properties": "^1.2.1",
     "q": "^1.4.1",
     "rx-lite": "^4.0.8",
     "semver": "5.1.0",

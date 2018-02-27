@@ -18,6 +18,9 @@ import {IProjectType} from './utils/cordovaProjectHelper';
 import { TsdHelper } from './utils/tsdHelper';
 
 import { IonicCompletionProvider } from './extension/completionProviders';
+import { ACCommandNames, AppCenterCommandType } from './extension/appcenter/appCenterConstants';
+import { AppCenterExtensionManager } from './extension/appcenter/appCenterExtensionManager';
+import { AppCenterCommandPalleteHandler } from './extension/appcenter/appCenterCommandPalleteHandler';
 
 let PLUGIN_TYPE_DEFS_FILENAME = 'pluginTypings.json';
 let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, '..', '..', PLUGIN_TYPE_DEFS_FILENAME);
@@ -103,14 +106,19 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     let extensionServer: ExtensionServer = new ExtensionServer(simulator, workspaceRoot);
     extensionServer.setup();
 
+    let appCenterManager: AppCenterExtensionManager = new AppCenterExtensionManager(workspaceRoot);
+    appCenterManager.setup();
+
     projectsCache[workspaceRoot] = {
         extensionServer,
         cordovaProjectRoot,
-        folder
+        folder,
+        appCenterManager
     };
 
     // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);
+    context.subscriptions.push(appCenterManager);
 
     // In case of Ionic 1 project register completions providers for html and javascript snippets
     if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
@@ -341,6 +349,81 @@ function registerCordovaCommands(context: vscode.ExtensionContext): void {
 }
 
 function registerAppCenterCommands(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.Login, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.Login);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.Logout, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.Logout);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.WhoAmI, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.Whoami);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.SetCurrentApp, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.SetCurrentApp);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.GetCurrentApp, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.GetCurrentApp);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.SetCurrentDeployment, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.SetCurrentDeployment);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.ShowMenu, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.ShowMenu);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.SwitchMandatoryPropertyForRelease, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.SwitchMandatoryPropForRelease);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.SetTargetBinaryVersionForRelease, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.SetTargetBinaryVersionForRelease);
+            });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand(ACCommandNames.CodePushReleaseCordova, () => {
+        return selectProject()
+            .then((project) => {
+                getAppCenterCommandPalleteHandler(project.appCenterManager).run(AppCenterCommandType.CodePushReleaseCordova);
+            });
+    }));
+}
+
+function getAppCenterCommandPalleteHandler(appCenterManager: AppCenterExtensionManager) {
+    let accph = new AppCenterCommandPalleteHandler();
+    accph.AppCenterManager = appCenterManager;
+    return accph;
 }
 
 function selectProject(): Q.Promise<any> {

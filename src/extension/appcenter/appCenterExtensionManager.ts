@@ -46,13 +46,13 @@ export class AppCenterExtensionManager implements Disposable {
             return VsCodeUtils.setStatusBar(this.appCenterStatusBarItem,
                 `$(icon octicon-person) ${profile.userName}`,
                 ACStrings.YouAreLoggedInMsg(profile.userName),
-                `${ACConstants.ExtensionPrefixName}.${ACCommandNames.ShowMenu}`
+                `${ACCommandNames.ShowMenu}`
             );
         }
         return VsCodeUtils.setStatusBar(this.appCenterStatusBarItem,
             `$(icon octicon-sign-in) ${ACStrings.LoginToAppCenterButton}`,
             ACStrings.UserMustSignIn,
-            `${ACConstants.ExtensionPrefixName}.${ACCommandNames.Login}`
+            `${ACCommandNames.Login}`
         );
     }
 }

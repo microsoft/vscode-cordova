@@ -141,8 +141,8 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
                 p.report({message: ACStrings.FetchAppsStatusBarMessage });
                 getQPromisifiedClientResult(client.account.apps.list()).then((apps: models.AppResponse[]) => {
                     const appsList: models.AppResponse[] = apps;
-                    const reactNativeApps = appsList.filter(app => app.platform === ACConstants.AppCenterReactNativePlatformName);
-                    resolve(reactNativeApps);
+                    const cordovaApps = appsList.filter(app => app.platform === ACConstants.AppCenterCordovaPlatformName);
+                    resolve(cordovaApps);
                 });
             });
         }).then((rnApps: models.AppResponse[]) => {
