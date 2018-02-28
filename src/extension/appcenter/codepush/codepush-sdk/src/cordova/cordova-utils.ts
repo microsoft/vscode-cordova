@@ -92,7 +92,10 @@ export function makeUpdateContents(os: string, bundleConfig: BundleConfig): stri
   }
 
   try {
-    execSync([cordovaCLI, cordovaCommand, bundleConfig.os, '--verbose'].join(' '), { stdio: 'inherit' });
+    execSync([cordovaCLI, cordovaCommand, bundleConfig.os, '--verbose'].join(' '), {
+      stdio: 'inherit',
+      cwd: bundleConfig.projectRootPath
+    });
   } catch (error) {
     throw new Error(`Failed to release a CodePush update`);
   }
