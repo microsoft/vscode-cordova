@@ -16,11 +16,11 @@ import { AppCenterExtensionManager } from '../appCenterExtensionManager';
 import { ACStrings } from '../appCenterStrings';
 import CodePushRelease from '../codepush/release';
 import { ACUtils } from '../helpers/utils';
-import { updateContents, reactNative, fileUtils } from '../codepush/codepush-sdk/src/index';
-import BundleConfig = reactNative.BundleConfig;
+import { updateContents, cordova, fileUtils } from '../codepush/codepush-sdk/src/index';
 import { getQPromisifiedClientResult } from '../api/createClient';
 import { validRange } from 'semver';
 import { VsCodeUtils, IButtonMessageItem } from '../helpers/vscodeUtils';
+import { BundleConfig } from '../codepush/codepush-sdk/src/cordova/cordova-utils';
 
 export interface IAppCenterAuth {
     login(appcenterManager: AppCenterExtensionManager): Q.Promise<void>;
@@ -36,7 +36,7 @@ export interface IAppCenterApps {
 
 export interface IAppCenterCodePush {
     showMenu(client: AppCenterClient, appCenterManager: AppCenterExtensionManager): Q.Promise<void>;
-    releaseReact(client: AppCenterClient, appCenterManager: AppCenterExtensionManager): Q.Promise<void>;
+    releaseCordova(client: AppCenterClient, appCenterManager: AppCenterExtensionManager): Q.Promise<void>;
     switchIsMandatoryForRelease(appCenterManager: AppCenterExtensionManager): Q.Promise<void>;
     setTargetBinaryVersionForRelease(appCenterManager: AppCenterExtensionManager): Q.Promise<void>;
 }
@@ -210,12 +210,13 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
         return Q.resolve(void 0);
     }
 
-    public releaseReact(client: AppCenterClient, appCenterManager: AppCenterExtensionManager): Q.Promise<void> {
+    public releaseCordova(client: AppCenterClient, appCenterManager: AppCenterExtensionManager): Q.Promise<void> {
         let codePushRelaseParams = <ICodePushReleaseParams>{};
         const projectRootPath: string = appCenterManager.projectRootPath;
         return Q.Promise<any>((resolve, reject) => {
             let updateContentsDirectory: string;
             let isMandatory: boolean;
+            let os: string;
             vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Get Apps' }, p => {
                 return new Promise<DefaultApp>((appResolve, appReject) => {
                     p.report({ message: ACStrings.GettingAppInfoMessage });
@@ -227,9 +228,10 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
                     if (!currentApp) {
                         throw new Error(`No current app has been specified.`);
                     }
-                    if (!currentApp.os || !reactNative.isValidOS(currentApp.os)) {
-                        throw new Error(`OS must be "android", "ios", or "windows".`);
+                    if (!currentApp.os || !cordova.isValidOS(currentApp.os)) {
+                        throw new Error(`OS must be "android", "ios".`);
                     }
+                    os = currentApp.os;
                     codePushRelaseParams.app = currentApp;
                     codePushRelaseParams.deploymentName = currentApp.currentAppDeployments.currentDeploymentName;
                     currentApp.os = currentApp.os.toLowerCase();
@@ -237,19 +239,14 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
                     if (currentApp.targetBinaryVersion !== ACConstants.AppCenterDefaultTargetBinaryVersion) {
                         return currentApp.targetBinaryVersion;
                     } else {
-                        switch (currentApp.os) {
-                            case 'android': return reactNative.getAndroidAppVersion(projectRootPath);
-                            case 'ios': return reactNative.getiOSAppVersion(projectRootPath);
-                            case 'windows': return reactNative.getWindowsAppVersion(projectRootPath);
-                            default: throw new Error(`OS must be "android", "ios", or "windows".`);
-                        }
+                        return cordova.getAppVersion(projectRootPath);
                     }
                 }).then((appVersion: string) => {
                     p.report({ message: ACStrings.RunningReactNativeBundleCommandMessage });
                     codePushRelaseParams.appVersion = appVersion;
-                    return reactNative.makeUpdateContents(<BundleConfig>{
-                        os: codePushRelaseParams.app.os,
-                        projectRootPath: projectRootPath,
+                    return cordova.makeUpdateContents(os, <BundleConfig>{
+                        os: os,
+                        projectRootPath: appCenterManager.projectRootPath,
                     });
                 }).then((pathToUpdateContents: string) => {
                     p.report({ message: ACStrings.ArchivingUpdateContentsMessage });
@@ -302,7 +299,7 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
                     {
                         label: ACStrings.ReleaseReactMenuText(defaultApp),
                         description: '',
-                        target: ACCommandNames.CodePushReleaseReact,
+                        target: ACCommandNames.CodePushReleaseCordova,
                     },
                     {
                         label: ACStrings.SetCurrentAppMenuText(defaultApp),
@@ -355,8 +352,8 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
                     case (ACCommandNames.SetCurrentDeployment):
                         return this.setCurrentDeployment(appCenterManager);
 
-                    case (ACCommandNames.CodePushReleaseReact):
-                        return this.releaseReact(client, appCenterManager);
+                    case (ACCommandNames.CodePushReleaseCordova):
+                        return this.releaseCordova(client, appCenterManager);
 
                     case (ACCommandNames.SetTargetBinaryVersionForRelease):
                         return this.setTargetBinaryVersionForRelease(appCenterManager);

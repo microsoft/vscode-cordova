@@ -65,8 +65,8 @@ export class AppCenterCommandPalleteHandler {
                                 case (AppCenterCommandType.SetCurrentDeployment):
                                     return this.commandExecutor.setCurrentDeployment(this.appCenterManager);
 
-                                case (AppCenterCommandType.CodePushReleaseReact):
-                                    return this.commandExecutor.releaseReact(this.client, this.appCenterManager);
+                                case (AppCenterCommandType.CodePushReleaseCordova):
+                                    return this.commandExecutor.releaseCordova(this.client, this.appCenterManager);
 
                                 case (AppCenterCommandType.ShowMenu):
                                     return this.commandExecutor.showMenu(this.client, this.appCenterManager);

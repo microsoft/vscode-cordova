@@ -16,7 +16,7 @@ export class ACConstants {
 }
 
 export class ACCommandNames {
-    public static CommandPrefix: string = ACConstants.ExtensionPrefixName + ACConstants.AppCenterExtensionName + '.';
+    public static CommandPrefix: string = ACConstants.ExtensionPrefixName + '.' + ACConstants.AppCenterExtensionName + '.';
     public static Login: string = ACCommandNames.CommandPrefix + 'login';
     public static Logout: string = ACCommandNames.CommandPrefix + 'logout';
     public static WhoAmI: string = ACCommandNames.CommandPrefix + 'whoami';

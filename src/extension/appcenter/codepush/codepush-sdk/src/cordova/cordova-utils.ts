@@ -5,6 +5,8 @@ import * as which from 'which';
 import * as xml2js from 'xml2js';
 import * as fs from 'fs';
 import * as path from 'path';
+const childProcess = require("child_process");
+export var execSync = childProcess.execSync;
 
 export function getAppVersion(projectRoot?: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -56,12 +58,16 @@ export function getCordovaOrPhonegapCLI(): string {
   }
 }
 
-export function makeUpdateContents(os: string): string {
+export function getCordovaCommand(): string {
+  return 'prepare'; // Currently support only prepare cpmmand
+}
+
+export function makeUpdateContents(os: string, bundleConfig: BundleConfig): string {
   if (!isValidOS(os)) {
     throw new Error(`Platform must be either "ios" or "android".`);
   }
 
-  const projectRoot: string = process.cwd();
+  const projectRoot: string = bundleConfig.projectRootPath || process.cwd();
   const platformFolder: string = path.join(projectRoot, 'platforms', os);
   let outputFolder: string = '';
 
@@ -77,5 +83,24 @@ export function makeUpdateContents(os: string): string {
     }
   }
 
+  const cordovaCommand: string = getCordovaCommand();
+  let cordovaCLI: string;
+  try {
+    cordovaCLI = getCordovaOrPhonegapCLI();
+  } catch (e) {
+    throw new Error(`Unable to ${cordovaCommand} project. Please ensure that either the Cordova or PhoneGap CLI is installed.`);
+  }
+
+  try {
+    execSync([cordovaCLI, cordovaCommand, bundleConfig.os, '--verbose'].join(' '), { stdio: 'inherit' });
+  } catch (error) {
+    throw new Error(`Failed to release a CodePush update`);
+  }
+
   return outputFolder;
+}
+
+export class BundleConfig {
+  public os: string;
+  public projectRootPath: string;
 }
