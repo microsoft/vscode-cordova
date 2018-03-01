@@ -17,12 +17,18 @@ export default function zip(updateContentsPath: string, outputDir?: string): Pro
   return new Promise<string>(async (resolve, reject) => {
     const releaseFiles: ReleaseFile[] = [];
 
-    if (!fileUtils.isDirectory(updateContentsPath)) {
-      releaseFiles.push({
-        sourceLocation: updateContentsPath,
-        targetLocation: fileUtils.normalizePath(path.basename(updateContentsPath)), // Put the file in the root
-      });
+    try {
+      if (!fileUtils.isDirectory(updateContentsPath)) {
+        releaseFiles.push({
+          sourceLocation: updateContentsPath,
+          targetLocation: fileUtils.normalizePath(path.basename(updateContentsPath)), // Put the file in the root
+        });
+      }
+    } catch (error) {
+      error.message = error.message + " Make sure you have run `cordova platform add ios`.";
+      reject(error);
     }
+
 
     const directoryPath: string = updateContentsPath;
     const baseDirectoryPath = path.join(directoryPath, '..'); // For legacy reasons, put the root directory in the zip
