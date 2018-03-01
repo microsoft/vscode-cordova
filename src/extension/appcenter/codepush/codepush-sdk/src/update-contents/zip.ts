@@ -29,7 +29,6 @@ export default function zip(updateContentsPath: string, outputDir?: string): Pro
       reject(error);
     }
 
-
     const directoryPath: string = updateContentsPath;
     const baseDirectoryPath = path.join(directoryPath, '..'); // For legacy reasons, put the root directory in the zip
 
