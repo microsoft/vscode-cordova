@@ -83,7 +83,11 @@ export class PackageManifest {
 }
 
 export async function generatePackageHashFromDirectory(directoryPath: string, basePath: string): Promise<string> {
-  if (!fileUtils.isDirectory(directoryPath)) {
+  try {
+    if (!fileUtils.isDirectory(directoryPath)) {
+      throw new Error('Not a directory. Please either create a directory, or use hashFile().');
+    }
+  } catch (error) {
     throw new Error('Not a directory. Please either create a directory, or use hashFile().');
   }
 
