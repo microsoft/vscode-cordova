@@ -26,7 +26,7 @@ export class ACStrings {
     public static FetchDeploymentsStatusBarMessage: string = 'Fetching app deployments for you...';
     public static GettingAppInfoMessage: string = 'Getting app info...';
     public static DetectingAppVersionMessage: string = 'Detecting app version...';
-    public static RunningReactNativeBundleCommandMessage: string = 'Running \"react-native bundle\" command...';
+    public static RunningBundleCommandMessage: string = 'Running bundle command...';
     public static ArchivingUpdateContentsMessage: string = 'Archiving update contents...';
     public static ReleasingUpdateContentsMessage: string = 'Releasing update contents to CodePush...';
     public static LoginToAppCenterButton: string = 'Login to App Center';
