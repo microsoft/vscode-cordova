@@ -25,7 +25,7 @@ export default function zip(updateContentsPath: string, outputDir?: string): Pro
         });
       }
     } catch (error) {
-      error.message = error.message + " Make sure you have run `cordova platform add ios`.";
+      error.message = error.message + " Make sure you have run `cordova platform add <platform name>`.";
       reject(error);
     }
 
