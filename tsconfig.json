@@ -1,4 +1,4 @@
-{
+﻿{
     "compilerOptions": {
         "module": "commonjs",
         "noImplicitAny": false,
@@ -12,6 +12,8 @@
         "debugger/testapp/node_modules",
         "CordovaTypings",
         "out",
-        "test/testProject"
+        "test/testProject",
+        "lib",
+        "src/extension/appcenter/lib"
     ]
 }
