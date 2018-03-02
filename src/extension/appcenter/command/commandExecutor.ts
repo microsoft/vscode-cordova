@@ -242,7 +242,7 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
                         return cordova.getAppVersion(projectRootPath);
                     }
                 }).then((appVersion: string) => {
-                    p.report({ message: ACStrings.RunningReactNativeBundleCommandMessage });
+                    p.report({ message: ACStrings.RunningBundleCommandMessage });
                     codePushRelaseParams.appVersion = appVersion;
                     return cordova.makeUpdateContents(os, <BundleConfig>{
                         os: os,
