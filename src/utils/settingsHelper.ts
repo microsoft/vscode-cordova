@@ -3,7 +3,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import * as vscode from 'vscode';
 import {ConfigurationReader} from '../common/configurationReader';
 import {ACConstants} from '../extension/appcenter/appCenterConstants';
 
@@ -16,7 +15,7 @@ export function settingsHome(): string {
             return path.join(process.env['HOME'], '.vscode-cordova');
         default:
             throw new Error('UnexpectedPlatform');
-    };
+    }
 }
 export class SettingsHelper {
 
@@ -24,11 +23,6 @@ export class SettingsHelper {
      * Get appcenter login endpoint setting
      */
     public static getAppCenterLoginEndpoint(): string {
-        const workspaceConfiguration = vscode.workspace.getConfiguration();
-        if (workspaceConfiguration.has('cordova.appcenter.loginendpoint')) {
-            let loginEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get('cordova.appcenter.loginendpoint'));
-            return loginEndpoint;
-        }
         return ACConstants.DefaultLoginEndPoint;
     }
 
@@ -36,11 +30,6 @@ export class SettingsHelper {
      * Get appcenter api endpoint setting
      */
    public static getAppCenterAPIEndpoint(): string {
-        const workspaceConfiguration = vscode.workspace.getConfiguration();
-        if (workspaceConfiguration.has('cordova.appcenter.api.endpoint')) {
-            let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get('cordova.appcenter.api.endpoint'));
-            return apiEndpoint;
-        }
         return ACConstants.DefaulAPIEndPoint;
    }
 
@@ -48,20 +37,10 @@ export class SettingsHelper {
      * Get old codepush endpoint setting
      */
     public static getLegacyCodePushEndpoint(): string {
-        const workspaceConfiguration = vscode.workspace.getConfiguration();
-        if (workspaceConfiguration.has('cordova.appcenter.legacycodepushservice')) {
-            let apiEndpoint: string = ConfigurationReader.readString(workspaceConfiguration.get('cordova.appcenter.legacycodepushservice'));
-            return apiEndpoint;
-        }
         return ACConstants.DefaultLegacyCodePushService;
     }
 
    public static getLegacyCodePushServiceEnabled(): boolean {
-        const workspaceConfiguration = vscode.workspace.getConfiguration();
-        if (workspaceConfiguration.has('cordova.appcenter.legacycodepushserviceenabled')) {
-            let enabled: boolean = ConfigurationReader.readBoolean(workspaceConfiguration.get('cordova.appcenter.legacycodepushserviceenabled'));
-            return enabled;
-        }
         return true;
    }
 }
