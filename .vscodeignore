@@ -17,7 +17,6 @@ node_modules/gulp*/**
 node_modules/vsce/**
 node_modules/mocha/**
 node_modules/mockery/**
-node_modules/rimraf/**
 node_modules/should/**
 node_modules/sinon/**
 node_modules/tslint/**
