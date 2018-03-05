@@ -1,3 +1,7 @@
+## 1.3.6
+
+* Added support for cordova-code-push commands
+
 ## 1.3.5
 
 * Updated README
