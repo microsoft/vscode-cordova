@@ -9,7 +9,7 @@ import * as os from 'os';
 import Auth from '../../appcenter/auth/auth';
 import { AppCenterLoginType, ACConstants, AppCenterOS, CurrentAppDeployments, Deployment, ACCommandNames } from '../appCenterConstants';
 import { Profile } from '../../appcenter/auth/profile/profile';
-import { ConfigurationHelper } from '../../../utils/ConfigurationHelper';
+import { ConfigurationHelper } from '../../../utils/configurationHelper';
 import { AppCenterClient, models } from '../api/index';
 import { DefaultApp, ICodePushReleaseParams } from './commandParams';
 import { AppCenterExtensionManager } from '../appCenterExtensionManager';

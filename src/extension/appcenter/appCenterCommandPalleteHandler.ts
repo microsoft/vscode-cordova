@@ -7,7 +7,7 @@ import Auth from '../appcenter/auth/auth';
 import { AppCenterClient } from './api/index';
 import { Profile } from './auth/profile/profile';
 import { AppCenterClientFactory, createAppCenterClient } from './api/createClient';
-import { ConfigurationHelper } from '../../utils/ConfigurationHelper';
+import { ConfigurationHelper } from '../../utils/configurationHelper';
 import { AppCenterCommandType } from './appCenterConstants';
 import { AppCenterExtensionManager } from './appCenterExtensionManager';
 import { ACStrings } from './appCenterStrings';
