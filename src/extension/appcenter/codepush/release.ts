@@ -7,7 +7,7 @@ import * as Q from 'q';
 import { CommandResult, success, failure, ErrorCodes } from '../command/commandResult';
 import { appcenterCodePushRelease } from './release-strategy/appcenterCodePushRelease';
 import { legacyCodePushRelease } from './release-strategy/legacyCodePushRelease';
-import { ConfigurationHelper } from '../../../utils/ConfigurationHelper';
+import { ConfigurationHelper } from '../../../utils/configurationHelper';
 
 // Use old service endpoint unless we will fix issue with 1MB payload limitation for new one
 const useLegacyCodePushServer: boolean = ConfigurationHelper.getLegacyCodePushServiceEnabled();

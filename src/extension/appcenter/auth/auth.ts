@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as Q from 'q';
-import { ConfigurationHelper } from '../../../utils/ConfigurationHelper';
+import { ConfigurationHelper } from '../../../utils/configurationHelper';
 import { createAppCenterClient, getQPromisifiedClientResult } from '../api/index';
 import { Profile, saveUser, deleteUser, getUser } from '../auth/profile/profile';
 import * as models from '../lib/app-center-node-client/models';
