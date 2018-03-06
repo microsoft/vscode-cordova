@@ -8,6 +8,7 @@ export class ACConstants {
     public static DefaultLoginEndPoint: string = 'https://appcenter.ms/cli-login';
     public static DefaultLegacyCodePushService: string = 'https://codepush-management.azurewebsites.net/';
     public static CodePushNpmPackageName: string = 'react-native-code-push';
+    public static CodePushCordovaPluginName: string = 'cordova-plugin-code-push';
     public static AppCenterReactNativePlatformName: string = 'React-Native';
     public static AppCenterCordovaPlatformName: string = 'Cordova';
     public static AppCenterCodePushStatusBarColor: string = '#F3F3B2';

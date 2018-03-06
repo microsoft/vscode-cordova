@@ -9,8 +9,9 @@ import * as Q from 'q';
 import * as fs from 'fs';
 import * as path from 'path';
 // import { Package, IPackageInformation } from '../../../common/node/package';
-import { AppCenterOS, CurrentAppDeployments } from '../appCenterConstants';
+import { AppCenterOS, CurrentAppDeployments, ACConstants } from '../appCenterConstants';
 import { DefaultApp } from '../command/commandParams';
+import { CordovaProjectHelper } from '../../../utils/cordovaProjectHelper';
 
 export class ACUtils {
     private static validApp = /^([a-zA-Z0-9-_.]{1,100})\/([a-zA-Z0-9-_.]{1,100})$/;
@@ -32,14 +33,8 @@ export class ACUtils {
         if (!projectRoot || !fs.existsSync(path.join(projectRoot, 'package.json'))) {
             return Q<boolean>(false);
         }
-        return Q<boolean>(true); // TODO: ADD this
-        // return new Package(projectRoot).parsePackageInformation().then((packageInfo: IPackageInformation) => {
-        //     if (packageInfo.dependencies && packageInfo.dependencies[ACConstants.CodePushNpmPackageName]) {
-        //         return Q<boolean>(true);
-        //     } else {
-        //         return Q<boolean>(false);
-        //     }
-        // });
+        let installedPlugins: string[] = CordovaProjectHelper.getInstalledPlugins(projectRoot);
+        return Q<boolean>(installedPlugins.indexOf(ACConstants.CodePushCordovaPluginName) > 0);
     }
 
     public static formatDeploymentNameForStatusBar(deployment: CurrentAppDeployments): string {
