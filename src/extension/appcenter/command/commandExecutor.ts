@@ -9,7 +9,7 @@ import * as os from 'os';
 import Auth from '../../appcenter/auth/auth';
 import { AppCenterLoginType, ACConstants, AppCenterOS, CurrentAppDeployments, Deployment, ACCommandNames } from '../appCenterConstants';
 import { Profile } from '../../appcenter/auth/profile/profile';
-import { SettingsHelper } from '../../../utils/settingsHelper';
+import { ConfigurationHelper } from '../../../utils/ConfigurationHelper';
 import { AppCenterClient, models } from '../api/index';
 import { DefaultApp, ICodePushReleaseParams } from './commandParams';
 import { AppCenterExtensionManager } from '../appCenterExtensionManager';
@@ -51,7 +51,7 @@ export class AppCenterCommandExecutor implements IAppCenterAuth, IAppCenterCodeP
             switch (loginType) {
                 case (AppCenterLoginType[AppCenterLoginType.Interactive]):
                     const messageItems: IButtonMessageItem[] = [];
-                    const loginUrl = `${SettingsHelper.getAppCenterLoginEndpoint()}?${qs.stringify({ hostname: os.hostname()})}`;
+                    const loginUrl = `${ConfigurationHelper.getAppCenterLoginEndpoint()}?${qs.stringify({ hostname: os.hostname()})}`;
                     messageItems.push({ title : ACStrings.OkBtnLabel,
                                         url : loginUrl });
 

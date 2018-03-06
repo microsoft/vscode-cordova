@@ -3,8 +3,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import {ConfigurationReader} from '../common/configurationReader';
-import {ACConstants} from '../extension/appcenter/appCenterConstants';
 
 export function settingsHome(): string {
     switch (os.platform()) {
@@ -16,31 +14,4 @@ export function settingsHome(): string {
         default:
             throw new Error('UnexpectedPlatform');
     }
-}
-export class SettingsHelper {
-
-    /**
-     * Get appcenter login endpoint setting
-     */
-    public static getAppCenterLoginEndpoint(): string {
-        return ACConstants.DefaultLoginEndPoint;
-    }
-
-    /**
-     * Get appcenter api endpoint setting
-     */
-   public static getAppCenterAPIEndpoint(): string {
-        return ACConstants.DefaulAPIEndPoint;
-   }
-
-    /**
-     * Get old codepush endpoint setting
-     */
-    public static getLegacyCodePushEndpoint(): string {
-        return ACConstants.DefaultLegacyCodePushService;
-    }
-
-   public static getLegacyCodePushServiceEnabled(): boolean {
-        return true;
-   }
 }

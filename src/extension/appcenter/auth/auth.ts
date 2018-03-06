@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as Q from 'q';
-import { SettingsHelper } from '../../../utils/settingsHelper';
+import { ConfigurationHelper } from '../../../utils/ConfigurationHelper';
 import { createAppCenterClient, getQPromisifiedClientResult } from '../api/index';
 import { Profile, saveUser, deleteUser, getUser } from '../auth/profile/profile';
 import * as models from '../lib/app-center-node-client/models';
@@ -46,7 +46,7 @@ export default class Auth {
     }
 
     private static getUserInfo(token: string): Q.Promise <models.UserProfileResponse > {
-        const client = createAppCenterClient().fromToken(token, SettingsHelper.getAppCenterAPIEndpoint());
+        const client = createAppCenterClient().fromToken(token, ConfigurationHelper.getAppCenterAPIEndpoint());
         return getQPromisifiedClientResult(client.account.users.get());
     }
 
