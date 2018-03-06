@@ -7,16 +7,16 @@ import * as Q from 'q';
 import { CommandResult, success, failure, ErrorCodes } from '../command/commandResult';
 import { appcenterCodePushRelease } from './release-strategy/appcenterCodePushRelease';
 import { legacyCodePushRelease } from './release-strategy/legacyCodePushRelease';
-import { SettingsHelper } from '../../../utils/settingsHelper';
+import { ConfigurationHelper } from '../../../utils/ConfigurationHelper';
 
 // Use old service endpoint unless we will fix issue with 1MB payload limitation for new one
-const useLegacyCodePushServer: boolean = SettingsHelper.getLegacyCodePushServiceEnabled();
+const useLegacyCodePushServer: boolean = ConfigurationHelper.getLegacyCodePushServiceEnabled();
 
 export default class CodePushRelease {
     public static exec(client: AppCenterClient, params: ICodePushReleaseParams): Q.Promise<CommandResult> {
         return ((): Q.Promise<CodePushRelease> => {
             if (useLegacyCodePushServer) {
-                return legacyCodePushRelease(params, <string>params.token, SettingsHelper.getLegacyCodePushEndpoint());
+                return legacyCodePushRelease(params, <string>params.token, ConfigurationHelper.getLegacyCodePushEndpoint());
             } else {
                 return appcenterCodePushRelease(client, params);
             }

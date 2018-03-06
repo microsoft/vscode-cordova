@@ -7,7 +7,7 @@ import Auth from '../appcenter/auth/auth';
 import { AppCenterClient } from './api/index';
 import { Profile } from './auth/profile/profile';
 import { AppCenterClientFactory, createAppCenterClient } from './api/createClient';
-import { SettingsHelper } from '../../utils/settingsHelper';
+import { ConfigurationHelper } from '../../utils/ConfigurationHelper';
 import { AppCenterCommandType } from './appCenterConstants';
 import { AppCenterExtensionManager } from './appCenterExtensionManager';
 import { ACStrings } from './appCenterStrings';
@@ -92,7 +92,7 @@ export class AppCenterCommandPalleteHandler {
     private resolveAppCenterClient(profile: Profile): AppCenterClient | null {
         if (!this.client) {
             if (profile) {
-                return this.clientFactory.fromProfile(profile, SettingsHelper.getAppCenterAPIEndpoint());
+                return this.clientFactory.fromProfile(profile, ConfigurationHelper.getAppCenterAPIEndpoint());
             } else {
                 throw new Error('No App Center user specified!');
             }
