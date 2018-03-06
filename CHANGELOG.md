@@ -1,3 +1,8 @@
+## 1.3.8
+
+* Remove local file dependencies for code-push libs from package.json
+* Bug fixes
+
 ## 1.3.7
 
 * Bug fixes
