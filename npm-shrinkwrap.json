@@ -527,12 +527,6 @@
         }
       }
     },
-    "app-center-node-client": {
-      "version": "file:src/extension/appcenter/lib/app-center-node-client",
-      "requires": {
-        "ms-rest": "2.3.1"
-      }
-    },
     "append-transform": {
       "version": "0.4.0",
       "resolved": "https://registry.npmjs.org/append-transform/-/append-transform-0.4.0.tgz",
