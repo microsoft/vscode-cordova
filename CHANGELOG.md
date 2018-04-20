@@ -1,3 +1,7 @@
+## 1.3.9
+
+* Migrated CodePush functionality to App Center extension for VS Code
+
 ## 1.3.8
 
 * Remove local file dependencies for code-push libs from package.json
