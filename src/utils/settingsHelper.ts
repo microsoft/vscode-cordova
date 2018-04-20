@@ -3,8 +3,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import * as vscode from 'vscode';
-import {ConfigurationReader} from '../common/configurationReader';
 
 export function settingsHome(): string {
     switch (os.platform()) {
@@ -15,5 +13,5 @@ export function settingsHome(): string {
             return path.join(process.env['HOME'], '.vscode-cordova');
         default:
             throw new Error('UnexpectedPlatform');
-    };
+    }
 }

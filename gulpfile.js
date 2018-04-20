@@ -64,13 +64,15 @@ var projectConfig = {
     typescript: typescript
 };
 
-gulp.task('build', function () {
+gulp.task('build-tsc', function () {
     return gulp.src(sources, { base: '.' })
         .pipe(sourcemaps.init())
         .pipe(ts(projectConfig))
         .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: __dirname }))
         .pipe(gulp.dest('out'));
 });
+
+gulp.task('build', ['build-tsc']);
 
 gulp.task('watch', ['build'], function(cb) {
     log('Watching build sources...');
