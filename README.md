@@ -189,28 +189,6 @@ For Angular services, the service type will be in the following format: ```angul
 
 For a list of supported services for IntelliSense, see the ```angular.d.ts``` and ```ionic.d.ts``` typing files, which our extension places by default under ```.vscode/typings``` in your project.
 
-## Using with Cordova Plugin Code Push
-
-We have added basic support for [cordova-plugin-code-push](https://github.com/Microsoft/cordova-plugin-code-push).
-
-This is our first release of this feature and we would love to hear any feedback from you to make things better.
-Please [feel free to reach us](https://github.com/Microsoft/vscode-cordova/issues) in case of any issues or questions.
-
-CodePush is a cloud service that enables Cordova and React Native developers to deploy mobile app updates directly to their users' devices. It works by acting as a central repository that developers can publish updates to (JS, HTML, CSS and images). [How does it work?](https://github.com/Microsoft/cordova-plugin-code-push#how-does-it-work)
-
-To use it with your current project you should have the following things to be done:
-1) Your currently opened project should be `cordova` one
-2) You should have added `cordova-plugin-code-push` into your project
-3) You should have an app already created in [Microsoft AppCenter](https://appcenter.ms/) and configured cordova-plugin-code-push for your project:
-* [How to configure Cordova Plugin Code Push](https://github.com/Microsoft/cordova-plugin-code-push#getting-started)
-* [How to create an App in the AppCenter portal](https://docs.microsoft.com/en-us/appcenter/sdk/getting-started/cordova#2-getting-the-app-center-app-secret)
-
-To start using CodePush with current extension please do the following:
-1) Login to AppCenter from CodePush status bar
-2) Set current app that will be used for further code-push releases
-3) Configure AppVersion/IsMandatory for release (optional)
-4) Click on CodePush status bar and select `Releae Cordova` command to make new CodePush release
-
 ## How to disable telemetry reporting
 
 VS Code Cordova extension collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://www.visualstudio.com/en-us/dn948229) to learn more.

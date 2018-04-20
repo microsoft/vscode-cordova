@@ -5,7 +5,6 @@ var child_process = require('child_process');
 var fs = require('fs');
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
-var install = require("gulp-install");
 var sourcemaps = require('gulp-sourcemaps');
 var ts = require('gulp-typescript');
 var log = require('gulp-util').log;
@@ -13,7 +12,6 @@ var os = require('os');
 var path = require('path');
 var Q = require('q');
 var typescript = require('typescript');
-var execSync = require('child_process').execSync;
 
 function executeCordovaCommand(cwd, command) {
     var cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
@@ -74,12 +72,7 @@ gulp.task('build-tsc', function () {
         .pipe(gulp.dest('out'));
 });
 
-gulp.task('copy-lib', function () {
-    return gulp.src('src/extension/appcenter/lib/**/*{.d.ts,.js}', { base: '.' })
-        .pipe(gulp.dest('out'));
-});
-
-gulp.task('build', ['build-tsc', 'copy-lib']);
+gulp.task('build', ['build-tsc']);
 
 gulp.task('watch', ['build'], function(cb) {
     log('Watching build sources...');
