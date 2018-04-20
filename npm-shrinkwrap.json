@@ -2564,6 +2564,11 @@
       "from": "source-map@>=0.5.3 <0.6.0",
       "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.7.tgz"
     },
+    "source-map-support": {
+      "version": "0.4.18",
+      "from": "source-map-support@>=0.4.0 <0.5.0",
+      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.4.18.tgz"
+    },
     "sparkles": {
       "version": "1.0.0",
       "from": "sparkles@>=1.0.0 <2.0.0",
@@ -2924,9 +2929,9 @@
       }
     },
     "vscode-chrome-debug-core": {
-      "version": "3.23.11",
-      "from": "vscode-chrome-debug-core@>=3.16.4 <4.0.0",
-      "resolved": "https://registry.npmjs.org/vscode-chrome-debug-core/-/vscode-chrome-debug-core-3.23.11.tgz",
+      "version": "3.21.2",
+      "from": "vscode-chrome-debug-core@3.21.2",
+      "resolved": "https://registry.npmjs.org/vscode-chrome-debug-core/-/vscode-chrome-debug-core-3.21.2.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",
@@ -2942,7 +2947,7 @@
     },
     "vscode-debugprotocol": {
       "version": "1.28.0",
-      "from": "vscode-debugprotocol@>=1.28.0-pre.1 <2.0.0",
+      "from": "vscode-debugprotocol@>=1.25.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/vscode-debugprotocol/-/vscode-debugprotocol-1.28.0.tgz"
     },
     "vscode-extension-telemetry": {
@@ -2951,9 +2956,9 @@
       "resolved": "https://registry.npmjs.org/vscode-extension-telemetry/-/vscode-extension-telemetry-0.0.5.tgz"
     },
     "vscode-nls": {
-      "version": "3.2.2",
-      "from": "vscode-nls@>=3.2.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-3.2.2.tgz"
+      "version": "2.0.2",
+      "from": "vscode-nls@>=2.0.2 <3.0.0",
+      "resolved": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-2.0.2.tgz"
     },
     "vscode-uri": {
       "version": "1.0.1",
