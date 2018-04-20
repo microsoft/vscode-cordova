@@ -499,7 +499,7 @@
     "socket.io-client": "^1.4.6",
     "temp": "^0.8.3",
     "vscode": "^1.1.6",
-    "vscode-chrome-debug-core": "^3.16.4",
+    "vscode-chrome-debug-core": "3.16.4",
     "vscode-debugadapter": "^1.22.0",
     "vscode-extension-telemetry": "0.0.5",
     "which": "^1.3.0",
