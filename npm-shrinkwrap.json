@@ -231,12 +231,6 @@
       "integrity": "sha1-qCJQ3bABXponyoLoLqYDu/pF768=",
       "dev": true
     },
-    "app-center-node-client": {
-      "version": "file:src/extension/appcenter/lib/app-center-node-client",
-      "requires": {
-        "ms-rest": "2.3.1"
-      }
-    },
     "applicationinsights": {
       "version": "0.15.6",
       "resolved": "https://registry.npmjs.org/applicationinsights/-/applicationinsights-0.15.6.tgz",
