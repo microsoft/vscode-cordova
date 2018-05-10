@@ -7,21 +7,21 @@ import * as os from 'os';
 import * as util from 'util';
 import { window, WorkspaceConfiguration, workspace, Uri } from 'vscode';
 
-import {TelemetryHelper} from './telemetryHelper';
-import { ConfigurationReader } from '../common/configurationReader';
+import { TelemetryHelper } from './telemetryHelper';
+import { OutputChannelLogger } from './outputChannelLogger';
 
 export class CordovaCommandHelper {
-    private static CORDOVA_CMD_NAME = os.platform() === "win32" ? "cordova.cmd" : "cordova";
-    private static IONIC_CMD_NAME = os.platform() === "win32" ? "ionic.cmd" : "ionic";
-    private static CORDOVA_TELEMETRY_EVENT_NAME: string = "cordovaCommand";
-    private static IONIC_TELEMETRY_EVENT_NAME: string = "ionicCommand";
-    private static CORDOVA_DISPLAY_NAME: string = "Cordova";
-    private static IONIC_DISPLAY_NAME: string = "Ionic";
+    private static CORDOVA_CMD_NAME: string = os.platform() === 'win32' ? 'cordova.cmd' : 'cordova';
+    private static IONIC_CMD_NAME: string = os.platform() === 'win32' ? 'ionic.cmd' : 'ionic';
+    private static CORDOVA_TELEMETRY_EVENT_NAME: string = 'cordovaCommand';
+    private static IONIC_TELEMETRY_EVENT_NAME: string = 'ionicCommand';
+    private static CORDOVA_DISPLAY_NAME: string = 'Cordova';
+    private static IONIC_DISPLAY_NAME: string = 'Ionic';
 
     public static executeCordovaCommand(projectRoot: string, command: string, useIonic: boolean = false) {
-        var telemetryEventName: string = CordovaCommandHelper.CORDOVA_TELEMETRY_EVENT_NAME;
-        var cliCommandName: string = CordovaCommandHelper.CORDOVA_CMD_NAME;
-        var cliDisplayName: string = CordovaCommandHelper.CORDOVA_DISPLAY_NAME;
+        let telemetryEventName: string = CordovaCommandHelper.CORDOVA_TELEMETRY_EVENT_NAME;
+        let cliCommandName: string = CordovaCommandHelper.CORDOVA_CMD_NAME;
+        let cliDisplayName: string = CordovaCommandHelper.CORDOVA_DISPLAY_NAME;
 
         if (useIonic) {
             telemetryEventName = CordovaCommandHelper.IONIC_TELEMETRY_EVENT_NAME;
@@ -31,8 +31,8 @@ export class CordovaCommandHelper {
 
         TelemetryHelper.generate(telemetryEventName, (generator) => {
             generator.add('command', command, false);
-            let outputChannel = window.createOutputChannel("cordova");
-            let commandToExecute = cliCommandName + " " + command;
+            let logger = OutputChannelLogger.getMainChannel();
+            let commandToExecute = `${cliCommandName} ${command}`;
 
             if (useIonic && os.platform() === 'win32' && ['build', 'run'].indexOf(command) >= 0) {
                 // ionic build/run commands use 'ios' as default platform, even on Windows, which
@@ -46,29 +46,28 @@ export class CordovaCommandHelper {
                 commandToExecute += ' ' + runArgs.join(' ');
             }
 
-            outputChannel.appendLine("########### EXECUTING: " + commandToExecute + " ###########");
-            outputChannel.show();
+            logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
             let process = child_process.exec(commandToExecute, { cwd: projectRoot });
 
             let deferred = Q.defer();
-            process.on("error", (err: any) => {
+            process.on('error', (err: any) => {
                 // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
-                if (err.code === "ENOENT") {
-                    window.showErrorMessage(util.format("%s not found, please run 'npm install –g %s' to install %s globally", cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
+                if (err.code === 'ENOENT') {
+                    window.showErrorMessage(util.format('%s not found, please run "npm install –g %s" to install %s globally', cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
                 }
                 deferred.reject(err);
             });
 
             process.stderr.on('data', (data: any) => {
-                outputChannel.append(data);
+                logger.append(data);
             });
 
             process.stdout.on('data', (data: any) => {
-                outputChannel.append(data);
+                logger.append(data);
             });
 
-            process.stdout.on("close", (exitCode: number) => {
-                outputChannel.appendLine("########### FINISHED EXECUTING : " + commandToExecute + " ###########");
+            process.stdout.on('close', (exitCode: number) => {
+                logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
                 deferred.resolve({});
             });
 
