@@ -32,7 +32,8 @@
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:typescript",
-    "workspaceContains:config.xml"
+    "workspaceContains:config.xml",
+    "workspaceContains:ionic.config.json"
   ],
   "main": "./out/src/cordova",
   "contributes": {
