@@ -76,11 +76,9 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     }
 
     let activateExtensionEvent = TelemetryHelper.createTelemetryEvent('activate');
-    let projectType: IProjectType;
 
     TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
         .then((projType) => {
-            projectType = projType;
             activateExtensionEvent.properties['projectType'] = projType;
         })
         .finally(() => {
