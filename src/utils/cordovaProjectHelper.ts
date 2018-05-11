@@ -34,6 +34,8 @@ export class CordovaProjectHelper {
     private static CONFIG_XML_FILENAME: string = "config.xml";
     private static PROJECT_PLUGINS_DIR: string = "plugins";
     private static IONIC_PROJECT_FILE: string = "ionic.project";
+
+    private static CONFIG_IONIC_FILENAME: string = 'ionic.config.json';
     private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
 
     private static CORE_PLUGIN_LIST: string[] = ["cordova-plugin-battery-status",
@@ -205,9 +207,11 @@ export class CordovaProjectHelper {
         let parentPath: string;
         let projectRoot: string = workspaceRoot;
         let atFsRoot: boolean = false;
-        while (!CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_XML_FILENAME))) {
+
+        while (!CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_XML_FILENAME))
+            && !CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_IONIC_FILENAME))) {
             // Navigate up one level until either config.xml is found
-            parentPath = path.resolve(projectRoot, "..");
+            parentPath = path.resolve(projectRoot, '..');
             if (parentPath !== projectRoot) {
                 projectRoot = parentPath;
             } else {
