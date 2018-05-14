@@ -136,20 +136,19 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
             .then(() => TelemetryHelper.generate('launch', (generator) => {
-            launchArgs.port = launchArgs.port || 9222;
-            launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
-            launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
+                launchArgs.port = launchArgs.port || 9222;
+                launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
+                generator.add('target', launchArgs.target, false);
+                launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
-            let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
+                let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
 
-            TelemetryHelper.sendPluginsList(launchArgs.cwd, CordovaProjectHelper.getInstalledPlugins(launchArgs.cwd));
+                TelemetryHelper.sendPluginsList(launchArgs.cwd, CordovaProjectHelper.getInstalledPlugins(launchArgs.cwd));
 
-            return Q.all([
-                TelemetryHelper.determineProjectTypes(launchArgs.cwd),
-                CordovaDebugAdapter.getRunArguments(launchArgs.cwd)
-            ])
-                .then(([projectType, runArguments]) => {
-
+                return Q.all([
+                    TelemetryHelper.determineProjectTypes(launchArgs.cwd),
+                    CordovaDebugAdapter.getRunArguments(launchArgs.cwd),
+                ]).then(([projectType, runArguments]) => {
                     generator.add('projectType', projectType, false);
                     this.outputLogger(`Launching for ${platform} (This may take a while)...`);
 
@@ -194,7 +193,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         return this.attach(launchArgs);
                     }
                 });
-        }).done(resolve, reject)));
+            }).done(resolve, reject)));
     }
 
     public isSimulateTarget(target: string) {
@@ -208,6 +207,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
+            generator.add('target', attachArgs.target, false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
