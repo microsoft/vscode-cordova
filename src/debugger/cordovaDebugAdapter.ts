@@ -87,9 +87,9 @@ const DEFAULT_CHROMIUM_PATH = {
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
 
 enum TargetType {
-    EMULATOR,
-    DEVICE,
-    CHROME,
+    Emulator = 'emulator',
+    Device = 'device',
+    Chrome = 'chrome',
 }
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
@@ -1289,14 +1289,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
      */
     private static getTargetType(target: string): string {
         if (/emulator/i.test(target)) {
-            return TargetType[TargetType.EMULATOR];
+            return TargetType.Emulator;
         }
 
         if (/chrom/i.test(target)) {
-            return TargetType[TargetType.CHROME];
+            return TargetType.Chrome;
         }
 
-        return TargetType[TargetType.DEVICE];
+        return TargetType.Device;
     }
 
     /**
