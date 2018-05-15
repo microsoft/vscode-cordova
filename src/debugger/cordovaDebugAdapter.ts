@@ -81,10 +81,16 @@ const DEFAULT_CHROMIUM_PATH = {
     WIN: 'C:\\Program Files\\Chromium\\Application\\chrome.exe',
     WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Chromium\\Application\\chrome.exe'),
     WINx86: 'C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe',
-}
+};
 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
+
+enum TargetType {
+    EMULATOR,
+    DEVICE,
+    CHROME,
+}
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -1283,14 +1289,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
      */
     private static getTargetType(target: string): string {
         if (/emulator/i.test(target)) {
-            return 'emulator';
+            return TargetType[TargetType.EMULATOR];
         }
 
         if (/chrom/i.test(target)) {
-            return 'chrome';
+            return TargetType[TargetType.CHROME];
         }
 
-        return 'device';
+        return TargetType[TargetType.DEVICE];
     }
 
     /**
