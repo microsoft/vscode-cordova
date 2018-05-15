@@ -81,10 +81,16 @@ const DEFAULT_CHROMIUM_PATH = {
     WIN: 'C:\\Program Files\\Chromium\\Application\\chrome.exe',
     WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Chromium\\Application\\chrome.exe'),
     WINx86: 'C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe',
-}
+};
 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
+
+enum TargetType {
+    Emulator = 'emulator',
+    Device = 'device',
+    Chrome = 'chrome',
+}
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -138,7 +144,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => TelemetryHelper.generate('launch', (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
                 launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
-                generator.add('target', launchArgs.target, false);
+                generator.add('target', CordovaDebugAdapter.getTargetType(launchArgs.target), false);
                 launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
                 let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
@@ -207,7 +213,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
-            generator.add('target', attachArgs.target, false);
+            generator.add('target', CordovaDebugAdapter.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
@@ -1276,6 +1282,21 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         } else {
             return ChromeDebugCoreUtils.existsSync(defaultPaths.LINUX) ? defaultPaths.LINUX : null;
         }
+    }
+
+    /**
+     * Target type for telemetry
+     */
+    private static getTargetType(target: string): string {
+        if (/emulator/i.test(target)) {
+            return TargetType.Emulator;
+        }
+
+        if (/chrom/i.test(target)) {
+            return TargetType.Chrome;
+        }
+
+        return TargetType.Device;
     }
 
     /**
