@@ -138,7 +138,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => TelemetryHelper.generate('launch', (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
                 launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
-                generator.add('target', launchArgs.target, false);
+                generator.add('target', CordovaDebugAdapter.getTargetType(launchArgs.target), false);
                 launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
                 let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
@@ -207,7 +207,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => TelemetryHelper.generate('attach', (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || 'emulator';
-            generator.add('target', attachArgs.target, false);
+            generator.add('target', CordovaDebugAdapter.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
@@ -1276,6 +1276,21 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         } else {
             return ChromeDebugCoreUtils.existsSync(defaultPaths.LINUX) ? defaultPaths.LINUX : null;
         }
+    }
+
+    /**
+     * Target type for telemetry
+     */
+    private static getTargetType(target: string): string {
+        if (/emulator/i.test(target)) {
+            return 'emulator';
+        }
+
+        if (/chrom/i.test(target)) {
+            return 'chrome';
+        }
+
+        return 'device';
     }
 
     /**
