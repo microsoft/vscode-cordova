@@ -1,3 +1,9 @@
+## 1.3.10
+
+* Added target type to telemetry request
+* Added support for Ionic projects without Cordova integration
+* Bug fixes and improvements
+
 ## 1.3.9
 
 * Migrated CodePush functionality to App Center extension for VS Code
