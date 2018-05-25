@@ -9,6 +9,7 @@ import { window, WorkspaceConfiguration, workspace, Uri } from 'vscode';
 
 import { TelemetryHelper } from './telemetryHelper';
 import { OutputChannelLogger } from './outputChannelLogger';
+import { CordovaProjectHelper } from './cordovaProjectHelper';
 
 export class CordovaCommandHelper {
     private static CORDOVA_CMD_NAME: string = os.platform() === 'win32' ? 'cordova.cmd' : 'cordova';
@@ -29,51 +30,51 @@ export class CordovaCommandHelper {
             cliDisplayName = CordovaCommandHelper.IONIC_DISPLAY_NAME;
         }
 
-        TelemetryHelper.generate(telemetryEventName, (generator) => {
-            generator.add('command', command, false);
-            let logger = OutputChannelLogger.getMainChannel();
-            let commandToExecute = `${cliCommandName} ${command}`;
+        return CordovaCommandHelper.selectPlatform(projectRoot, command)
+                .then((platform) => {
+                    TelemetryHelper.generate(telemetryEventName, (generator) => {
+                        generator.add('command', command, false);
+                        let logger = OutputChannelLogger.getMainChannel();
+                        let commandToExecute = `${cliCommandName} ${command}`;
 
-            if (useIonic && os.platform() === 'win32' && ['build', 'run'].indexOf(command) >= 0) {
-                // ionic build/run commands use 'ios' as default platform, even on Windows, which
-                // causes them to fail w/ odd “You cannot run iOS unless you are on Mac OSX” error.
-                // To prevent this we enforce these commands to use 'android' in such case
-                commandToExecute += ' android';
-            }
+                        if (platform) {
+                            commandToExecute += ` ${platform}`;
+                        }
 
-            const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
-            if (runArgs.length) {
-                commandToExecute += ' ' + runArgs.join(' ');
-            }
+                        const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
+                        if (runArgs.length) {
+                            commandToExecute += ` ${runArgs.join(' ')}`;
+                        }
 
-            logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
-            let process = child_process.exec(commandToExecute, { cwd: projectRoot });
+                        logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
+                        let process = child_process.exec(commandToExecute, { cwd: projectRoot });
 
-            let deferred = Q.defer();
-            process.on('error', (err: any) => {
-                // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
-                if (err.code === 'ENOENT') {
-                    window.showErrorMessage(util.format('%s not found, please run "npm install –g %s" to install %s globally', cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
-                }
-                deferred.reject(err);
-            });
+                        let deferred = Q.defer();
+                        process.on('error', (err: any) => {
+                            // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
+                            if (err.code === 'ENOENT') {
+                                window.showErrorMessage(util.format('%s not found, please run "npm install –g %s" to install %s globally', cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
+                            }
+                            deferred.reject(err);
+                        });
 
-            process.stderr.on('data', (data: any) => {
-                logger.append(data);
-            });
+                        process.stderr.on('data', (data: any) => {
+                            logger.append(data);
+                        });
 
-            process.stdout.on('data', (data: any) => {
-                logger.append(data);
-            });
+                        process.stdout.on('data', (data: any) => {
+                            logger.append(data);
+                        });
 
-            process.stdout.on('close', (exitCode: number) => {
-                logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
-                deferred.resolve({});
-            });
+                        process.stdout.on('close', (exitCode: number) => {
+                            logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
+                            deferred.resolve({});
+                        });
 
-            return TelemetryHelper.determineProjectTypes(projectRoot)
-                .then((projectType) => generator.add('projectType', projectType, false))
-                .then(() => deferred.promise);
+                        return TelemetryHelper.determineProjectTypes(projectRoot)
+                            .then((projectType) => generator.add('projectType', projectType, false))
+                            .then(() => deferred.promise);
+                });
         });
     }
 
@@ -94,5 +95,57 @@ export class CordovaCommandHelper {
         if (workspaceConfiguration.has(configKey)) {
             return workspaceConfiguration.get(configKey);
         }
+    }
+
+    private static selectPlatform(projectRoot, command): Q.Promise<string> {
+        let platforms = CordovaProjectHelper.getInstalledPlatforms(projectRoot);
+
+        if (os.platform() === 'win32') {
+            platforms = platforms.filter((platform) => {
+                switch (platform) {
+                    case 'ios':
+                    case 'osx':
+                        return false;
+                    default:
+                        return true;
+                }
+            });
+        } else {
+            platforms = platforms.filter((platform) => {
+                switch (platform) {
+                    case 'windows':
+                        return false;
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        return Q({})
+            .then(() => {
+                if (['prepare', 'build', 'run'].indexOf(command) > -1) {
+                    if (platforms.length > 1) {
+                        platforms.unshift('all');
+                        return window.showQuickPick(platforms)
+                            .then((platform) => {
+                                if (!platform) {
+                                    throw new Error('Platform selection was canceled. Please select target platform to continue!');
+                                }
+
+                                if (platform === 'all') {
+                                    return '';
+                                }
+
+                                return platform;
+                            });
+                    } else if (platforms.length === 1) {
+                        return platforms[0];
+                    } else {
+                        throw new Error('No any platforms installed');
+                    }
+                }
+
+                return '';
+            });
     }
 }
