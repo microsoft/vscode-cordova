@@ -31,51 +31,51 @@ export class CordovaCommandHelper {
         }
 
         return CordovaCommandHelper.selectPlatform(projectRoot, command)
-                .then((platform) => {
-                    TelemetryHelper.generate(telemetryEventName, (generator) => {
-                        generator.add('command', command, false);
-                        let logger = OutputChannelLogger.getMainChannel();
-                        let commandToExecute = `${cliCommandName} ${command}`;
+            .then((platform) => {
+                TelemetryHelper.generate(telemetryEventName, (generator) => {
+                    generator.add('command', command, false);
+                    let logger = OutputChannelLogger.getMainChannel();
+                    let commandToExecute = `${cliCommandName} ${command}`;
 
-                        if (platform) {
-                            commandToExecute += ` ${platform}`;
+                    if (platform) {
+                        commandToExecute += ` ${platform}`;
+                    }
+
+                    const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
+                    if (runArgs.length) {
+                        commandToExecute += ` ${runArgs.join(' ')}`;
+                    }
+
+                    logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
+                    let process = child_process.exec(commandToExecute, { cwd: projectRoot });
+
+                    let deferred = Q.defer();
+                    process.on('error', (err: any) => {
+                        // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
+                        if (err.code === 'ENOENT') {
+                            window.showErrorMessage(util.format('%s not found, please run "npm install –g %s" to install %s globally', cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
                         }
+                        deferred.reject(err);
+                    });
 
-                        const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
-                        if (runArgs.length) {
-                            commandToExecute += ` ${runArgs.join(' ')}`;
-                        }
+                    process.stderr.on('data', (data: any) => {
+                        logger.append(data);
+                    });
 
-                        logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
-                        let process = child_process.exec(commandToExecute, { cwd: projectRoot });
+                    process.stdout.on('data', (data: any) => {
+                        logger.append(data);
+                    });
 
-                        let deferred = Q.defer();
-                        process.on('error', (err: any) => {
-                            // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
-                            if (err.code === 'ENOENT') {
-                                window.showErrorMessage(util.format('%s not found, please run "npm install –g %s" to install %s globally', cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
-                            }
-                            deferred.reject(err);
-                        });
+                    process.stdout.on('close', (exitCode: number) => {
+                        logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
+                        deferred.resolve({});
+                    });
 
-                        process.stderr.on('data', (data: any) => {
-                            logger.append(data);
-                        });
-
-                        process.stdout.on('data', (data: any) => {
-                            logger.append(data);
-                        });
-
-                        process.stdout.on('close', (exitCode: number) => {
-                            logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
-                            deferred.resolve({});
-                        });
-
-                        return TelemetryHelper.determineProjectTypes(projectRoot)
-                            .then((projectType) => generator.add('projectType', projectType, false))
-                            .then(() => deferred.promise);
+                    return TelemetryHelper.determineProjectTypes(projectRoot)
+                        .then((projectType) => generator.add('projectType', projectType, false))
+                        .then(() => deferred.promise);
                 });
-        });
+            });
     }
 
     /**
