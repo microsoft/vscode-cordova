@@ -160,26 +160,35 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                     switch (platform) {
                         case 'android':
-                            /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchAndroid(launchArgs, projectType, runArguments);
                             }
-                        /* tslint:enable:no-switch-case-fall-through */
                         case 'ios':
-                            /* tslint:disable:no-switch-case-fall-through */
                             generator.add('platform', platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchIos(launchArgs, projectType, runArguments);
                             }
-                        /* tslint:enable:no-switch-case-fall-through */
+                        case 'windows':
+                            generator.add('platform', platform, false);
+                            if (this.isSimulateTarget(launchArgs.target)) {
+                                return this.launchSimulate(launchArgs, projectType, generator);
+                            } else {
+                                throw new Error(`${platform} debugger doesn't support`);
+                            }
                         case 'serve':
                             generator.add('platform', platform, false);
                             return this.launchServe(launchArgs, projectType, runArguments);
+                        // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
+                        case 'amazon_fireos':
+                        case 'blackberry10':
+                        case 'firefoxos':
+                        case 'ubuntu':
+                        case 'wp8':
                         case 'browser':
                             generator.add('platform', platform, false);
                             return this.launchSimulate(launchArgs, projectType, generator);
