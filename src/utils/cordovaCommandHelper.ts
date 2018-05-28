@@ -99,27 +99,7 @@ export class CordovaCommandHelper {
 
     private static selectPlatform(projectRoot, command): Q.Promise<string> {
         let platforms = CordovaProjectHelper.getInstalledPlatforms(projectRoot);
-
-        if (os.platform() === 'win32') {
-            platforms = platforms.filter((platform) => {
-                switch (platform) {
-                    case 'ios':
-                    case 'osx':
-                        return false;
-                    default:
-                        return true;
-                }
-            });
-        } else {
-            platforms = platforms.filter((platform) => {
-                switch (platform) {
-                    case 'windows':
-                        return false;
-                    default:
-                        return true;
-                }
-            });
-        }
+        platforms = CordovaCommandHelper.filterAvailablePlatforms(platforms);
 
         return Q({})
             .then(() => {
@@ -147,5 +127,21 @@ export class CordovaCommandHelper {
 
                 return '';
             });
+    }
+
+    private static filterAvailablePlatforms(platforms: string[]): string[] {
+        const osPlatform = os.platform();
+
+        return platforms.filter((platform) => {
+            switch (platform) {
+                case 'ios':
+                case 'osx':
+                    return osPlatform === 'darwin';
+                case 'windows':
+                    return osPlatform === 'win32';
+                default:
+                    return true;
+            }
+        });
     }
 }
