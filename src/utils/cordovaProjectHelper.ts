@@ -169,7 +169,9 @@ export class CordovaProjectHelper {
 
         try {
             let platformsDirContents = fs.readdirSync(platformsPath);
-            return platformsDirContents;
+            return platformsDirContents.filter((platform) => {
+                return platform.charAt(0) !== '.';
+            });
         } catch (error) {
             console.error(error);
             return [];
