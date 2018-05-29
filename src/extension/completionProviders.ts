@@ -1,27 +1,25 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as fs from 'fs';
+import * as fs from "fs";
 import {
     CompletionItem, CompletionItemKind, CompletionItemProvider,
-    DocumentSelector, CancellationToken, TextDocument, SnippetString, Position
-} from 'vscode';
+    DocumentSelector, SnippetString
+} from "vscode";
 
 // Types to outline TextMate snippets format, used in this extension's snippet files
 type TMSnippet = { prefix: string, body: string[], description: string };
 type TMSnippets = { [name: string]: TMSnippet };
 
 export class IonicCompletionProvider implements CompletionItemProvider {
-    public static HTML_DOCUMENT_SELECTOR: DocumentSelector = 'html';
-    public static JS_DOCUMENT_SELECTOR: DocumentSelector = 'javascript';
+    public static HTML_DOCUMENT_SELECTOR: DocumentSelector = "html";
+    public static JS_DOCUMENT_SELECTOR: DocumentSelector = "javascript";
 
     private snippetCompletions: CompletionItem[];
 
     constructor(private completionsSource: string) { }
 
-    public provideCompletionItems(document: TextDocument,
-                                  position: Position,
-                                  token: CancellationToken): CompletionItem[] {
+    public provideCompletionItems(): CompletionItem[] {
 
         if (this.snippetCompletions) {
             return this.snippetCompletions;
@@ -30,7 +28,7 @@ export class IonicCompletionProvider implements CompletionItemProvider {
         this.snippetCompletions = [];
 
         try {
-            let rawSnippets: TMSnippets = JSON.parse(fs.readFileSync(this.completionsSource, 'utf8'));
+            let rawSnippets: TMSnippets = JSON.parse(fs.readFileSync(this.completionsSource, "utf8"));
             this.snippetCompletions = Object.keys(rawSnippets)
                 .map(name => makeCompletionItem(rawSnippets[name]));
 
@@ -47,7 +45,7 @@ function makeCompletionItem(rawSnippet: TMSnippet): CompletionItem {
     const item = new CompletionItem(rawSnippet.prefix);
     item.documentation = rawSnippet.description;
     item.kind = CompletionItemKind.Snippet;
-    item.insertText = new SnippetString(rawSnippet.body.join('\n'));
+    item.insertText = new SnippetString(rawSnippet.body.join("\n"));
 
     return item;
 }

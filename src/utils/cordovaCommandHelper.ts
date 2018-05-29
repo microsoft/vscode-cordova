@@ -1,23 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as child_process from 'child_process';
-import * as Q from 'q';
-import * as os from 'os';
-import * as util from 'util';
-import { window, WorkspaceConfiguration, workspace, Uri } from 'vscode';
+import * as child_process from "child_process";
+import * as Q from "q";
+import * as os from "os";
+import * as util from "util";
+import { window, WorkspaceConfiguration, workspace, Uri } from "vscode";
 
-import { TelemetryHelper } from './telemetryHelper';
-import { OutputChannelLogger } from './outputChannelLogger';
-import { CordovaProjectHelper } from './cordovaProjectHelper';
+import { TelemetryHelper } from "./telemetryHelper";
+import { OutputChannelLogger } from "./outputChannelLogger";
+import { CordovaProjectHelper } from "./cordovaProjectHelper";
 
 export class CordovaCommandHelper {
-    private static CORDOVA_CMD_NAME: string = os.platform() === 'win32' ? 'cordova.cmd' : 'cordova';
-    private static IONIC_CMD_NAME: string = os.platform() === 'win32' ? 'ionic.cmd' : 'ionic';
-    private static CORDOVA_TELEMETRY_EVENT_NAME: string = 'cordovaCommand';
-    private static IONIC_TELEMETRY_EVENT_NAME: string = 'ionicCommand';
-    private static CORDOVA_DISPLAY_NAME: string = 'Cordova';
-    private static IONIC_DISPLAY_NAME: string = 'Ionic';
+    private static CORDOVA_CMD_NAME: string = os.platform() === "win32" ? "cordova.cmd" : "cordova";
+    private static IONIC_CMD_NAME: string = os.platform() === "win32" ? "ionic.cmd" : "ionic";
+    private static CORDOVA_TELEMETRY_EVENT_NAME: string = "cordovaCommand";
+    private static IONIC_TELEMETRY_EVENT_NAME: string = "ionicCommand";
+    private static CORDOVA_DISPLAY_NAME: string = "Cordova";
+    private static IONIC_DISPLAY_NAME: string = "Ionic";
 
     public static executeCordovaCommand(projectRoot: string, command: string, useIonic: boolean = false) {
         let telemetryEventName: string = CordovaCommandHelper.CORDOVA_TELEMETRY_EVENT_NAME;
@@ -33,7 +33,7 @@ export class CordovaCommandHelper {
         return CordovaCommandHelper.selectPlatform(projectRoot, command)
             .then((platform) => {
                 TelemetryHelper.generate(telemetryEventName, (generator) => {
-                    generator.add('command', command, false);
+                    generator.add("command", command, false);
                     let logger = OutputChannelLogger.getMainChannel();
                     let commandToExecute = `${cliCommandName} ${command}`;
 
@@ -43,36 +43,36 @@ export class CordovaCommandHelper {
 
                     const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
                     if (runArgs.length) {
-                        commandToExecute += ` ${runArgs.join(' ')}`;
+                        commandToExecute += ` ${runArgs.join(" ")}`;
                     }
 
                     logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
                     let process = child_process.exec(commandToExecute, { cwd: projectRoot });
 
                     let deferred = Q.defer();
-                    process.on('error', (err: any) => {
+                    process.on("error", (err: any) => {
                         // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
-                        if (err.code === 'ENOENT') {
-                            window.showErrorMessage(util.format('%s not found, please run "npm install –g %s" to install %s globally', cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
+                        if (err.code === "ENOENT") {
+                            window.showErrorMessage(util.format("%s not found, please run \"npm install –g %s\" to install %s globally", cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
                         }
                         deferred.reject(err);
                     });
 
-                    process.stderr.on('data', (data: any) => {
+                    process.stderr.on("data", (data: any) => {
                         logger.append(data);
                     });
 
-                    process.stdout.on('data', (data: any) => {
+                    process.stdout.on("data", (data: any) => {
                         logger.append(data);
                     });
 
-                    process.stdout.on('close', (exitCode: number) => {
+                    process.stdout.on("close", () => {
                         logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
                         deferred.resolve({});
                     });
 
                     return TelemetryHelper.determineProjectTypes(projectRoot)
-                        .then((projectType) => generator.add('projectType', projectType, false))
+                        .then((projectType) => generator.add("projectType", projectType, false))
                         .then(() => deferred.promise);
                 });
             });
@@ -82,16 +82,16 @@ export class CordovaCommandHelper {
      * Get command line run arguments from settings.json
      */
     public static getRunArguments(fsPath: string): string[] {
-        return CordovaCommandHelper.getSetting(fsPath, 'runArguments') || [];
+        return CordovaCommandHelper.getSetting(fsPath, "runArguments") || [];
     }
 
     public static getSimulatorInExternalBrowserSetting(fsPath: string): boolean {
-        return CordovaCommandHelper.getSetting(fsPath, 'simulatorInExternalBrowser') === true;
+        return CordovaCommandHelper.getSetting(fsPath, "simulatorInExternalBrowser") === true;
     }
 
     private static getSetting(fsPath: string, configKey: string): any {
         let uri = Uri.file(fsPath);
-        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration('cordova', uri);
+        const workspaceConfiguration: WorkspaceConfiguration = workspace.getConfiguration("cordova", uri);
         if (workspaceConfiguration.has(configKey)) {
             return workspaceConfiguration.get(configKey);
         }
@@ -103,17 +103,17 @@ export class CordovaCommandHelper {
 
         return Q({})
             .then(() => {
-                if (['prepare', 'build', 'run'].indexOf(command) > -1) {
+                if (["prepare", "build", "run"].indexOf(command) > -1) {
                     if (platforms.length > 1) {
-                        platforms.unshift('all');
+                        platforms.unshift("all");
                         return window.showQuickPick(platforms)
                             .then((platform) => {
                                 if (!platform) {
-                                    throw new Error('Platform selection was canceled. Please select target platform to continue!');
+                                    throw new Error("Platform selection was canceled. Please select target platform to continue!");
                                 }
 
-                                if (platform === 'all') {
-                                    return '';
+                                if (platform === "all") {
+                                    return "";
                                 }
 
                                 return platform;
@@ -121,11 +121,11 @@ export class CordovaCommandHelper {
                     } else if (platforms.length === 1) {
                         return platforms[0];
                     } else {
-                        throw new Error('No any platforms installed');
+                        throw new Error("No any platforms installed");
                     }
                 }
 
-                return '';
+                return "";
             });
     }
 
@@ -134,11 +134,11 @@ export class CordovaCommandHelper {
 
         return platforms.filter((platform) => {
             switch (platform) {
-                case 'ios':
-                case 'osx':
-                    return osPlatform === 'darwin';
-                case 'windows':
-                    return osPlatform === 'win32';
+                case "ios":
+                case "osx":
+                    return osPlatform === "darwin";
+                case "windows":
+                    return osPlatform === "win32";
                 default:
                     return true;
             }

@@ -1,20 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 const channels: { [channelName: string]: OutputChannelLogger } = {};
 
 export class OutputChannelLogger {
-    public static MAIN_CHANNEL_NAME: string = 'Cordova Tools';
+    public static MAIN_CHANNEL_NAME: string = "Cordova Tools";
     private outputChannel: vscode.OutputChannel;
 
-    private static purify(message: string): string {
-        return message
-            .toString()
-            .replace(/\u001b/g, '')
-            .replace(/\[2K\[G/g, '') // Erasing `[2K[G` artifacts from output
-            .replace(/\[\d+m/g, ''); // Erasing "colors" from output
+    constructor(public readonly channelName: string, lazy: boolean = false, private preserveFocus: boolean = false) {
+        if (!lazy) {
+            this.channel = vscode.window.createOutputChannel(this.channelName);
+            this.channel.show(this.preserveFocus);
+        }
     }
 
     public static disposeChannel(channelName: string): void {
@@ -36,11 +35,12 @@ export class OutputChannelLogger {
         return channels[channelName];
     }
 
-    constructor(public readonly channelName: string, lazy: boolean = false, private preserveFocus: boolean = false) {
-        if (!lazy) {
-            this.channel = vscode.window.createOutputChannel(this.channelName);
-            this.channel.show(this.preserveFocus);
-        }
+    private static purify(message: string): string {
+        return message
+            .toString()
+            .replace(/\u001b/g, "")
+            .replace(/\[2K\[G/g, "") // Erasing `[2K[G` artifacts from output
+            .replace(/\[\d+m/g, ""); // Erasing "colors" from output
     }
 
     public log(message: string): void {

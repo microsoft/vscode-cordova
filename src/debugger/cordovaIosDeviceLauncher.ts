@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-'use strict';
+"use strict";
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as net from 'net';
-import * as path from 'path';
-import * as pl from 'plist';
-import * as Q from 'q';
+import * as child_process from "child_process";
+import * as fs from "fs";
+import * as net from "net";
+import * as path from "path";
+import * as pl from "plist";
+import * as Q from "q";
 
 let promiseExec = Q.denodeify(child_process.exec);
 
@@ -18,7 +18,7 @@ export class CordovaIosDeviceLauncher {
 
     public static cleanup(): void {
         if (CordovaIosDeviceLauncher.nativeDebuggerProxyInstance) {
-            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.kill('SIGHUP');
+            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.kill("SIGHUP");
             CordovaIosDeviceLauncher.nativeDebuggerProxyInstance = null;
         }
         if (CordovaIosDeviceLauncher.webDebuggerProxyInstance) {
@@ -28,29 +28,29 @@ export class CordovaIosDeviceLauncher {
     }
 
     public static getBundleIdentifier(projectRoot: string): Q.Promise<string> {
-        return Q.nfcall(fs.readdir, path.join(projectRoot, 'platforms', 'ios')).then((files: string[]) => {
+        return Q.nfcall(fs.readdir, path.join(projectRoot, "platforms", "ios")).then((files: string[]) => {
             let xcodeprojfiles = files.filter((file: string) => /\.xcodeproj$/.test(file));
             if (xcodeprojfiles.length === 0) {
-                throw new Error('Unable to find xcodeproj file');
+                throw new Error("Unable to find xcodeproj file");
             }
             let xcodeprojfile = xcodeprojfiles[0];
             let projectName = /^(.*)\.xcodeproj/.exec(xcodeprojfile)[1];
-            let filepath = path.join(projectRoot, 'platforms', 'ios', projectName, projectName + '-Info.plist');
-            let plist = pl.parse(fs.readFileSync(filepath, 'utf8'));
+            let filepath = path.join(projectRoot, "platforms", "ios", projectName, projectName + "-Info.plist");
+            let plist = pl.parse(fs.readFileSync(filepath, "utf8"));
             return plist.CFBundleIdentifier;
         });
     }
 
     public static startDebugProxy(proxyPort: number): Q.Promise<child_process.ChildProcess> {
         if (CordovaIosDeviceLauncher.nativeDebuggerProxyInstance) {
-            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.kill('SIGHUP'); // idevicedebugserver does not exit from SIGTERM
+            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.kill("SIGHUP"); // idevicedebugserver does not exit from SIGTERM
             CordovaIosDeviceLauncher.nativeDebuggerProxyInstance = null;
         }
 
         return CordovaIosDeviceLauncher.mountDeveloperImage().then(function (): Q.Promise<child_process.ChildProcess> {
             let deferred = Q.defer<child_process.ChildProcess>();
-            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance = child_process.spawn('idevicedebugserverproxy', [proxyPort.toString()]);
-            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.on('error', function (err: any): void {
+            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance = child_process.spawn("idevicedebugserverproxy", [proxyPort.toString()]);
+            CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.on("error", function (err: any): void {
                 deferred.reject(err);
             });
             // Allow 200ms for the spawn to error out, ~125ms isn't uncommon for some failures
@@ -68,9 +68,9 @@ export class CordovaIosDeviceLauncher {
 
         let deferred = Q.defer();
         let portRange = `null:${proxyPort},:${proxyRangeStart}-${proxyRangeEnd}`;
-        CordovaIosDeviceLauncher.webDebuggerProxyInstance = child_process.spawn('ios_webkit_debug_proxy', ['-c', portRange]);
-        CordovaIosDeviceLauncher.webDebuggerProxyInstance.on('error', function (err: Error) {
-            deferred.reject(new Error('Unable to start ios_webkit_debug_proxy.'));
+        CordovaIosDeviceLauncher.webDebuggerProxyInstance = child_process.spawn("ios_webkit_debug_proxy", ["-c", portRange]);
+        CordovaIosDeviceLauncher.webDebuggerProxyInstance.on("error", function () {
+            deferred.reject(new Error("Unable to start ios_webkit_debug_proxy."));
         });
         // Allow some time for the spawned process to error out
         Q.delay(250).then(() => deferred.resolve({}));
@@ -87,20 +87,20 @@ export class CordovaIosDeviceLauncher {
     }
 
     public static getPathOnDevice(packageId: string): Q.Promise<string> {
-        return promiseExec('ideviceinstaller -l -o xml > /tmp/$$.ideviceinstaller && echo /tmp/$$.ideviceinstaller')
+        return promiseExec("ideviceinstaller -l -o xml > /tmp/$$.ideviceinstaller && echo /tmp/$$.ideviceinstaller")
         .catch(function (err: any): any {
-            if (err.code === 'ENOENT') {
-                throw new Error('Unable to find ideviceinstaller.');
+            if (err.code === "ENOENT") {
+                throw new Error("Unable to find ideviceinstaller.");
             }
             throw err;
-        }).spread<string>(function (stdout: string, stderr: string): string {
+        }).spread<string>(function (stdout: string): string {
             // First find the path of the app on the device
             let filename: string = stdout.trim();
             if (!/^\/tmp\/[0-9]+\.ideviceinstaller$/.test(filename)) {
-                throw new Error('Unable to list installed applications on device');
+                throw new Error("Unable to list installed applications on device");
             }
 
-            let list: any[] = pl.parse(fs.readFileSync(filename, 'utf8'));
+            let list: any[] = pl.parse(fs.readFileSync(filename, "utf8"));
             fs.unlink(filename);
             for (let i: number = 0; i < list.length; ++i) {
                 if (list[i].CFBundleIdentifier === packageId) {
@@ -109,7 +109,7 @@ export class CordovaIosDeviceLauncher {
                 }
             }
 
-            throw new Error('Application not installed on the device');
+            throw new Error("Application not installed on the device");
         });
     }
 
@@ -131,23 +131,23 @@ export class CordovaIosDeviceLauncher {
         let deferred2: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
         let deferred3: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
 
-        socket.on('data', function (data: any): void {
+        socket.on("data", function (data: any): void {
             data = data.toString();
-            while (data[0] === '+') { data = data.substring(1); }
+            while (data[0] === "+") { data = data.substring(1); }
             // Acknowledge any packets sent our way
-            if (data[0] === '$') {
-                socket.write('+');
-                if (data[1] === 'W') {
+            if (data[0] === "$") {
+                socket.write("+");
+                if (data[1] === "W") {
                     // The app process has exited, with hex status given by data[2-3]
                     let status: number = parseInt(data.substring(2, 4), 16);
                     endStatus = status;
                     socket.end();
-                } else if (data[1] === 'X') {
+                } else if (data[1] === "X") {
                     // The app rocess exited because of signal given by data[2-3]
                     let signal: number = parseInt(data.substring(2, 4), 16);
                     endSignal = signal;
                     socket.end();
-                } else if (data.substring(1, 3) === 'OK') {
+                } else if (data.substring(1, 3) === "OK") {
                     // last command was received OK;
                     if (initState === 1) {
                         deferred1.resolve(socket);
@@ -158,19 +158,19 @@ export class CordovaIosDeviceLauncher {
                         deferred3.resolve(socket);
                         initState++;
                     }
-                } else if (data[1] === 'O') {
+                } else if (data[1] === "O") {
                     // STDOUT was written to, and the rest of the input until reaching a '#' is a hex-encoded string of that output
                     if (initState === 3) {
                         deferred3.resolve(socket);
                         initState++;
                     }
-                } else if (data[1] === 'E') {
+                } else if (data[1] === "E") {
                     // An error has occurred, with error code given by data[2-3]: parseInt(data.substring(2, 4), 16)
-                    deferred1.reject('Unable to launch application.');
-                    deferred2.reject('Unable to launch application.');
-                    deferred3.reject('Unable to launch application.');
+                    deferred1.reject("Unable to launch application.");
+                    deferred2.reject("Unable to launch application.");
+                    deferred3.reject("Unable to launch application.");
                 }
-            } else if (data === '' && initState === 3) {
+            } else if (data === "" && initState === 3) {
                 // On iOS 10.2.1 (and maybe others) after 'c' message debug server doesn't respond with '$OK', see also
                 // http://www.embecosm.com/appnotes/ean4/embecosm-howto-rsp-server-ean4-issue-2.html#sec_exchange_cont
                 deferred3.resolve(socket);
@@ -178,44 +178,44 @@ export class CordovaIosDeviceLauncher {
             }
         });
 
-        socket.on('end', function (): void {
-            deferred1.reject('Unable to launch application.');
-            deferred2.reject('Unable to launch application.');
-            deferred3.reject('Unable to launch application.');
+        socket.on("end", function (): void {
+            deferred1.reject("Unable to launch application.");
+            deferred2.reject("Unable to launch application.");
+            deferred3.reject("Unable to launch application.");
         });
 
-        socket.on('error', function (err: Error): void {
+        socket.on("error", function (err: Error): void {
             deferred1.reject(err);
             deferred2.reject(err);
             deferred3.reject(err);
         });
 
-        socket.connect(portNumber, 'localhost', function (): void {
+        socket.connect(portNumber, "localhost", function (): void {
             // set argument 0 to the (encoded) path of the app
-            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand('A' + encodedPath.length + ',0,' + encodedPath);
+            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand("A" + encodedPath.length + ",0," + encodedPath);
             initState++;
             socket.write(cmd);
             setTimeout(function (): void {
-                deferred1.reject('Timeout launching application. Is the device locked?');
+                deferred1.reject("Timeout launching application. Is the device locked?");
             }, appLaunchStepTimeout);
         });
 
         return deferred1.promise.then(function (sock: net.Socket): Q.Promise<net.Socket> {
             // Set the step and continue thread to any thread
-            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand('Hc0');
+            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand("Hc0");
             initState++;
             sock.write(cmd);
             setTimeout(function (): void {
-                deferred2.reject('Timeout launching application. Is the device locked?');
+                deferred2.reject("Timeout launching application. Is the device locked?");
             }, appLaunchStepTimeout);
             return deferred2.promise;
         }).then(function (sock: net.Socket): Q.Promise<net.Socket> {
             // Continue execution; actually start the app running.
-            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand('c');
+            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand("c");
             initState++;
             sock.write(cmd);
             setTimeout(function (): void {
-                deferred3.reject('Timeout launching application. Is the device locked?');
+                deferred3.reject("Timeout launching application. Is the device locked?");
             }, appLaunchStepTimeout);
             return deferred3.promise;
         }).then(() => packagePath);
@@ -223,32 +223,32 @@ export class CordovaIosDeviceLauncher {
 
     public static encodePath(packagePath: string): string {
         // Encode the path by converting each character value to hex
-        return packagePath.split('').map((c: string) => c.charCodeAt(0).toString(16)).join('').toUpperCase();
+        return packagePath.split("").map((c: string) => c.charCodeAt(0).toString(16)).join("").toUpperCase();
     }
 
     private static mountDeveloperImage(): Q.Promise<any> {
         return CordovaIosDeviceLauncher.getDiskImage()
             .then(function (path: string): Q.Promise<any> {
-            let imagemounter: child_process.ChildProcess = child_process.spawn('ideviceimagemounter', [path]);
+            let imagemounter: child_process.ChildProcess = child_process.spawn("ideviceimagemounter", [path]);
             let deferred: Q.Deferred<any> = Q.defer();
-            let stdout: string = '';
-            imagemounter.stdout.on('data', function (data: any): void {
+            let stdout: string = "";
+            imagemounter.stdout.on("data", function (data: any): void {
                 stdout += data.toString();
             });
-            imagemounter.on('close', function (code: number): void {
+            imagemounter.on("close", function (code: number): void {
                 if (code !== 0) {
-                    if (stdout.indexOf('Error:') !== -1) {
+                    if (stdout.indexOf("Error:") !== -1) {
                         deferred.resolve({}); // Technically failed, but likely caused by the image already being mounted.
-                    } else if (stdout.indexOf('No device found, is it plugged in?') !== -1) {
-                        deferred.reject('Unable to find device. Is the device plugged in?');
+                    } else if (stdout.indexOf("No device found, is it plugged in?") !== -1) {
+                        deferred.reject("Unable to find device. Is the device plugged in?");
                     }
 
-                    deferred.reject('Unable to mount developer disk image.');
+                    deferred.reject("Unable to mount developer disk image.");
                 } else {
                     deferred.resolve({});
                 }
             });
-            imagemounter.on('error', function(err: any): void {
+            imagemounter.on("error", function(err: any): void {
                 deferred.reject(err);
             });
             return deferred.promise;
@@ -257,37 +257,37 @@ export class CordovaIosDeviceLauncher {
 
     private static getDiskImage(): Q.Promise<string> {
         // Attempt to find the OS version of the iDevice, e.g. 7.1
-        let versionInfo: Q.Promise<any> = promiseExec('ideviceinfo -s -k ProductVersion')
-            .spread<string>(function (stdout: string, stderr: string): string {
+        let versionInfo: Q.Promise<any> = promiseExec("ideviceinfo -s -k ProductVersion")
+            .spread<string>(function (stdout: string): string {
                 // Versions for DeveloperDiskImage seem to be X.Y, while some device versions are X.Y.Z
                 return /^(\d+\.\d+)(?:\.\d+)?$/gm.exec(stdout.trim())[1];
             })
             .catch(function (e): string {
-                throw new Error('Unable to get device OS version. Details: ${e.message}');
+                throw new Error(`Unable to get device OS version. Details: ${e.message}`);
             });
 
         // Attempt to find the path where developer resources exist.
-        let pathInfo: Q.Promise<any> = promiseExec('xcrun -sdk iphoneos --show-sdk-platform-path').spread<string>(function (stdout: string, stderr: string): string {
+        let pathInfo: Q.Promise<any> = promiseExec("xcrun -sdk iphoneos --show-sdk-platform-path").spread<string>(function (stdout: string): string {
             let sdkpath: string = stdout.trim();
             return sdkpath;
         });
 
         // Attempt to find the developer disk image for the appropriate
         return Q.all([versionInfo, pathInfo]).spread<string>(function (version: string, sdkpath: string): Q.Promise<string> {
-            let find: child_process.ChildProcess = child_process.spawn('find', [sdkpath, '-path', '*' + version + '*', '-name', 'DeveloperDiskImage.dmg']);
+            let find: child_process.ChildProcess = child_process.spawn("find", [sdkpath, "-path", "*" + version + "*", "-name", "DeveloperDiskImage.dmg"]);
             let deferred: Q.Deferred<string> = Q.defer<string>();
 
-            find.stdout.on('data', function (data: any): void {
+            find.stdout.on("data", function (data: any): void {
                 let dataStr: string = data.toString();
-                let path: string = dataStr.split('\n')[0].trim();
+                let path: string = dataStr.split("\n")[0].trim();
                 if (!path) {
-                    deferred.reject('Unable to find developer disk image');
+                    deferred.reject("Unable to find developer disk image");
                 } else {
                     deferred.resolve(path);
                 }
             });
-            find.on('close', function (code: number): void {
-                deferred.reject('Unable to find developer disk image');
+            find.on("close", function (): void {
+                deferred.reject("Unable to find developer disk image");
             });
 
             return deferred.promise;
@@ -295,7 +295,7 @@ export class CordovaIosDeviceLauncher {
     }
 
     private static makeGdbCommand(command: string): string {
-        let commandString: string = '$' + command + '#';
+        let commandString: string = "$" + command + "#";
         let stringSum: number = 0;
         for (let i: number = 0; i < command.length; i++) {
             stringSum += command.charCodeAt(i);
@@ -307,7 +307,7 @@ export class CordovaIosDeviceLauncher {
         /* tslint:enable:no-bitwise */
         let checksum: string = stringSum.toString(16).toUpperCase();
         if (checksum.length < 2) {
-            checksum = '0' + checksum;
+            checksum = "0" + checksum;
         }
 
         commandString += checksum;
@@ -315,4 +315,4 @@ export class CordovaIosDeviceLauncher {
     }
 }
 
-process.on('exit', CordovaIosDeviceLauncher.cleanup);
+process.on("exit", CordovaIosDeviceLauncher.cleanup);

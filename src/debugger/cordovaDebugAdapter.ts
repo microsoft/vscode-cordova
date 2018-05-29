@@ -2,34 +2,45 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 
-import * as child_process from 'child_process';
-import * as elementtree from 'elementtree';
-import * as fs from 'fs';
-import * as http from 'http';
-import * as io from 'socket.io-client';
-import * as messaging from '../common/extensionMessaging';
-import * as os from 'os';
-import * as path from 'path';
-import * as Q from 'q';
-import * as simulate from 'cordova-simulate';
+import * as child_process from "child_process";
+import * as elementtree from "elementtree";
+import * as fs from "fs";
+import * as http from "http";
+import * as io from "socket.io-client";
+import * as messaging from "../common/extensionMessaging";
+import * as os from "os";
+import * as path from "path";
+import * as Q from "q";
+import * as simulate from "cordova-simulate";
 
-import {DebugProtocol} from 'vscode-debugprotocol';
-import {OutputEvent} from 'vscode-debugadapter';
-import {ChromeDebugAdapter, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from 'vscode-chrome-debug-core';
-import {Crdp} from 'vscode-chrome-debug-core/lib/crdp/crdp'
-import {CordovaIosDeviceLauncher} from './cordovaIosDeviceLauncher';
-import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from './extension';
-import {CordovaPathTransformer} from './cordovaPathTransformer';
-import {CordovaProjectHelper} from '../utils/cordovaProjectHelper';
-import {ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from '../utils/telemetryHelper';
-import {IProjectType} from '../utils/cordovaProjectHelper';
-import {settingsHome} from '../utils/settingsHelper';
-import {Telemetry} from '../utils/telemetry';
-import {SimulationInfo} from '../common/simulationInfo';
+import {DebugProtocol} from "vscode-debugprotocol";
+import {OutputEvent} from "vscode-debugadapter";
+import {ChromeDebugAdapter, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from "vscode-chrome-debug-core";
+import {Crdp} from "vscode-chrome-debug-core/lib/crdp/crdp";
+import {CordovaIosDeviceLauncher} from "./cordovaIosDeviceLauncher";
+import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from "./extension";
+import {CordovaPathTransformer} from "./cordovaPathTransformer";
+import {CordovaProjectHelper} from "../utils/cordovaProjectHelper";
+import {ISimulateTelemetryProperties, TelemetryHelper, TelemetryGenerator} from "../utils/telemetryHelper";
+import {IProjectType} from "../utils/cordovaProjectHelper";
+import {settingsHome} from "../utils/settingsHelper";
+import {Telemetry} from "../utils/telemetry";
+import {SimulationInfo} from "../common/simulationInfo";
 
-const MISSING_API_ERROR = 'Debugger.setAsyncCallStackDepth';
-const ANDROID_MANIFEST_PATH = path.join('platforms', 'android', 'AndroidManifest.xml');
-const ANDROID_MANIFEST_PATH_8 = path.join('platforms', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+const MISSING_API_ERROR = "Debugger.setAsyncCallStackDepth";
+const ANDROID_MANIFEST_PATH = path.join("platforms", "android", "AndroidManifest.xml");
+const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", "main", "AndroidManifest.xml");
+
+export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
+    cwd: string; /* Automatically set by VS Code to the currently opened folder */
+    platform: string;
+    target?: string;
+    webkitRangeMin?: number;
+    webkitRangeMax?: number;
+    attachAttempts?: number;
+    attachDelay?: number;
+    simulatorInExternalBrowser?: boolean;
+}
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
@@ -56,47 +67,36 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     runArguments?: string[];
 }
 
-export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
-    cwd: string; /* Automatically set by VS Code to the currently opened folder */
-    platform: string;
-    target?: string;
-    webkitRangeMin?: number;
-    webkitRangeMax?: number;
-    attachAttempts?: number;
-    attachDelay?: number;
-    simulatorInExternalBrowser?: boolean;
-}
-
-const WIN_APPDATA = process.env.LOCALAPPDATA || '/';
+const WIN_APPDATA = process.env.LOCALAPPDATA || "/";
 const DEFAULT_CHROME_PATH = {
-    LINUX: '/usr/bin/google-chrome',
-    OSX: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    WIN: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Google\\Chrome\\Application\\chrome.exe'),
-    WINx86: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    LINUX: "/usr/bin/google-chrome",
+    OSX: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    WIN: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    WIN_LOCALAPPDATA: path.join(WIN_APPDATA, "Google\\Chrome\\Application\\chrome.exe"),
+    WINx86: "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
 };
 const DEFAULT_CHROMIUM_PATH = {
-    LINUX: '/usr/bin/chromium-browser',
-    OSX: '/Applications/Chromium.app/Contents/MacOS/Chromium',
-    WIN: 'C:\\Program Files\\Chromium\\Application\\chrome.exe',
-    WIN_LOCALAPPDATA: path.join(WIN_APPDATA, 'Chromium\\Application\\chrome.exe'),
-    WINx86: 'C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe',
+    LINUX: "/usr/bin/chromium-browser",
+    OSX: "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    WIN: "C:\\Program Files\\Chromium\\Application\\chrome.exe",
+    WIN_LOCALAPPDATA: path.join(WIN_APPDATA, "Chromium\\Application\\chrome.exe"),
+    WINx86: "C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe",
 };
 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
 
 enum TargetType {
-    Emulator = 'emulator',
-    Device = 'device',
-    Chrome = 'chrome',
+    Emulator = "emulator",
+    Device = "device",
+    Chrome = "chrome",
 }
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
-    private static CHROME_DATA_DIR = 'chrome_sandbox_dir'; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
-    private static NO_LIVERELOAD_WARNING = 'Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...';
-    private static SIMULATE_TARGETS: string[] = ['chrome', 'chromium', 'edge', 'firefox', 'ie', 'opera', 'safari'];
-    private static pidofNotFoundError = '/system/bin/sh: pidof: not found';
+    private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
+    private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
+    private static SIMULATE_TARGETS: string[] = ["chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
+    private static pidofNotFoundError = "/system/bin/sh: pidof: not found";
 
 
     private outputLogger: (message: string, error?: boolean | string) => void;
@@ -120,31 +120,94 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         this.cordovaPathTransformer = (<any>global).cordovaPathTransformer;
         this.telemetryInitialized = false;
         this.outputLogger = (message: string, error?: boolean | string) => {
-            let category = 'console';
+            let category = "console";
             if (error === true) {
-                category = 'stderr';
+                category = "stderr";
             }
-            if (typeof error === 'string') {
+            if (typeof error === "string") {
                 category = error;
             }
 
-            let newLine = '\n';
-            if (category === 'stdout' || category === 'stderr') {
-                newLine = '';
+            let newLine = "\n";
+            if (category === "stdout" || category === "stderr") {
+                newLine = "";
             }
             debugSession.sendEvent(new OutputEvent(message + newLine, category));
         };
         this.attachedDeferred = Q.defer<void>();
     }
 
+    public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS, [projectRoot]);
+    }
+
+    public static getSimulatorInExternalBrowserSetting(projectRoot: string): Q.Promise<boolean> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING, [projectRoot]);
+    }
+
+    private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
+        const retry = () => {
+            if (iteration < maxRetries) {
+                return Q.delay(delay).then(() => CordovaDebugAdapter.retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
+            }
+
+            throw new Error(failure);
+        };
+
+        return func()
+            .then(result => {
+                if (condition(result)) {
+                    return result;
+                }
+
+                retry();
+            },
+            retry);
+    }
+
+    private static getBrowserPath(target: string): string {
+        const platform = ChromeDebugCoreUtils.getPlatform();
+        let defaultPaths = target === "chromium" ? DEFAULT_CHROMIUM_PATH : DEFAULT_CHROME_PATH;
+        if (platform === ChromeDebugCoreUtils.Platform.OSX) {
+            return ChromeDebugCoreUtils.existsSync(defaultPaths.OSX) ? defaultPaths.OSX : null;
+        } else if (platform === ChromeDebugCoreUtils.Platform.Windows) {
+            if (ChromeDebugCoreUtils.existsSync(defaultPaths.WINx86)) {
+                return defaultPaths.WINx86;
+            } else if (ChromeDebugCoreUtils.existsSync(defaultPaths.WIN)) {
+                return defaultPaths.WIN;
+            } else if (ChromeDebugCoreUtils.existsSync(defaultPaths.WIN_LOCALAPPDATA)) {
+                return defaultPaths.WIN_LOCALAPPDATA;
+            } else {
+                return null;
+            }
+        } else {
+            return ChromeDebugCoreUtils.existsSync(defaultPaths.LINUX) ? defaultPaths.LINUX : null;
+        }
+    }
+
+    /**
+     * Target type for telemetry
+     */
+    private static getTargetType(target: string): string {
+        if (/emulator/i.test(target)) {
+            return TargetType.Emulator;
+        }
+
+        if (/chrom/i.test(target)) {
+            return TargetType.Chrome;
+        }
+
+        return TargetType.Device;
+    }
+
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
         this.previousLaunchArgs = launchArgs;
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
-            .then(() => TelemetryHelper.generate('launch', (generator) => {
+            .then(() => TelemetryHelper.generate("launch", (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
-                launchArgs.target = launchArgs.target || (launchArgs.platform === 'browser' ? 'chrome' : 'emulator');
-                generator.add('target', CordovaDebugAdapter.getTargetType(launchArgs.target), false);
+                launchArgs.target = launchArgs.target || (launchArgs.platform === "browser" ? "chrome" : "emulator");
+                generator.add("target", CordovaDebugAdapter.getTargetType(launchArgs.target), false);
                 launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
                 let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
@@ -155,45 +218,45 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     TelemetryHelper.determineProjectTypes(launchArgs.cwd),
                     CordovaDebugAdapter.getRunArguments(launchArgs.cwd),
                 ]).then(([projectType, runArguments]) => {
-                    generator.add('projectType', projectType, false);
+                    generator.add("projectType", projectType, false);
                     this.outputLogger(`Launching for ${platform} (This may take a while)...`);
 
                     switch (platform) {
-                        case 'android':
-                            generator.add('platform', platform, false);
+                        case "android":
+                            generator.add("platform", platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchAndroid(launchArgs, projectType, runArguments);
                             }
-                        case 'ios':
-                            generator.add('platform', platform, false);
+                        case "ios":
+                            generator.add("platform", platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchIos(launchArgs, projectType, runArguments);
                             }
-                        case 'windows':
-                            generator.add('platform', platform, false);
+                        case "windows":
+                            generator.add("platform", platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 throw new Error(`${platform} debugger doesn't support`);
                             }
-                        case 'serve':
-                            generator.add('platform', platform, false);
+                        case "serve":
+                            generator.add("platform", platform, false);
                             return this.launchServe(launchArgs, projectType, runArguments);
                         // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
-                        case 'amazon_fireos':
-                        case 'blackberry10':
-                        case 'firefoxos':
-                        case 'ubuntu':
-                        case 'wp8':
-                        case 'browser':
-                            generator.add('platform', platform, false);
+                        case "amazon_fireos":
+                        case "blackberry10":
+                        case "firefoxos":
+                        case "ubuntu":
+                        case "wp8":
+                        case "browser":
+                            generator.add("platform", platform, false);
                             return this.launchSimulate(launchArgs, projectType, generator);
                         default:
-                            generator.add('unknownPlatform', platform, true);
+                            generator.add("unknownPlatform", platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
                     }
                 }).catch((err) => {
@@ -204,7 +267,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     });
                 }).then(() => {
                     // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
-                    if (platform !== 'serve' && platform !== 'browser' && !this.isSimulateTarget(launchArgs.target)) {
+                    if (platform !== "serve" && platform !== "browser" && !this.isSimulateTarget(launchArgs.target)) {
                         return this.attach(launchArgs);
                     }
                 });
@@ -219,33 +282,33 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         this.previousAttachArgs = attachArgs;
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
-            .then(() => TelemetryHelper.generate('attach', (generator) => {
+            .then(() => TelemetryHelper.generate("attach", (generator) => {
             attachArgs.port = attachArgs.port || 9222;
-            attachArgs.target = attachArgs.target || 'emulator';
-            generator.add('target', CordovaDebugAdapter.getTargetType(attachArgs.target), false);
+            attachArgs.target = attachArgs.target || "emulator";
+            generator.add("target", CordovaDebugAdapter.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
             return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
-                .then((projectType) => generator.add('projectType', projectType, false))
+                .then((projectType) => generator.add("projectType", projectType, false))
                 .then(() => {
                     this.outputLogger(`Attaching to ${platform}`);
                     switch (platform) {
-                        case 'android':
-                            generator.add('platform', platform, false);
+                        case "android":
+                            generator.add("platform", platform, false);
                             return this.attachAndroid(attachArgs);
-                        case 'ios':
-                            generator.add('platform', platform, false);
+                        case "ios":
+                            generator.add("platform", platform, false);
                             return this.attachIos(attachArgs);
                         default:
-                            generator.add('unknownPlatform', platform, true);
+                            generator.add("unknownPlatform", platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
                     }
                 }).then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
-                    this.outputLogger('Attaching to app.');
-                    this.outputLogger('', true); // Send blank message on stderr to include a divider between prelude and app starting
+                    this.outputLogger("Attaching to app.");
+                    this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
                     return super.attach(processedAttachArgs)
                         .catch((err) => {
                             if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
@@ -261,7 +324,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             // method to be called for breakpoints to work (see #193 and #247)
                             // In case of error do not reject promise but continue debugging
                             super.chrome.Debugger.setBreakpointsActive({ active: true })
-                                .catch(err => this.outputLogger('Failed to call "setBreakpointsActive" of debugging frontend. Debugging will continue...'));
+                                .catch(() => this.outputLogger("Failed to call \"setBreakpointsActive\" of debugging frontend. Debugging will continue..."));
 
                             this.attachedDeferred.resolve(void 0);
                         });
@@ -287,20 +350,40 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         super.commonArgs(args);
     }
 
+    protected onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): Promise<void> {
+        let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
+
+        if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === ".js") {
+            // Browsers don't always report source maps for scripts, so even though no source map was reported for this script, parse it in case it has a sourceMappingUrl attribute.
+            let clientPath = this.cordovaPathTransformer.getClientPath(script.url);
+
+            if (clientPath) {
+                let scriptContent = fs.readFileSync(clientPath).toString();
+                let parsedSrcMapUrl = this.findSourceAttribute("sourceMappingURL", scriptContent);
+
+                if (parsedSrcMapUrl) {
+                    script.sourceMapURL = parsedSrcMapUrl;
+                }
+            }
+        }
+
+        return super.onScriptParsed(script);
+    }
+
     private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         let workingDirectory = launchArgs.cwd;
 
         // Prepare the command line args
-        let isDevice = launchArgs.target.toLowerCase() === 'device';
-        let args = ['run', 'android'];
+        let isDevice = launchArgs.target.toLowerCase() === "device";
+        let args = ["run", "android"];
 
         if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
             args.push(...launchArgs.runArguments);
         } else if (runArguments && runArguments.length) {
             args.push(...runArguments);
         } else {
-            args.push(isDevice ? '--device' : '--emulator', '--verbose');
-            if (['device', 'emulator'].indexOf(launchArgs.target.toLowerCase()) === -1) {
+            args.push(isDevice ? "--device" : "--emulator", "--verbose");
+            if (["device", "emulator"].indexOf(launchArgs.target.toLowerCase()) === -1) {
                 args.push(`--target=${launchArgs.target}`);
             }
 
@@ -308,14 +391,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             if (launchArgs.ionicLiveReload) {
                 if (projectType.ionic || projectType.ionic2) {
                     // Livereload is enabled, let Ionic do the launch
-                    args.push('--livereload');
+                    args.push("--livereload");
                 } else {
                     this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
                 }
             }
         }
 
-        if (args.indexOf('--livereload') > -1) {
+        if (args.indexOf("--livereload") > -1) {
             return this.startIonicDevServer(launchArgs, args).then(() => void 0);
         }
 
@@ -330,7 +413,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 throw new Error(`Error running android`);
             }
 
-            this.outputLogger('App successfully launched');
+            this.outputLogger("App successfully launched");
         }, undefined, (progress) => {
             this.outputLogger(progress[0], progress[1]);
         });
@@ -346,16 +429,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const deviceFilter = (line: string) => /\w+\tdevice/.test(line) && !/emulator/.test(line);
         const emulatorFilter = (line: string) => /device/.test(line) && /emulator/.test(line);
 
-        let adbDevicesResult: Q.Promise<string> = this.runAdbCommand(['devices'], errorLogger)
+        let adbDevicesResult: Q.Promise<string> = this.runAdbCommand(["devices"], errorLogger)
             .then<string>((devicesOutput) => {
 
-                const targetFilter = attachArgs.target.toLowerCase() === 'device' ? deviceFilter :
-                    attachArgs.target.toLowerCase() === 'emulator' ? emulatorFilter :
+                const targetFilter = attachArgs.target.toLowerCase() === "device" ? deviceFilter :
+                    attachArgs.target.toLowerCase() === "emulator" ? emulatorFilter :
                         (line: string) => line.match(attachArgs.target);
 
-                const result = devicesOutput.split('\n')
+                const result = devicesOutput.split("\n")
                     .filter(targetFilter)
-                    .map(line => line.replace(/\tdevice/, '').replace('\r', ''))[0];
+                    .map(line => line.replace(/\tdevice/, "").replace("\r", ""))[0];
 
                 if (!result) {
                     errorLogger(devicesOutput);
@@ -365,8 +448,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 return result;
             }, (err: Error): any => {
                 let errorCode: string = (<any>err).code;
-                if (errorCode && errorCode === 'ENOENT') {
-                    throw new Error('Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code');
+                if (errorCode && errorCode === "ENOENT") {
+                    throw new Error("Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code");
                 }
 
                 throw err;
@@ -374,22 +457,22 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         let packagePromise: Q.Promise<string> = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, ANDROID_MANIFEST_PATH))
             .catch((err) => {
-                if (err && err.code === 'ENOENT') {
+                if (err && err.code === "ENOENT") {
                     return Q.nfcall(fs.readFile, path.join(attachArgs.cwd, ANDROID_MANIFEST_PATH_8));
                 }
                 throw err;
             })
             .then((manifestContents) => {
                 let parsedFile = elementtree.XML(manifestContents.toString());
-                let packageKey = 'package';
+                let packageKey = "package";
                 return parsedFile.attrib[packageKey];
             });
 
         return Q.all([packagePromise, adbDevicesResult])
             .spread((appPackageName: string, targetDevice: string) => {
-            let pidofCommandArguments = ['-s', targetDevice, 'shell', 'pidof', appPackageName];
-            let getPidCommandArguments = ['-s', targetDevice, 'shell', 'ps'];
-            let getSocketsCommandArguments = ['-s', targetDevice, 'shell', 'cat /proc/net/unix'];
+            let pidofCommandArguments = ["-s", targetDevice, "shell", "pidof", appPackageName];
+            let getPidCommandArguments = ["-s", targetDevice, "shell", "ps"];
+            let getSocketsCommandArguments = ["-s", targetDevice, "shell", "cat /proc/net/unix"];
 
             let findAbstractNameFunction = () =>
                 // Get the pid from app package name
@@ -408,10 +491,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                         return this.runAdbCommand(getPidCommandArguments, errorLogger)
                             .then((psResult) => {
-                                const lines = psResult.split('\n');
+                                const lines = psResult.split("\n");
                                 const keys = lines.shift().split(PS_FIELDS_SPLITTER_RE);
-                                const nameIdx = keys.indexOf('NAME');
-                                const pidIdx = keys.indexOf('PID');
+                                const nameIdx = keys.indexOf("NAME");
+                                const pidIdx = keys.indexOf("PID");
                                 for (const line of lines) {
                                     const fields = line.trim().split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
                                     if (fields.length < nameIdx) {
@@ -427,11 +510,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     .then(pid =>
                         this.runAdbCommand(getSocketsCommandArguments, errorLogger)
                             .then((getSocketsResult) => {
-                                const lines = getSocketsResult.split('\n');
+                                const lines = getSocketsResult.split("\n");
                                 const keys = lines.shift().split(/[\s\r]+/);
-                                const flagsIdx = keys.indexOf('Flags');
-                                const stIdx = keys.indexOf('St');
-                                const pathIdx = keys.indexOf('Path');
+                                const flagsIdx = keys.indexOf("Flags");
+                                const stIdx = keys.indexOf("St");
+                                const pathIdx = keys.indexOf("Path");
                                 for (const line of lines) {
                                     const fields = line.split(/[\s\r]+/);
                                     if (fields.length < 8) {
@@ -439,14 +522,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                                     }
                                     // flag = 00010000 (16) -> accepting connection
                                     // state = 01 (1) -> unconnected
-                                    if (fields[flagsIdx] !== '00010000' || fields[stIdx] !== '01') {
+                                    if (fields[flagsIdx] !== "00010000" || fields[stIdx] !== "01") {
                                         continue;
                                     }
                                     const pathField = fields[pathIdx];
-                                    if (pathField.length < 1 || pathField[0] !== '@') {
+                                    if (pathField.length < 1 || pathField[0] !== "@") {
                                         continue;
                                     }
-                                    if (pathField.indexOf('_devtools_remote') === -1) {
+                                    if (pathField.indexOf("_devtools_remote") === -1) {
                                         continue;
                                     }
 
@@ -464,11 +547,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             })
                     );
 
-            return CordovaDebugAdapter.retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, 'Unable to find localabstract name of cordova app')
+            return CordovaDebugAdapter.retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, "Unable to find localabstract name of cordova app")
                 .then((abstractName) => {
                     // Configure port forwarding to the app
-                    let forwardSocketCommandArguments = ['-s', targetDevice, 'forward', `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
-                    this.outputLogger('Forwarding debug port');
+                    let forwardSocketCommandArguments = ["-s", targetDevice, "forward", `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
+                    this.outputLogger("Forwarding debug port");
                     return this.runAdbCommand(forwardSocketCommandArguments, errorLogger).then(() => {
                         this.adbPortForwardingInfo = { targetDevice, port: attachArgs.port };
                     });
@@ -481,50 +564,50 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
-        if (os.platform() !== 'darwin') {
-            return Q.reject<void>('Unable to launch iOS on non-mac machines');
+        if (os.platform() !== "darwin") {
+            return Q.reject<void>("Unable to launch iOS on non-mac machines");
         }
         let workingDirectory = launchArgs.cwd;
         let errorLogger = (message) => this.outputLogger(message, true);
 
-        this.outputLogger('Launching app (This may take a while)...');
+        this.outputLogger("Launching app (This may take a while)...");
 
         let iosDebugProxyPort = launchArgs.iosDebugProxyPort || 9221;
         let appStepLaunchTimeout = launchArgs.appStepLaunchTimeout || 5000;
         // Launch the app
-        if (launchArgs.target.toLowerCase() === 'device') {
-            let args = ['build', 'ios'];
+        if (launchArgs.target.toLowerCase() === "device") {
+            let args = ["build", "ios"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
             } else if (runArguments && runArguments.length) {
                 args.push(...runArguments);
             } else {
-                args.push('--device');
+                args.push("--device");
                 // Verify if we are using Ionic livereload
                 if (launchArgs.ionicLiveReload) {
                     if (projectType.ionic || projectType.ionic2) {
                         // Livereload is enabled, let Ionic do the launch
-                        args = ['run', 'ios', '--device', '--livereload'];
+                        args = ["run", "ios", "--device", "--livereload"];
                     } else {
                         this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
                     }
                 }
             }
 
-            if (args.indexOf('--livereload') > -1) {
-                if (args[0] === 'build') {
-                    args[0] = 'run';
+            if (args.indexOf("--livereload") > -1) {
+                if (args[0] === "build") {
+                    args[0] = "run";
                 }
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(args, workingDirectory).then((output) => {
-                let buildFolder = path.join(workingDirectory, 'platforms', 'ios', 'build', 'device');
+            return cordovaRunCommand(args, workingDirectory).then(() => {
+                let buildFolder = path.join(workingDirectory, "platforms", "ios", "build", "device");
 
-                this.outputLogger('Installing app on device');
+                this.outputLogger("Installing app on device");
 
                 let installPromise = Q.nfcall(fs.readdir, buildFolder).then((files: string[]) => {
                     let ipaFiles = files.filter((file) => /\.ipa$/.test(file));
@@ -537,21 +620,21 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     let appFiles = files.filter((file) => /\.app$/.test(file));
 
                     if (appFiles.length === 0) {
-                        throw new Error('Unable to find a .app or a .ipa to install');
+                        throw new Error("Unable to find a .app or a .ipa to install");
                     }
 
                     let appFile = path.join(buildFolder, appFiles[0]);
-                    let ipaFile = path.join(buildFolder, path.basename(appFile, path.extname(appFile)) + '.ipa'); // Convert [path]/foo.app to [path]/foo.ipa
-                    let execArgs = ['-v', '-sdk', 'iphoneos', 'PackageApplication', `${appFile}`, '-o', `${ipaFile}`];
+                    let ipaFile = path.join(buildFolder, path.basename(appFile, path.extname(appFile)) + ".ipa"); // Convert [path]/foo.app to [path]/foo.ipa
+                    let execArgs = ["-v", "-sdk", "iphoneos", "PackageApplication", `${appFile}`, "-o", `${ipaFile}`];
 
-                    return execCommand('xcrun', execArgs, errorLogger).then(() => ipaFile).catch((err): string => {
+                    return execCommand("xcrun", execArgs, errorLogger).then(() => ipaFile).catch((): string => {
                         throw new Error(`Error converting ${path.basename(appFile)} to .ipa`);
                     });
                 }).then((ipaFile: string) => {
-                    return execCommand('ideviceinstaller', ['-i', ipaFile], errorLogger).catch((err: Error): any => {
+                    return execCommand("ideviceinstaller", ["-i", ipaFile], errorLogger).catch((err: Error): any => {
                         let errorCode: string = (<any>err).code;
-                        if (errorCode && errorCode === 'ENOENT') {
-                            throw new Error('Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code');
+                        if (errorCode && errorCode === "ENOENT") {
+                            throw new Error("Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code");
                         }
                         throw err;
                     });
@@ -562,14 +645,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 this.outputLogger(progress[0], progress[1]);
             }).spread((appBundleId) => {
                 // App is now built and installed. Try to launch
-                this.outputLogger('Launching app');
+                this.outputLogger("Launching app");
                 return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort).then(() => {
                     return CordovaIosDeviceLauncher.startApp(appBundleId, iosDebugProxyPort, appStepLaunchTimeout);
                 });
             }).then(() => void (0));
         } else {
-            let target = launchArgs.target.toLowerCase() === 'emulator' ? null : launchArgs.target;
-            let args = ['emulate', 'ios'];
+            let target = launchArgs.target.toLowerCase() === "emulator" ? null : launchArgs.target;
+            let args = ["emulate", "ios"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
@@ -577,20 +660,20 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 args.push(...runArguments);
             } else {
                 if (target) {
-                    args.push('--target=' + target);
+                    args.push("--target=" + target);
                 }
                 // Verify if we are using Ionic livereload
                 if (launchArgs.ionicLiveReload) {
                     if (projectType.ionic || projectType.ionic2) {
                         // Livereload is enabled, let Ionic do the launch
-                        args.push('--livereload');
+                        args.push("--livereload");
                     } else {
                         this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
                     }
                 }
             }
 
-            if (args.indexOf('--livereload') > -1) {
+            if (args.indexOf("--livereload") > -1) {
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
@@ -599,10 +682,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     this.outputLogger(progress[0], progress[1]);
                 }).catch((err) => {
                     if (target) {
-                        return cordovaRunCommand(['emulate', 'ios', '--list'], workingDirectory).then((output) => {
+                        return cordovaRunCommand(["emulate", "ios", "--list"], workingDirectory).then((output) => {
                             // List out available targets
-                            errorLogger('Unable to run with given target.');
-                            errorLogger(output[0].replace(/\*+[^*]+\*+/g, '')); // Print out list of targets, without ** RUN SUCCEEDED **
+                            errorLogger("Unable to run with given target.");
+                            errorLogger(output[0].replace(/\*+[^*]+\*+/g, "")); // Print out list of targets, without ** RUN SUCCEEDED **
                             throw err;
                         });
                     }
@@ -618,52 +701,52 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         attachArgs.attachAttempts = attachArgs.attachAttempts || 20;
         attachArgs.attachDelay = attachArgs.attachDelay || 1000;
         // Start the tunnel through to the webkit debugger on the device
-        this.outputLogger('Configuring debugging proxy');
+        this.outputLogger("Configuring debugging proxy");
 
         const retry = function<T> (func, condition, retryCount): Q.Promise<T> {
-            return CordovaDebugAdapter.retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, 'Unable to find webview');
+            return CordovaDebugAdapter.retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview");
         };
 
         const getBundleIdentifier = (): Q.IWhenable<string> => {
-            if (attachArgs.target.toLowerCase() === 'device') {
+            if (attachArgs.target.toLowerCase() === "device") {
                 return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
                     .then(CordovaIosDeviceLauncher.getPathOnDevice)
                     .then(path.basename);
             } else {
-                return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, 'platforms', 'ios', 'build', 'emulator')).then((entries: string[]) => {
+                return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, "platforms", "ios", "build", "emulator")).then((entries: string[]) => {
                     let filtered = entries.filter((entry) => /\.app$/.test(entry));
                     if (filtered.length > 0) {
                         return filtered[0];
                     } else {
-                        throw new Error('Unable to find .app file');
+                        throw new Error("Unable to find .app file");
                     }
                 });
             }
         };
 
         const getSimulatorProxyPort = (packagePath): Q.IWhenable<{ packagePath: string; targetPort: number }> => {
-            return this.promiseGet(`http://localhost:${attachArgs.port}/json`, 'Unable to communicate with ios_webkit_debug_proxy').then((response: string) => {
+            return this.promiseGet(`http://localhost:${attachArgs.port}/json`, "Unable to communicate with ios_webkit_debug_proxy").then((response: string) => {
                 try {
                     let endpointsList = JSON.parse(response);
                     let devices = endpointsList.filter((entry) =>
-                        attachArgs.target.toLowerCase() === 'device' ? entry.deviceId !== 'SIMULATOR'
-                            : entry.deviceId === 'SIMULATOR'
+                        attachArgs.target.toLowerCase() === "device" ? entry.deviceId !== "SIMULATOR"
+                            : entry.deviceId === "SIMULATOR"
                     );
                     let device = devices[0];
                     // device.url is of the form 'localhost:port'
                     return {
                         packagePath,
-                        targetPort: parseInt(device.url.split(':')[1], 10)
+                        targetPort: parseInt(device.url.split(":")[1], 10),
                     };
                 } catch (e) {
-                    throw new Error('Unable to find iOS target device/simulator. Please check that "Settings > Safari > Advanced > Web Inspector = ON" or try specifying a different "port" parameter in launch.json');
+                    throw new Error("Unable to find iOS target device/simulator. Please check that \"Settings > Safari > Advanced > Web Inspector = ON\" or try specifying a different \"port\" parameter in launch.json");
                 }
             });
         };
 
         const findWebViews = ({ packagePath, targetPort }) => {
             return retry(() =>
-                this.promiseGet(`http://localhost:${targetPort}/json`, 'Unable to communicate with target')
+                this.promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
                     .then((response: string) => {
                         try {
                             const webviewsList = JSON.parse(response);
@@ -678,18 +761,18 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                                 this.outputLogger("Unable to find target app webview, trying to fallback to the only running webview");
                                 return {
                                     relevantViews: webviewsList,
-                                    targetPort
+                                    targetPort,
                                 };
                             }
                             if (!foundWebViews.length) {
-                                throw new Error('Unable to find target app');
+                                throw new Error("Unable to find target app");
                             }
                             return {
                                 relevantViews: foundWebViews,
-                                targetPort
+                                targetPort,
                             };
                         } catch (e) {
-                            throw new Error('Unable to find target app');
+                            throw new Error("Unable to find target app");
                         }
                     }), (result) => result.relevantViews.length > 0, 5);
         };
@@ -718,27 +801,27 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             platform: launchArgs.platform,
             target: launchArgs.target,
             port: launchArgs.port,
-            simulatePort: launchArgs.simulatePort
+            simulatePort: launchArgs.simulatePort,
         };
 
-        if (launchArgs.hasOwnProperty('livereload')) {
+        if (launchArgs.hasOwnProperty("livereload")) {
             simulateTelemetryPropts.livereload = launchArgs.livereload;
         }
 
-        if (launchArgs.hasOwnProperty('forceprepare')) {
+        if (launchArgs.hasOwnProperty("forceprepare")) {
             simulateTelemetryPropts.forceprepare = launchArgs.forceprepare;
         }
 
-        generator.add('simulateOptions', simulateTelemetryPropts, false);
+        generator.add("simulateOptions", simulateTelemetryPropts, false);
 
         let messageSender = new messaging.ExtensionMessageSender(launchArgs.cwd);
         let simulateInfo: SimulationInfo;
 
         let getEditorsTelemetry = messageSender.sendMessage(messaging.ExtensionMessage.GET_VISIBLE_EDITORS_COUNT)
             .then((editorsCount) => {
-                generator.add('visibleTextEditors', editorsCount, false);
+                generator.add("visibleTextEditors", editorsCount, false);
             }).catch((e) => {
-                this.outputLogger('Could not read the visible text editors. ' + this.getErrorMessage(e));
+                this.outputLogger("Could not read the visible text editors. " + this.getErrorMessage(e));
             });
 
         let launchSimulate = Q(void 0)
@@ -758,7 +841,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         if (isSetInLaunchArgs || isSetInSettings) {
                             return this.launchChrome({
                                 ...launchArgs,
-                                url: simulateInfo.simHostUrl
+                                url: simulateInfo.simHostUrl,
                             });
                         }
                         return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd, launchArgs.target, isSetInLaunchArgs]);
@@ -766,11 +849,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => {
                 // Launch Chrome and attach
                 launchArgs.url = simulateInfo.appHostUrl;
-                this.outputLogger('Attaching to app');
+                this.outputLogger("Attaching to app");
 
                 return this.launchChrome(launchArgs);
             }).catch((e) => {
-                this.outputLogger('An error occurred while attaching to the debugger. ' + this.getErrorMessage(e));
+                this.outputLogger("An error occurred while attaching to the debugger. " + this.getErrorMessage(e));
                 throw e;
             }).then(() => void 0);
 
@@ -781,7 +864,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return this.attachedDeferred.promise.then(() =>
             this.chrome.Emulation.clearDeviceMetricsOverride()
         ).then(() =>
-            this.chrome.Emulation.setEmulatedMedia({media: ''})
+            this.chrome.Emulation.setEmulatedMedia({media: ""})
         ).then(() =>
             this.chrome.Emulation.resetPageScaleFactor()
         );
@@ -793,14 +876,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 width: data.width,
                 height: data.height,
                 deviceScaleFactor: 0,
-                mobile: true
+                mobile: true,
             })
         );
     }
 
     private connectSimulateDebugHost(simulateInfo: SimulationInfo): Q.Promise<void> {
         // Connect debug-host to cordova-simulate
-        let viewportResizeFailMessage = 'Viewport resizing failed. Please try again.';
+        let viewportResizeFailMessage = "Viewport resizing failed. Please try again.";
         let simulateDeferred: Q.Deferred<void> = Q.defer<void>();
 
         let simulateConnectErrorHandler = (err: any): void => {
@@ -809,20 +892,20 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         };
 
         this.simulateDebugHost = io.connect(simulateInfo.urlRoot);
-        this.simulateDebugHost.on('connect_error', simulateConnectErrorHandler);
-        this.simulateDebugHost.on('connect_timeout', simulateConnectErrorHandler);
-        this.simulateDebugHost.on('connect', () => {
-            this.simulateDebugHost.on('resize-viewport', (data: simulate.ResizeViewportData) => {
-                this.changeSimulateViewport(data).catch((err) => {
+        this.simulateDebugHost.on("connect_error", simulateConnectErrorHandler);
+        this.simulateDebugHost.on("connect_timeout", simulateConnectErrorHandler);
+        this.simulateDebugHost.on("connect", () => {
+            this.simulateDebugHost.on("resize-viewport", (data: simulate.ResizeViewportData) => {
+                this.changeSimulateViewport(data).catch(() => {
                     this.outputLogger(viewportResizeFailMessage, true);
                 }).done();
             });
-            this.simulateDebugHost.on('reset-viewport', () => {
-                this.resetSimulateViewport().catch((err) => {
+            this.simulateDebugHost.on("reset-viewport", () => {
+                this.resetSimulateViewport().catch(() => {
                     this.outputLogger(viewportResizeFailMessage, true);
                 }).done();
             });
-            this.simulateDebugHost.emit('register-debug-host', { handlers: ['reset-viewport', 'resize-viewport'] });
+            this.simulateDebugHost.emit("register-debug-host", { handlers: ["reset-viewport", "resize-viewport"] });
             simulateDeferred.resolve(void 0);
         });
 
@@ -848,14 +931,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         // Currently, "ionic serve" is only supported for Ionic projects
         if (!projectType.ionic && !projectType.ionic2) {
-            let errorMessage = 'Serving to the browser is currently only supported for Ionic projects';
+            let errorMessage = "Serving to the browser is currently only supported for Ionic projects";
 
             errorLogger(errorMessage);
 
             return Q.reject<void>(new Error(errorMessage));
         }
 
-        let args = ['serve'];
+        let args = ["serve"];
 
         if (launchArgs.runArguments && launchArgs.runArguments.length > -1) {
             args.push(...launchArgs.runArguments);
@@ -863,10 +946,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             args.push(...runArguments);
         } else {
             // Set up "ionic serve" args
-            args.push('--nobrowser');
+            args.push("--nobrowser");
 
             if (!launchArgs.ionicLiveReload) {
-                args.push('--nolivereload');
+                args.push("--nolivereload");
             }
         }
 
@@ -880,7 +963,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
 
             // Launch Chrome and attach
-            this.outputLogger('Attaching to app');
+            this.outputLogger("Attaching to app");
             return this.launchChrome(launchArgs);
         });
     }
@@ -891,19 +974,19 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private startIonicDevServer(launchArgs: ICordovaLaunchRequestArgs, cliArgs: string[]): Q.Promise<string[]> {
         if (!launchArgs.runArguments || launchArgs.runArguments.length === 0) {
             if (launchArgs.devServerAddress) {
-                cliArgs.push('--address', launchArgs.devServerAddress);
+                cliArgs.push("--address", launchArgs.devServerAddress);
             }
 
-            if (launchArgs.hasOwnProperty('devServerPort')) {
-                if (typeof launchArgs.devServerPort === 'number' && launchArgs.devServerPort >= 0 && launchArgs.devServerPort <= 65535) {
-                    cliArgs.push('--port', launchArgs.devServerPort.toString());
+            if (launchArgs.hasOwnProperty("devServerPort")) {
+                if (typeof launchArgs.devServerPort === "number" && launchArgs.devServerPort >= 0 && launchArgs.devServerPort <= 65535) {
+                    cliArgs.push("--port", launchArgs.devServerPort.toString());
                 } else {
-                    return Q.reject<string[]>(new Error('The value for "devServerPort" must be a number between 0 and 65535'));
+                    return Q.reject<string[]>(new Error("The value for \"devServerPort\" must be a number between 0 and 65535"));
                 }
             }
         }
 
-        let isServe: boolean = cliArgs[0] === 'serve';
+        let isServe: boolean = cliArgs[0] === "serve";
         let errorRegex: RegExp = /error:.*/i;
         let serverReady: boolean = false;
         let appReady: boolean = false;
@@ -911,14 +994,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let appReadyTimeout: number = launchArgs.devServerTimeout || 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverDeferred = Q.defer<void>();
         let appDeferred = Q.defer<string[]>();
-        let serverOut: string = '';
-        let serverErr: string = '';
+        let serverOut: string = "";
+        let serverErr: string = "";
         const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
         let getServerErrorMessage = (channel: string) => {
             let errorMatch = errorRegex.exec(channel);
 
             if (errorMatch) {
-                return 'Error in the Ionic live reload server:' + os.EOL + errorMatch[0];
+                return "Error in the Ionic live reload server:" + os.EOL + errorMatch[0];
             }
 
             return null;
@@ -935,8 +1018,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // ios simulators:
             // "build succeeded"
 
-            let isIosDevice: boolean = cliArgs.indexOf('ios') !== -1 && cliArgs.indexOf('--device') !== -1;
-            let isIosSimulator: boolean = cliArgs.indexOf('ios') !== -1 && cliArgs.indexOf('emulate') !== -1;
+            let isIosDevice: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("--device") !== -1;
+            let isIosSimulator: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("emulate") !== -1;
             let iosDeviceAppReadyRegex: RegExp = /\(lldb\)\W+run\r?\nsuccess/;
             let iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
             let appReadyRegex: RegExp = /launch success/i;
@@ -950,26 +1033,26 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             return appReadyRegex;
-        }
+        };
 
         this.ionicLivereloadProcess = cordovaStartCommand(cliArgs, launchArgs.cwd);
-        this.ionicLivereloadProcess.on('error', (err: { code: string }) => {
-            if (err.code === 'ENOENT') {
-                serverDeferred.reject(new Error('Ionic not found, please run \'npm install –g ionic\' to install it globally'));
+        this.ionicLivereloadProcess.on("error", (err: { code: string }) => {
+            if (err.code === "ENOENT") {
+                serverDeferred.reject(new Error("Ionic not found, please run 'npm install –g ionic' to install it globally"));
             } else {
                 serverDeferred.reject(err);
             }
         });
-        this.ionicLivereloadProcess.on('exit', (() => {
+        this.ionicLivereloadProcess.on("exit", (() => {
             this.ionicLivereloadProcess = null;
 
-            let exitMessage: string = 'The Ionic live reload server exited unexpectedly';
+            let exitMessage: string = "The Ionic live reload server exited unexpectedly";
             let errorMsg = getServerErrorMessage(serverErr);
 
             if (errorMsg) {
                 // The Ionic live reload server has an error; check if it is related to the devServerAddress to give a better message
-                if (errorMsg.indexOf('getaddrinfo ENOTFOUND') !== -1 || errorMsg.indexOf('listen EADDRNOTAVAIL') !== -1) {
-                    exitMessage += os.EOL + 'Invalid address: please provide a valid IP address or hostname for the "devServerAddress" property in launch.json';
+                if (errorMsg.indexOf("getaddrinfo ENOTFOUND") !== -1 || errorMsg.indexOf("listen EADDRNOTAVAIL") !== -1) {
+                    exitMessage += os.EOL + "Invalid address: please provide a valid IP address or hostname for the \"devServerAddress\" property in launch.json";
                 } else {
                     exitMessage += os.EOL + errorMsg;
                 }
@@ -1049,7 +1132,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     const serverUrls = [localServerMatchResult[2]];
                     const externalUrls = /External:\s(.*)$/im.exec(serverOut);
                     if (externalUrls) {
-                        const urls = externalUrls[1].split(', ').map(x => x.trim());
+                        const urls = externalUrls[1].split(", ").map(x => x.trim());
                         serverUrls.push(...urls);
                     }
                     appDeferred.resolve(serverUrls);
@@ -1058,7 +1141,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             if (/Address Selection:/.test(serverOut)) {
                 // Ionic does not know which address to use for the dev server, and requires human interaction; error out and let the user know
-                let errorMessage: string = 'Your machine has multiple network addresses. Please specify which one your device or emulator will use to communicate with the dev server by adding a "devServerAddress": "ADDRESS" property to .vscode/launch.json.';
+                let errorMessage: string = "Your machine has multiple network addresses. Please specify which one your device or emulator will use to communicate with the dev server by adding a \"devServerAddress\": \"ADDRESS\" property to .vscode/launch.json.";
                 let addresses: string[] = [];
                 let addressRegex = /(\d+\) .*)/gm;
                 let match: string[] = addressRegex.exec(serverOut);
@@ -1070,7 +1153,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                 if (addresses) {
                     // Give the user the list of addresses that Ionic found
-                    errorMessage += [' Available addresses:'].concat(addresses).join(os.EOL + ' ');
+                    errorMessage += [" Available addresses:"].concat(addresses).join(os.EOL + " ");
                 }
 
                 serverDeferred.reject(new Error(errorMessage));
@@ -1083,8 +1166,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
         };
 
-        this.ionicLivereloadProcess.stdout.on('data', serverOutputHandler);
-        this.ionicLivereloadProcess.stderr.on('data', (data: Buffer) => {
+        this.ionicLivereloadProcess.stdout.on("data", serverOutputHandler);
+        this.ionicLivereloadProcess.stderr.on("data", (data: Buffer) => {
             serverErr += data.toString();
 
             let errorMsg = getServerErrorMessage(serverErr);
@@ -1096,56 +1179,36 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         this.outputLogger(`Starting Ionic dev server (live reload: ${launchArgs.ionicLiveReload})`);
 
         return serverDeferred.promise.timeout(serverReadyTimeout, `Starting the Ionic dev server timed out (${serverReadyTimeout} ms)`).then(() => {
-            this.outputLogger('Building and deploying app');
+            this.outputLogger("Building and deploying app");
 
             return appDeferred.promise.timeout(appReadyTimeout, `Building and deploying the app timed out (${appReadyTimeout} ms)`);
         }).then((ionicDevServerUrls: string[]) => {
 
             if (!ionicDevServerUrls || !ionicDevServerUrls.length) {
-                return Q.reject<string[]>(new Error('Unable to determine the Ionic dev server address, please try re-launching the debugger'));
+                return Q.reject<string[]>(new Error("Unable to determine the Ionic dev server address, please try re-launching the debugger"));
             }
 
             // The dev server address is the captured group at index 1 of the match
-            this.ionicDevServerUrls = ionicDevServerUrls
+            this.ionicDevServerUrls = ionicDevServerUrls;
 
             // When ionic 2 cli is installed, output includes ansi characters for color coded output.
-            this.ionicDevServerUrls = this.ionicDevServerUrls.map(url => url.replace(ansiRegex, ''));
+            this.ionicDevServerUrls = this.ionicDevServerUrls.map(url => url.replace(ansiRegex, ""));
             return Q(this.ionicDevServerUrls);
         });
-    }
-
-    private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
-        const retry = () => {
-            if (iteration < maxRetries) {
-                return Q.delay(delay).then(() => CordovaDebugAdapter.retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
-            }
-
-            throw new Error(failure);
-        };
-
-        return func()
-            .then(result => {
-                if (condition(result)) {
-                    return result;
-                }
-
-                retry();
-            },
-            retry);
     }
 
     private promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
         let deferred = Q.defer<string>();
         let req = http.get(url, function(res) {
-            let responseString = '';
-            res.on('data', (data: Buffer) => {
+            let responseString = "";
+            res.on("data", (data: Buffer) => {
                 responseString += data.toString();
             });
-            res.on('end', () => {
+            res.on("end", () => {
                 deferred.resolve(responseString);
             });
         });
-        req.on('error', (err: Error) => {
+        req.on("error", (err: Error) => {
             this.outputLogger(reqErrMessage);
             deferred.reject(err);
         });
@@ -1156,7 +1219,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const errorLogger = (message) => this.outputLogger(message, true);
 
         if (this.chromeProc) {
-            this.chromeProc.kill('SIGINT');
+            this.chromeProc.kill("SIGINT");
             this.chromeProc = null;
         }
 
@@ -1169,9 +1232,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         if (this.adbPortForwardingInfo) {
             const adbForwardStopArgs =
-                ['-s', this.adbPortForwardingInfo.targetDevice,
-                    'forward',
-                    '--remove', `tcp:${this.adbPortForwardingInfo.port}`];
+                ["-s", this.adbPortForwardingInfo.targetDevice,
+                    "forward",
+                    "--remove", `tcp:${this.adbPortForwardingInfo.port}`];
             adbPortPromise = this.runAdbCommand(adbForwardStopArgs, errorLogger)
                 .then(() => void 0);
         } else {
@@ -1182,7 +1245,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let killServePromise: Q.Promise<void>;
 
         if (this.ionicLivereloadProcess) {
-            this.ionicLivereloadProcess.removeAllListeners('exit');
+            this.ionicLivereloadProcess.removeAllListeners("exit");
             killServePromise = killChildProcess(this.ionicLivereloadProcess).finally(() => {
                 this.ionicLivereloadProcess = null;
             });
@@ -1205,26 +1268,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
     }
 
-    protected onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): Promise<void> {
-        let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
-
-        if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === '.js') {
-            // Browsers don't always report source maps for scripts, so even though no source map was reported for this script, parse it in case it has a sourceMappingUrl attribute.
-            let clientPath = this.cordovaPathTransformer.getClientPath(script.url);
-
-            if (clientPath) {
-                let scriptContent = fs.readFileSync(clientPath).toString();
-                let parsedSrcMapUrl = this.findSourceAttribute('sourceMappingURL', scriptContent);
-
-                if (parsedSrcMapUrl) {
-                    script.sourceMapURL = parsedSrcMapUrl;
-                }
-            }
-        }
-
-        return super.onScriptParsed(script);
-    }
-
     private launchChrome(args: ICordovaLaunchRequestArgs): Promise<void> {
         return super.launch(args).then(() => {
             const chromePath: string = args.runtimeExecutable || CordovaDebugAdapter.getBrowserPath(args.target);
@@ -1233,15 +1276,15 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             const port = args.port || 9222;
-            const chromeArgs: string[] = ['--remote-debugging-port='+port];
+            const chromeArgs: string[] = ["--remote-debugging-port=" + port];
 
-            chromeArgs.push(...['--no-first-run', '--no-default-browser-check']);
-            if(args.runtimeArgs) {
+            chromeArgs.push(...["--no-first-run", "--no-default-browser-check"]);
+            if (args.runtimeArgs) {
                 chromeArgs.push(...args.runtimeArgs);
             }
 
-            if(args.userDataDir) {
-                chromeArgs.push('--user-data-dir=' + args.userDataDir);
+            if (args.userDataDir) {
+                chromeArgs.push("--user-data-dir=" + args.userDataDir);
             }
 
             const launchUrl = args.url;
@@ -1249,11 +1292,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             this.chromeProc = child_process.spawn(chromePath, chromeArgs, {
                 detached: true,
-                stdio: ['ignore']
+                stdio: ["ignore"],
             });
             this.chromeProc.unref();
-            this.chromeProc.on('error', (err) => {
-                const errMsg = 'Chrome error: ' + err;
+            this.chromeProc.on("error", (err) => {
+                const errMsg = "Chrome error: " + err;
                 this.terminateSession(errMsg);
             });
 
@@ -1273,52 +1316,17 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         });
     }
 
-    private static getBrowserPath(target: string): string {
-        const platform = ChromeDebugCoreUtils.getPlatform();
-        let defaultPaths = target === 'chromium' ? DEFAULT_CHROMIUM_PATH : DEFAULT_CHROME_PATH;
-        if (platform === ChromeDebugCoreUtils.Platform.OSX) {
-            return ChromeDebugCoreUtils.existsSync(defaultPaths.OSX) ? defaultPaths.OSX : null;
-        } else if (platform === ChromeDebugCoreUtils.Platform.Windows) {
-            if (ChromeDebugCoreUtils.existsSync(defaultPaths.WINx86)) {
-                return defaultPaths.WINx86;
-            } else if (ChromeDebugCoreUtils.existsSync(defaultPaths.WIN)) {
-                return defaultPaths.WIN;
-            } else if (ChromeDebugCoreUtils.existsSync(defaultPaths.WIN_LOCALAPPDATA)) {
-                return defaultPaths.WIN_LOCALAPPDATA;
-            } else {
-                return null;
-            }
-        } else {
-            return ChromeDebugCoreUtils.existsSync(defaultPaths.LINUX) ? defaultPaths.LINUX : null;
-        }
-    }
-
-    /**
-     * Target type for telemetry
-     */
-    private static getTargetType(target: string): string {
-        if (/emulator/i.test(target)) {
-            return TargetType.Emulator;
-        }
-
-        if (/chrom/i.test(target)) {
-            return TargetType.Chrome;
-        }
-
-        return TargetType.Device;
-    }
-
     /**
      * Initializes telemetry.
      */
     private initializeTelemetry(projectRoot: string): Q.Promise<any> {
         if (!this.telemetryInitialized) {
             this.telemetryInitialized = true;
-            let version = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf-8')).version;
+            let version = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "..", "package.json"), "utf-8")).version;
             // Enable telemetry, forced on for now.
-            return Telemetry.init('cordova-tools-debug-adapter', version, { isExtensionProcess: false, projectRoot: projectRoot })
+            return Telemetry.init("cordova-tools-debug-adapter", version, { isExtensionProcess: false, projectRoot: projectRoot })
                 .catch((e) => {
-                    this.outputLogger('Could not initialize telemetry.' + e.message || e.error || e.data || e);
+                    this.outputLogger("Could not initialize telemetry." + e.message || e.error || e.data || e);
                 });
         } else {
             return Q.resolve(void 0);
@@ -1335,24 +1343,24 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
      */
     private findSourceAttribute(attribute: string, codeContent: string): string {
         if (codeContent) {
-            let prefixes = ['//#', '/*#', '//@', '/*@'];
+            let prefixes = ["//#", "/*#", "//@", "/*@"];
             let findString: string;
             let index = -1;
             let endIndex = -1;
 
             // Use pound-sign definitions first, but fall back to at-sign
             // The last instance of the attribute comment takes precedence
-            for (var i = 0; index < 0 && i < prefixes.length; i++) {
-                findString = '\n' + prefixes[i] + ' ' + attribute + '=';
+            for (let i = 0; index < 0 && i < prefixes.length; i++) {
+                findString = "\n" + prefixes[i] + " " + attribute + "=";
                 index = codeContent.lastIndexOf(findString);
             }
 
             if (index >= 0) {
                 if (index >= 0) {
-                    if (findString.charAt(2) === '*') {
-                        endIndex = codeContent.indexOf('*/', index + findString.length);
+                    if (findString.charAt(2) === "*") {
+                        endIndex = codeContent.indexOf("*/", index + findString.length);
                     } else {
-                        endIndex = codeContent.indexOf('\n', index + findString.length);
+                        endIndex = codeContent.indexOf("\n", index + findString.length);
                     }
 
                     if (endIndex < 0) {
@@ -1368,24 +1376,16 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     private runAdbCommand(args, errorLogger): Q.Promise<string> {
-        const originalPath = process.env['PATH'];
-        if (process.env['ANDROID_HOME']) {
-            process.env['PATH'] += path.delimiter + path.join(process.env['ANDROID_HOME'], 'platform-tools');
+        const originalPath = process.env["PATH"];
+        if (process.env["ANDROID_HOME"]) {
+            process.env["PATH"] += path.delimiter + path.join(process.env["ANDROID_HOME"], "platform-tools");
         }
-        return execCommand('adb', args, errorLogger).finally(() => {
-            process.env['PATH'] = originalPath;
+        return execCommand("adb", args, errorLogger).finally(() => {
+            process.env["PATH"] = originalPath;
         });
     }
 
     private getErrorMessage(e: any): string {
         return e.message || e.error || e.data || e;
-    }
-
-    public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS, [projectRoot]);
-    }
-
-    public static getSimulatorInExternalBrowserSetting(projectRoot: string): Q.Promise<boolean> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING, [projectRoot]);
     }
 }

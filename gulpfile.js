@@ -98,7 +98,7 @@ gulp.task('tslint-test', function () {
         .pipe(tslint.report());
 });
 
-gulp.task('build-src', ['compile-src'/*, 'tslint-src'*/]);
+gulp.task('build-src', ['compile-src', 'tslint-src']);
 gulp.task('build-test', ['compile-test'/*, 'tslint-test'*/]);
 gulp.task('build', ['build-src'/*, 'build-test'*/]);
 gulp.task('tslint', ['tslint-src', 'tslint-test']);

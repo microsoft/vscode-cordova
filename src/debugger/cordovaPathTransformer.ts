@@ -1,14 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {DebugProtocol} from 'vscode-debugprotocol';
-import {utils, logger, chromeUtils, ISetBreakpointsArgs, IDebugTransformer, IStackTraceResponseBody} from 'vscode-chrome-debug-core';
-import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from './cordovaDebugAdapter';
+import {utils, logger, chromeUtils, ISetBreakpointsArgs, IStackTraceResponseBody} from "vscode-chrome-debug-core";
+import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from "./cordovaDebugAdapter";
 
-import {BasePathTransformer} from 'vscode-chrome-debug-core';
+import {BasePathTransformer} from "vscode-chrome-debug-core";
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from "path";
+import * as fs from "fs";
 
 interface IPendingBreakpoint {
     resolve: () => void;
@@ -130,16 +129,16 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
     public getClientPath(sourceUrl: string): string {
-        let wwwRoot = path.join(this._cordovaRoot, 'www');
+        let wwwRoot = path.join(this._cordovaRoot, "www");
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
         // default behavior is to use that exact file, if it exists. We don't want that,
         // since we know that those files are copies of files in the local folder structure.
         // A simple workaround for this is to convert file:// paths to bogus http:// paths
-        sourceUrl = sourceUrl.replace('file:///', 'http://localhost/');
+        sourceUrl = sourceUrl.replace("file:///", "http://localhost/");
 
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
-        let defaultPath = '';
+        let defaultPath = "";
         [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
             let mappedPath = chromeUtils.targetUrlToClientPath(searchFolder, sourceUrl);
 
@@ -154,7 +153,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
         if (defaultPath.toLowerCase().indexOf(wwwRoot.toLowerCase()) === 0) {
             // If the path appears to be in www, check to see if it exists in /merges/<platform>/<relative path>
             let relativePath = path.relative(wwwRoot, defaultPath);
-            let mergesPath = path.join(this._cordovaRoot, 'merges', this._platform, relativePath);
+            let mergesPath = path.join(this._cordovaRoot, "merges", this._platform, relativePath);
             if (fs.existsSync(mergesPath)) {
                 // This file is overriden by a merge: Use that one
                 if (fs.existsSync(defaultPath)) {

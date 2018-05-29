@@ -4,7 +4,7 @@
 import * as net from "net";
 import * as Q from "q";
 import {PluginSimulator} from "./simulate";
-import {SimulationInfo} from '../common/simulationInfo';
+import {SimulationInfo} from "../common/simulationInfo";
 import {SimulateOptions} from "cordova-simulate";
 import * as vscode from "vscode";
 
@@ -20,8 +20,8 @@ import {Telemetry} from "../utils/telemetry";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 
 export class ExtensionServer implements vscode.Disposable {
-    private serverInstance: net.Server = null;
     public pluginSimulator: PluginSimulator;
+    private serverInstance: net.Server = null;
     private messageHandlerDictionary: { [id: number]: ((...argArray: any[]) => Q.Promise<any>) } = {};
     private pipePath: string;
 
@@ -158,7 +158,7 @@ export class ExtensionServer implements vscode.Disposable {
         };
 
         socket.on("data", dataCallback);
-    };
+    }
 
     /**
      * Recovers the server in case the named socket we use already exists, but no other instance of VSCode is active.

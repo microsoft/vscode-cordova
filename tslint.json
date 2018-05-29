@@ -19,16 +19,12 @@
     ],
     "jsdoc-format": true,
     "label-position": true,
-    "label-undefined": true,
     "max-line-length": [
       false,
       140
     ],
     "member-access": true,
-    "member-ordering": [
-      true,
-      "variables-before-functions"
-    ],
+    "member-ordering": [true, {"order": "fields-first"}],
     "no-any": false,
     "no-arg": true,
     "no-bitwise": true,
@@ -43,25 +39,22 @@
     ],
     "no-construct": true,
     "no-debugger": true,
-    "no-duplicate-key": true,
     "no-duplicate-variable": true,
     "no-empty": false,
     "no-eval": true,
     "no-inferrable-types": false,
-    "no-internal-module": true,
-    "no-keyword-named-variables": true,
+    "no-internal-module": false,
     "no-require-imports": false,
-    "no-shadowed-variable": true,
+    "no-shadowed-variable": false,
     "no-string-literal": false,
-    "no-switch-case-fall-through": true,
+    "no-switch-case-fall-through": false,
     "no-trailing-whitespace": true,
-    "no-unreachable": true,
     "no-unused-expression": true,
     "no-unused-variable": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
-    "no-var-requires": true,
-    "object-literal-sort-keys": true,
+    "no-var-requires": false,
+    "object-literal-sort-keys": false,
     "one-line": [
       true,
       "check-open-brace",
@@ -71,7 +64,7 @@
     ],
     "quotemark": [
       true,
-      "single"
+      "double"
     ],
     "radix": true,
     "semicolon": true,
@@ -79,7 +72,11 @@
     "trailing-comma": [
       true,
       {
-        "multiline": "always",
+        "multiline": {
+          "objects": "always",
+          "arrays": "always",
+          "functions": "never"
+        },
         "singleline": "never"
       }
     ],
@@ -108,4 +105,3 @@
     ]
   }
 }
-
