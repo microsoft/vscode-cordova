@@ -12,10 +12,14 @@ var os = require('os');
 var path = require('path');
 var Q = require('q');
 var typescript = require('typescript');
+var libtslint = require('tslint');
+var tslint = require('gulp-tslint');
+var runSequence = require('run-sequence');
+var del = require('del');
 
 function executeCordovaCommand(cwd, command) {
-    var cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
-    var commandToExecute = cordovaCmd + " " + command;
+    var cordovaCmd = os.platform() === 'darwin' ? 'cordova' : 'cordova.cmd';
+    var commandToExecute = cordovaCmd + ' ' + command;
     return executeCommand(cwd, commandToExecute);
 }
 
@@ -23,19 +27,19 @@ function executeCommand(cwd, commandToExecute) {
     var deferred = Q.defer();
     var process = child_process.exec(commandToExecute, { cwd: cwd }, (error, stdout, stderr) => {
         if (error) {
-            console.error("An error occurred: " + error);
+            console.error('An error occurred: ' + error);
             return;
         }
         console.log(stderr);
         console.log(stdout);
     });
-    process.on("error", function (err) {
-        console.log("Command failed with error: " + err);
+    process.on('error', function (err) {
+        console.log('Command failed with error: ' + err);
         deferred.reject(err);
     });
-    process.stdout.on("close", function (exitCode) {
+    process.stdout.on('close', function (exitCode) {
         if (exitCode) {
-            console.log("Command failed with exit code " + exitCode);
+            console.log('Command failed with exit code ' + exitCode);
             deferred.reject(exitCode);
         }
         else {
@@ -46,25 +50,19 @@ function executeCommand(cwd, commandToExecute) {
 }
 
 var sources = [
-    'src',
-    'test/debugger',
-    'typings',
-    'debugger/adapter',
-    'debugger/common',
-    'debugger/test',
-    'debugger/webkit',
-].map(function(tsFolder) { return tsFolder + '/**/*.ts'; })
-.concat(['test/*.ts']);
+    'src/**/*.ts'
+];
 
-var projectConfig = {
-    noImplicitAny: false,
-    target: 'ES6',
-    module: 'commonjs',
-    declarationFiles: true,
-    typescript: typescript
-};
+var tests = [
+    'test/debugger/**/*.ts',
+    'test/*.ts'
+];
 
-gulp.task('build-tsc', function () {
+var tsConfig = require('./tsconfig.json');
+var projectConfig = tsConfig.compilerOptions;
+projectConfig.typescript = typescript;
+
+gulp.task('compile-src', function () {
     return gulp.src(sources, { base: '.' })
         .pipe(sourcemaps.init())
         .pipe(ts(projectConfig))
@@ -72,63 +70,69 @@ gulp.task('build-tsc', function () {
         .pipe(gulp.dest('out'));
 });
 
-gulp.task('build', ['build-tsc']);
+gulp.task('compile-test', function () {
+    return gulp.src(tests, { base: '.' })
+        .pipe(sourcemaps.init())
+        .pipe(ts(projectConfig))
+        .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: __dirname }))
+        .pipe(gulp.dest('out'));
+});
 
-gulp.task('watch', ['build'], function(cb) {
+gulp.task('tslint-src', function () {
+    var program = libtslint.Linter.createProgram('./tsconfig.json');
+    return gulp.src(sources, { base: '.' })
+        .pipe(tslint({
+            formatter: 'verbose',
+            program: program
+        }))
+        .pipe(tslint.report());
+});
+
+gulp.task('tslint-test', function () {
+    var program = libtslint.Linter.createProgram('./tsconfig.json');
+    return gulp.src(tests, { base: '.' })
+        .pipe(tslint({
+            formatter: 'verbose',
+            program: program
+        }))
+        .pipe(tslint.report());
+});
+
+gulp.task('build-src', ['compile-src'/*, 'tslint-src'*/]);
+gulp.task('build-test', ['compile-test'/*, 'tslint-test'*/]);
+gulp.task('build', ['build-src'/*, 'build-test'*/]);
+gulp.task('tslint', ['tslint-src', 'tslint-test']);
+
+gulp.task('watch', ['build'], function (cb) {
     log('Watching build sources...');
     return gulp.watch(sources, ['build']);
 });
 
-gulp.task('default', ['build']);
-
-// Don't lint code from tsd or common, and whitelist my files under adapter
-var lintSources = [
-    'src/cordova.ts',
-    'src/utils/cordovaCommandHelper.ts',
-    'src/utils/cordovaProjectHelper.ts',
-    'src/utils/tsdHelper.ts',
-    'src/debugger',
-    'test/debugger',
-    'debugger/test',
-    'debugger/test',
-    'debugger/webkit',
-].map(function(tsFolder) { return tsFolder + '/**/*.ts'; });
-lintSources = lintSources.concat([
-    'debugger/adapter/sourceMaps/sourceMapTransformer.ts',
-    'debugger/adapter/adapterProxy.ts',
-    'debugger/adapter/lineNumberTransformer.ts',
-    'debugger/adapter/pathTransformer.ts',
-]);
-
-var tslint = require('gulp-tslint');
-gulp.task('tslint', function(){
-      return gulp.src(lintSources, { base: '.' })
-        .pipe(tslint())
-        .pipe(tslint.report('verbose'));
-});
-
-function test() {
+gulp.task('run-test', function () {
     return gulp.src('out/test/debugger/**/*.js', { read: false })
         .pipe(mocha({ ui: 'bdd' }))
-        .on('error', function(e) {
+        .on('error', function (e) {
             log(e ? e.toString() : 'error in test task!');
             this.emit('end');
         });
-}
-
-gulp.task('build-test', ['build'], test);
-gulp.task('test', test);
-
-gulp.task('prepare-integration-tests', ['build'], function() {
-    return executeCordovaCommand(path.resolve(__dirname, "test", "testProject"), "plugin add cordova-plugin-file");
 });
 
-gulp.task('watch-build-test', ['build', 'build-test'], function() {
-    return gulp.watch(sources, ['build', 'build-test']);
+gulp.task('test', function (done) {
+    runSequence('build-test', 'run-test', done);
+});
+
+gulp.task('prepare-integration-tests', ['build'], function () {
+    return executeCordovaCommand(path.resolve(__dirname, 'test', 'testProject'), 'plugin add cordova-plugin-file');
+});
+
+gulp.task('watch-build-test', function (done) {
+    runSequence('build', 'run-test', function () {
+        return gulp.watch(sources, ['build', 'run-test'], done);
+    });
 });
 
 gulp.task('release', function () {
-    var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt"];
+    var licenseFiles = ['LICENSE.txt', 'ThirdPartyNotices.txt'];
     var backupFolder = path.resolve(path.join(os.tmpdir(), 'vscode-cordova'));
     if (!fs.existsSync(backupFolder)) {
         fs.mkdirSync(backupFolder);
@@ -137,23 +141,43 @@ gulp.task('release', function () {
     return Q({})
         .then(function () {
             /* back up LICENSE.txt, ThirdPartyNotices.txt, README.md */
-            console.log("Backing up license files to " + backupFolder + "...");
+            console.log('Backing up license files to ' + backupFolder + '...');
             licenseFiles.forEach(function (fileName) {
                 fs.writeFileSync(path.join(backupFolder, fileName), fs.readFileSync(fileName));
             });
 
             /* copy over the release package license files */
-            console.log("Preparing license files for release...");
+            console.log('Preparing license files for release...');
             fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/releaselicense.txt'));
             fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/release3party.txt'));
-        }).then(()=>{
-            console.log("Creating release package...");
+        }).then(() => {
+            console.log('Creating release package...');
             return executeCommand(path.resolve(__dirname), 'vsce package');
         }).finally(function () {
             /* restore backed up files */
-            console.log("Restoring modified files...");
+            console.log('Restoring modified files...');
             licenseFiles.forEach(function (fileName) {
                 fs.writeFileSync(path.join(__dirname, fileName), fs.readFileSync(path.join(backupFolder, fileName)));
             });
         });
+});
+
+gulp.task('clean-src', function () {
+    var pathsToDelete = [
+        'out/src/',
+    ]
+    return del(pathsToDelete, { force: true });
+});
+
+gulp.task('clean-test', function () {
+    var pathsToDelete = [
+        'out/test/',
+    ]
+    return del(pathsToDelete, { force: true });
+});
+
+gulp.task('clean', ['clean-src', 'clean-test']);
+
+gulp.task('default', function (done) {
+    runSequence('clean', 'build', /*'run-test',*/ done);
 });

@@ -9,8 +9,10 @@
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out",
-            "preLaunchTask": "build"
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ],
+            "preLaunchTask": "build-src"
         },
         {
             "name": "Launch Tests",
@@ -20,7 +22,9 @@
             "args": ["${workspaceRoot}/test/testProject", "--extensionDevelopmentPath=${workspaceRoot}", "--extensionTestsPath=${workspaceRoot}/out/test" ],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out/src",
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ],
             "preLaunchTask": "prepare-integration-tests"
         },
         {
@@ -32,8 +36,10 @@
             "stopOnEntry": false,
             "args": [ "--server=4712" ],
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/out",
-            "preLaunchTask": "build"
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ],
+            "preLaunchTask": "build-src"
         }
     ]
 }
