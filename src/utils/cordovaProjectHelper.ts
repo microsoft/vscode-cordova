@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as Q from 'q';
+import * as child_process from "child_process";
+import * as fs from "fs";
+import * as path from "path";
+import * as Q from "q";
 import * as semver from "semver";
-import * as os from 'os';
+import * as os from "os";
 
 export interface IProjectType {
     ionic: boolean;
@@ -35,7 +35,7 @@ export class CordovaProjectHelper {
     private static PROJECT_PLUGINS_DIR: string = "plugins";
     private static IONIC_PROJECT_FILE: string = "ionic.project";
 
-    private static CONFIG_IONIC_FILENAME: string = 'ionic.config.json';
+    private static CONFIG_IONIC_FILENAME: string = "ionic.config.json";
     private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
 
     private static CORE_PLUGIN_LIST: string[] = ["cordova-plugin-battery-status",
@@ -93,7 +93,7 @@ export class CordovaProjectHelper {
             CordovaProjectHelper.makeDirectoryRecursive(parentPath);
         }
 
-        fs.mkdirSync(dirPath)
+        fs.mkdirSync(dirPath);
     }
 
     /**
@@ -103,7 +103,7 @@ export class CordovaProjectHelper {
         if (fs.existsSync(dirPath)) {
             if (fs.lstatSync(dirPath).isDirectory()) {
                 fs.readdirSync(dirPath).forEach(function (file) {
-                    var curPath = path.join(dirPath, file);
+                    let curPath = path.join(dirPath, file);
                     CordovaProjectHelper.deleteDirectoryRecursive(curPath);
                 });
 
@@ -112,15 +112,15 @@ export class CordovaProjectHelper {
                 fs.unlinkSync(dirPath);
             }
         }
-    };
+    }
 
     /**
      *  Helper function to asynchronously copy a file
      */
     public static copyFile(from: string, to: string, encoding?: string): Q.Promise<any> {
-        var deferred: Q.Deferred<any> = Q.defer();
-        var destFile: fs.WriteStream = fs.createWriteStream(to, { encoding: encoding });
-        var srcFile: fs.ReadStream = fs.createReadStream(from, { encoding: encoding });
+        let deferred: Q.Deferred<any> = Q.defer();
+        let destFile: fs.WriteStream = fs.createWriteStream(to, { encoding: encoding });
+        let srcFile: fs.ReadStream = fs.createReadStream(from, { encoding: encoding });
         destFile.on("finish", function (): void {
             deferred.resolve({});
         });
@@ -148,7 +148,7 @@ export class CordovaProjectHelper {
         }
 
         try {
-            let fetchJsonContents = fs.readFileSync(fetchJsonPath, 'utf8');
+            let fetchJsonContents = fs.readFileSync(fetchJsonPath, "utf8");
             let fetchJson = JSON.parse(fetchJsonContents);
             return Object.keys(fetchJson);
         } catch (error) {
@@ -170,7 +170,7 @@ export class CordovaProjectHelper {
         try {
             let platformsDirContents = fs.readdirSync(platformsPath);
             return platformsDirContents.filter((platform) => {
-                return platform.charAt(0) !== '.';
+                return platform.charAt(0) !== ".";
             });
         } catch (error) {
             console.error(error);
@@ -179,19 +179,19 @@ export class CordovaProjectHelper {
     }
 
     public static getInstalledPluginDetails(projectRoot: string, pluginId: string): IPluginDetails {
-        let packageJsonPath: string = path.resolve(projectRoot, CordovaProjectHelper.PROJECT_PLUGINS_DIR, pluginId, 'package.json');
+        let packageJsonPath: string = path.resolve(projectRoot, CordovaProjectHelper.PROJECT_PLUGINS_DIR, pluginId, "package.json");
 
         if (!CordovaProjectHelper.existsSync(packageJsonPath)) {
             return null;
         }
 
         try {
-            let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+            let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 
             let details: IPluginDetails = {
                 PluginId: packageJson.name,
                 Version: packageJson.version,
-                PluginType: CordovaProjectHelper.CORE_PLUGIN_LIST.indexOf(pluginId) >= 0 ? 'Core' : 'Npm'
+                PluginType: CordovaProjectHelper.CORE_PLUGIN_LIST.indexOf(pluginId) >= 0 ? "Core" : "Npm",
             };
 
             return details;
@@ -213,7 +213,7 @@ export class CordovaProjectHelper {
         while (!CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_XML_FILENAME))
             && !CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_IONIC_FILENAME))) {
             // Navigate up one level until either config.xml is found
-            parentPath = path.resolve(projectRoot, '..');
+            parentPath = path.resolve(projectRoot, "..");
             if (parentPath !== projectRoot) {
                 projectRoot = parentPath;
             } else {
@@ -287,11 +287,11 @@ export class CordovaProjectHelper {
      *  Helper function to determine whether the project is an Ionic 2 project or no. NOTE: we currently rely on "ionic.config.js" file, which may change as Ionic 2 continues development.
      */
     public static isIonic2Project(projectRoot: string): boolean {
-        const packageJsonPath = path.join(projectRoot, 'package.json');
+        const packageJsonPath = path.join(projectRoot, "package.json");
         if (!fs.existsSync(packageJsonPath)) {
             return false;
         }
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
         const dependencies = packageJson.dependencies || {};
         const devDependencies = packageJson.devDependencies || {};
         const highestNotSupportedIonic2BetaVersion = "2.0.0-beta.9";
@@ -299,7 +299,7 @@ export class CordovaProjectHelper {
             const ionicVersion = dependencies["ionic-angular"];
 
             // Assuming for now that latest version is > 3
-            if (ionicVersion === 'latest' || ionicVersion === 'nightly') {
+            if (ionicVersion === "latest" || ionicVersion === "nightly") {
                 return true;
             }
 
@@ -320,35 +320,35 @@ export class CordovaProjectHelper {
      * manifest and can be considered as a typescript project.
      */
     public static isTypescriptProject(projectRoot: string): boolean {
-        return fs.existsSync(path.resolve(projectRoot, 'tsconfig.json'));
+        return fs.existsSync(path.resolve(projectRoot, "tsconfig.json"));
     }
 
     public static getCliCommand(fsPath: string) {
-        const cliName = CordovaProjectHelper.isIonicProject(fsPath) ? 'ionic' : 'cordova';
-        const commandExtension = os.platform() === 'win32' ? '.cmd' : '';
+        const cliName = CordovaProjectHelper.isIonicProject(fsPath) ? "ionic" : "cordova";
+        const commandExtension = os.platform() === "win32" ? ".cmd" : "";
         const command = cliName + commandExtension;
         return command;
     }
 
     public static getIonicCliVersion(fsPath: string): string {
         const command = CordovaProjectHelper.getCliCommand(fsPath);
-        const ionicInfo = child_process.spawnSync(command, ['-v', '--quiet'], {
+        const ionicInfo = child_process.spawnSync(command, ["-v", "--quiet"], {
             cwd: fsPath,
             env: {
                 ...process.env,
-                CI: "Hack to disable Ionic autoupdate prompt"
-            }
+                CI: "Hack to disable Ionic autoupdate prompt",
+            },
         });
         // A warning might appear on second line
-        return ionicInfo.stdout.toString().split('\n')[0].trim();
+        return ionicInfo.stdout.toString().split("\n")[0].trim();
     }
 
     public static isIonicCliVersionGte3(fsPath: string): boolean {
         try {
             const ionicVersion = CordovaProjectHelper.getIonicCliVersion(fsPath);
-            return semver.gte(ionicVersion, '3.0.0');
+            return semver.gte(ionicVersion, "3.0.0");
         } catch (err) {
-            console.error('Error while detecting Ionic CLI version', err);
+            console.error("Error while detecting Ionic CLI version", err);
         }
         return true;
     }

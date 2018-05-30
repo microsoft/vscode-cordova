@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {Hash} from "../utils/hash"
+import {Hash} from "../utils/hash";
 import * as Q from "q";
 import * as net from "net";
 
@@ -18,7 +18,7 @@ export enum ExtensionMessage {
     SIMULATE,
     START_SIMULATE_SERVER,
     GET_RUN_ARGUMENTS,
-    GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING
+    GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING,
 }
 
 export interface MessageWithArguments {

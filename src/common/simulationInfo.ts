@@ -4,5 +4,5 @@
 export interface SimulationInfo {
     appHostUrl: string;
     simHostUrl: string;
-    urlRoot: string
+    urlRoot: string;
 }
