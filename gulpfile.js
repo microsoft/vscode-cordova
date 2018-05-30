@@ -99,8 +99,8 @@ gulp.task('tslint-test', function () {
 });
 
 gulp.task('build-src', ['compile-src', 'tslint-src']);
-gulp.task('build-test', ['compile-test'/*, 'tslint-test'*/]);
-gulp.task('build', ['build-src'/*, 'build-test'*/]);
+gulp.task('build-test', ['compile-test', 'tslint-test']);
+gulp.task('build', ['build-src', 'build-test']);
 gulp.task('tslint', ['tslint-src', 'tslint-test']);
 
 gulp.task('watch', ['build'], function (cb) {
@@ -179,5 +179,5 @@ gulp.task('clean-test', function () {
 gulp.task('clean', ['clean-src', 'clean-test']);
 
 gulp.task('default', function (done) {
-    runSequence('clean', 'build', /*'run-test',*/ done);
+    runSequence('clean', 'build', 'run-test', done);
 });
