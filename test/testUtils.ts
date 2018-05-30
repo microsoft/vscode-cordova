@@ -1,16 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as http from 'http';
-import * as os from 'os';
-import * as path from 'path';
-import * as Q from 'q';
+import * as child_process from "child_process";
+import * as fs from "fs";
+import * as http from "http";
+import * as os from "os";
+import * as Q from "q";
 
-import {CordovaCommandHelper} from './../src/utils/CordovaCommandHelper';
-import {CordovaProjectHelper} from './../src/utils/CordovaProjectHelper';
-
+import {CordovaProjectHelper} from "./../src/utils/CordovaProjectHelper";
 
 export function executeCordovaCommand(cwd: string, command: string): Q.Promise<any> {
     let deferred = Q.defer<any>();
