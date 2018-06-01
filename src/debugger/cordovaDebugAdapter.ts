@@ -241,7 +241,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
-                                throw new Error(`${platform} debugger doesn't support`);
+                                throw new Error(`Debugging ${platform} platform is not supported.`);
                             }
                         case "serve":
                             generator.add("platform", platform, false);
