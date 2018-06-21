@@ -1,6 +1,6 @@
 ## 1.4.0
 
-* Migrate to [cordova-simulate@0.4.0]()
+* Migrate to [cordova-simulate@0.4.0](https://github.com/Microsoft/cordova-simulate/releases/tag/0.4.0)
 * Added target platform selector for command palette commands
 * Added cordova-simulate support for all known platform
 * Added `.travis.yml`
