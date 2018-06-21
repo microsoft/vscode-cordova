@@ -95,7 +95,7 @@ enum TargetType {
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
-    private static SIMULATE_TARGETS: string[] = ["chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
+    private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
     private static pidofNotFoundError = "/system/bin/sh: pidof: not found";
 
 
