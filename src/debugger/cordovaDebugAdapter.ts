@@ -65,6 +65,9 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     simulateTempDir?: string;
     corsproxy?: boolean;
     runArguments?: string[];
+    cordovaExecutable?: string;
+    envFile?: string;
+    env?: any;
 }
 
 const WIN_APPDATA = process.env.LOCALAPPDATA || "/";
@@ -145,6 +148,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING, [projectRoot]);
     }
 
+    public static getCordovaExecutable(projectRoot: string): Q.Promise<string> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_CORDOVA_EXECUTABLE, [projectRoot]);
+    }
+
     private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
         const retry = () => {
             if (iteration < maxRetries) {
@@ -217,7 +224,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 return Q.all([
                     TelemetryHelper.determineProjectTypes(launchArgs.cwd),
                     CordovaDebugAdapter.getRunArguments(launchArgs.cwd),
-                ]).then(([projectType, runArguments]) => {
+                    CordovaDebugAdapter.getCordovaExecutable(launchArgs.cwd),
+                ]).then(([projectType, runArguments, cordovaExecutable]) => {
+                    launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
+                    launchArgs.env = CordovaProjectHelper.getEnvArgument(launchArgs);
                     generator.add("projectType", projectType, false);
                     this.outputLogger(`Launching for ${platform} (This may take a while)...`);
 
@@ -401,8 +411,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         if (args.indexOf("--livereload") > -1) {
             return this.startIonicDevServer(launchArgs, args).then(() => void 0);
         }
-
-        let cordovaResult = cordovaRunCommand(args, workingDirectory).then((output) => {
+        const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
+        let cordovaResult = cordovaRunCommand(command, args, launchArgs.env, workingDirectory).then((output) => {
             let runOutput = output[0];
             let stderr = output[1];
 
@@ -574,6 +584,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         let iosDebugProxyPort = launchArgs.iosDebugProxyPort || 9221;
         let appStepLaunchTimeout = launchArgs.appStepLaunchTimeout || 5000;
+
+        const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
             let args = ["build", "ios"];
@@ -604,7 +616,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(args, workingDirectory).then(() => {
+            return cordovaRunCommand(command, args, launchArgs.env, workingDirectory).then(() => {
                 let buildFolder = path.join(workingDirectory, "platforms", "ios", "build", "device");
 
                 this.outputLogger("Installing app on device");
@@ -677,12 +689,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
-            return cordovaRunCommand(args, workingDirectory)
+            return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
                 .progress((progress) => {
                     this.outputLogger(progress[0], progress[1]);
                 }).catch((err) => {
                     if (target) {
-                        return cordovaRunCommand(["emulate", "ios", "--list"], workingDirectory).then((output) => {
+                        return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.env, workingDirectory).then((output) => {
                             // List out available targets
                             errorLogger("Unable to run with given target.");
                             errorLogger(output[0].replace(/\*+[^*]+\*+/g, "")); // Print out list of targets, without ** RUN SUCCEEDED **
@@ -1035,7 +1047,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             return appReadyRegex;
         };
 
-        this.ionicLivereloadProcess = cordovaStartCommand(cliArgs, launchArgs.cwd);
+        const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(launchArgs.cwd);
+
+        this.ionicLivereloadProcess = cordovaStartCommand(command, cliArgs, launchArgs.env, launchArgs.cwd);
         this.ionicLivereloadProcess.on("error", (err: { code: string }) => {
             if (err.code === "ENOENT") {
                 serverDeferred.reject(new Error("Ionic not found, please run 'npm install –g ionic' to install it globally"));

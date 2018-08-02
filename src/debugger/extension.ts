@@ -36,13 +36,12 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
     return deferred.promise;
 }
 
-export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Promise<string[]> {
+export function cordovaRunCommand(command: string, args: string[], env, cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
     let isIonicProject = CordovaProjectHelper.isIonicProject(cordovaRootPath);
-    let cliName = isIonicProject ? "ionic" : "cordova";
     let output = "";
     let stderr = "";
-    let cordovaProcess = cordovaStartCommand(args, cordovaRootPath);
+    let cordovaProcess = cordovaStartCommand(command, args, env, cordovaRootPath);
 
     // Prevent these lines to be shown more than once
     // to prevent debug console pollution
@@ -81,7 +80,7 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
     });
     cordovaProcess.on("exit", exitCode => {
         if (exitCode) {
-            defer.reject(new Error(util.format("'%s %s' failed with exit code %d", cliName, args.join(" "), exitCode)));
+            defer.reject(new Error(util.format("'%s %s' failed with exit code %d", command, args.join(" "), exitCode)));
         } else {
             defer.resolve([output, stderr]);
         }
@@ -93,13 +92,12 @@ export function cordovaRunCommand(args: string[], cordovaRootPath: string): Q.Pr
     return defer.promise;
 }
 
-export function cordovaStartCommand(args: string[], cordovaRootPath: string): child_process.ChildProcess {
-    const command = CordovaProjectHelper.getCliCommand(cordovaRootPath);
+export function cordovaStartCommand(command: string, args: string[], env: any, cordovaRootPath: string): child_process.ChildProcess {
     const isIonic = CordovaProjectHelper.isIonicProject(cordovaRootPath);
     const isIonicServe: boolean = args.indexOf("serve") >= 0;
 
     if (isIonic && !isIonicServe) {
-        const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(cordovaRootPath);
+        const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(cordovaRootPath, command);
 
         if (isIonicCliVersionGte3) {
             args.unshift("cordova");
@@ -112,7 +110,7 @@ export function cordovaStartCommand(args: string[], cordovaRootPath: string): ch
         args.push("--no-update-notifier");
     }
 
-    return child_process.spawn(command, args, { cwd: cordovaRootPath });
+    return child_process.spawn(command, args, { cwd: cordovaRootPath, env });
 }
 
 export function killTree(processId: number): void {

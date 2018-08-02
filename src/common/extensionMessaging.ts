@@ -19,6 +19,7 @@ export enum ExtensionMessage {
     START_SIMULATE_SERVER,
     GET_RUN_ARGUMENTS,
     GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING,
+    GET_CORDOVA_EXECUTABLE,
 }
 
 export interface MessageWithArguments {
