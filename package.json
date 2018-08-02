@@ -416,7 +416,7 @@
                 "description": "An array of file or folder names, or path globs, to skip when debugging.",
                 "default": []
               }
-              }
+            }
           },
           "attach": {
             "required": [
