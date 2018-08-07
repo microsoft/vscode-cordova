@@ -394,6 +394,23 @@
                 "description": "Launch Cordova simulator in browser instead of tab in VS Code",
                 "default": false
               },
+              "cordovaExecutable": {
+                "type": "string",
+                "description": "Path to local cordova/ionic executable"
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Environment variables passed to the program.",
+                "default": {}
+              },
+              "envFile": {
+                "type": "string",
+                "description": "Absolute path to a file containing environment variable definitions.",
+                "default": "${workspaceFolder}/.env"
+              },
               "skipFiles": {
                 "type": "array",
                 "description": "An array of file or folder names, or path globs, to skip when debugging.",
@@ -474,6 +491,26 @@
             "type": "boolean",
             "default": false,
             "description": "Launch Cordova simulator in browser instead of tab in VS Code",
+            "scope": "resource"
+          },
+          "cordova.cordovaExecutable": {
+            "type": "string",
+            "default": "",
+            "description": "Path to local cordova/ionic executable",
+            "scope": "resource"
+          },
+          "cordova.env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Environment variables passed to the program.",
+            "default": {},
+            "scope": "resource"
+          },
+          "cordova.envFile": {
+            "type": "string",
+            "description": "Absolute path to a file containing environment variable definitions.",
             "scope": "resource"
           }
         }

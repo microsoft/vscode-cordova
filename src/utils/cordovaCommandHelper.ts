@@ -47,7 +47,11 @@ export class CordovaCommandHelper {
                     }
 
                     logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
-                    let process = child_process.exec(commandToExecute, { cwd: projectRoot });
+                    const env = CordovaProjectHelper.getEnvArgument({
+                        env: CordovaCommandHelper.getEnvArgs(projectRoot),
+                        envFile: CordovaCommandHelper.getEnvFile(projectRoot),
+                    });
+                    let process = child_process.exec(commandToExecute, { cwd: projectRoot, env });
 
                     let deferred = Q.defer();
                     process.on("error", (err: any) => {
@@ -87,6 +91,18 @@ export class CordovaCommandHelper {
 
     public static getSimulatorInExternalBrowserSetting(fsPath: string): boolean {
         return CordovaCommandHelper.getSetting(fsPath, "simulatorInExternalBrowser") === true;
+    }
+
+    public static getCordovaExecutable(fsPath: string): string {
+        return CordovaCommandHelper.getSetting(fsPath, "cordovaExecutable") || "";
+    }
+
+    public static getEnvArgs(fsPath: string): any {
+        return CordovaCommandHelper.getSetting(fsPath, "env");
+    }
+
+    public static getEnvFile(fsPath: string): string {
+        return CordovaCommandHelper.getSetting(fsPath, "envFile") || "";
     }
 
     private static getSetting(fsPath: string, configKey: string): any {
