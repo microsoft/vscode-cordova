@@ -144,6 +144,7 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     // Skip adding typings for cordova in case of Typescript or Ionic2 projects
     // to avoid conflicts between typings we install and user-installed ones.
     if (!CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) &&
+        !CordovaProjectHelper.isIonic4Project(cordovaProjectRoot) &&
         !CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
 
         // Install the type defintion files for Cordova
@@ -240,6 +241,7 @@ function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     // in typescript projects as it might break compilation due to conflicts
     // between typings we install and user-installed ones.
     if (CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) ||
+        CordovaProjectHelper.isIonic4Project(cordovaProjectRoot) ||
         CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
 
         return;
