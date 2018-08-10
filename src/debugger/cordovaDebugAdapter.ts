@@ -943,7 +943,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
         // Currently, "ionic serve" is only supported for Ionic projects
         if (!projectType.ionic && !projectType.ionic2 && !projectType.ionic4) {
-            errorLogger(JSON.stringify(projectType, null, 2) + "\n");
             let errorMessage = "Serving to the browser is currently only supported for Ionic projects";
 
             errorLogger(errorMessage);
