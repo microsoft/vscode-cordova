@@ -11,6 +11,7 @@ import * as os from "os";
 export interface IProjectType {
     ionic: boolean;
     ionic2: boolean;
+    ionic4: boolean;
     meteor: boolean;
     mobilefirst: boolean;
     phonegap: boolean;
@@ -266,7 +267,7 @@ export class CordovaProjectHelper {
      * Helper function to determine whether the project is an Ionic 1 or 2 project or not
      */
     public static isIonicProject(projectRoot: string): boolean {
-        return CordovaProjectHelper.isIonic1Project(projectRoot) || CordovaProjectHelper.isIonic2Project(projectRoot);
+        return CordovaProjectHelper.isIonic1Project(projectRoot) || CordovaProjectHelper.isIonic2Project(projectRoot) || CordovaProjectHelper.isIonic4Project(projectRoot);
     }
 
     /**
@@ -310,6 +311,35 @@ export class CordovaProjectHelper {
             // If it's a valid range we check that the entire range is greater than 2.0.0-beta-9
             if (semver.validRange(ionicVersion)) {
                 return semver.ltr(highestNotSupportedIonic2BetaVersion, ionicVersion);
+            }
+        }
+        return false;
+    }
+
+    public static isIonic4Project(projectRoot: string): boolean {
+        const packageJsonPath = path.join(projectRoot, "package.json");
+        if (!fs.existsSync(packageJsonPath)) {
+            return false;
+        }
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+        const dependencies = packageJson.dependencies || {};
+        const devDependencies = packageJson.devDependencies || {};
+        const ionic4BetaVersion = "4.0.0-beta.0";
+        if ((dependencies["@ionic/angular"]) && (devDependencies["@ionic-native/core"] || dependencies["@ionic-native/core"])) {
+            const ionicVersion = dependencies["@ionic/angular"];
+
+            // Assuming for now that latest version is > 3
+            if (ionicVersion === "latest" || ionicVersion === "nightly") {
+                return true;
+            }
+
+
+            if (semver.valid(ionicVersion)) {
+                return semver.gte(ionicVersion, ionic4BetaVersion);
+            }
+
+            if (semver.validRange(ionicVersion)) {
+                return semver.satisfies(ionic4BetaVersion, ionicVersion);
             }
         }
         return false;

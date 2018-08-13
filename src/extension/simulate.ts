@@ -135,7 +135,7 @@ export class PluginSimulator implements vscode.Disposable {
 
                 if (isPlatformMissing) {
                     let command = "cordova";
-                    if (projectType.ionic || projectType.ionic2) {
+                    if (projectType.ionic || projectType.ionic2  || projectType.ionic4) {
                         const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(workspaceFolder.uri.fsPath);
                         command = "ionic" + (isIonicCliVersionGte3 ? " cordova" : "");
                     }
@@ -154,7 +154,7 @@ export class PluginSimulator implements vscode.Disposable {
                             simHostUrl: this.simulator.simHostUrl(),
                             urlRoot: this.simulator.urlRoot(),
                         };
-                        if (projectType.ionic2 && platform && platform !== "browser") {
+                        if ((projectType.ionic2 || projectType.ionic4) && platform && platform !== "browser") {
                             this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`;
                         }
                         return this.simulationInfo;

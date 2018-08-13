@@ -399,7 +399,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic || projectType.ionic2) {
+                if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
                     // Livereload is enabled, let Ionic do the launch
                     args.push("--livereload");
                 } else {
@@ -598,7 +598,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 args.push("--device");
                 // Verify if we are using Ionic livereload
                 if (launchArgs.ionicLiveReload) {
-                    if (projectType.ionic || projectType.ionic2) {
+                    if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
                         // Livereload is enabled, let Ionic do the launch
                         args = ["run", "ios", "--device", "--livereload"];
                     } else {
@@ -676,7 +676,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }
                 // Verify if we are using Ionic livereload
                 if (launchArgs.ionicLiveReload) {
-                    if (projectType.ionic || projectType.ionic2) {
+                    if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
                         // Livereload is enabled, let Ionic do the launch
                         args.push("--livereload");
                     } else {
@@ -942,7 +942,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
-        if (!projectType.ionic && !projectType.ionic2) {
+        if (!projectType.ionic && !projectType.ionic2 && !projectType.ionic4) {
             let errorMessage = "Serving to the browser is currently only supported for Ionic projects";
 
             errorLogger(errorMessage);
