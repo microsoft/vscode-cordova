@@ -7,7 +7,7 @@ import * as http from "http";
 import * as os from "os";
 import * as Q from "q";
 
-import {CordovaProjectHelper} from "./../src/utils/CordovaProjectHelper";
+import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 
 export function executeCordovaCommand(cwd: string, command: string): Q.Promise<any> {
     let deferred = Q.defer<any>();

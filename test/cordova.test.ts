@@ -8,7 +8,7 @@ import * as rimraf from "rimraf";
 import * as vscode from "vscode";
 
 import * as testUtils from "./testUtils";
-import {CordovaProjectHelper} from "./../src/utils/CordovaProjectHelper";
+import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 
 suite("VSCode Cordova extension - intellisense and command palette tests", () => {
     let testProjectPath: string = path.resolve(__dirname, "..", "..", "test", "testProject");
