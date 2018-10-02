@@ -62,10 +62,17 @@ var tsConfig = require('./tsconfig.json');
 var projectConfig = tsConfig.compilerOptions;
 projectConfig.typescript = typescript;
 
+function fixSources() {
+    return sourcemaps.mapSources(function(sourcePath) {
+        return sourcePath.replace('..', '.');
+    });
+}
+
 gulp.task('compile-src', function () {
     return gulp.src(sources, { base: '.' })
         .pipe(sourcemaps.init())
         .pipe(ts(projectConfig))
+        .pipe(fixSources())
         .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: __dirname }))
         .pipe(gulp.dest('out'));
 });
@@ -74,6 +81,7 @@ gulp.task('compile-test', function () {
     return gulp.src(tests, { base: '.' })
         .pipe(sourcemaps.init())
         .pipe(ts(projectConfig))
+        .pipe(fixSources())
         .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: __dirname }))
         .pipe(gulp.dest('out'));
 });

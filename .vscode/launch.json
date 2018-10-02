@@ -41,6 +41,12 @@
             ],
             "preLaunchTask": "build-src"
         }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Extension + Debugger",
+            "configurations": ["Launch debugger as server", "Launch Extension"]
+        }
     ]
 }
 
