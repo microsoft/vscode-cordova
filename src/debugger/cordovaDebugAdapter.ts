@@ -16,7 +16,7 @@ import * as simulate from "cordova-simulate";
 import {DebugProtocol} from "vscode-debugprotocol";
 import {OutputEvent} from "vscode-debugadapter";
 import {ChromeDebugAdapter, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from "vscode-chrome-debug-core";
-import {Crdp} from "vscode-chrome-debug-core/lib/crdp/crdp";
+import {Protocol as Crdp} from "devtools-protocol";
 import {CordovaIosDeviceLauncher} from "./cordovaIosDeviceLauncher";
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from "./extension";
 import {CordovaPathTransformer} from "./cordovaPathTransformer";
@@ -568,7 +568,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 });
         }).then(() => {
             let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
-            args.webRoot = attachArgs.cwd;
+            args.address = attachArgs.cwd;
             return args;
         });
     }
@@ -800,7 +800,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 .then(({ port, url }) => {
                     const args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
                     args.port = port;
-                    args.webRoot = attachArgs.cwd;
+                    args.address = attachArgs.cwd;
                     args.url = url;
                     return args;
                 });

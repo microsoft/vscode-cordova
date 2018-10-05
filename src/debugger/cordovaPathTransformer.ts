@@ -41,40 +41,40 @@ export class CordovaPathTransformer extends BasePathTransformer {
     public attach(args: ICordovaAttachRequestArgs): Promise<void> {
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
-        this._webRoot = args.webRoot || this._cordovaRoot;
+        this._webRoot = args.address || this._cordovaRoot;
         return;
     }
 
-    public setBreakpoints(args: ISetBreakpointsArgs): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    // public setBreakpoints(args: ISetBreakpointsArgs): Promise<void> {
+    //     return new Promise<void>((resolve, reject) => {
 
-            if (!args.source.path) {
-                resolve();
-                return;
-            }
+    //         if (!args.source.path) {
+    //             resolve();
+    //             return;
+    //         }
 
-            if (utils.isURL(args.source.path)) {
-                // already a url, use as-is
-                logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
-                resolve();
-                return;
-            }
+    //         if (utils.isURL(args.source.path)) {
+    //             // already a url, use as-is
+    //             logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
+    //             resolve();
+    //             return;
+    //         }
 
-            const url = utils.canonicalizeUrl(args.source.path);
-            if (this._clientPathToWebkitUrl.has(url)) {
-                args.source.path = this._clientPathToWebkitUrl.get(url);
-                logger.log(`Paths.setBP: Resolved ${url} to ${args.source.path}`);
-                resolve();
-            } else if (this._shadowedClientPaths.has(url)) {
-                this._outputLogger(`Warning: Breakpoint set in overriden file ${url} will not be hit. Use ${this._shadowedClientPaths.get(url)} instead.`, true);
-                reject();
-            } else {
-                logger.log(`Paths.setBP: No target url cached for client path: ${url}, waiting for target script to be loaded.`);
-                args.source.path = url;
-                this._pendingBreakpointsByPath.set(args.source.path, { resolve, reject, args });
-            }
-        });
-    }
+    //         const url = utils.canonicalizeUrl(args.source.path);
+    //         if (this._clientPathToWebkitUrl.has(url)) {
+    //             args.source.path = this._clientPathToWebkitUrl.get(url);
+    //             logger.log(`Paths.setBP: Resolved ${url} to ${args.source.path}`);
+    //             resolve();
+    //         } else if (this._shadowedClientPaths.has(url)) {
+    //             this._outputLogger(`Warning: Breakpoint set in overriden file ${url} will not be hit. Use ${this._shadowedClientPaths.get(url)} instead.`, true);
+    //             reject();
+    //         } else {
+    //             logger.log(`Paths.setBP: No target url cached for client path: ${url}, waiting for target script to be loaded.`);
+    //             args.source.path = url;
+    //             this._pendingBreakpointsByPath.set(args.source.path, { resolve, reject, args });
+    //         }
+    //     });
+    // }
 
     public clearClientContext(): void {
         this._pendingBreakpointsByPath = new Map<string, IPendingBreakpoint>();
@@ -104,7 +104,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
             logger.log(`Paths.scriptParsed: Resolving pending breakpoints for ${scriptPath}`);
             const pendingBreakpoint = this._pendingBreakpointsByPath.get(scriptPath);
             this._pendingBreakpointsByPath.delete(scriptPath);
-            this.setBreakpoints(pendingBreakpoint.args).then(pendingBreakpoint.resolve, pendingBreakpoint.reject);
+            this.setBreakpoints(pendingBreakpoint.args);
         }
         return Promise.resolve(scriptPath);
     }
