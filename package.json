@@ -116,7 +116,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -136,7 +136,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -155,7 +155,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -174,7 +174,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -194,7 +194,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -214,7 +214,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -233,7 +233,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -252,7 +252,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -271,7 +271,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -291,7 +291,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -311,7 +311,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           },
           {
@@ -331,7 +331,7 @@
               "webpack:///src/*": "${workspaceRoot}/*"
             },
             "pathMapping": {
-              "/": "${workspaceFolder}"
+              "/": "${workspaceRoot}"
             }
           }
         ],
