@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { chromeUtils, UrlPathTransformer, IPathMapping} from "vscode-chrome-debug-core";
+import {logger, utils, chromeUtils, IPathMapping, ISetBreakpointsArgs, BasePathTransformer, IStackTraceResponseBody} from "vscode-chrome-debug-core";
 import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from "./cordovaDebugAdapter";
 
 // import {BasePathTransformer} from "vscode-chrome-debug-core";
@@ -12,10 +12,12 @@ import * as fs from "fs";
 /**
  * Converts a local path from Code to a path on the target.
  */
-export class CordovaPathTransformer extends UrlPathTransformer {
+export class CordovaPathTransformer extends BasePathTransformer {
     private _cordovaRoot: string;
     private _platform: string;
     private _webRoot: string;
+    private _clientPathToWebkitUrl = new Map<string, string>();
+    private _webkitUrlToClientPath = new Map<string, string>();
     private _outputLogger: (message: string, error?: boolean | string) => void;
 
     constructor(outputLogger: (message: string) => void) {
@@ -35,82 +37,69 @@ export class CordovaPathTransformer extends UrlPathTransformer {
         return;
     }
 
-    // public setBreakpoints(args: ISetBreakpointsArgs): ISetBreakpointsArgs {
-    //     if (!args.source.path) {
-    //         // sourceReference script, nothing to do
-    //         return args;
-    //     }
+    public setBreakpoints(args: ISetBreakpointsArgs): ISetBreakpointsArgs {
+        if (!args.source.path) {
+            // sourceReference script, nothing to do
+            return args;
+        }
 
-    //     if (utils.isURL(args.source.path)) {
-    //         // already a url, use as-is
-    //         logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
-    //         return args;
-    //     }
+        if (utils.isURL(args.source.path)) {
+            // already a url, use as-is
+            logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
+            return args;
+        }
 
-    //     const path = utils.canonicalizeUrl(args.source.path);
-    //     const url = this.getTargetPathFromClientPath(path);
-    //     if (url) {
-    //         args.source.path = url;
-    //         logger.log(`Paths.setBP: Resolved ${path} to ${args.source.path}`);
-    //         return args;
-    //     } else {
-    //         logger.log(`Paths.setBP: No target url cached yet for client path: ${path}.`);
-    //         args.source.path = path;
-    //         return args;
-    //     }
-    // }
+        const path = utils.canonicalizeUrl(args.source.path);
+        const url = this.getTargetPathFromClientPath(path);
+        if (url) {
+            args.source.path = url;
+            logger.log(`Paths.setBP: Resolved ${path} to ${args.source.path}`);
+            return args;
+        } else {
+            logger.log(`Paths.setBP: No target url cached yet for client path: ${path}.`);
+            args.source.path = path;
+            return args;
+        }
+    }
 
-    // public clearClientContext(): void {
-    //     this._pendingBreakpointsByPath = new Map<string, IPendingBreakpoint>();
-    // }
+    public clearTargetContext(): void {
+        this._clientPathToWebkitUrl = new Map<string, string>();
+        this._webkitUrlToClientPath = new Map<string, string>();
+    }
 
-    // public clearTargetContext(): void {
-    //     this._clientPathToWebkitUrl = new Map<string, string>();
-    //     this._webkitUrlToClientPath = new Map<string, string>();
-    //     this._shadowedClientPaths = new Map<string, string>();
-    // }
+    public scriptParsed(scriptUrl: string): Promise<string> {
+        const clientPath = this.getClientPath(scriptUrl);
 
-    // public scriptParsed(scriptPath: string): Promise<string> {
-    //     const webkitUrl: string = scriptPath;
-    //     const clientPath = this.getClientPath(webkitUrl);
+        if (clientPath) {
+            logger.log(`Paths.scriptParsed: resolved ${scriptUrl} to ${clientPath}`);
+            const canonicalizedClientPath = utils.canonicalizeUrl(clientPath);
+            this._clientPathToWebkitUrl.set(canonicalizedClientPath, scriptUrl);
+            this._webkitUrlToClientPath.set(scriptUrl, clientPath);
 
-    //     if (!clientPath) {
-    //         logger.log(`Paths.scriptParsed: could not resolve ${webkitUrl} to a file in the workspace. webRoot: ${this._webRoot}`);
-    //     } else {
-    //         logger.log(`Paths.scriptParsed: resolved ${webkitUrl} to ${clientPath}. webRoot: ${this._webRoot}`);
-    //         this._clientPathToWebkitUrl.set(clientPath, webkitUrl);
-    //         this._webkitUrlToClientPath.set(webkitUrl, clientPath);
+            scriptUrl = clientPath;
+        }
 
-    //         scriptPath = clientPath;
-    //     }
+        return Promise.resolve(scriptUrl);
+    }
 
-    //     if (this._pendingBreakpointsByPath.has(scriptPath)) {
-    //         logger.log(`Paths.scriptParsed: Resolving pending breakpoints for ${scriptPath}`);
-    //         const pendingBreakpoint = this._pendingBreakpointsByPath.get(scriptPath);
-    //         this._pendingBreakpointsByPath.delete(scriptPath);
-    //         this.setBreakpoints(pendingBreakpoint.args);
-    //     }
-    //     return Promise.resolve(scriptPath);
-    // }
+    public stackTraceResponse(response: IStackTraceResponseBody): void {
+        response.stackFrames.forEach(frame => {
+            if (frame.source.path) {
+                // Try to resolve the url to a path in the workspace. If it's not in the workspace,
+                // just use the script.url as-is. It will be resolved or cleared by the SourceMapTransformer.
+                const clientPath = this._webkitUrlToClientPath.has(frame.source.path) ?
+                    this._webkitUrlToClientPath.get(frame.source.path) :
+                    this.getClientPath(frame.source.path);
 
-    // // public stackTraceResponse(response: IStackTraceResponseBody): void {
-    // //     response.stackFrames.forEach(frame => {
-    // //         if (frame.source.path) {
-    // //             // Try to resolve the url to a path in the workspace. If it's not in the workspace,
-    // //             // just use the script.url as-is. It will be resolved or cleared by the SourceMapTransformer.
-    // //             const clientPath = this._webkitUrlToClientPath.has(frame.source.path) ?
-    // //                 this._webkitUrlToClientPath.get(frame.source.path) :
-    // //                 this.getClientPath(frame.source.path);
-
-    // //             // Incoming stackFrames have sourceReference and path set. If the path was resolved to a file in the workspace,
-    // //             // clear the sourceReference since it's not needed.
-    // //             if (clientPath) {
-    // //                 frame.source.path = clientPath;
-    // //                 frame.source.sourceReference = 0;
-    // //             }
-    // //         }
-    // //     });
-    // // }
+                // Incoming stackFrames have sourceReference and path set. If the path was resolved to a file in the workspace,
+                // clear the sourceReference since it's not needed.
+                if (clientPath) {
+                    frame.source.path = clientPath;
+                    frame.source.sourceReference = 0;
+                }
+            }
+        });
+    }
 
     public getClientPath(sourceUrl: string): string {
         let wwwRoot = path.join(this._cordovaRoot, "www");
@@ -124,8 +113,9 @@ export class CordovaPathTransformer extends UrlPathTransformer {
         [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
             const pathMapping: IPathMapping = {
                 "file:///": "http://localhost/",
+                "/": `${searchFolder}`,
             };
-            let mappedPath = chromeUtils.targetUrlToClientPath(searchFolder, pathMapping);
+            let mappedPath = chromeUtils.targetUrlToClientPath(sourceUrl, pathMapping);
 
             if (mappedPath) {
                 defaultPath = mappedPath;

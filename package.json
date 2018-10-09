@@ -108,7 +108,13 @@
             "port": 9222,
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Run iOS on device",
@@ -119,7 +125,13 @@
             "port": 9220,
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running android on device",
@@ -129,7 +141,13 @@
             "target": "device",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running iOS on device",
@@ -139,7 +157,13 @@
             "target": "device",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Run Android on emulator",
@@ -150,7 +174,13 @@
             "port": 9222,
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Run iOS on simulator",
@@ -161,7 +191,13 @@
             "port": 9220,
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running android on emulator",
@@ -171,7 +207,13 @@
             "target": "emulator",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running iOS on simulator",
@@ -181,7 +223,13 @@
             "target": "emulator",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Serve to the browser (ionic serve)",
@@ -191,7 +239,13 @@
             "cwd": "${workspaceRoot}",
             "devServerAddress": "localhost",
             "sourceMaps": true,
-            "ionicLiveReload": true
+            "ionicLiveReload": true,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Simulate Android in browser",
@@ -202,7 +256,13 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Simulate iOS in browser",
@@ -213,7 +273,13 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           },
           {
             "name": "Run Browser",
@@ -224,7 +290,13 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*":   "${cwd}/*",
+              "webpack:///*":     "*",
+              "webpack:///src/*": "${cwd}/*"
+            }
           }
         ],
         "configurationSnippets": [
