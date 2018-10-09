@@ -3,9 +3,7 @@
 
 import {logger, utils, chromeUtils, IPathMapping, ISetBreakpointsArgs, BasePathTransformer, IStackTraceResponseBody} from "vscode-chrome-debug-core";
 import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from "./cordovaDebugAdapter";
-
-// import {BasePathTransformer} from "vscode-chrome-debug-core";
-
+import { DebugProtocol } from "vscode-debugprotocol";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -13,11 +11,12 @@ import * as fs from "fs";
  * Converts a local path from Code to a path on the target.
  */
 export class CordovaPathTransformer extends BasePathTransformer {
+    private _pathMapping: IPathMapping;
+    private _clientPathToTargetUrl = new Map<string, string>();
+    private _targetUrlToClientPath = new Map<string, string>();
     private _cordovaRoot: string;
     private _platform: string;
     private _webRoot: string;
-    private _clientPathToWebkitUrl = new Map<string, string>();
-    private _webkitUrlToClientPath = new Map<string, string>();
     private _outputLogger: (message: string, error?: boolean | string) => void;
 
     constructor(outputLogger: (message: string) => void) {
@@ -26,15 +25,15 @@ export class CordovaPathTransformer extends BasePathTransformer {
         (<any>global).cordovaPathTransformer = this;
     }
 
+
     public launch(args: ICordovaLaunchRequestArgs): Promise<void> {
-        return this.attach(args);
+        this.initRoot(args);
+        return super.launch(args);
     }
 
     public attach(args: ICordovaAttachRequestArgs): Promise<void> {
-        this._cordovaRoot = args.cwd;
-        this._platform = args.platform.toLowerCase();
-        this._webRoot = args.address || this._cordovaRoot;
-        return;
+        this.initRoot(args);
+        return super.attach(args);
     }
 
     public setBreakpoints(args: ISetBreakpointsArgs): ISetBreakpointsArgs {
@@ -63,18 +62,23 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
     public clearTargetContext(): void {
-        this._clientPathToWebkitUrl = new Map<string, string>();
-        this._webkitUrlToClientPath = new Map<string, string>();
+        this._clientPathToTargetUrl = new Map<string, string>();
+        this._targetUrlToClientPath = new Map<string, string>();
     }
 
-    public scriptParsed(scriptUrl: string): Promise<string> {
-        const clientPath = this.getClientPath(scriptUrl);
+    public async scriptParsed(scriptUrl: string): Promise<string> {
+        const clientPath = await this.targetUrlToClientPath(scriptUrl);
 
-        if (clientPath) {
-            logger.log(`Paths.scriptParsed: resolved ${scriptUrl} to ${clientPath}`);
+        if (!clientPath) {
+            // It's expected that eval scripts (eval://) won't be resolved
+            if (!scriptUrl.startsWith(chromeUtils.EVAL_NAME_PREFIX)) {
+                logger.log(`Paths.scriptParsed: could not resolve ${scriptUrl} to a file with pathMapping/webRoot: ${JSON.stringify(this._pathMapping)}. It may be external or served directly from the server's memory (and that's OK).`);
+            }
+        } else {
+            logger.log(`Paths.scriptParsed: resolved ${scriptUrl} to ${clientPath}. pathMapping/webroot: ${JSON.stringify(this._pathMapping)}`);
             const canonicalizedClientPath = utils.canonicalizeUrl(clientPath);
-            this._clientPathToWebkitUrl.set(canonicalizedClientPath, scriptUrl);
-            this._webkitUrlToClientPath.set(scriptUrl, clientPath);
+            this._clientPathToTargetUrl.set(canonicalizedClientPath, scriptUrl);
+            this._targetUrlToClientPath.set(scriptUrl, clientPath);
 
             scriptUrl = clientPath;
         }
@@ -82,23 +86,37 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return Promise.resolve(scriptUrl);
     }
 
-    public stackTraceResponse(response: IStackTraceResponseBody): void {
-        response.stackFrames.forEach(frame => {
-            if (frame.source.path) {
-                // Try to resolve the url to a path in the workspace. If it's not in the workspace,
-                // just use the script.url as-is. It will be resolved or cleared by the SourceMapTransformer.
-                const clientPath = this._webkitUrlToClientPath.has(frame.source.path) ?
-                    this._webkitUrlToClientPath.get(frame.source.path) :
-                    this.getClientPath(frame.source.path);
+    public async stackTraceResponse(response: IStackTraceResponseBody): Promise<void> {
+        await Promise.all(response.stackFrames.map(frame => this.fixSource(frame.source)));
+    }
 
-                // Incoming stackFrames have sourceReference and path set. If the path was resolved to a file in the workspace,
-                // clear the sourceReference since it's not needed.
-                if (clientPath) {
-                    frame.source.path = clientPath;
-                    frame.source.sourceReference = 0;
-                }
+    public async fixSource(source: DebugProtocol.Source): Promise<void> {
+        if (source && source.path) {
+            // Try to resolve the url to a path in the workspace. If it's not in the workspace,
+            // just use the script.url as-is. It will be resolved or cleared by the SourceMapTransformer.
+            const clientPath = this.getClientPathFromTargetPath(source.path) ||
+                await this.targetUrlToClientPath(source.path);
+
+            // Incoming stackFrames have sourceReference and path set. If the path was resolved to a file in the workspace,
+            // clear the sourceReference since it's not needed.
+            if (clientPath) {
+                source.path = clientPath;
+                source.sourceReference = undefined;
+                source.origin = undefined;
+                source.name = path.basename(clientPath);
             }
-        });
+        }
+    }
+
+    public getTargetPathFromClientPath(clientPath: string): string {
+        // If it's already a URL, skip the Map
+        return path.isAbsolute(clientPath) ?
+            this._clientPathToTargetUrl.get(utils.canonicalizeUrl(clientPath)) :
+            clientPath;
+    }
+
+    public getClientPathFromTargetPath(targetPath: string): string {
+        return this._targetUrlToClientPath.get(targetPath);
     }
 
     public getClientPath(sourceUrl: string): string {
@@ -108,11 +126,13 @@ export class CordovaPathTransformer extends BasePathTransformer {
         // default behavior is to use that exact file, if it exists. We don't want that,
         // since we know that those files are copies of files in the local folder structure.
         // A simple workaround for this is to convert file:// paths to bogus http:// paths
+        sourceUrl = sourceUrl.replace("file:///", "http://localhost/");
+
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
         let defaultPath = "";
+
         [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
             const pathMapping: IPathMapping = {
-                "file:///": "http://localhost/",
                 "/": `${searchFolder}`,
             };
             let mappedPath = chromeUtils.targetUrlToClientPath(sourceUrl, pathMapping);
@@ -137,5 +157,18 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return defaultPath;
     }
 
+    /**
+     * Overridable for VS to ask Client to resolve path
+     */
+    protected async targetUrlToClientPath(scriptUrl: string): Promise<string> {
+        return Promise.resolve(chromeUtils.targetUrlToClientPath(scriptUrl, this._pathMapping));
+    }
+
+    private initRoot(args: ICordovaAttachRequestArgs) {
+        this._pathMapping = args.pathMapping;
+        this._cordovaRoot = args.cwd;
+        this._platform = args.platform.toLowerCase();
+        this._webRoot = args.address || this._cordovaRoot;
+    }
 
 }
