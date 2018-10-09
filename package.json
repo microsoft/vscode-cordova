@@ -107,16 +107,16 @@
             "target": "device",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "ionicLiveReload": false,
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -127,16 +127,16 @@
             "target": "device",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "ionicLiveReload": false,
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -147,15 +147,15 @@
             "target": "device",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -166,15 +166,15 @@
             "target": "device",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -185,16 +185,16 @@
             "target": "emulator",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "ionicLiveReload": false,
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -205,16 +205,16 @@
             "target": "emulator",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "ionicLiveReload": false,
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -225,15 +225,15 @@
             "target": "emulator",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -244,15 +244,15 @@
             "target": "emulator",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -260,18 +260,18 @@
             "type": "cordova",
             "request": "launch",
             "platform": "serve",
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "devServerAddress": "localhost",
             "sourceMaps": true,
             "ionicLiveReload": true,
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -283,15 +283,15 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -303,15 +303,15 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           },
           {
@@ -323,15 +323,15 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "sourceMapPathOverrides": {
-              "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
-              "webpack:///./*": "${workspaceRoot}/*",
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
               "webpack:///*": "*",
-              "webpack:///src/*": "${workspaceRoot}/*"
+              "webpack:///src/*": "${cwd}/*"
             },
             "pathMapping": {
-              "/": "${workspaceRoot}"
+              "/": "${cwd}/*"
             }
           }
         ],
@@ -346,7 +346,7 @@
               "platform": "${1:android|ios}",
               "target": "${2:device|emulator}",
               "sourceMaps": true,
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
@@ -358,7 +358,7 @@
               "request": "attach",
               "platform": "${1:android|ios}",
               "target": "${2:device|emulator}",
-              "cwd": "^\"\\${workspaceRoot}\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
               "sourceMaps": true
             }
           },
@@ -373,7 +373,7 @@
               "devServerAddress": "${2:localhost}",
               "sourceMaps": true,
               "ionicLiveReload": true,
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
@@ -387,7 +387,7 @@
               "target": "chrome",
               "simulatePort": 8000,
               "livereload": true,
-              "cwd": "^\"\\${workspaceRoot}\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
               "sourceMaps": true
             }
           }
@@ -486,7 +486,7 @@
               "simulateTempDir": {
                 "type": "string",
                 "description": "The directory where temporary browser simulation files are hosted.",
-                "default": "${workspaceRoot}/.vscode/simulation"
+                "default": "${workspaceFolder}/.vscode/simulation"
               },
               "corsproxy": {
                 "type": "boolean",
