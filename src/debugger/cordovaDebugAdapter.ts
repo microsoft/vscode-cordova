@@ -566,7 +566,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 });
         }).then(() => {
             let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
-            args.address = attachArgs.cwd;
             return args;
         });
     }
@@ -798,7 +797,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 .then(({ port, url }) => {
                     const args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
                     args.port = port;
-                    args.address = attachArgs.cwd;
                     args.url = url;
                     return args;
                 });

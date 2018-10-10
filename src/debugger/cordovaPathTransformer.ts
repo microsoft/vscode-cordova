@@ -66,8 +66,8 @@ export class CordovaPathTransformer extends BasePathTransformer {
         this._targetUrlToClientPath = new Map<string, string>();
     }
 
-    public async scriptParsed(scriptUrl: string): Promise<string> {
-        const clientPath = await this.targetUrlToClientPath(scriptUrl);
+    public scriptParsed(scriptUrl: string): Promise<string> {
+        const clientPath = this.getClientPath(scriptUrl);
 
         if (!clientPath) {
             // It's expected that eval scripts (eval://) won't be resolved
@@ -126,7 +126,6 @@ export class CordovaPathTransformer extends BasePathTransformer {
         // default behavior is to use that exact file, if it exists. We don't want that,
         // since we know that those files are copies of files in the local folder structure.
         // A simple workaround for this is to convert file:// paths to bogus http:// paths
-        sourceUrl = sourceUrl.replace("file:///", "http://localhost/");
 
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
         let defaultPath = "";
