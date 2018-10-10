@@ -107,8 +107,17 @@
             "target": "device",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Run iOS on device",
@@ -118,8 +127,17 @@
             "target": "device",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running android on device",
@@ -129,7 +147,16 @@
             "target": "device",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running iOS on device",
@@ -139,7 +166,16 @@
             "target": "device",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Run Android on emulator",
@@ -149,8 +185,17 @@
             "target": "emulator",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Run iOS on simulator",
@@ -160,8 +205,17 @@
             "target": "emulator",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
-            "ionicLiveReload": false
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running android on emulator",
@@ -171,7 +225,16 @@
             "target": "emulator",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Attach to running iOS on simulator",
@@ -181,17 +244,35 @@
             "target": "emulator",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Serve to the browser (ionic serve)",
             "type": "cordova",
             "request": "launch",
             "platform": "serve",
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "devServerAddress": "localhost",
             "sourceMaps": true,
-            "ionicLiveReload": true
+            "ionicLiveReload": true,
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Simulate Android in browser",
@@ -202,7 +283,16 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Simulate iOS in browser",
@@ -213,7 +303,16 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           },
           {
             "name": "Run Browser",
@@ -224,7 +323,16 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+              "webpack:///./~/*": "${cwd}/node_modules/*",
+              "webpack:///./*": "${cwd}/*",
+              "webpack:///*": "*",
+              "webpack:///src/*": "${cwd}/*"
+            },
+            "pathMapping": {
+              "/": "${cwd}/*"
+            }
           }
         ],
         "configurationSnippets": [
@@ -238,7 +346,7 @@
               "platform": "${1:android|ios}",
               "target": "${2:device|emulator}",
               "sourceMaps": true,
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
@@ -250,7 +358,7 @@
               "request": "attach",
               "platform": "${1:android|ios}",
               "target": "${2:device|emulator}",
-              "cwd": "^\"\\${workspaceRoot}\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
               "sourceMaps": true
             }
           },
@@ -265,7 +373,7 @@
               "devServerAddress": "${2:localhost}",
               "sourceMaps": true,
               "ionicLiveReload": true,
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
@@ -279,7 +387,7 @@
               "target": "chrome",
               "simulatePort": 8000,
               "livereload": true,
-              "cwd": "^\"\\${workspaceRoot}\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
               "sourceMaps": true
             }
           }
@@ -378,7 +486,7 @@
               "simulateTempDir": {
                 "type": "string",
                 "description": "The directory where temporary browser simulation files are hosted.",
-                "default": "${workspaceRoot}/.vscode/simulation"
+                "default": "${workspaceFolder}/.vscode/simulation"
               },
               "corsproxy": {
                 "type": "boolean",
@@ -415,6 +523,23 @@
                 "type": "array",
                 "description": "An array of file or folder names, or path globs, to skip when debugging.",
                 "default": []
+              },
+              "pathMapping": {
+                "type": "object",
+                "description": "A mapping of URLs/paths to local folders, to resolve scripts in app webroot to scripts on disk",
+                "default": {
+                  "/": "${workspaceFolder}"
+                }
+              },
+              "sourceMapPathOverrides": {
+                "type": "object",
+                "description": "A set of mappings for rewriting the locations of source files from what the sourcemap says, to their locations on disk.",
+                "default": {
+                  "webpack:///./*": "${cwd}/*",
+                  "webpack:///src/*": "${cwd}/*",
+                  "webpack:///*": "*",
+                  "webpack:///./~/*": "${cwd}/node_modules/*"
+                }
               }
             }
           },
@@ -471,6 +596,23 @@
                 "type": "array",
                 "description": "An array of file or folder names, or path globs, to skip when debugging.",
                 "default": []
+              },
+              "pathMapping": {
+                "type": "object",
+                "description": "A mapping of URLs/paths to local folders, to resolve scripts in app webroot to scripts on disk",
+                "default": {
+                  "/": "${workspaceFolder}"
+                }
+              },
+              "sourceMapPathOverrides": {
+                "type": "object",
+                "description": "A set of mappings for rewriting the locations of source files from what the sourcemap says, to their locations on disk.",
+                "default": {
+                  "webpack:///./*": "${cwd}/*",
+                  "webpack:///src/*": "${cwd}/*",
+                  "webpack:///*": "*",
+                  "webpack:///./~/*": "${cwd}/node_modules/*"
+                }
               }
             }
           }
@@ -538,8 +680,8 @@
     "source-map-support": "^0.4.18",
     "temp": "^0.8.3",
     "vscode": "^1.1.6",
-    "vscode-chrome-debug-core": "3.21.2",
-    "vscode-debugadapter": "^1.22.0",
+    "vscode-chrome-debug-core": "^6.7.19-patch.0",
+    "vscode-debugadapter": "^1.32.1",
     "vscode-extension-telemetry": "0.0.5",
     "which": "^1.3.0",
     "winreg": "0.0.13",

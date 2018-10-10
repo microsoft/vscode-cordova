@@ -2421,6 +2421,11 @@
         }
       }
     },
+    "devtools-protocol": {
+      "version": "0.0.588169",
+      "resolved": "https://registry.npmjs.org/devtools-protocol/-/devtools-protocol-0.0.588169.tgz",
+      "integrity": "sha512-DDGCT3YFiamX4jRPqg4galOrQS8DsU0j+xM5iaR0YB5TM1fjCZejQ7MSe9ByIMIq4IsnULY/4Qp3TBWAUjMgXw=="
+    },
     "diff": {
       "version": "3.2.0",
       "resolved": "https://registry.npmjs.org/diff/-/diff-3.2.0.tgz",
@@ -8573,9 +8578,9 @@
       }
     },
     "noice-json-rpc": {
-      "version": "1.0.1",
-      "resolved": "https://registry.npmjs.org/noice-json-rpc/-/noice-json-rpc-1.0.1.tgz",
-      "integrity": "sha1-XnKJpgocIIgEicsVEBVSusOSJm4="
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/noice-json-rpc/-/noice-json-rpc-1.2.0.tgz",
+      "integrity": "sha512-Wm+otW+drKzdqlSPoSwj34tUEq/Xj1gX6Cr2avrykvTW4IY7d3ngLmP+PErALzS0s9nYRokXvYDM54sbFvLlDA=="
     },
     "nomnomnomnom": {
       "version": "2.0.1",
@@ -12668,54 +12673,76 @@
       }
     },
     "vscode-chrome-debug-core": {
-      "version": "3.21.2",
-      "resolved": "https://registry.npmjs.org/vscode-chrome-debug-core/-/vscode-chrome-debug-core-3.21.2.tgz",
-      "integrity": "sha512-dizMZJEuy7m5ZQ6oe+CwGXTGhu8euN6gc1nhkbAvWcC1152thZPiIRLzXEp8FJIwY7cpZM+8QdX7yD9WLg//Wg==",
+      "version": "6.7.19-patch.0",
+      "resolved": "https://registry.npmjs.org/vscode-chrome-debug-core/-/vscode-chrome-debug-core-6.7.19-patch.0.tgz",
+      "integrity": "sha512-y4UKIrlciawuxXabFTNHRKIrYPEho2oKmdA5n0Ia18ZiJ4vfl4XxRXm12XJREoqL/Q1C4yPKnbdzQypeW8+jXA==",
       "requires": {
         "@types/source-map": "^0.1.27",
-        "glob": "^7.0.6",
-        "noice-json-rpc": "1.0.1",
+        "devtools-protocol": "0.0.588169",
+        "glob": "^7.1.3",
+        "noice-json-rpc": "^1.2.0",
         "source-map": "^0.6.1",
-        "vscode-debugadapter": "^1.25.0",
-        "vscode-debugprotocol": "^1.25.0",
-        "vscode-nls": "^2.0.2",
-        "ws": "^3.3.2"
+        "vscode-debugadapter": "^1.32.0-pre.0",
+        "vscode-debugprotocol": "^1.32.0-pre.0",
+        "vscode-nls": "^3.2.5",
+        "ws": "^6.0.0"
       },
       "dependencies": {
+        "glob": {
+          "version": "7.1.3",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.3.tgz",
+          "integrity": "sha512-vcfuiIxogLV4DlGBHIUOwI0IbrJ8HWPc4MU7HzviGeNho/UJDfi6B5p3sHeWIQ0KGIU0Jpxi5ZHxemQfLkkAwQ==",
+          "requires": {
+            "fs.realpath": "^1.0.0",
+            "inflight": "^1.0.4",
+            "inherits": "2",
+            "minimatch": "^3.0.4",
+            "once": "^1.3.0",
+            "path-is-absolute": "^1.0.0"
+          }
+        },
         "source-map": {
           "version": "0.6.1",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz",
           "integrity": "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="
         },
-        "ultron": {
-          "version": "1.1.1",
-          "resolved": "https://registry.npmjs.org/ultron/-/ultron-1.1.1.tgz",
-          "integrity": "sha512-UIEXBNeYmKptWH6z8ZnqTeS8fV74zG0/eRU9VGkpzz+LIJNs8W/zM/L+7ctCkRrgbNnnR0xxw4bKOr0cW0N0Og=="
+        "vscode-debugadapter": {
+          "version": "1.32.1",
+          "resolved": "https://registry.npmjs.org/vscode-debugadapter/-/vscode-debugadapter-1.32.1.tgz",
+          "integrity": "sha512-D7hpwmh4mPNJXLavginjGYbeIpSJj7L/FhfB4EqEnJH2om8jTvnMq6NvOyuHONn6YzarS/L3oAye7RNro9iviw==",
+          "requires": {
+            "mkdirp": "^0.5.1",
+            "vscode-debugprotocol": "1.32.0"
+          }
+        },
+        "vscode-debugprotocol": {
+          "version": "1.32.0",
+          "resolved": "https://registry.npmjs.org/vscode-debugprotocol/-/vscode-debugprotocol-1.32.0.tgz",
+          "integrity": "sha512-x3+HV+BkLqfl1ZuDJEILAv1sT5mDceuPThDXD12hwXAEjAdfc6MLQFvaoVPuO6C6gb+lHQTd0R9FNkCflEJHbA=="
         },
         "ws": {
-          "version": "3.3.3",
-          "resolved": "https://registry.npmjs.org/ws/-/ws-3.3.3.tgz",
-          "integrity": "sha512-nnWLa/NwZSt4KQJu51MYlCcSQ5g7INpOrOMt4XV8j4dqTXdmlUmSHQ8/oLC069ckre0fRsgfvsKwbTdtKLCDkA==",
+          "version": "6.1.0",
+          "resolved": "https://registry.npmjs.org/ws/-/ws-6.1.0.tgz",
+          "integrity": "sha512-H3dGVdGvW2H8bnYpIDc3u3LH8Wue3Qh+Zto6aXXFzvESkTVT6rAfKR6tR/+coaUvxs8yHtmNV0uioBF62ZGSTg==",
           "requires": {
-            "async-limiter": "~1.0.0",
-            "safe-buffer": "~5.1.0",
-            "ultron": "~1.1.0"
+            "async-limiter": "~1.0.0"
           }
         }
       }
     },
     "vscode-debugadapter": {
-      "version": "1.25.0",
-      "resolved": "https://registry.npmjs.org/vscode-debugadapter/-/vscode-debugadapter-1.25.0.tgz",
-      "integrity": "sha512-tsOtNNKKTbnQanARdkFfUxI8qKVKba+QHOKWC1reDDeeyvzoNKkLMGkL/xsiKn5vQDeaP3zFBcLY8Ysak9GrvQ==",
+      "version": "1.32.1",
+      "resolved": "https://registry.npmjs.org/vscode-debugadapter/-/vscode-debugadapter-1.32.1.tgz",
+      "integrity": "sha512-D7hpwmh4mPNJXLavginjGYbeIpSJj7L/FhfB4EqEnJH2om8jTvnMq6NvOyuHONn6YzarS/L3oAye7RNro9iviw==",
       "requires": {
-        "vscode-debugprotocol": "1.25.0"
+        "mkdirp": "^0.5.1",
+        "vscode-debugprotocol": "1.32.0"
       }
     },
     "vscode-debugprotocol": {
-      "version": "1.25.0",
-      "resolved": "https://registry.npmjs.org/vscode-debugprotocol/-/vscode-debugprotocol-1.25.0.tgz",
-      "integrity": "sha512-e1EUy/5npqa0NlAwRCUu8A9LnVRf6tkwiPQcCLyUFCC9o2GxcAqH5Va4mqXDoxQ58ar3zODivKQeRb3z1KH7WA=="
+      "version": "1.32.0",
+      "resolved": "https://registry.npmjs.org/vscode-debugprotocol/-/vscode-debugprotocol-1.32.0.tgz",
+      "integrity": "sha512-x3+HV+BkLqfl1ZuDJEILAv1sT5mDceuPThDXD12hwXAEjAdfc6MLQFvaoVPuO6C6gb+lHQTd0R9FNkCflEJHbA=="
     },
     "vscode-extension-telemetry": {
       "version": "0.0.5",
@@ -12727,9 +12754,9 @@
       }
     },
     "vscode-nls": {
-      "version": "2.0.2",
-      "resolved": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-2.0.2.tgz",
-      "integrity": "sha1-gIUiOAhEuK0VNJmvXDsDkhrqAto="
+      "version": "3.2.5",
+      "resolved": "https://registry.npmjs.org/vscode-nls/-/vscode-nls-3.2.5.tgz",
+      "integrity": "sha512-ITtoh3V4AkWXMmp3TB97vsMaHRgHhsSFPsUdzlueSL+dRZbSNTZeOmdQv60kjCV306ghPxhDeoNUEm3+EZMuyw=="
     },
     "vso-node-api": {
       "version": "6.1.2-preview",
