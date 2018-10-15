@@ -585,6 +585,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
+            // Workaround of new Xcode building system
+            // https://github.com/apache/cordova-ios/issues/407
             let args = ["build", "ios", "--buildFlag='-UseModernBuildSystem=0'"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
@@ -661,6 +663,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? null : launchArgs.target;
+            // Workaround of new Xcode building system
+            // https://github.com/apache/cordova-ios/issues/407
             let args = ["emulate", "ios", "--buildFlag='-UseModernBuildSystem=0'"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
