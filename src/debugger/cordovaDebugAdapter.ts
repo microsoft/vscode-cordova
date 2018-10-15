@@ -661,7 +661,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? null : launchArgs.target;
-            let args = ["emulate", "ios"];
+            let args = ["emulate", "ios", "--buildFlag='-UseModernBuildSystem=0'"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
