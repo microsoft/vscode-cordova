@@ -585,7 +585,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
-            let args = ["build", "ios"];
+            let args = ["build", "ios", "--buildFlag='-UseModernBuildSystem=0'"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);

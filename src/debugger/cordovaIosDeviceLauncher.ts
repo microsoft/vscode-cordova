@@ -229,7 +229,7 @@ export class CordovaIosDeviceLauncher {
     private static mountDeveloperImage(): Q.Promise<any> {
         return CordovaIosDeviceLauncher.getDiskImage()
             .then(function (path: string): Q.Promise<any> {
-            let imagemounter: child_process.ChildProcess = child_process.spawn("ideviceimagemounter", [path]);
+            let imagemounter: child_process.ChildProcess = child_process.spawn("ideviceimagemounter", [path, path + ".signature"]);
             let deferred: Q.Deferred<any> = Q.defer();
             let stdout: string = "";
             imagemounter.stdout.on("data", function (data: any): void {
