@@ -93,12 +93,15 @@ enum TargetType {
     Device = "device",
     Chrome = "chrome",
 }
+
+// Keep in sync with sourceMapPathOverrides package.json default
 const DefaultWebSourceMapPathOverrides: ISourceMapPathOverrides = {
     "webpack:///./~/*": "${cwd}/node_modules/*",
     "webpack:///./*": "${cwd}/*",
     "webpack:///*": "*",
     "webpack:///src/*": "${cwd}/*",
 };
+
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
@@ -116,7 +119,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
     private attachedDeferred: Q.Deferred<void>;
-    // Keep in sync with sourceMapPathOverrides package.json default
 
 
     private chromeProc: child_process.ChildProcess;
