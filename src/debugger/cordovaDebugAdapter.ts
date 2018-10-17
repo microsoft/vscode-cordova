@@ -71,6 +71,7 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
 }
 
 export interface ICordovaCommonRequestArgs extends ICommonRequestArgs {
+    // Workaround to suit interface ICommonRequestArgs with launch.json cwd argument
     cwd?: string;
 }
 
