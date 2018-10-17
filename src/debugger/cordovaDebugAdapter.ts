@@ -15,7 +15,7 @@ import * as simulate from "cordova-simulate";
 
 import {DebugProtocol} from "vscode-debugprotocol";
 import {OutputEvent} from "vscode-debugadapter";
-import {ChromeDebugAdapter, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, utils as ChromeDebugCoreUtils} from "vscode-chrome-debug-core";
+import {ChromeDebugAdapter, IAttachRequestArgs, IChromeDebugSessionOpts, ICommonRequestArgs, ChromeDebugSession, ISourceMapPathOverrides, utils as ChromeDebugCoreUtils} from "vscode-chrome-debug-core";
 import {Protocol as Crdp} from "devtools-protocol";
 import {CordovaIosDeviceLauncher} from "./cordovaIosDeviceLauncher";
 import {cordovaRunCommand, cordovaStartCommand, execCommand, killChildProcess} from "./extension";
@@ -93,7 +93,12 @@ enum TargetType {
     Device = "device",
     Chrome = "chrome",
 }
-
+const DefaultWebSourceMapPathOverrides: ISourceMapPathOverrides = {
+    "webpack:///./~/*": "${cwd}/node_modules/*",
+    "webpack:///./*": "${cwd}/*",
+    "webpack:///*": "*",
+    "webpack:///src/*": "${cwd}/*",
+};
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
@@ -110,8 +115,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private previousAttachArgs: ICordovaAttachRequestArgs;
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
-
     private attachedDeferred: Q.Deferred<void>;
+    // Keep in sync with sourceMapPathOverrides package.json default
+
 
     private chromeProc: child_process.ChildProcess;
 
@@ -355,6 +361,13 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         // If we specify skipFileRegExps or skipFiles then vscode-chrome-debug-core attempts to call Debugger.setBlackboxPatterns
         // however in older targets that API is not implemented, and results in errors.
         args.skipFileRegExps = args.skipFiles = null;
+        if (args.cwd && (!args.pathMapping || !args.pathMapping["/"])) {
+            args.pathMapping = args.pathMapping || {};
+            args.pathMapping["/"] = args.cwd;
+        }
+
+        args.sourceMaps = typeof args.sourceMaps === "undefined" || args.sourceMaps;
+        args.sourceMapPathOverrides = this.getSourceMapPathOverrides(args.cwd, args.sourceMapPathOverrides);
         super.commonArgs(args);
     }
 
@@ -1401,5 +1414,40 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     private getErrorMessage(e: any): string {
         return e.message || e.error || e.data || e;
+    }
+
+    private getSourceMapPathOverrides(cwd: string, sourceMapPathOverrides?: ISourceMapPathOverrides): ISourceMapPathOverrides {
+        return sourceMapPathOverrides ? this.resolveWebRootPattern(cwd, sourceMapPathOverrides, /*warnOnMissing=*/true) :
+                this.resolveWebRootPattern(cwd, DefaultWebSourceMapPathOverrides, /*warnOnMissing=*/false);
+    }
+    /**
+     * Returns a copy of sourceMapPathOverrides with the ${cwd} pattern resolved in all entries.
+     *
+     * dynamically required by test
+     */
+    private resolveWebRootPattern(cwd: string, sourceMapPathOverrides: ISourceMapPathOverrides, warnOnMissing: boolean): ISourceMapPathOverrides {
+        const resolvedOverrides: ISourceMapPathOverrides = {};
+        // tslint:disable-next-line:forin
+        for (let pattern in sourceMapPathOverrides) {
+                const replacePattern = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, pattern, warnOnMissing);
+                const replacePatternValue = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, sourceMapPathOverrides[pattern], warnOnMissing);
+                resolvedOverrides[replacePattern] = replacePatternValue;
+
+        }
+        return resolvedOverrides;
+    }
+
+    private replaceWebRootInSourceMapPathOverridesEntry(cwd: string, entry: string, warnOnMissing: boolean): string {
+        const cwdIndex = entry.indexOf("${cwd}");
+        if (cwdIndex === 0) {
+            if (cwd) {
+                return entry.replace("${cwd}", cwd);
+            } else if (warnOnMissing) {
+                this.outputLogger("Warning: sourceMapPathOverrides entry contains ${cwd}, but cwd is not set");
+            }
+        } else if (cwdIndex > 0) {
+            this.outputLogger("Warning: in a sourceMapPathOverrides entry, ${cwd} is only valid at the beginning of the path");
+        }
+        return entry;
     }
 }
