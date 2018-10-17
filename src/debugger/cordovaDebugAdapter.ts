@@ -1431,10 +1431,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const resolvedOverrides: ISourceMapPathOverrides = {};
         // tslint:disable-next-line:forin
         for (let pattern in sourceMapPathOverrides) {
-                const replacePattern = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, pattern, warnOnMissing);
-                const replacePatternValue = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, sourceMapPathOverrides[pattern], warnOnMissing);
-                resolvedOverrides[replacePattern] = replacePatternValue;
-
+            const replacePattern = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, pattern, warnOnMissing);
+            const replacePatternValue = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, sourceMapPathOverrides[pattern], warnOnMissing);
+            resolvedOverrides[replacePattern] = replacePatternValue;
         }
         return resolvedOverrides;
     }
