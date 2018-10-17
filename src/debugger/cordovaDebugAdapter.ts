@@ -70,6 +70,10 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     env?: any;
 }
 
+export interface ICordovaCommonRequestArgs extends ICommonRequestArgs {
+    cwd?: string;
+}
+
 const WIN_APPDATA = process.env.LOCALAPPDATA || "/";
 const DEFAULT_CHROME_PATH = {
     LINUX: "/usr/bin/google-chrome",
@@ -359,7 +363,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return super.disconnect({});
     }
 
-    public commonArgs(args: ICommonRequestArgs): void {
+    public commonArgs(args: ICordovaCommonRequestArgs): void {
         // If we specify skipFileRegExps or skipFiles then vscode-chrome-debug-core attempts to call Debugger.setBlackboxPatterns
         // however in older targets that API is not implemented, and results in errors.
         args.skipFileRegExps = args.skipFiles = null;
