@@ -99,7 +99,7 @@ enum TargetType {
     Chrome = "chrome",
 }
 
-// Keep in sync with sourceMapPathOverrides package.json default
+// Keep in sync with sourceMapPathOverrides package.json default values
 const DefaultWebSourceMapPathOverrides: ISourceMapPathOverrides = {
     "webpack:///./~/*": "${cwd}/node_modules/*",
     "webpack:///./*": "${cwd}/*",
@@ -605,7 +605,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
-            // Workaround of new Xcode building system
+            // Workaround for dealing with new build system in XCode 10
             // https://github.com/apache/cordova-ios/issues/407
             let args = ["build", "ios", "--buildFlag='-UseModernBuildSystem=0'"];
 
@@ -683,7 +683,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? null : launchArgs.target;
-            // Workaround of new Xcode building system
+            // Workaround for dealing with new build system in XCode 10
             // https://github.com/apache/cordova-ios/issues/407
             let args = ["emulate", "ios", "--buildFlag='-UseModernBuildSystem=0'"];
 
@@ -1429,8 +1429,6 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
     /**
      * Returns a copy of sourceMapPathOverrides with the ${cwd} pattern resolved in all entries.
-     *
-     * dynamically required by test
      */
     private resolveWebRootPattern(cwd: string, sourceMapPathOverrides: ISourceMapPathOverrides, warnOnMissing: boolean): ISourceMapPathOverrides {
         const resolvedOverrides: ISourceMapPathOverrides = {};
