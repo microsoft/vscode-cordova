@@ -39,7 +39,7 @@ export class CordovaCommandHelper {
 
                     if (platform) {
                         commandToExecute += ` ${platform}`;
-                        // Workaround of new Xcode building system
+                        // Workaround for dealing with new build system in XCode 10
                         // https://github.com/apache/cordova-ios/issues/407
                         if (platform === "ios")
                             commandToExecute += " --buildFlag='-UseModernBuildSystem=0'";
