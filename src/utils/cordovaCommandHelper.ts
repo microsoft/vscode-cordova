@@ -42,7 +42,7 @@ export class CordovaCommandHelper {
                         // Workaround of new Xcode building system
                         // https://github.com/apache/cordova-ios/issues/407
                         if (platform === "ios")
-                            commandToExecute += "--buildFlag='-UseModernBuildSystem=0'";
+                            commandToExecute += " --buildFlag='-UseModernBuildSystem=0'";
                     }
 
                     const runArgs = CordovaCommandHelper.getRunArguments(projectRoot);
