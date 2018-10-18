@@ -368,8 +368,8 @@ export class CordovaProjectHelper {
                 CI: "Hack to disable Ionic autoupdate prompt",
             },
         });
-        // A warning might appear on second line
-        return ionicInfo.stdout.toString().split("\n")[0].trim();
+        let parseVersion = /\d\.\d\.\d/.exec(ionicInfo.stdout.toString());
+        return parseVersion[0].trim();
     }
 
     public static isIonicCliVersionGte3(fsPath: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): boolean {
