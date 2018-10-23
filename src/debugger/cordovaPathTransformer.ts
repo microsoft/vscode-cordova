@@ -123,23 +123,23 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
     public getClientPath(sourceUrl: string): string {
-        // Ionic 4 serve have changed algorithm, so we don't need
-        // to connect ts files with js in www folder
         let wwwRoot = path.join(this._cordovaRoot, "www");
-        if (this._platform === "serve" && this._projectTypes.ionic4) {
-            wwwRoot = "";
-        }
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
         // default behavior is to use that exact file, if it exists. We don't want that,
         // since we know that those files are copies of files in the local folder structure.
         // A simple workaround for this is to convert file:// paths to bogus http:// paths
 
-        // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
         let defaultPath = "";
+        let foldersForSearch = [this._webRoot, this._cordovaRoot, wwwRoot];
+        // Ionic 4 serve have changed algorithm, so we don't need
+        // to connect ts files with js in www folder in this case
+        if (this._platform === "serve" && this._projectTypes.ionic4) {
+            foldersForSearch.pop();
+        }
 
-        [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
-            if (searchFolder === "") return false;
+        // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
+        foldersForSearch.find((searchFolder) => {
             const pathMapping: IPathMapping = {
                 "/": `${searchFolder}`,
             };
