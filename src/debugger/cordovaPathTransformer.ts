@@ -123,7 +123,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
     public getClientPath(sourceUrl: string): string {
-        // Ionic 4 serve changed algorithm, so we don't need
+        // Ionic 4 serve have changed algorithm, so we don't need
         // to connect ts files with js in www folder
         let wwwRoot = path.join(this._cordovaRoot, "www");
         if (this._platform === "serve" && this._projectTypes.ionic4) {
