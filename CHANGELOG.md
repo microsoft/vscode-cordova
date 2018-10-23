@@ -1,3 +1,10 @@
+## 1.5.0
+
+* Added Ionic 4 beta support
+* Added support for cordovaExecutable, env, envFile as a launch parameters
+* Extension title renamed from `Cordova Tools` to `Ionic and Cordova Tools`
+* Fixed several bugs affecting debugging experience
+
 ## 1.4.0
 
 * Migrate to [cordova-simulate@0.4.0](https://github.com/Microsoft/cordova-simulate/releases/tag/0.4.0)
