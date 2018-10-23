@@ -4,8 +4,10 @@
 import {logger, utils, chromeUtils, IPathMapping, ISetBreakpointsArgs, BasePathTransformer, IStackTraceResponseBody} from "vscode-chrome-debug-core";
 import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from "./cordovaDebugAdapter";
 import { DebugProtocol } from "vscode-debugprotocol";
+import { TelemetryHelper } from "../utils/telemetryHelper";
 import * as path from "path";
 import * as fs from "fs";
+
 
 /**
  * Converts a local path from Code to a path on the target.
@@ -17,6 +19,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
     private _cordovaRoot: string;
     private _platform: string;
     private _webRoot: string;
+    private _projectTypes;
     private _outputLogger: (message: string, error?: boolean | string) => void;
 
     constructor(outputLogger: (message: string) => void) {
@@ -120,7 +123,12 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
     public getClientPath(sourceUrl: string): string {
+        // Ionic 4 serve changed algorithm, so we don't need
+        // to connect ts files with js in www folder
         let wwwRoot = path.join(this._cordovaRoot, "www");
+        if (this._platform === "serve" && this._projectTypes.ionic4) {
+            wwwRoot = "";
+        }
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
         // default behavior is to use that exact file, if it exists. We don't want that,
@@ -131,6 +139,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
         let defaultPath = "";
 
         [this._webRoot, this._cordovaRoot, wwwRoot].find((searchFolder) => {
+            if (searchFolder === "") return false;
             const pathMapping: IPathMapping = {
                 "/": `${searchFolder}`,
             };
@@ -168,6 +177,9 @@ export class CordovaPathTransformer extends BasePathTransformer {
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
         this._webRoot = args.address || this._cordovaRoot;
+        TelemetryHelper.determineProjectTypes(args.cwd).then((projectType) => {
+            this._projectTypes = projectType;
+        });
     }
 
 }
