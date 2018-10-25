@@ -178,7 +178,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     return result;
                 }
 
-                retry();
+                return retry();
             },
             retry);
     }
