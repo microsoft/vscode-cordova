@@ -205,19 +205,19 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ## Known Issues
 
-* > Error `Unable to find webview` while debugging on iOS Simulator
+* Error `Unable to find webview` while debugging on iOS Simulator
 
 This is [ios-webkit-debug-proxy issue](https://github.com/google/ios-webkit-debug-proxy/issues/250). Apple removed option to enable WebInspector inside simulator and debug proxy unable to connect to application webview.
 
-*  > Error `Error: Project does not include the specified platform: android` while running `Simulate android in browser` on Ubuntu machine.
+*  Error `Error: Project does not include the specified platform: android` while running `Simulate android in browser` on Ubuntu machine.
 
 This is cordova-serve issue, please, see details [here](https://github.com/Microsoft/vscode-cordova/issues/438).
 
-* > Error `Error running android` while running Ionic 4 project for android platform
+* Error `Error running android` while running Ionic 4 project for android platform
 
 It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376). As workaround, you can use Node JS v10+.
 
-* > After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
+* After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
 
 This is [ionic bug](https://github.com/ionic-team/ionic-cli/issues/3709).
 
