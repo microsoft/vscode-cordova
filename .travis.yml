@@ -29,5 +29,5 @@ before_script:
   - npm install -g gulp-cli
 
 script:
-  - export CODE_TESTS_WORKSPACE=./test/testProject
+  - export CODE_TESTS_WORKSPACE=${PWD}/test/testProject
   - npm test
