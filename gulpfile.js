@@ -117,7 +117,7 @@ gulp.task('watch', ['build'], function (cb) {
 });
 
 gulp.task('run-test', function () {
-    return gulp.src('out/test/debugger/**/*.js', { read: false })
+    return gulp.src('out/test/**/*.test.js', { read: false })
         .pipe(mocha({ ui: 'bdd' }))
         .on('error', function (e) {
             log(e ? e.toString() : 'error in test task!');
