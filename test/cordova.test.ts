@@ -19,7 +19,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
         }
 
         // Remove the FileSystem and whitelist plugins from the testProject
-        testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file", "cordova-plugin-whitelist"]);
+        return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file", "cordova-plugin-whitelist"]);
     });
 
     function checkTypeDefinitions(expectedTypedDefs: string[]) {
@@ -28,18 +28,18 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     }
 
     test("#Plugin type definitions are installed on activation", () => {
-            checkTypeDefinitions(["FileSystem.d.ts"]);
+        checkTypeDefinitions(["FileSystem.d.ts"]);
     });
 
     test("#Plugin type defintion for a plugin is added upon adding that plugin", () => {
-        testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
+        return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
             .then(() => {
                 checkTypeDefinitions(["Device.d.ts", "FileSystem.d.ts"]);
             });
     });
 
     test("#Plugin type definition for a plugin is removed after removal of that plugin", () => {
-        testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
+        return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
             .then(() => {
                 checkTypeDefinitions(["FileSystem.d.ts"]);
             });
@@ -57,7 +57,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     test("#Execute Commands from the command palette", () => {
         testUtils.addCordovaComponents("platform", testProjectPath, ["android"]);
-        vscode.commands.executeCommand("cordova.build")
+        return vscode.commands.executeCommand("cordova.build")
             .then(res => {
                 let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "build");
                 assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
@@ -67,7 +67,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     test("#Verify that the simulate command launches the simulate server", () => {
         testUtils.addCordovaComponents("platform", testProjectPath, ["android"]);
-        vscode.commands.executeCommand("cordova.simulate.android")
+        return vscode.commands.executeCommand("cordova.simulate.android")
             .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
             .then((simHostStarted: boolean) => assert(simHostStarted, "The simulation host is running."))
             .then(() => testUtils.isUrlReachable("http://localhost:8000/index.html"))
