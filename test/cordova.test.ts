@@ -59,10 +59,9 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     });
 
     test("#Execute Commands from the command palette", () => {
-        return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
-            .then(() => {
-                return vscode.commands.executeCommand("cordova.build");
-            }).then(res => {
+        testUtils.addCordovaComponents("platform", testProjectPath, ["android"]);
+        vscode.commands.executeCommand("cordova.build")
+            .then(res => {
                 let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "build");
                 assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
                 return testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]);
@@ -70,12 +69,12 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     });
 
     test("#Verify that the simulate command launches the simulate server", () => {
-        return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
-            .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
+        testUtils.addCordovaComponents("platform", testProjectPath, ["android"]);
+        vscode.commands.executeCommand("cordova.simulate.android")
             .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
             .then((simHostStarted: boolean) => assert(simHostStarted, "The simulation host is running."))
             .then(() => testUtils.isUrlReachable("http://localhost:8000/index.html"))
             .then((appHostStarted: boolean) => assert(appHostStarted, "The application host is running."))
-            .fin(() => testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]));
+            .then(() => testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]));
     });
 });
