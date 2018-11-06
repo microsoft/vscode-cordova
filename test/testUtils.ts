@@ -12,19 +12,13 @@ import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 export function executeCordovaCommand(cwd: string, command: string): Q.Promise<any> {
     let deferred = Q.defer<any>();
     let cordovaCmd = os.platform() === "win32" ? "cordova.cmd" : "cordova";
-    let commandToExecute = cordovaCmd + " " + command;
-    let process = child_process.exec(commandToExecute, { cwd: cwd });
+    let process = child_process.spawnSync(cordovaCmd, command.split(" "), { cwd: cwd });
 
-    process.on("error", function (err: any): void {
-        deferred.reject(err);
-    });
-    process.stdout.on("close", exitCode => {
-        if (exitCode) {
-            deferred.reject("Cordova command failed with exit code " + exitCode);
-        } else {
-            deferred.resolve({});
-        }
-    });
+    if (process.error) {
+        deferred.reject(process.error);
+    } else {
+        deferred.resolve(process.error);
+    }
 
     return deferred.promise;
 }
