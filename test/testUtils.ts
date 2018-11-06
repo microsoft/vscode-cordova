@@ -13,7 +13,7 @@ export function executeCordovaCommand(cwd: string, command: string): Q.Promise<a
     let deferred = Q.defer<any>();
     let cordovaCmd = os.platform() === "win32" ? "cordova.cmd" : "cordova";
     let commandToExecute = cordovaCmd + " " + command;
-    let process = child_process.execSync(commandToExecute, { cwd: cwd });
+    child_process.execSync(commandToExecute, { cwd: cwd });
 
     // process.on("error", function (err: any): void {
     //     deferred.reject(err);
