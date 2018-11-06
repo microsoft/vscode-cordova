@@ -19,7 +19,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
         }
 
         // Remove the FileSystem and whitelist plugins from the testProject
-        return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file", "cordova-plugin-whitelist"]);
+        testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file", "cordova-plugin-whitelist"]);
     });
 
     function checkTypeDefinitions(expectedTypedDefs: string[]) {
