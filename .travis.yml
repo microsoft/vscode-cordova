@@ -23,7 +23,7 @@ node_js:
 
 install:
   - npm install
-  - npm run vscode:prepublish
+
 
 before_script:
   - npm install -g gulp-cli
@@ -31,5 +31,5 @@ before_script:
   - export CODE_TESTS_WORKSPACE="${PWD}/test/testProject"
 
 script:
-  - gulp
+  - npm run vscode:prepublish
   - npm test
