@@ -30,4 +30,5 @@ before_script:
 
 script:
   - export CODE_TESTS_WORKSPACE="${PWD}/test/testProject"
+  - gulp prepare-integration-tests
   - npm test
