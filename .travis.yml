@@ -27,8 +27,9 @@ install:
 
 before_script:
   - npm install -g gulp-cli
+  - npm install -g cordova
+  - export CODE_TESTS_WORKSPACE="${PWD}/test/testProject"
 
 script:
-  - export CODE_TESTS_WORKSPACE="${PWD}/test/testProject"
   - gulp prepare-integration-tests
   - npm test
