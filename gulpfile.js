@@ -116,7 +116,7 @@ gulp.task('watch', ['build'], function (cb) {
     return gulp.watch(sources, ['build']);
 });
 
-gulp.task('run-test', function () {
+gulp.task('run-test', ['prepare-integration-tests'], function () {
     return gulp.src('out/test/debugger/**/*.js', { read: false })
         .pipe(mocha({ ui: 'bdd' }))
         .on('error', function (e) {
@@ -129,7 +129,7 @@ gulp.task('test', function (done) {
     runSequence('build-test', 'run-test', done);
 });
 
-gulp.task('prepare-integration-tests', ['build'], function () {
+gulp.task('prepare-integration-tests', function () {
     return executeCordovaCommand(path.resolve(__dirname, 'test', 'testProject'), 'plugin add cordova-plugin-file');
 });
 
