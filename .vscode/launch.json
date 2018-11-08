@@ -25,7 +25,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "prepare-integration-tests"
+            "preLaunchTask": "build-src"
         },
         {
             "name": "Launch debugger as server",

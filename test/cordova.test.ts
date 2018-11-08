@@ -14,6 +14,9 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     let testProjectPath: string = path.resolve(__dirname, "..", "..", "test", "testProject");
     let cordovaTypeDefDir: string = CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
 
+    suiteSetup(() => {
+        return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file"]);
+    });
     suiteTeardown(() => {
         // Cleanup the target folder for type definitions
         if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
