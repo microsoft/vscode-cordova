@@ -29,7 +29,7 @@ before_script:
   - npm install -g gulp-cli
   - npm install -g cordova
   - export CODE_TESTS_WORKSPACE="${PWD}/test/testProject"
-
+  - export CODE_TESTS_PATH="${PWD}/test/testProject"
 script:
   - npm run vscode:prepublish
   - npm test
