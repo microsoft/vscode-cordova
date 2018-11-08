@@ -11,7 +11,7 @@ import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 
 export function executeCordovaCommand(cwd: string, command: string): Q.Promise<any> {
     let deferred = Q.defer<any>();
-    let cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
+    let cordovaCmd = os.platform() === "win32" ? "cordova.cmd" : "cordova";
     let commandToExecute = cordovaCmd + " " + command;
     let process = child_process.exec(commandToExecute, { cwd: cwd });
 
