@@ -1,3 +1,7 @@
+## 1.5.1
+
+* Previous extension title is returned
+
 ## 1.5.0
 
 * Added Ionic 4 beta support
@@ -11,7 +15,7 @@
 * Added target platform selector for command palette commands
 * Added cordova-simulate support for all known platform
 * Added `.travis.yml`
-
+s
 ## 1.3.10
 
 * Added target type to telemetry request
