@@ -1,4 +1,4 @@
-# Ionic and Cordova Tools Extension
+# Cordova Tools Extension
 
 Debug your code, find commands in the Command Palette, and use IntelliSense to browse objects, functions, and parameters in plugin APIs. This extension works with any Cordova-based project.
 
