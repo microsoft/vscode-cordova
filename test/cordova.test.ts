@@ -67,9 +67,8 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
         return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
             .then(() => {
                 return vscode.commands.executeCommand("cordova.build");
-            }).then(() => {
-                return Q.delay(30000);
-            }).then(res => {
+            }).delay(30000)
+            .then(res => {
                 let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "build");
                 assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
                 return testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]);
