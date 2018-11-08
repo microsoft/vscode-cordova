@@ -38,7 +38,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     test("#Plugin type defintion for a plugin is added upon adding that plugin", () => {
         return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
             .then(() => {
-                return Q.delay(15000);
+                return Q.delay(20000);
             }).then(() => {
                 checkTypeDefinitions(["Device.d.ts", "FileSystem.d.ts"]);
             });
@@ -68,7 +68,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             .then(() => {
                 return vscode.commands.executeCommand("cordova.build");
             }).then(() => {
-                return Q.delay(15000);
+                return Q.delay(30000);
             }).then(res => {
                 let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "build");
                 assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
@@ -78,6 +78,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     test("#Verify that the simulate command launches the simulate server", () => {
         return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
+            .delay(20000)
             .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
             .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
             .then((simHostStarted: boolean) => assert(simHostStarted, "The simulation host is running."))
