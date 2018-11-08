@@ -3,6 +3,7 @@
 
 import * as assert from "assert";
 import * as path from "path";
+import * as Q from "q";
 import * as rimraf from "rimraf";
 import * as vscode from "vscode";
 
@@ -29,9 +30,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     }
 
     test("#Plugin type definitions are installed on activation", () => {
-        return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file"])
-        .delay(15000)
-        .then(() => {
+        return Q.delay(15000).then(() => {
             checkTypeDefinitions(["FileSystem.d.ts"]);
         });
     });
