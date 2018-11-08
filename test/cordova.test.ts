@@ -30,7 +30,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     }
 
     test("#Plugin type definitions are installed on activation", () => {
-        return Q.delay(10000).then(() => {
+        return Q.delay(15000).then(() => {
             checkTypeDefinitions(["FileSystem.d.ts"]);
         });
     });
@@ -38,7 +38,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     test("#Plugin type defintion for a plugin is added upon adding that plugin", () => {
         return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
             .then(() => {
-                return Q.delay(10000);
+                return Q.delay(15000);
             }).then(() => {
                 checkTypeDefinitions(["Device.d.ts", "FileSystem.d.ts"]);
             });
@@ -47,7 +47,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
     test("#Plugin type definition for a plugin is removed after removal of that plugin", () => {
         return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
             .then(() => {
-                return Q.delay(10000);
+                return Q.delay(15000);
             }).then(() => {
                 checkTypeDefinitions(["FileSystem.d.ts"]);
             });
@@ -68,7 +68,7 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
             .then(() => {
                 return vscode.commands.executeCommand("cordova.build");
             }).then(() => {
-                return Q.delay(10000);
+                return Q.delay(15000);
             }).then(res => {
                 let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "build");
                 assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
