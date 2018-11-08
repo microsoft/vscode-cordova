@@ -28,7 +28,7 @@ before_script:
   - npm install -g gulp-cli
   - npm install -g cordova@5.4.0
   - export CODE_TESTS_WORKSPACE="${PWD}/test/testProject"
-  - export CODE_VERSION="0.8.0.0"
+  - export CODE_VERSION="1.20.0"
 
 script:
   - npm run vscode:prepublish
