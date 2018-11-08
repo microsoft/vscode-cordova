@@ -1,6 +1,6 @@
 {
   "name": "cordova-tools",
-  "displayName": "Ionic and Cordova Tools",
+  "displayName": "Cordova Tools",
   "description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework.",
   "keywords": [
     "cordova",
@@ -513,7 +513,7 @@
     ],
     "configuration": [
       {
-        "title": "Ionic and Cordova Tools",
+        "title": "Cordova Tools",
         "properties": {
           "cordova.runArguments": {
             "type": "array",
