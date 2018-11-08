@@ -1,3 +1,7 @@
+## 1.5.1
+
+* Return extension name back to "Cordova Tools"
+
 ## 1.5.0
 
 * Added Ionic 4 beta support
