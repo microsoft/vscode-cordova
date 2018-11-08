@@ -45,9 +45,8 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     test("#Plugin type definition for a plugin is removed after removal of that plugin", () => {
         return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
+            .delay(15000)
             .then(() => {
-                return Q.delay(15000);
-            }).then(() => {
                 checkTypeDefinitions(["FileSystem.d.ts"]);
             });
     });
