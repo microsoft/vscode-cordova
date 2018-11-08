@@ -37,9 +37,8 @@ suite("VSCode Cordova extension - intellisense and command palette tests", () =>
 
     test("#Plugin type defintion for a plugin is added upon adding that plugin", () => {
         return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
+            .delay(15000)
             .then(() => {
-                return Q.delay(20000);
-            }).then(() => {
                 checkTypeDefinitions(["Device.d.ts", "FileSystem.d.ts"]);
             });
     });
