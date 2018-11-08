@@ -31,4 +31,4 @@ before_script:
 
 script:
   - npm run vscode:prepublish
-  - npm test
+  - npm run test
