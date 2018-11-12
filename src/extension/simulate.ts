@@ -74,6 +74,7 @@ export class PluginSimulator implements vscode.Disposable {
 
     private simulator: Simulator;
     private simulationInfo: SimulationInfo;
+    private simulatePage: vscode.WebviewPanel | null;
 
     public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<any> {
         return this.launchServer(fsPath, simulateOptions, projectType)
@@ -106,7 +107,18 @@ export class PluginSimulator implements vscode.Disposable {
         let provider = new SimHostContentProvider(this.simulator.simHostUrl(), simulateUri);
         this.registration = vscode.workspace.registerTextDocumentContentProvider(simulateProtocol, provider);
 
-        return Q(vscode.commands.executeCommand("vscode.previewHtml", simulateUri, vscode.ViewColumn.Two).then(() => provider.fireChange()));
+        if (this.simulatePage) {
+            this.simulatePage.dispose();
+        }
+        this.simulatePage = vscode.window.createWebviewPanel("Cordova Simulate", "Cordova Simulate", vscode.ViewColumn.Two, {
+             enableScripts: true,
+             retainContextWhenHidden: true,
+             enableCommandUris: true,
+            });
+        this.simulatePage.onDidDispose(() => {
+            this.simulatePage = null;
+        });
+        return Q(provider.fireChange());
     }
 
     public launchServer(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
