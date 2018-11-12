@@ -12,7 +12,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "build-src"
+            "preLaunchTask": "gulp: build-src"
         },
         {
             "name": "Launch Tests",
@@ -25,7 +25,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "prepare-integration-tests"
+            "preLaunchTask": "gulp: prepare-integration-tests"
         },
         {
             "name": "Launch debugger as server",
@@ -39,7 +39,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "build-src"
+            "preLaunchTask": "gulp: build-src"
         }
     ],
     "compounds": [
