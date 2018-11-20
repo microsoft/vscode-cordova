@@ -111,8 +111,8 @@ export class ExtensionServer implements vscode.Disposable {
     /**
      * Launches sim-host using an already running simulate server.
      */
-    private launchSimHost(fsPath: string, target: string, runInBrowser?: boolean): Q.Promise<void> {
-        return this.pluginSimulator.launchSimHost(fsPath, target, runInBrowser);
+    private launchSimHost(fsPath: string, target: string): Q.Promise<void> {
+        return this.pluginSimulator.launchSimHost(fsPath, target);
     }
 
     /**
@@ -151,8 +151,7 @@ export class ExtensionServer implements vscode.Disposable {
                     .then(result => {
                         socket.end(JSON.stringify(result));
                     })
-                    .catch((e) => { handleError(e); })
-                    .done();
+                    .catch((e) => { handleError(e); });
             } catch (e) {
                 handleError(e);
             }
