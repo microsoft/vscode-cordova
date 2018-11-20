@@ -37,7 +37,6 @@ export class ExtensionServer implements vscode.Disposable {
         this.messageHandlerDictionary[ExtensionMessage.START_SIMULATE_SERVER] = this.launchSimulateServer;
         this.messageHandlerDictionary[ExtensionMessage.GET_VISIBLE_EDITORS_COUNT] = this.getVisibleEditorsCount;
         this.messageHandlerDictionary[ExtensionMessage.GET_RUN_ARGUMENTS] = this.getRunArguments;
-        this.messageHandlerDictionary[ExtensionMessage.GET_SIMULATOR_IN_EXTERNAL_BROWSER_SETTING] = this.getSimulatorInExternalBrowserSetting;
         this.messageHandlerDictionary[ExtensionMessage.GET_CORDOVA_EXECUTABLE] = this.getCordovaExecutable;
     }
 
@@ -186,9 +185,6 @@ export class ExtensionServer implements vscode.Disposable {
         return Q.resolve(CordovaCommandHelper.getRunArguments(fsPath));
     }
 
-    private getSimulatorInExternalBrowserSetting(fsPath: string): Q.Promise<boolean> {
-        return Q.resolve(CordovaCommandHelper.getSimulatorInExternalBrowserSetting(fsPath));
-    }
 
     private getCordovaExecutable(fsPath: string): Q.Promise<string> {
         return Q.resolve(CordovaCommandHelper.getCordovaExecutable(fsPath));
