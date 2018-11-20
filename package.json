@@ -22,7 +22,7 @@
   "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
-    "vscode": "^1.24.0"
+    "vscode": "^1.17.1"
   },
   "categories": [
     "Debuggers",
