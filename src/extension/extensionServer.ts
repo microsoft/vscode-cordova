@@ -150,7 +150,8 @@ export class ExtensionServer implements vscode.Disposable {
                     .then(result => {
                         socket.end(JSON.stringify(result));
                     })
-                    .catch((e) => { handleError(e); });
+                    .catch((e) => { handleError(e); })
+                    .done();
             } catch (e) {
                 handleError(e);
             }
