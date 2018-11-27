@@ -1,3 +1,8 @@
+## 1.6.0
+
+* Move to Azure pipelines builds instead of Travis CI for pull requests validation
+* Cordova Simulate migrate to browser instead of using deprecated vscode.previewHtml command
+
 ## 1.5.1
 
 * Return extension name back to "Cordova Tools"
