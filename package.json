@@ -560,7 +560,7 @@
     "socket.io-client": "^1.4.6",
     "source-map-support": "^0.4.18",
     "temp": "^0.8.3",
-    "vscode": "^1.1.6",
+    "vscode": "^1.1.22",
     "vscode-chrome-debug-core": "^6.7.25",
     "vscode-debugadapter": "^1.32.1",
     "vscode-extension-telemetry": "0.0.5",
