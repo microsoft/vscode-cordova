@@ -1,7 +1,9 @@
 ## 1.6.0
 
 * Move to Azure pipelines builds instead of Travis CI for pull requests validation
-* Cordova Simulate migrate to browser instead of using deprecated vscode.previewHtml command
+`previewHtml` will be deprecated in the future releases of VS Code and due to this the following changes were made:
+ * Simulate window now opens in a browser instead of opening inside VS Code
+ * `simulatorInExternalBrowser` and `cordova.simulatorInExternalBrowser` settings was removed
 
 ## 1.5.1
 
