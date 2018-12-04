@@ -106,15 +106,15 @@ gulp.task('tslint-test', function () {
         .pipe(tslint.report());
 });
 
-gulp.task('build-src', ['compile-src', 'tslint-src']);
-gulp.task('build-test', ['compile-test', 'tslint-test']);
-gulp.task('build', ['build-src', 'build-test']);
-gulp.task('tslint', ['tslint-src', 'tslint-test']);
+gulp.task('build-src', gulp.series('compile-src', 'tslint-src'));
+gulp.task('build-test', gulp.series('compile-test', 'tslint-test'));
+gulp.task('build', gulp.series('build-src', 'build-test'));
+gulp.task('tslint', gulp.series('tslint-src', 'tslint-test'));
 
-gulp.task('watch', ['build'], function (cb) {
+gulp.task('watch', gulp.series('build', function (cb) {
     log('Watching build sources...');
-    return gulp.watch(sources, ['build']);
-});
+    return gulp.watch(sources, gulp.series('build'));
+}));
 
 gulp.task('run-test', function () {
     return gulp.src('out/test/debugger/**/*.js', { read: false })
@@ -125,19 +125,16 @@ gulp.task('run-test', function () {
         });
 });
 
-gulp.task('test', function (done) {
-    runSequence('build-test', 'run-test', done);
-});
+gulp.task('test', gulp.series('build-test', 'run-test'));
 
-gulp.task('prepare-integration-tests', ['build'], function () {
+gulp.task('prepare-integration-tests', gulp.series('build', function () {
     return executeCordovaCommand(path.resolve(__dirname, 'test', 'testProject'), 'plugin add cordova-plugin-file');
-});
+}));
 
-gulp.task('watch-build-test', function (done) {
-    runSequence('build', 'run-test', function () {
-        return gulp.watch(sources, ['build', 'run-test'], done);
-    });
-});
+gulp.task('watch-build-test', gulp.series('build', 'run-test', function () {
+        return gulp.watch(sources, gulp.series('build', 'run-test'));
+    })
+);
 
 gulp.task('release', function () {
     var licenseFiles = ['LICENSE.txt', 'ThirdPartyNotices.txt'];
@@ -184,8 +181,6 @@ gulp.task('clean-test', function () {
     return del(pathsToDelete, { force: true });
 });
 
-gulp.task('clean', ['clean-src', 'clean-test']);
+gulp.task('clean', gulp.series('clean-src', 'clean-test'));
 
-gulp.task('default', function (done) {
-    runSequence('clean', 'build', 'run-test', done);
-});
+gulp.task('default', gulp.series('clean', 'build', 'run-test'));
