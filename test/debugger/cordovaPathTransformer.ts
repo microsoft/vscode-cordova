@@ -20,5 +20,5 @@ describe("CordovaPathTransformer", () => {
 
        pathTransformer.getClientPath("file:///android_asset/www/js/index.js").toLowerCase().should.equal(path.resolve(testapp, "www", "js", "index.js").toLowerCase());
        pathTransformer.getClientPath("file:///android_asset/www/js/merged.js").toLowerCase().should.equal(path.resolve(testapp, "merges", "android", "js", "merged.js").toLowerCase());
-   });
+   }).timeout(5000);
 });
