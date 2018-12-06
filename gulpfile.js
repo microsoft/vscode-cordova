@@ -116,12 +116,12 @@ gulp.task('watch', gulp.series('build', function (cb) {
     return gulp.watch(sources, gulp.series('build'));
 }));
 
-gulp.task('run-test', function (done) {
+gulp.task('run-test', function () {
     return gulp.src('out/test/debugger/**/*.js', { read: false })
         .pipe(mocha({ ui: 'bdd' }))
         .on('error', function (e) {
             log(e ? e.toString() : 'error in test task!');
-            this.emit("end");
+            this.emit('end');
         });
 });
 
