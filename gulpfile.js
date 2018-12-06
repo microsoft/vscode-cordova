@@ -62,8 +62,6 @@ var tsConfig = require('./tsconfig.json');
 var projectConfig = tsConfig.compilerOptions;
 projectConfig.typescript = typescript;
 
-let watching = false;
-
 function fixSources() {
     return sourcemaps.mapSources(function(sourcePath) {
         return sourcePath.replace('..', '.');
@@ -115,7 +113,6 @@ gulp.task('tslint', gulp.series('tslint-src', 'tslint-test'));
 
 gulp.task('watch', gulp.series('build', function (cb) {
     log('Watching build sources...');
-    watching = true;
     return gulp.watch(sources, gulp.series('build'));
 }));
 
@@ -124,11 +121,7 @@ gulp.task('run-test', function (done) {
         .pipe(mocha({ ui: 'bdd' }))
         .on('error', function (e) {
             log(e ? e.toString() : 'error in test task!');
-            if (watching) {
-                this.emit('end');
-            } else {
-                done(e);
-            }
+            this.emit("end");
         });
 });
 
@@ -139,7 +132,6 @@ gulp.task('prepare-integration-tests', gulp.series('build', function () {
 }));
 
 gulp.task('watch-build-test', gulp.series('build', 'run-test', function () {
-        watching = true;
         return gulp.watch(sources, gulp.series('build', 'run-test'));
     })
 );
