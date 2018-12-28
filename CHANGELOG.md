@@ -1,3 +1,8 @@
+## 1.6.1
+* Fix several security vulnerabilities
+* Fix debugging problems on Windows with non-latin locale [#460](https://github.com/Microsoft/vscode-cordova/issues/460)
+* Fix simulate scenarios on android on Linux [#438](https://github.com/Microsoft/vscode-cordova/issues/438)
+
 ## 1.6.0
 
 * Move to Azure pipelines builds instead of Travis CI for pull requests validation
