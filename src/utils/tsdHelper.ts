@@ -79,7 +79,7 @@ export class TsdHelper {
         if (typeDefsToRemove.length === 0) return;
 
         typeDefsToRemove.forEach(typeDef => {
-            fs.unlink(path.resolve(typingsFolderPath, typeDef), err => {
+            fs.unlinkSync(path.resolve(typingsFolderPath, typeDef), err => {
                 if (err) console.error(err);
             });
         });
@@ -99,7 +99,7 @@ export class TsdHelper {
             ref && !typeDefsToRemove.some(typedef => ref.indexOf(typedef) >= 0));
 
         referencesToPersist.length === 0 ?
-            fs.unlink(indexFile) :
+            fs.unlinkSync(indexFile) :
             // Write filtered references back to index file
             fs.writeFileSync(indexFile, referencesToPersist.join("\n"), "utf8");
     }
