@@ -101,7 +101,7 @@ export class CordovaIosDeviceLauncher {
             }
 
             let list: any[] = pl.parse(fs.readFileSync(filename, "utf8"));
-            fs.unlink(filename);
+            fs.unlinkSync(filename);
             for (let i: number = 0; i < list.length; ++i) {
                 if (list[i].CFBundleIdentifier === packageId) {
                     let path: string = list[i].Path;
