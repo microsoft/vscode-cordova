@@ -79,7 +79,7 @@ export class TsdHelper {
         if (typeDefsToRemove.length === 0) return;
 
         typeDefsToRemove.forEach(typeDef => {
-            fs.unlinkSync(path.resolve(typingsFolderPath, typeDef), err => {
+            fs.unlink(path.resolve(typingsFolderPath, typeDef), err => {
                 if (err) console.error(err);
             });
         });
