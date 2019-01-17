@@ -565,6 +565,7 @@
     "@types/rimraf": "^2.0.2",
     "@types/semver": "^5.5.0",
     "@types/socket.io-client": "^1.4.29",
+    "del": "^2.2.2",
     "gulp": "^4.0.0",
     "gulp-mocha": "^6.0.0",
     "gulp-sourcemaps": "^1.12.1",
