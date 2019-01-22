@@ -220,7 +220,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
             .then(() => TelemetryHelper.generate("launch", (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
-                launchArgs.target = launchArgs.target || (launchArgs.platform === "browser" ? "chrome" : "emulator");
+                if (!launchArgs.target) {
+                    if(launchArgs.platform === "browser"){
+                        launchArgs.target = "chrome";
+                    } else {
+                        launchArgs.target = "emulator";
+                    }
+                    this.outputLogger(`Parameter target is not set - ${launchArgs.target} will be used`);
+                }
                 generator.add("target", CordovaDebugAdapter.getTargetType(launchArgs.target), false);
                 launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
 
