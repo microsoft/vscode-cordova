@@ -221,7 +221,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             .then(() => TelemetryHelper.generate("launch", (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
                 if (!launchArgs.target) {
-                    if(launchArgs.platform === "browser"){
+                    if (launchArgs.platform === "browser") {
                         launchArgs.target = "chrome";
                     } else {
                         launchArgs.target = "emulator";
@@ -687,52 +687,82 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 });
             }).then(() => void (0));
         } else {
-            let target = launchArgs.target.toLowerCase() === "emulator" ? null : launchArgs.target;
-            // Workaround for dealing with new build system in XCode 10
-            // https://github.com/apache/cordova-ios/issues/407
-            let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
-            if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
-                args = ["emulate", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
-
-            if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                args.push(...launchArgs.runArguments);
-            } else if (runArguments && runArguments.length) {
-                args.push(...runArguments);
-            } else {
-                if (target) {
-                    args.push("--target=" + target);
+            let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
+            return this.checkIfTargetIsiOSEmulator(target, command, launchArgs.env, workingDirectory).then((result) => {
+                if (result) {
+                    const message = "Unknown target. Please use device id.";
+                    throw new Error(message);
                 }
-                // Verify if we are using Ionic livereload
-                if (launchArgs.ionicLiveReload) {
-                    if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
-                        // Livereload is enabled, let Ionic do the launch
-                        args.push("--livereload");
-                    } else {
-                        this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
+            }).then(() => {
+                // Workaround for dealing with new build system in XCode 10
+                // https://github.com/apache/cordova-ios/issues/407
+                let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
+                if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
+                    args = ["emulate", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
+
+                if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
+                    args.push(...launchArgs.runArguments);
+                } else if (runArguments && runArguments.length) {
+                    args.push(...runArguments);
+                } else {
+                    if (target === "emulator") {
+                        args.push("--target=" + target);
+                    }
+                    // Verify if we are using Ionic livereload
+                    if (launchArgs.ionicLiveReload) {
+                        if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
+                            // Livereload is enabled, let Ionic do the launch
+                            args.push("--livereload");
+                        } else {
+                            this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
+                        }
                     }
                 }
-            }
 
-            if (args.indexOf("--livereload") > -1) {
-                return this.startIonicDevServer(launchArgs, args).then(() => void 0);
-            }
+                if (args.indexOf("--livereload") > -1) {
+                    return this.startIonicDevServer(launchArgs, args).then(() => void 0);
+                }
 
-            return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
-                .progress((progress) => {
-                    this.outputLogger(progress[0], progress[1]);
-                }).catch((err) => {
-                    if (target) {
-                        return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.env, workingDirectory).then((output) => {
-                            // List out available targets
-                            errorLogger("Unable to run with given target.");
-                            errorLogger(output[0].replace(/\*+[^*]+\*+/g, "")); // Print out list of targets, without ** RUN SUCCEEDED **
-                            throw err;
-                        });
-                    }
+                return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
+                    .progress((progress) => {
+                        this.outputLogger(progress[0], progress[1]);
+                    }).catch((err) => {
+                        if (target === "emulator") {
+                            return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.env, workingDirectory).then((output) => {
+                                // List out available targets
+                                errorLogger("Unable to run with given target.");
+                                errorLogger(output[0].replace(/\*+[^*]+\*+/g, "")); // Print out list of targets, without ** RUN SUCCEEDED **
+                                throw err;
+                            });
+                        }
 
-                    throw err;
-                });
+                        throw err;
+                    });
+            });
         }
+    }
+
+    private checkIfTargetIsiOSEmulator(target: string, cordovaCommand: string, env: string, workingDirectory: string): Q.Promise<boolean> {
+        if (target === "emulator") {
+            return Q.resolve(true);
+        }
+        return cordovaRunCommand(cordovaCommand, ["emulate", "ios", "--list"], env, workingDirectory).then((output) => {
+            // Get list of emulators as raw strings
+            let match = output[0].match(/Available iOS Simulators:(.*)/gs);
+            if (!match) {
+                return false;
+            }
+            // Clean up each string to get real value
+            const emulators = match[0].split("\n").map((value) => {
+                let match = value.match(/(.*)(?=,)/gm);
+                if (!match) {
+                    return null;
+                }
+                return match[0].replace(/\t/, "");
+            });
+
+            return (emulators.indexOf(target) >= 0);
+        });
     }
 
     private attachIos(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
