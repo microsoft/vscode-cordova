@@ -14,7 +14,6 @@ var Q = require('q');
 var typescript = require('typescript');
 var libtslint = require('tslint');
 var tslint = require('gulp-tslint');
-var runSequence = require('run-sequence');
 var del = require('del');
 
 function executeCordovaCommand(cwd, command) {
