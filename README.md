@@ -66,7 +66,7 @@ To start the debugger, choose a target from the target drop-down list, and then 
 
 ![Cordova launch targets](images/debug-targets.png)
 
-You can debug your app on an Android emulator or a Android/iOS device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
+You can debug your app on an Android emulator or an Android/iOS device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
 > **Visual Studio Emulator for Android:**
 To deploy your app to the Visual Studio Emulator for Android using our extension, you first need to manually launch the emulator. Once it is running, select the ```Run Android on Device``` debug target rather than the emulator target. If *ADB* didn't automatically recognize the VS Android emulator when you launched it, you will need to run ```adb connect [EMULATOR'S IP]``` on the command prompt before trying to deploy. To find out the IP address of your emulator, click the double arrow icon at the bottom of the emulator's side-menu to open the "Additional Tools" window, and go to the "Network" tab. Use the IP of an appropriate network adapter in the list.
@@ -208,7 +208,7 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 * Why can't I debug on iOS Simulator?
 
-Apple removed option to enable WebInspector inside simulator and debug proxy unable to connect to application webview and that's why debugging on iOS simulators is not yet available. As soon as Apple publish new way to connect to simulators, debugging won iOS simulators ill be returned.
+Apple removed option to enable WebInspector inside simulator and debug proxy unable to connect to application webview and that's why debugging on iOS simulators is not yet available. As soon as Apple publish new way to connect to simulators, debugging on iOS simulators will be returned.
 
 *  Error `Error: Project does not include the specified platform: android` while running `Simulate android in browser` on Ubuntu machine.
 
