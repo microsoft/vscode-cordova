@@ -738,12 +738,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     private checkIfTargetIsiOSEmulator(target: string, cordovaCommand: string, env: any, workingDirectory: string): Q.Promise<void> {
-        const throwError = () => {
+        const simulatorTargetIsNotSupported = () => {
             const message = "Invalid target value. Please, use valid device id for your debug configuration.";
             throw new Error(message);
         };
         if (target === "emulator") {
-            throwError();
+            simulatorTargetIsNotSupported();
         }
         return cordovaRunCommand(cordovaCommand, ["emulate", "ios", "--list"], env, workingDirectory).then((output) => {
             // Get list of emulators as raw strings
@@ -764,7 +764,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         })
         .then((result) => {
             if (result) {
-                throwError();
+                simulatorTargetIsNotSupported();
             }
         });
     }
