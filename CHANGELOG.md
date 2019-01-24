@@ -1,3 +1,6 @@
+## 1.7.0
+* Fix security vulnerabilities caused by cordova-simulate dependencies [#479](https://github.com/Microsoft/vscode-cordova/pull/479)
+
 ## 1.6.2
 * Fix issue that caused extension crashes on macOS with VS Code Insiders 1.31 [#472](https://github.com/Microsoft/vscode-cordova/issues/472)
 * Fix debugging issues on macOS with VS Code Insiders 1.31 connected to changes in `unlink` function in Node 10 [#474](https://github.com/Microsoft/vscode-cordova/pull/474)
