@@ -206,9 +206,9 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ## Known Issues
 
-* Why can't I debug on iOS Simulator?
+* Why can't I debug my app on iOS Simulator?
 
-Apple removed option to enable WebInspector inside simulator and debug proxy unable to connect to application webview and that's why debugging on iOS simulators is not yet available. As soon as Apple publish new way to connect to simulators, debugging on iOS simulators will be returned.
+Apple made changes to the debugging mechanism and the approach is being used in IWDP we use under the hood doesn't work anymore. As soon as Apple publish new way to connect to simulators, debugging on iOS simulators will be returned.
 
 *  Error `Error: Project does not include the specified platform: android` while running `Simulate android in browser` on Ubuntu machine.
 
