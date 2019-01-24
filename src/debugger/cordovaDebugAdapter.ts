@@ -688,12 +688,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
-            return this.checkIfTargetIsiOSEmulator(target, command, launchArgs.env, workingDirectory).then((result) => {
-                if (result) {
-                    const message = "Unknown target. Please use device id.";
-                    throw new Error(message);
-                }
-            }).then(() => {
+            return this.checkIfTargetIsiOSEmulator(target, command, launchArgs.env, workingDirectory).then(() => {
                 // Workaround for dealing with new build system in XCode 10
                 // https://github.com/apache/cordova-ios/issues/407
                 let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
@@ -742,9 +737,13 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
     }
 
-    private checkIfTargetIsiOSEmulator(target: string, cordovaCommand: string, env: string, workingDirectory: string): Q.Promise<boolean> {
+    private checkIfTargetIsiOSEmulator(target: string, cordovaCommand: string, env: any, workingDirectory: string): Q.Promise<void> {
+        const throwError = () => {
+            const message = "Invalid target value. Please, use valid device id for your debug configuration.";
+            throw new Error(message);
+        };
         if (target === "emulator") {
-            return Q.resolve(true);
+            throwError();
         }
         return cordovaRunCommand(cordovaCommand, ["emulate", "ios", "--list"], env, workingDirectory).then((output) => {
             // Get list of emulators as raw strings
@@ -762,107 +761,119 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             });
 
             return (emulators.indexOf(target) >= 0);
+        })
+        .then((result) => {
+            if (result) {
+                throwError();
+            }
         });
     }
 
     private attachIos(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
-        attachArgs.webkitRangeMin = attachArgs.webkitRangeMin || 9223;
-        attachArgs.webkitRangeMax = attachArgs.webkitRangeMax || 9322;
-        attachArgs.attachAttempts = attachArgs.attachAttempts || 20;
-        attachArgs.attachDelay = attachArgs.attachDelay || 1000;
-        // Start the tunnel through to the webkit debugger on the device
-        this.outputLogger("Configuring debugging proxy");
+        let target = attachArgs.target.toLowerCase() === "emulator" ? "emulator" : attachArgs.target;
+        let workingDirectory = attachArgs.cwd;
+        const command = CordovaProjectHelper.getCliCommand(workingDirectory);
+        // TODO add env support for attach
+        const env = CordovaProjectHelper.getEnvArgument(attachArgs);
+        return this.checkIfTargetIsiOSEmulator(target, command, env, workingDirectory).then(() => {
+            attachArgs.webkitRangeMin = attachArgs.webkitRangeMin || 9223;
+            attachArgs.webkitRangeMax = attachArgs.webkitRangeMax || 9322;
+            attachArgs.attachAttempts = attachArgs.attachAttempts || 20;
+            attachArgs.attachDelay = attachArgs.attachDelay || 1000;
+            // Start the tunnel through to the webkit debugger on the device
+            this.outputLogger("Configuring debugging proxy");
 
-        const retry = function<T> (func, condition, retryCount): Q.Promise<T> {
-            return CordovaDebugAdapter.retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview");
-        };
+            const retry = function<T> (func, condition, retryCount): Q.Promise<T> {
+                return CordovaDebugAdapter.retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview");
+            };
 
-        const getBundleIdentifier = (): Q.IWhenable<string> => {
-            if (attachArgs.target.toLowerCase() === "device") {
-                return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
-                    .then(CordovaIosDeviceLauncher.getPathOnDevice)
-                    .then(path.basename);
-            } else {
-                return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, "platforms", "ios", "build", "emulator")).then((entries: string[]) => {
-                    let filtered = entries.filter((entry) => /\.app$/.test(entry));
-                    if (filtered.length > 0) {
-                        return filtered[0];
-                    } else {
-                        throw new Error("Unable to find .app file");
+            const getBundleIdentifier = (): Q.IWhenable<string> => {
+                if (attachArgs.target.toLowerCase() === "device") {
+                    return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
+                        .then(CordovaIosDeviceLauncher.getPathOnDevice)
+                        .then(path.basename);
+                } else {
+                    return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, "platforms", "ios", "build", "emulator")).then((entries: string[]) => {
+                        let filtered = entries.filter((entry) => /\.app$/.test(entry));
+                        if (filtered.length > 0) {
+                            return filtered[0];
+                        } else {
+                            throw new Error("Unable to find .app file");
+                        }
+                    });
+                }
+            };
+
+            const getSimulatorProxyPort = (packagePath): Q.IWhenable<{ packagePath: string; targetPort: number }> => {
+                return this.promiseGet(`http://localhost:${attachArgs.port}/json`, "Unable to communicate with ios_webkit_debug_proxy").then((response: string) => {
+                    try {
+                        let endpointsList = JSON.parse(response);
+                        let devices = endpointsList.filter((entry) =>
+                            attachArgs.target.toLowerCase() === "device" ? entry.deviceId !== "SIMULATOR"
+                                : entry.deviceId === "SIMULATOR"
+                        );
+                        let device = devices[0];
+                        // device.url is of the form 'localhost:port'
+                        return {
+                            packagePath,
+                            targetPort: parseInt(device.url.split(":")[1], 10),
+                        };
+                    } catch (e) {
+                        throw new Error("Unable to find iOS target device/simulator. Please check that \"Settings > Safari > Advanced > Web Inspector = ON\" or try specifying a different \"port\" parameter in launch.json");
                     }
                 });
-            }
-        };
+            };
 
-        const getSimulatorProxyPort = (packagePath): Q.IWhenable<{ packagePath: string; targetPort: number }> => {
-            return this.promiseGet(`http://localhost:${attachArgs.port}/json`, "Unable to communicate with ios_webkit_debug_proxy").then((response: string) => {
-                try {
-                    let endpointsList = JSON.parse(response);
-                    let devices = endpointsList.filter((entry) =>
-                        attachArgs.target.toLowerCase() === "device" ? entry.deviceId !== "SIMULATOR"
-                            : entry.deviceId === "SIMULATOR"
-                    );
-                    let device = devices[0];
-                    // device.url is of the form 'localhost:port'
-                    return {
-                        packagePath,
-                        targetPort: parseInt(device.url.split(":")[1], 10),
-                    };
-                } catch (e) {
-                    throw new Error("Unable to find iOS target device/simulator. Please check that \"Settings > Safari > Advanced > Web Inspector = ON\" or try specifying a different \"port\" parameter in launch.json");
-                }
-            });
-        };
-
-        const findWebViews = ({ packagePath, targetPort }) => {
-            return retry(() =>
-                this.promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
-                    .then((response: string) => {
-                        try {
-                            const webviewsList = JSON.parse(response);
-                            const foundWebViews = webviewsList.filter((entry) => {
-                                if (this.ionicDevServerUrls) {
-                                    return this.ionicDevServerUrls.some(url => entry.url.indexOf(url) === 0);
-                                } else {
-                                    return entry.url.indexOf(encodeURIComponent(packagePath)) !== -1;
+            const findWebViews = ({ packagePath, targetPort }) => {
+                return retry(() =>
+                    this.promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
+                        .then((response: string) => {
+                            try {
+                                const webviewsList = JSON.parse(response);
+                                const foundWebViews = webviewsList.filter((entry) => {
+                                    if (this.ionicDevServerUrls) {
+                                        return this.ionicDevServerUrls.some(url => entry.url.indexOf(url) === 0);
+                                    } else {
+                                        return entry.url.indexOf(encodeURIComponent(packagePath)) !== -1;
+                                    }
+                                });
+                                if (!foundWebViews.length && webviewsList.length === 1) {
+                                    this.outputLogger("Unable to find target app webview, trying to fallback to the only running webview");
+                                    return {
+                                        relevantViews: webviewsList,
+                                        targetPort,
+                                    };
                                 }
-                            });
-                            if (!foundWebViews.length && webviewsList.length === 1) {
-                                this.outputLogger("Unable to find target app webview, trying to fallback to the only running webview");
+                                if (!foundWebViews.length) {
+                                    throw new Error("Unable to find target app");
+                                }
                                 return {
-                                    relevantViews: webviewsList,
+                                    relevantViews: foundWebViews,
                                     targetPort,
                                 };
-                            }
-                            if (!foundWebViews.length) {
+                            } catch (e) {
                                 throw new Error("Unable to find target app");
                             }
-                            return {
-                                relevantViews: foundWebViews,
-                                targetPort,
-                            };
-                        } catch (e) {
-                            throw new Error("Unable to find target app");
-                        }
-                    }), (result) => result.relevantViews.length > 0, 5);
-        };
+                        }), (result) => result.relevantViews.length > 0, 5);
+            };
 
-        const getAttachRequestArgs = (): Q.Promise<IAttachRequestArgs> =>
-            CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax)
-                .then(getBundleIdentifier)
-                .then(getSimulatorProxyPort)
-                .then(findWebViews)
-                .then(({ relevantViews, targetPort }) => {
-                    return { port: targetPort, url: relevantViews[0].url };
-                })
-                .then(({ port, url }) => {
-                    const args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
-                    args.port = port;
-                    args.url = url;
-                    return args;
-                });
+            const getAttachRequestArgs = (): Q.Promise<IAttachRequestArgs> =>
+                CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax)
+                    .then(getBundleIdentifier)
+                    .then(getSimulatorProxyPort)
+                    .then(findWebViews)
+                    .then(({ relevantViews, targetPort }) => {
+                        return { port: targetPort, url: relevantViews[0].url };
+                    })
+                    .then(({ port, url }) => {
+                        const args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
+                        args.port = port;
+                        args.url = url;
+                        return args;
+                    });
 
-        return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts);
+            return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts);
+        });
     }
 
     private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, generator: TelemetryGenerator): Q.Promise<any> {
