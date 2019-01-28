@@ -206,16 +206,16 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ## Known Issues
 
-* Why can't I debug my app on iOS Simulator?
+### Why can't I debug my app on iOS Simulator?
 
-Apple made changes to the debugging mechanism and the approach is being used in IWDP we use under the hood doesn't work anymore. As soon as Apple publish new way to connect to simulators, debugging on iOS simulators will be returned.
+Due to recent changes in MacOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as MacOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
 
-* Error `Error running android` while running Ionic 4 project for android platform
+### Error `Error running android` while running Ionic 4 project for android platform
 
 It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376). As workaround, you can use Node JS v10+.
 
-* After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
+### After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
 
 [Explanation and solution for it](https://github.com/ionic-team/ionic-cli/issues/3709#issuecomment-457603038).
 
-* A complete [list of known issues](https://github.com/Microsoft/vscode-cordova/issues?q=is%3Aissue+label%3Aknown-issue+) can be found on [GitHub](https://github.com/Microsoft/vscode-cordova)
+### A complete [list of known issues](https://github.com/Microsoft/vscode-cordova/issues?q=is%3Aissue+label%3Aknown-issue+) can be found on [GitHub](https://github.com/Microsoft/vscode-cordova)
