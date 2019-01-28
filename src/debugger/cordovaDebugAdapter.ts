@@ -688,7 +688,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }).then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
-            return this.checkIfTargetIsiOSEmulator(target, command, launchArgs.env, workingDirectory).then(() => {
+            return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.env, workingDirectory).then(() => {
                 // Workaround for dealing with new build system in XCode 10
                 // https://github.com/apache/cordova-ios/issues/407
                 let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
@@ -737,7 +737,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
     }
 
-    private checkIfTargetIsiOSEmulator(target: string, cordovaCommand: string, env: any, workingDirectory: string): Q.Promise<void> {
+    private checkIfTargetIsiOSSimulator(target: string, cordovaCommand: string, env: any, workingDirectory: string): Q.Promise<void> {
         const simulatorTargetIsNotSupported = () => {
             const message = "Invalid target value. Please, use valid device id for your debug configuration. Proceed to https://aka.ms/AA3xq86 for more information.";
             throw new Error(message);
@@ -775,7 +775,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const command = CordovaProjectHelper.getCliCommand(workingDirectory);
         // TODO add env support for attach
         const env = CordovaProjectHelper.getEnvArgument(attachArgs);
-        return this.checkIfTargetIsiOSEmulator(target, command, env, workingDirectory).then(() => {
+        return this.checkIfTargetIsiOSSimulator(target, command, env, workingDirectory).then(() => {
             attachArgs.webkitRangeMin = attachArgs.webkitRangeMin || 9223;
             attachArgs.webkitRangeMax = attachArgs.webkitRangeMax || 9322;
             attachArgs.attachAttempts = attachArgs.attachAttempts || 20;
