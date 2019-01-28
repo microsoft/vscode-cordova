@@ -210,16 +210,12 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 Apple made changes to the debugging mechanism and the approach is being used in IWDP we use under the hood doesn't work anymore. As soon as Apple publish new way to connect to simulators, debugging on iOS simulators will be returned.
 
-*  Error `Error: Project does not include the specified platform: android` while running `Simulate android in browser` on Ubuntu machine.
-
-This is cordova-serve issue, please, see details [here](https://github.com/Microsoft/vscode-cordova/issues/438).
-
 * Error `Error running android` while running Ionic 4 project for android platform
 
 It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376). As workaround, you can use Node JS v10+.
 
 * After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
 
-This is [ionic bug](https://github.com/ionic-team/ionic-cli/issues/3709).
+[Explanation and solution for it](https://github.com/ionic-team/ionic-cli/issues/3709#issuecomment-457603038).
 
 * A complete [list of known issues](https://github.com/Microsoft/vscode-cordova/issues?q=is%3Aissue+label%3Aknown-issue+) can be found on [GitHub](https://github.com/Microsoft/vscode-cordova)
