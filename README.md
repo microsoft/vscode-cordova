@@ -208,7 +208,7 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ### Why can't I debug my app on iOS Simulator?
 
-Due to recent changes in MacOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as MacOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
+Due to recent changes in macOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as macOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
 
 ### Error `Error running android` while running Ionic 4 project for android platform
 
