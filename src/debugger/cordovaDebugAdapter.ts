@@ -739,7 +739,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     private checkIfTargetIsiOSSimulator(target: string, cordovaCommand: string, env: any, workingDirectory: string): Q.Promise<void> {
         const simulatorTargetIsNotSupported = () => {
-            const message = "Invalid target value. Please, use valid device id for your debug configuration. Proceed to https://aka.ms/AA3xq86 for more information.";
+            const message = "Invalid target. Please, check target parameter value in your debug configuration and make sure it's a valid iPhone device identifier. Proceed to https://aka.ms/AA3xq86 for more information.";
             throw new Error(message);
         };
         if (target === "emulator") {
