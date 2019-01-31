@@ -66,7 +66,7 @@ To start the debugger, choose a target from the target drop-down list, and then 
 
 ![Cordova launch targets](images/debug-targets.png)
 
-You can debug your app on an Android emulator, iOS simulator, or a device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
+You can debug your app on an Android emulator or an Android/iOS device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
 > **Visual Studio Emulator for Android:**
 To deploy your app to the Visual Studio Emulator for Android using our extension, you first need to manually launch the emulator. Once it is running, select the ```Run Android on Device``` debug target rather than the emulator target. If *ADB* didn't automatically recognize the VS Android emulator when you launched it, you will need to run ```adb connect [EMULATOR'S IP]``` on the command prompt before trying to deploy. To find out the IP address of your emulator, click the double arrow icon at the bottom of the emulator's side-menu to open the "Additional Tools" window, and go to the "Network" tab. Use the IP of an appropriate network adapter in the list.
@@ -206,16 +206,16 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ## Known Issues
 
-* Error `Unable to find webview` while debugging on iOS Simulator
+### Why can't I debug my app on iOS Simulator?
 
-This is [ios-webkit-debug-proxy issue](https://github.com/google/ios-webkit-debug-proxy/issues/250). Apple removed option to enable WebInspector inside simulator and debug proxy unable to connect to application webview.
+Due to recent changes in macOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as macOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
 
-* Error `Error running android` while running Ionic 4 project for android platform
+### Error `Error running android` while running Ionic 4 project for android platform
 
 It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376). As workaround, you can use Node JS v10+.
 
-* After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
+### After running Ionic 4 project on native platform I get white screen in application and error `(intermediate value).fill is not a function` in Debug Console.
 
 [Explanation and solution for it](https://github.com/ionic-team/ionic-cli/issues/3709#issuecomment-457603038).
 
-* A complete [list of known issues](https://github.com/Microsoft/vscode-cordova/issues?q=is%3Aissue+label%3Aknown-issue+) can be found on [GitHub](https://github.com/Microsoft/vscode-cordova)
+### A complete [list of known issues](https://github.com/Microsoft/vscode-cordova/issues?q=is%3Aissue+label%3Aknown-issue+) can be found on [GitHub](https://github.com/Microsoft/vscode-cordova)
