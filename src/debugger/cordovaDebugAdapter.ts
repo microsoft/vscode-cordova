@@ -1070,9 +1070,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Skip Ionic 4 searching port errors because, actually, they are not errors
             // https://github.com/ionic-team/ionic-cli/blob/4ee312ad983922ff4398b5900dcfcaebb6ef57df/packages/%40ionic/utils-network/src/index.ts#L85
-            const skipErrorMatch = /utils-network error while checking/.test(channel);
-            if (skipErrorMatch) {
-                return null;
+            if (isIonic4) {
+                const skipErrorMatch = /utils-network error while checking/.test(channel);
+                if (skipErrorMatch) {
+                    return null;
+                }
             }
 
             let errorMatch = errorRegex.exec(channel);
