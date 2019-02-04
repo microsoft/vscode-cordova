@@ -1067,6 +1067,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
         const isIonic4: boolean = CordovaProjectHelper.isIonicCliVersionGte(launchArgs.cwd, "4.0.0");
         let getServerErrorMessage = (channel: string) => {
+
+            // Skip Ionic 4 searching port errors because, actually, they are not errors
+            // https://github.com/ionic-team/ionic-cli/blob/4ee312ad983922ff4398b5900dcfcaebb6ef57df/packages/%40ionic/utils-network/src/index.ts#L85
+            const skipErrorMatch = /utils-network error while checking/.test(channel);
+            if (skipErrorMatch) {
+                return null;
+            }
+
             let errorMatch = errorRegex.exec(channel);
 
             if (errorMatch) {
