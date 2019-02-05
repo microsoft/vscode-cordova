@@ -1065,7 +1065,18 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let serverOut: string = "";
         let serverErr: string = "";
         const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+        const isIonic4: boolean = CordovaProjectHelper.isIonicCliVersionGte(launchArgs.cwd, "4.0.0");
         let getServerErrorMessage = (channel: string) => {
+
+            // Skip Ionic 4 searching port errors because, actually, they are not errors
+            // https://github.com/ionic-team/ionic-cli/blob/4ee312ad983922ff4398b5900dcfcaebb6ef57df/packages/%40ionic/utils-network/src/index.ts#L85
+            if (isIonic4) {
+                const skipErrorMatch = /utils-network error while checking/.test(channel);
+                if (skipErrorMatch) {
+                    return null;
+                }
+            }
+
             let errorMatch = errorRegex.exec(channel);
 
             if (errorMatch) {
@@ -1209,9 +1220,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }
             }
 
-            if (/Address Selection:/.test(serverOut)) {
+            if (/Multiple network interfaces detected/.test(serverOut)) {
                 // Ionic does not know which address to use for the dev server, and requires human interaction; error out and let the user know
-                let errorMessage: string = "Your machine has multiple network addresses. Please specify which one your device or emulator will use to communicate with the dev server by adding a \"devServerAddress\": \"ADDRESS\" property to .vscode/launch.json.";
+                let errorMessage: string = `Your machine has multiple network addresses. Please specify which one your device or emulator will use to communicate with the dev server by adding a \"devServerAddress\": \"ADDRESS\" property to .vscode/launch.json.
+To get the list of addresses run "ionic cordova run PLATFORM --livereload" (where PLATFORM is platform name to run) and wait until prompt with this list is appeared.`;
                 let addresses: string[] = [];
                 let addressRegex = /(\d+\) .*)/gm;
                 let match: string[] = addressRegex.exec(serverOut);
@@ -1221,8 +1233,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     match = addressRegex.exec(serverOut);
                 }
 
-                if (addresses) {
+                if (addresses.length > 0) {
                     // Give the user the list of addresses that Ionic found
+                    // NOTE: since ionic started to use inquirer.js for showing _interactive_ prompts this trick does not work as no output
+                    // of prompt are sent from ionic process which we starts with --no-interactive parameter
                     errorMessage += [" Available addresses:"].concat(addresses).join(os.EOL + " ");
                 }
 
@@ -1236,8 +1250,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
         };
 
-        this.ionicLivereloadProcess.stdout.on("data", serverOutputHandler);
-        this.ionicLivereloadProcess.stderr.on("data", (data: Buffer) => {
+        let serverErrorOutputHandler = (data: Buffer) => {
             serverErr += data.toString();
 
             let errorMsg = getServerErrorMessage(serverErr);
@@ -1245,7 +1258,17 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             if (errorMsg) {
                 appDeferred.reject(new Error(errorMsg));
             }
+        };
+
+        this.ionicLivereloadProcess.stdout.on("data", serverOutputHandler);
+        this.ionicLivereloadProcess.stderr.on("data", (data: Buffer) => {
+            if (isIonic4) {
+                // Ionic 4 writes all logs to stderr completely ignoring stdout
+                serverOutputHandler(data);
+            }
+            serverErrorOutputHandler(data);
         });
+
         this.outputLogger(`Starting Ionic dev server (live reload: ${launchArgs.ionicLiveReload})`);
 
         return serverDeferred.promise.timeout(serverReadyTimeout, `Starting the Ionic dev server timed out (${serverReadyTimeout} ms)`).then(() => {

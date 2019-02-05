@@ -372,14 +372,24 @@ export class CordovaProjectHelper {
         return parseVersion[0].trim();
     }
 
-    public static isIonicCliVersionGte3(fsPath: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): boolean {
+    /**
+     * Checks if ionic cli version is being used greater than specified version using semver.
+     * @param fsPath directory to use for running command
+     * @param version version to compare
+     * @param command multiplatform command to use
+     */
+    public static isIonicCliVersionGte(fsPath: string, version: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): boolean {
         try {
             const ionicVersion = CordovaProjectHelper.getIonicCliVersion(fsPath, command);
-            return semver.gte(ionicVersion, "3.0.0");
+            return semver.gte(ionicVersion, version);
         } catch (err) {
             console.error("Error while detecting Ionic CLI version", err);
         }
         return true;
+    }
+
+    public static isIonicCliVersionGte3(fsPath: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): boolean {
+        return CordovaProjectHelper.isIonicCliVersionGte(fsPath, "3.0.0", command);
     }
 
     public static getEnvArgument(launchArgs): any {
