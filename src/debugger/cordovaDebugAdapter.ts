@@ -747,12 +747,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
         return cordovaRunCommand(cordovaCommand, ["emulate", "ios", "--list"], env, workingDirectory).then((output) => {
             // Get list of emulators as raw strings
-            let match = output[0].match(/Available iOS Simulators:(.*)/gs);
-            if (!match) {
-                return false;
-            }
+            output[0] = output[0].replace(/Available iOS Simulators:/, "");
+
             // Clean up each string to get real value
-            const emulators = match[0].split("\n").map((value) => {
+            const emulators = output[0].split("\n").map((value) => {
                 let match = value.match(/(.*)(?=,)/gm);
                 if (!match) {
                     return null;
