@@ -564,6 +564,7 @@
     "winreg": "0.0.13"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
     "@types/q": "^1.0.3",
     "@types/rimraf": "^2.0.2",
     "@types/semver": "^5.5.0",
