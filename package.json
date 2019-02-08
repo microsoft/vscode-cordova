@@ -250,7 +250,7 @@
             "label": "Cordova: Attach to iOS device",
             "description": "Attach to running Cordova app on iOS device",
             "body": {
-              "name": "Attach to ios on device",
+               "name": "Attach to iOS on device",
               "type": "cordova",
               "request": "attach",
               "platform": "ios",
