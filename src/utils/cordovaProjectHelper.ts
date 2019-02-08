@@ -324,7 +324,7 @@ export class CordovaProjectHelper {
         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
         const dependencies = packageJson.dependencies || {};
         const devDependencies = packageJson.devDependencies || {};
-        const highestNotSupportedIonic4BetaVersion = "4.0.0-alpha.14";
+        const highestNotSupportedIonic4Version = "4.0.0-alpha.14";
         if ((dependencies["@ionic/angular"]) && (devDependencies["@ionic-native/core"] || dependencies["@ionic-native/core"])) {
             const ionicVersion = dependencies["@ionic/angular"];
 
@@ -335,11 +335,11 @@ export class CordovaProjectHelper {
 
 
             if (semver.valid(ionicVersion)) {
-                return semver.gte(ionicVersion, highestNotSupportedIonic4BetaVersion);
+                return semver.gte(ionicVersion, highestNotSupportedIonic4Version);
             }
 
             if (semver.validRange(ionicVersion)) {
-                return semver.ltr(highestNotSupportedIonic4BetaVersion, ionicVersion);
+                return semver.ltr(highestNotSupportedIonic4Version, ionicVersion);
             }
         }
         return false;
