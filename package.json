@@ -221,7 +221,7 @@
             }
           },
           {
-            "label": "Cordova: Run on iOS",
+            "label": "Cordova: Run on iOS device",
             "description": "Run and debug Cordova app on iOS device",
             "body": {
               "name": "Run iOS on device",
@@ -247,10 +247,10 @@
             }
           },
           {
-            "label": "Cordova: Attach to iOS",
+            "label": "Cordova: Attach to iOS device",
             "description": "Attach to running Cordova app on iOS device",
             "body": {
-              "name": "Attach to ios on device",
+              "name": "Attach to iOS on device",
               "type": "cordova",
               "request": "attach",
               "platform": "ios",
@@ -564,6 +564,7 @@
     "winreg": "0.0.13"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
     "@types/q": "^1.0.3",
     "@types/rimraf": "^2.0.2",
     "@types/semver": "^5.5.0",
