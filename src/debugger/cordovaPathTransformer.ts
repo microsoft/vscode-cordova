@@ -20,6 +20,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
     private _platform: string;
     private _webRoot: string;
     private _projectTypes;
+    private _ionicLiveReload: boolean;
     private _outputLogger: (message: string, error?: boolean | string) => void;
 
     constructor(outputLogger: (message: string) => void) {
@@ -132,10 +133,15 @@ export class CordovaPathTransformer extends BasePathTransformer {
 
         let defaultPath = "";
         let foldersForSearch = [this._webRoot, this._cordovaRoot, wwwRoot];
-        // Ionic 4 serve have changed algorithm, so we don't need
-        // to connect ts files with js in www folder in this case
-        if (this._platform === "serve" && this._projectTypes.ionic4) {
-            foldersForSearch.pop();
+
+        if (this._projectTypes.ionic4) {
+            // We don't need to connect ts files with js in www folder
+            // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
+            // don't use www directory anymore. If www directory is fulfilled and livereload is used then
+            // source maps could be messed up.
+            if (this._platform === "serve" || this._ionicLiveReload) {
+                foldersForSearch.pop();
+            }
         }
 
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
@@ -177,6 +183,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
         this._webRoot = args.address || this._cordovaRoot;
+        this._ionicLiveReload = args.ionicLiveReload || false;
         TelemetryHelper.determineProjectTypes(args.cwd).then((projectType) => {
             this._projectTypes = projectType;
         });
