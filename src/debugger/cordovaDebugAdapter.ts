@@ -40,6 +40,9 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     attachAttempts?: number;
     attachDelay?: number;
     simulatorInExternalBrowser?: boolean;
+
+    // Ionic livereload properties
+    ionicLiveReload?: boolean;
 }
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {

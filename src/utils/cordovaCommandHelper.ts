@@ -35,7 +35,12 @@ export class CordovaCommandHelper {
                 TelemetryHelper.generate(telemetryEventName, (generator) => {
                     generator.add("command", command, false);
                     let logger = OutputChannelLogger.getMainChannel();
-                    let commandToExecute = `${cliCommandName} ${command}`;
+                    let commandToExecute;
+                    if (useIonic && ["run", "prepare"].indexOf(command) > -1) {
+                        commandToExecute = `${cliCommandName} cordova ${command}`;
+                    } else {
+                        commandToExecute = `${cliCommandName} ${command}`;
+                    }
 
                     if (platform) {
                         commandToExecute += ` ${platform}`;
