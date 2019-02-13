@@ -351,7 +351,7 @@
               },
               "ionicLiveReload": {
                 "type": "boolean",
-                "description": "Whether or not to start an Ionic live reload session (this is currently only supported for Ionic 1 projects)",
+                "description": "Whether or not to start an Ionic live reload session",
                 "default": false
               },
               "devServerPort": {
@@ -495,6 +495,11 @@
                 "default": {
                   "/": "${workspaceFolder}"
                 }
+              },
+              "ionicLiveReload": {
+                "type": "boolean",
+                "description": "Set this to true if you are going to attach to app being ran with --livereload option",
+                "default": false
               },
               "sourceMapPathOverrides": {
                 "type": "object",

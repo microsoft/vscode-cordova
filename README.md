@@ -218,4 +218,8 @@ It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376
 
 [Explanation and solution for it](https://github.com/ionic-team/ionic-cli/issues/3709#issuecomment-457603038).
 
+### I try to attach to Ionic 4 app running with livereload but breakpoints are not being hit or being placed to incorrect positions
+
+Add `"ionicLiveReload": true` to your attach debug configuration and reattach.
+
 ### A complete [list of known issues](https://github.com/Microsoft/vscode-cordova/issues?q=is%3Aissue+label%3Aknown-issue+) can be found on [GitHub](https://github.com/Microsoft/vscode-cordova)
