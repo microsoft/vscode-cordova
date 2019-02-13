@@ -498,7 +498,7 @@
               },
               "ionicLiveReload": {
                 "type": "boolean",
-                "description": "Set this to true if you are going to attach to app being ran with --livereload option",
+                "description": "Set this to true if you are going to attach to Ionic 4 app being ran with --livereload option",
                 "default": false
               },
               "sourceMapPathOverrides": {
