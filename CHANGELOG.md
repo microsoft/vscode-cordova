@@ -1,3 +1,8 @@
+## 1.8.0
+* Disable debugging Cordova apps on iOS simulators. Please, see details [here](https://github.com/Microsoft/vscode-cordova/blob/ffd0e244f253d5324253368401edced1ca087b6d/README.md#why-cant-i-debug-my-app-on-ios-simulator)
+* Fix several issues with debugging Ionic apps when livereload option is enabled [#494](https://github.com/Microsoft/vscode-cordova/pull/494)
+* Fix Ionic command pallette commands [#508](https://github.com/Microsoft/vscode-cordova/pull/508)
+
 ## 1.7.0
 * Fix security vulnerabilities caused by cordova-simulate dependencies [#479](https://github.com/Microsoft/vscode-cordova/pull/479)
 
