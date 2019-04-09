@@ -384,12 +384,12 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         super.commonArgs(args);
     }
 
-    protected onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): Promise<void> {
+    protected async onScriptParsed(script: Crdp.Debugger.ScriptParsedEvent): Promise<void> {
         let sourceMapsEnabled = this.previousLaunchArgs && this.previousLaunchArgs.sourceMaps || this.previousAttachArgs && this.previousAttachArgs.sourceMaps;
 
         if (sourceMapsEnabled && !script.sourceMapURL && path.extname(script.url) === ".js") {
             // Browsers don't always report source maps for scripts, so even though no source map was reported for this script, parse it in case it has a sourceMappingUrl attribute.
-            let clientPath = this.cordovaPathTransformer.getClientPath(script.url);
+            let clientPath = await this.cordovaPathTransformer.getClientPath(script.url);
 
             if (clientPath) {
                 let scriptContent = fs.readFileSync(clientPath).toString();
