@@ -30,13 +30,13 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
 
-    public launch(args: ICordovaLaunchRequestArgs): Promise<void> {
-        this.initRoot(args);
+    public async launch(args: ICordovaLaunchRequestArgs): Promise<void> {
+        await this.initRoot(args);
         return super.launch(args);
     }
 
-    public attach(args: ICordovaAttachRequestArgs): Promise<void> {
-        this.initRoot(args);
+    public async attach(args: ICordovaAttachRequestArgs): Promise<void> {
+        await this.initRoot(args);
         return super.attach(args);
     }
 
@@ -176,15 +176,13 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return Promise.resolve(chromeUtils.targetUrlToClientPath(scriptUrl, this._pathMapping));
     }
 
-    private initRoot(args: ICordovaAttachRequestArgs) {
+    private async initRoot(args: ICordovaAttachRequestArgs) {
         this._pathMapping = args.pathMapping;
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
         this._webRoot = args.address || this._cordovaRoot;
         this._ionicLiveReload = args.ionicLiveReload || false;
-        TelemetryHelper.determineProjectTypes(args.cwd).then((projectType) => {
-            this._projectTypes = projectType;
-        });
+        this._projectTypes = await TelemetryHelper.determineProjectTypes(args.cwd);
     }
 
 }
