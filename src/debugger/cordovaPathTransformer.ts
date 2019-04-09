@@ -30,13 +30,13 @@ export class CordovaPathTransformer extends BasePathTransformer {
     }
 
 
-    public launch(args: ICordovaLaunchRequestArgs): Promise<void> {
-        this.initRoot(args);
+    public async launch(args: ICordovaLaunchRequestArgs): Promise<void> {
+        await this.initRoot(args);
         return super.launch(args);
     }
 
-    public attach(args: ICordovaAttachRequestArgs): Promise<void> {
-        this.initRoot(args);
+    public async attach(args: ICordovaAttachRequestArgs): Promise<void> {
+        await this.initRoot(args);
         return super.attach(args);
     }
 
@@ -70,8 +70,8 @@ export class CordovaPathTransformer extends BasePathTransformer {
         this._targetUrlToClientPath = new Map<string, string>();
     }
 
-    public scriptParsed(scriptUrl: string): Promise<string> {
-        const clientPath = this.getClientPath(scriptUrl);
+    public async scriptParsed(scriptUrl: string): Promise<string> {
+        const clientPath = await this.getClientPath(scriptUrl);
 
         if (!clientPath) {
             // It's expected that eval scripts (eval://) won't be resolved
@@ -123,7 +123,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return this._targetUrlToClientPath.get(targetPath);
     }
 
-    public getClientPath(sourceUrl: string): string {
+    public async getClientPath(sourceUrl: string): Promise<string> {
         let wwwRoot = path.join(this._cordovaRoot, "www");
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
@@ -145,19 +145,17 @@ export class CordovaPathTransformer extends BasePathTransformer {
         }
 
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
-        foldersForSearch.find((searchFolder) => {
+        for (const searchFolder of foldersForSearch) {
             const pathMapping: IPathMapping = {
-                "/": `${searchFolder}`,
+                "/": searchFolder,
             };
-            let mappedPath = chromeUtils.targetUrlToClientPath(sourceUrl, pathMapping);
+            let mappedPath = await chromeUtils.targetUrlToClientPath(sourceUrl, pathMapping);
 
             if (mappedPath) {
                 defaultPath = mappedPath;
-                return true;
+                break;
             }
-
-            return false;
-        });
+        }
 
         if (defaultPath.toLowerCase().indexOf(wwwRoot.toLowerCase()) === 0) {
             // If the path appears to be in www, check to see if it exists in /merges/<platform>/<relative path>
@@ -178,15 +176,13 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return Promise.resolve(chromeUtils.targetUrlToClientPath(scriptUrl, this._pathMapping));
     }
 
-    private initRoot(args: ICordovaAttachRequestArgs) {
+    private async initRoot(args: ICordovaAttachRequestArgs) {
         this._pathMapping = args.pathMapping;
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
         this._webRoot = args.address || this._cordovaRoot;
         this._ionicLiveReload = args.ionicLiveReload || false;
-        TelemetryHelper.determineProjectTypes(args.cwd).then((projectType) => {
-            this._projectTypes = projectType;
-        });
+        this._projectTypes = await TelemetryHelper.determineProjectTypes(args.cwd);
     }
 
 }
