@@ -13,7 +13,7 @@ describe("cordovaIosDeviceLauncher", function () {
     let fsMock: any = {};
 
     before(() => {
-        mockery.enable({warnOnReplace: false, useCleanCache: true});
+        mockery.enable({warnOnReplace: false, useCleanCache: true, warnOnUnregistered: false});
         mockery.registerAllowables([
             "../../src/debugger/cordovaIosDeviceLauncher",
             "path",
