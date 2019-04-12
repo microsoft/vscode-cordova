@@ -13,6 +13,7 @@ describe("cordovaIosDeviceLauncher", function () {
     let fsMock: any = {};
 
     before(() => {
+        // warnOnUnregistered is set to false because of https://github.com/mfncooper/mockery/issues/59
         mockery.enable({warnOnReplace: false, useCleanCache: true, warnOnUnregistered: false});
         mockery.registerAllowables([
             "../../src/debugger/cordovaIosDeviceLauncher",
