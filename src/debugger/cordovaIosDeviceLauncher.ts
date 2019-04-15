@@ -9,6 +9,7 @@ import * as net from "net";
 import * as path from "path";
 import * as pl from "plist";
 import * as Q from "q";
+import * as xcode from "xcode";
 
 let promiseExec = Q.denodeify(child_process.exec);
 
@@ -37,7 +38,12 @@ export class CordovaIosDeviceLauncher {
             let projectName = /^(.*)\.xcodeproj/.exec(xcodeprojfile)[1];
             let filepath = path.join(projectRoot, "platforms", "ios", projectName, projectName + "-Info.plist");
             let plist = pl.parse(fs.readFileSync(filepath, "utf8"));
-            return plist.CFBundleIdentifier;
+            // Since Cordova 9, no plain value is used, so we need to take it from project.pbxproj
+            if (plist.CFBundleIdentifier === "$(PRODUCT_BUNDLE_IDENTIFIER)") {
+                return this.getBundleIdentifierFromPbxproj(path.join(projectRoot, "platforms", "ios", xcodeprojfile));
+            } else {
+                return plist.CFBundleIdentifier;
+            }
         });
     }
 
@@ -226,6 +232,18 @@ export class CordovaIosDeviceLauncher {
         return packagePath.split("").map((c: string) => c.charCodeAt(0).toString(16)).join("").toUpperCase();
     }
 
+    private static getBundleIdentifierFromPbxproj(xcodeprojFilePath: string): Q.Promise<string> {
+        const pbxprojFilePath = path.join(xcodeprojFilePath, "project.pbxproj");
+        const pbxproj = xcode.project(pbxprojFilePath).parseSync();
+        const target = pbxproj.getFirstTarget();
+        const configListUUID = target.firstTarget.buildConfigurationList;
+        const configListsMap = pbxproj.pbxXCConfigurationList();
+        const targetConfigs = configListsMap[configListUUID].buildConfigurations;
+        const targetConfigUUID = targetConfigs[0].value; // 0 is "Debug, 1 is Release" - usually they have the same associated bundleId, it's highly unlikely someone would change it
+        const allConfigs = pbxproj.pbxXCBuildConfigurationSection();
+        const bundleId = allConfigs[targetConfigUUID].buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
+        return Q.resolve(bundleId);
+    }
     private static mountDeveloperImage(): Q.Promise<any> {
         return CordovaIosDeviceLauncher.getDiskImage()
             .then(function (path: string): Q.Promise<any> {
