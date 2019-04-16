@@ -1,3 +1,10 @@
+## 1.8.1
+* Fixed error "Application not installed on the device" while debugging Cordova 9 iOS apps
+* Fixed [js-yaml security vulnerability](https://www.npmjs.com/advisories/788)
+* Fixed [tar security vulnerability](https://www.npmjs.com/advisories/803)
+* Bumped debug core dependencies versions to the more recent ones
+* Fixed minor bugs
+
 ## 1.8.0
 * Disable debugging Cordova apps on iOS simulators. Please, see details [here](https://github.com/Microsoft/vscode-cordova/blob/ffd0e244f253d5324253368401edced1ca087b6d/README.md#why-cant-i-debug-my-app-on-ios-simulator)
 * Fix several issues with debugging Ionic apps when livereload option is enabled [#494](https://github.com/Microsoft/vscode-cordova/pull/494)
