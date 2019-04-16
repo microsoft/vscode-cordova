@@ -1,5 +1,7 @@
 ## 1.8.1
+* Fixed error "Application not installed on the device" while debugging Cordova 9 iOS apps
 * Fixed [js-yaml security vulnerability](https://www.npmjs.com/advisories/788)
+* Fixed [tar security vulnerability](https://www.npmjs.com/advisories/803)
 * Bumped debug core dependencies versions to the more recent ones
 * Fixed minor bugs
 
