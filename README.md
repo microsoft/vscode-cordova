@@ -215,7 +215,6 @@ Due to recent changes in macOS we cannot connect to simulators to enable debuggi
 
 Try to increase attach timeout by adding `attachTimeout` configuration parameter.
 
-
 ### Error `Error running android` while running Ionic 4 project for android platform
 
 It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376). As workaround, you can use Node JS v10+.
