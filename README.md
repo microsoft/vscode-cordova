@@ -211,6 +211,11 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 Due to recent changes in macOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as macOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
 
+### Error `'Cannot connect to runtime process, timeout after {0} ms - (reason: {1}).', '{_timeout}', '{_error}'` while running debug scenarios
+
+This may happen if debugger is not being connected to the debug session in a default 10000 milliseconds. You can increase this time by adding `attachTimeout` variable to your debug scenario and initializing with the value that suits for your case.
+
+
 ### Error `Error running android` while running Ionic 4 project for android platform
 
 It caused by [ionic cli bug](https://github.com/ionic-team/ionic-cli/issues/3376). As workaround, you can use Node JS v10+.
