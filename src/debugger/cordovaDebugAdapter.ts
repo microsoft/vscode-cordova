@@ -1394,7 +1394,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                 this.terminateSession(errMsg);
             });
 
-            return this.doAttach(port, launchUrl, args.address)
+            return this.doAttach(port, launchUrl, args.address, args.timeout)
                 .catch((err) => {
                     if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
                         // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
