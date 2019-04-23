@@ -339,7 +339,7 @@
                 "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
                 "default": 1000
               },
-              "timeout": {
+              "attachTimeout": {
                 "type": "number",
                 "description": "Time in milliseconds to wait before the debugger is attached to the debug session",
                 "default": 10000
@@ -489,7 +489,7 @@
                 "description": "Time in milliseconds to wait between attempts to attach to an iOS app",
                 "default": 1000
               },
-              "timeout": {
+              "attachTimeout": {
                 "type": "number",
                 "description": "Time in milliseconds to wait before the debugger is attached to the debug session",
                 "default": 10000
