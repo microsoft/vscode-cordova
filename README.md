@@ -47,6 +47,7 @@ Name                               | Description                                
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
 `attachAttempts`                   | The maximum number of times that you want the debugger to attempt to attach to a running iOS app.                                             | 5
 `attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
+`attachTimeout`                    | Time in milliseconds to wait before the debugger is attached to the debug session                                                             | 10000
 `iosDebugProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
 `appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
 `ionicLiveReload`                  | Set to true to enable Ionic live reload.                                                                                                      | false
@@ -209,6 +210,10 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 ### Why can't I debug my app on iOS Simulator?
 
 Due to recent changes in macOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as macOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
+
+### Error `'Cannot connect to runtime process, timeout after {0} ms - (reason: {1}).', '{_timeout}', '{_error}'` occured while running debug scenarios
+
+Try to increase attach timeout by adding `attachTimeout` configuration parameter.
 
 ### Error `Error running android` while running Ionic 4 project for android platform
 

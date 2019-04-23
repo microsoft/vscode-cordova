@@ -39,6 +39,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     webkitRangeMax?: number;
     attachAttempts?: number;
     attachDelay?: number;
+    attachTimeout?: number;
     simulatorInExternalBrowser?: boolean;
 
     // Ionic livereload properties
@@ -233,6 +234,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }
                 generator.add("target", CordovaDebugAdapter.getTargetType(launchArgs.target), false);
                 launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
+                launchArgs.timeout = launchArgs.attachTimeout;
 
                 let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
 
@@ -314,6 +316,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             attachArgs.target = attachArgs.target || "emulator";
             generator.add("target", CordovaDebugAdapter.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
+            attachArgs.timeout = attachArgs.attachTimeout;
+
             let platform = attachArgs.platform && attachArgs.platform.toLowerCase();
 
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
@@ -1394,7 +1398,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                 this.terminateSession(errMsg);
             });
 
-            return this.doAttach(port, launchUrl, args.address)
+            return this.doAttach(port, launchUrl, args.address, args.attachTimeout)
                 .catch((err) => {
                     if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
                         // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
