@@ -213,7 +213,7 @@ Due to recent changes in macOS we cannot connect to simulators to enable debuggi
 
 ### Error `'Cannot connect to runtime process, timeout after {0} ms - (reason: {1}).', '{_timeout}', '{_error}'` while running debug scenarios
 
-This may happen if debugger is not being connected to the debug session in a default 10000 milliseconds. You can increase this time by adding `attachTimeout` variable to your debug scenario and initializing with the value that suits for your case.
+This may happen if debugger is not being connected to the debug session in a default 10000 milliseconds. You can increase this time by adding `attachTimeout` variable to your debug configuration in `launch.json` and initializing with the value that suits for your case.
 
 
 ### Error `Error running android` while running Ionic 4 project for android platform
