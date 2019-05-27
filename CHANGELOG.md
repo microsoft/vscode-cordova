@@ -1,3 +1,8 @@
+## 1.8.2
+* Deps: cordova-simulate@0.6.2
+* Added attachTimeout variable to attach and launch args
+* Publisher changed from `vsmobile` to `msjsdiag`
+
 ## 1.8.1
 * Fixed error "Application not installed on the device" while debugging Cordova 9 iOS apps
 * Fixed [js-yaml security vulnerability](https://www.npmjs.com/advisories/788)
