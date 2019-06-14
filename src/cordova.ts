@@ -171,7 +171,6 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
                     });
                 }
             });
-            throw new Error("ssss");
         })
         .catch(() => {
             activateExtensionEvent.properties["error"] = true;
