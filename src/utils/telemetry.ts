@@ -255,9 +255,9 @@ export module Telemetry {
     }
 
     /**
-     * TelemetryActivity automatically includes timing data, used for scenarios where we want to track performance.
-     * Calls to start() and end() are optional, if not called explicitly then the constructor will be the start and send will be the end.
-     * This event will include a property called completion.time which represents time in milliseconds.
+     * `TelemetryActivity` automatically includes timing data, used for scenarios where we want to track performance.
+     * Calls to `start()` and `end()` are optional, if not called explicitly then the constructor will be the start and send will be the end.
+     * This event will include a property called `completion.time` which represents time in milliseconds.
      */
     export class TelemetryActivity extends TelemetryEvent {
         private startTime: [number, number];
