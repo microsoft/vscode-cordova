@@ -27,16 +27,27 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 let projectsCache: {[key: string]: any} = {};
 
 export function activate(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
+    // Asynchronously enable telemetry
+    Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: "" });
 
-    const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
+    let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
+    try {
+        context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
 
-    if (workspaceFolders) {
-        registerCordovaCommands(context);
-        workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
-            onFolderAdded(context, folder);
-        });
+        const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
+
+        if (workspaceFolders) {
+            registerCordovaCommands(context);
+            workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
+                onFolderAdded(context, folder);
+            });
+        }
+        activateExtensionEvent.properties["cordova.workspaceFolders"] = workspaceFolders.length;
+    } catch (e) {
+        activateExtensionEvent.properties["cordova.error"] = true;
     }
+
+    Telemetry.send(activateExtensionEvent);
 }
 
 export function deactivate(): void {
@@ -61,124 +72,116 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     let workspaceRoot = folder.uri.fsPath;
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(workspaceRoot);
 
-    // Asynchronously enable telemetry
-    Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: workspaceRoot });
-
     if (!cordovaProjectRoot) {
         return;
     }
 
     if (path.resolve(cordovaProjectRoot) !== path.resolve(workspaceRoot)) {
         vscode.window.showWarningMessage("VSCode Cordova extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated.");
-
         return;
     }
 
-    let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
-
+    // Send project type to telemetry for each workspace folder
+    let cordovaProjectTypeEvent = TelemetryHelper.createTelemetryEvent("cordova.projectType");
     TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
         .then((projType) => {
-            activateExtensionEvent.properties["projectType"] = projType;
-        })
-        .then(() => {
-            // We need to update the type definitions added to the project
-            // as and when plugins are added or removed. For this reason,
-            // setup a file system watcher to watch changes to plugins in the Cordova project
-            // Note that watching plugins/fetch.json file would suffice
-
-            let watcher = vscode.workspace.createFileSystemWatcher("**/plugins/fetch.json", false /*ignoreCreateEvents*/, false /*ignoreChangeEvents*/, false /*ignoreDeleteEvents*/);
-            watcher.onDidChange(() => updatePluginTypeDefinitions(cordovaProjectRoot));
-            watcher.onDidDelete(() => updatePluginTypeDefinitions(cordovaProjectRoot));
-            watcher.onDidCreate(() => updatePluginTypeDefinitions(cordovaProjectRoot));
-            context.subscriptions.push(watcher);
-
-            let simulator: PluginSimulator = new PluginSimulator();
-            let extensionServer: ExtensionServer = new ExtensionServer(simulator, workspaceRoot);
-            extensionServer.setup();
-
-            projectsCache[workspaceRoot] = {
-                extensionServer,
-                cordovaProjectRoot,
-                folder,
-            };
-
-            // extensionServer takes care of disposing the simulator instance
-            context.subscriptions.push(extensionServer);
-
-            // In case of Ionic 1 project register completions providers for html and javascript snippets
-            if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
-                context.subscriptions.push(
-                    vscode.languages.registerCompletionItemProvider(
-                        IonicCompletionProvider.JS_DOCUMENT_SELECTOR,
-                        new IonicCompletionProvider(path.resolve(__dirname, "../../snippets/ionicJs.json"))));
-
-                context.subscriptions.push(
-                    vscode.languages.registerCompletionItemProvider(
-                        IonicCompletionProvider.HTML_DOCUMENT_SELECTOR,
-                        new IonicCompletionProvider(path.resolve(__dirname, "../../snippets/ionicHtml.json"))));
-            }
-
-            // Install Ionic type definitions if necessary
-            if (CordovaProjectHelper.isIonicProject(cordovaProjectRoot)) {
-                let ionicTypings: string[] = [
-                    path.join("jquery", "jquery.d.ts"),
-                    path.join("cordova-ionic", "plugins", "keyboard.d.ts"),
-                ];
-                if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
-                    ionicTypings = ionicTypings.concat([
-                        path.join("angularjs", "angular.d.ts"),
-                        path.join("ionic", "ionic.d.ts"),
-                    ]);
-                }
-                TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
-            }
-
-            let pluginTypings = getPluginTypingsJson();
-            if (!pluginTypings) {
-                return;
-            }
-
-            // Skip adding typings for cordova in case of Typescript or Ionic2 projects
-            // to avoid conflicts between typings we install and user-installed ones.
-            if (!CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) &&
-                !CordovaProjectHelper.isIonic4Project(cordovaProjectRoot) &&
-                !CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
-
-                // Install the type defintion files for Cordova
-                TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot),
-                    [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], cordovaProjectRoot);
-            }
-
-            // Install type definition files for the currently installed plugins
-            updatePluginTypeDefinitions(cordovaProjectRoot);
-
-            let pluginFilePath = path.join(cordovaProjectRoot, ".vscode", "plugins.json");
-            if (fs.existsSync(pluginFilePath)) {
-                fs.unlinkSync(pluginFilePath);
-            }
-
-            TelemetryHelper.sendPluginsList(cordovaProjectRoot, CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot));
-
-            // In VSCode 0.10.10+, if the root doesn't contain jsconfig.json or tsconfig.json, intellisense won't work for files without /// typing references, so add a jsconfig.json here if necessary
-            let jsconfigPath: string = path.join(workspaceRoot, JSCONFIG_FILENAME);
-            let tsconfigPath: string = path.join(workspaceRoot, TSCONFIG_FILENAME);
-
-            Q.all([Q.nfcall(fs.exists, jsconfigPath), Q.nfcall(fs.exists, tsconfigPath)]).spread((jsExists: boolean, tsExists: boolean) => {
-                if (!jsExists && !tsExists) {
-                    Q.nfcall(fs.writeFile, jsconfigPath, "{}").then(() => {
-                        // Any open file must be reloaded to enable intellisense on them, so inform the user
-                        vscode.window.showInformationMessage("A 'jsconfig.json' file was created to enable IntelliSense. You may need to reload your open JS file(s).");
-                    });
-                }
-            });
-        })
-        .catch(() => {
-            activateExtensionEvent.properties["error"] = true;
+            cordovaProjectTypeEvent.properties["projectType"] = projType;
         })
         .finally(() => {
-            Telemetry.send(activateExtensionEvent);
+            Telemetry.send(cordovaProjectTypeEvent);
         })
         .done();
+
+    // We need to update the type definitions added to the project
+    // as and when plugins are added or removed. For this reason,
+    // setup a file system watcher to watch changes to plugins in the Cordova project
+    // Note that watching plugins/fetch.json file would suffice
+
+    let watcher = vscode.workspace.createFileSystemWatcher("**/plugins/fetch.json", false /*ignoreCreateEvents*/, false /*ignoreChangeEvents*/, false /*ignoreDeleteEvents*/);
+    watcher.onDidChange(() => updatePluginTypeDefinitions(cordovaProjectRoot));
+    watcher.onDidDelete(() => updatePluginTypeDefinitions(cordovaProjectRoot));
+    watcher.onDidCreate(() => updatePluginTypeDefinitions(cordovaProjectRoot));
+    context.subscriptions.push(watcher);
+
+    let simulator: PluginSimulator = new PluginSimulator();
+    let extensionServer: ExtensionServer = new ExtensionServer(simulator, workspaceRoot);
+    extensionServer.setup();
+
+    projectsCache[workspaceRoot] = {
+        extensionServer,
+        cordovaProjectRoot,
+        folder,
+    };
+
+    // extensionServer takes care of disposing the simulator instance
+    context.subscriptions.push(extensionServer);
+
+    // In case of Ionic 1 project register completions providers for html and javascript snippets
+    if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
+        context.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                IonicCompletionProvider.JS_DOCUMENT_SELECTOR,
+                new IonicCompletionProvider(path.resolve(__dirname, "../../snippets/ionicJs.json"))));
+
+        context.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                IonicCompletionProvider.HTML_DOCUMENT_SELECTOR,
+                new IonicCompletionProvider(path.resolve(__dirname, "../../snippets/ionicHtml.json"))));
+    }
+
+    // Install Ionic type definitions if necessary
+    if (CordovaProjectHelper.isIonicProject(cordovaProjectRoot)) {
+        let ionicTypings: string[] = [
+            path.join("jquery", "jquery.d.ts"),
+            path.join("cordova-ionic", "plugins", "keyboard.d.ts"),
+        ];
+        if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
+            ionicTypings = ionicTypings.concat([
+                path.join("angularjs", "angular.d.ts"),
+                path.join("ionic", "ionic.d.ts"),
+            ]);
+        }
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot), ionicTypings, cordovaProjectRoot);
+    }
+
+    let pluginTypings = getPluginTypingsJson();
+    if (!pluginTypings) {
+        return;
+    }
+
+    // Skip adding typings for cordova in case of Typescript or Ionic2 projects
+    // to avoid conflicts between typings we install and user-installed ones.
+    if (!CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) &&
+        !CordovaProjectHelper.isIonic4Project(cordovaProjectRoot) &&
+        !CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
+
+        // Install the type defintion files for Cordova
+        TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(cordovaProjectRoot),
+            [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], cordovaProjectRoot);
+    }
+
+    // Install type definition files for the currently installed plugins
+    updatePluginTypeDefinitions(cordovaProjectRoot);
+
+    let pluginFilePath = path.join(cordovaProjectRoot, ".vscode", "plugins.json");
+    if (fs.existsSync(pluginFilePath)) {
+        fs.unlinkSync(pluginFilePath);
+    }
+
+    TelemetryHelper.sendPluginsList(cordovaProjectRoot, CordovaProjectHelper.getInstalledPlugins(cordovaProjectRoot));
+
+    // In VSCode 0.10.10+, if the root doesn't contain jsconfig.json or tsconfig.json, intellisense won't work for files without /// typing references, so add a jsconfig.json here if necessary
+    let jsconfigPath: string = path.join(workspaceRoot, JSCONFIG_FILENAME);
+    let tsconfigPath: string = path.join(workspaceRoot, TSCONFIG_FILENAME);
+
+    Q.all([Q.nfcall(fs.exists, jsconfigPath), Q.nfcall(fs.exists, tsconfigPath)]).spread((jsExists: boolean, tsExists: boolean) => {
+        if (!jsExists && !tsExists) {
+            Q.nfcall(fs.writeFile, jsconfigPath, "{}").then(() => {
+                // Any open file must be reloaded to enable intellisense on them, so inform the user
+                vscode.window.showInformationMessage("A 'jsconfig.json' file was created to enable IntelliSense. You may need to reload your open JS file(s).");
+            });
+        }
+    });
 }
 
 function onFolderRemoved(folder: vscode.WorkspaceFolder): void {
