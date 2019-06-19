@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 onFolderAdded(context, folder);
             });
         }
-        activateExtensionEvent.properties["cordova.workspaceFolders"] = workspaceFolders.length;
+        activateExtensionEvent.properties["cordova.workspaceFoldersCount"] = workspaceFolders.length;
     } catch (e) {
         activateExtensionEvent.properties["cordova.error"] = true;
     }
