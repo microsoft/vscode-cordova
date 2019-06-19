@@ -254,6 +254,34 @@ export module Telemetry {
         }
     }
 
+    /**
+     * `TelemetryActivity` automatically includes timing data, used for scenarios where we want to track performance.
+     * Calls to `start()` and `end()` are optional, if not called explicitly then the constructor will be the start and send will be the end.
+     * This event will include a property called `completion.time` which represents time in milliseconds.
+     */
+    export class TelemetryActivity extends TelemetryEvent {
+        private startTime: [number, number];
+        private endTime: [number, number];
+
+        constructor(name: string, properties?: ITelemetryProperties) {
+            super(name, properties);
+            this.start();
+        }
+
+        public start(): void {
+            this.startTime = process.hrtime();
+        }
+
+        public end(): void {
+            if (!this.endTime) {
+                this.endTime = process.hrtime(this.startTime);
+
+                // convert [seconds, nanoseconds] to milliseconds and include as property
+                this.properties["completion.time"] = this.endTime[0] * 1000 + this.endTime[1] / 1000000;
+            }
+        }
+    }
+
     export interface ITelemetryInitOptions {
         isExtensionProcess: boolean;
         projectRoot: string;
@@ -271,6 +299,9 @@ export module Telemetry {
     export function send(event: TelemetryEvent, ignoreOptIn: boolean = false): Q.Promise<void> {
         return TelemetryUtils.initDeferred.promise.then(function () {
             if (Telemetry.isOptedIn || ignoreOptIn) {
+                if (event instanceof TelemetryActivity) {
+                    (<TelemetryActivity>event).end();
+                }
                 TelemetryUtils.addCommonProperties(event);
 
                 try {
