@@ -918,7 +918,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 return this.connectSimulateDebugHost(simulateInfo);
             }).then(() => {
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugAdapter.CHROME_DATA_DIR);
-                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.cwd, launchArgs.target]);
+                return messageSender.sendMessage(messaging.ExtensionMessage.LAUNCH_SIM_HOST, [launchArgs.target]);
             }).then(() => {
                 // Launch Chrome and attach
                 launchArgs.url = simulateInfo.appHostUrl;
