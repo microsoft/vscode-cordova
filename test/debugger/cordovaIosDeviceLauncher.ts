@@ -43,9 +43,9 @@ describe("cordovaIosDeviceLauncher", function () {
     });
 
     it("should be able to find the bundle identifier", () => {
-        fsMock.readFileSync = (file: string) => "";
-        fsMock.readdir = (path: string, callback: (err: Error, result: string[]) => void) => callback(null, ["foo", "bar.xcodeproj"]);
-        plistMock.parse = (file: string) => {
+        fsMock.readFileSync = (_file: string) => "";
+        fsMock.readdir = (_path: string, callback: (err: Error, result: string[]) => void) => callback(null, ["foo", "bar.xcodeproj"]);
+        plistMock.parse = (_file: string) => {
             return {CFBundleIdentifier: "test.bundle.identifier"};
         };
 

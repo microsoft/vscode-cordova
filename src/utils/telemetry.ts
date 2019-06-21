@@ -233,13 +233,12 @@ export module Telemetry {
         private static PII_HASH_KEY: string = "959069c9-9e93-4fa1-bf16-3f8120d7db0c";
         public name: string;
         public properties: ITelemetryProperties;
-        private eventId: string;
+        // private eventId: string;
 
         constructor(name: string, properties?: ITelemetryProperties) {
             this.name = name;
             this.properties = properties || {};
-
-            this.eventId = TelemetryUtils.generateGuid();
+            // this.eventId = TelemetryUtils.generateGuid();
         }
 
         public setPiiProperty(name: string, value: string): void {

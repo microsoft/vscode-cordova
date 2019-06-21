@@ -7,9 +7,7 @@ import "should";
 
 describe("CordovaPathTransformer", () => {
     it("should correctly convert merges paths for android", async () => {
-        let output = "";
-        let logger = (message: string) => output += message + "\n";
-        let pathTransformer = new CordovaPathTransformer(logger);
+        let pathTransformer = new CordovaPathTransformer();
         // __dirname is '/out/test/debugger' so we need to step up three levels to escape completely
         let testapp = path.join(__dirname, "..", "..", "..", "test", "testProject");
         await pathTransformer.attach({cwd: testapp, platform: "android", port: 1234});

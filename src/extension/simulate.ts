@@ -20,7 +20,7 @@ export class PluginSimulator implements vscode.Disposable {
 
     public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<any> {
         return this.launchServer(fsPath, simulateOptions, projectType)
-            .then(() => this.launchSimHost(fsPath, simulateOptions.target))
+            .then(() => this.launchSimHost(simulateOptions.target))
             .then(() => this.launchAppHost(simulateOptions.target));
     }
 
@@ -28,7 +28,7 @@ export class PluginSimulator implements vscode.Disposable {
         return launchBrowser(target, this.simulationInfo.appHostUrl);
     }
 
-    public launchSimHost(fsPath: string, target: string): Q.Promise<void> {
+    public launchSimHost(target: string): Q.Promise<void> {
         if (!this.simulator) {
             return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
         }

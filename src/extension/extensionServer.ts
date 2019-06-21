@@ -94,7 +94,7 @@ export class ExtensionServer implements vscode.Disposable {
     private simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
         return this.launchSimulateServer(fsPath, simulateOptions, projectType)
             .then((simulateInfo: SimulationInfo) => {
-               return this.launchSimHost(fsPath, simulateOptions.target).then(() => simulateInfo);
+               return this.launchSimHost(simulateOptions.target).then(() => simulateInfo);
             });
     }
 
@@ -110,8 +110,8 @@ export class ExtensionServer implements vscode.Disposable {
     /**
      * Launches sim-host using an already running simulate server.
      */
-    private launchSimHost(fsPath: string, target: string): Q.Promise<void> {
-        return this.pluginSimulator.launchSimHost(fsPath, target);
+    private launchSimHost(target: string): Q.Promise<void> {
+        return this.pluginSimulator.launchSimHost(target);
     }
 
     /**
