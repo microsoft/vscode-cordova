@@ -1,6 +1,6 @@
 ## 1.8.3
 * Enhanced extension security
-* Bumped Typescript version up to `2.9.2`
+* Bumped Typescript version to `2.9.2`
 
 ## 1.8.2
 * Deps: `cordova-simulate@0.6.2`
