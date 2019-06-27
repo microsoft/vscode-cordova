@@ -1,5 +1,9 @@
+## 1.8.3
+* Fixed security vulnerabilities
+* Bumped Typescript version to `2.9.2`
+
 ## 1.8.2
-* Deps: cordova-simulate@0.6.2
+* Deps: `cordova-simulate@0.6.2`
 * Added attachTimeout variable to attach and launch args
 * Publisher changed from `vsmobile` to `msjsdiag`
 
