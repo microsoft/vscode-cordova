@@ -130,8 +130,8 @@ export class CordovaIosDeviceLauncher {
         // For more info, see http://www.opensource.apple.com/source/lldb/lldb-167.2/docs/lldb-gdb-remote.txt
         let socket: net.Socket = new net.Socket();
         let initState: number = 0;
-        let endStatus: number = null;
-        let endSignal: number = null;
+        // let endStatus: number = null;
+        // let endSignal: number = null;
 
         let deferred1: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
         let deferred2: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
@@ -145,13 +145,13 @@ export class CordovaIosDeviceLauncher {
                 socket.write("+");
                 if (data[1] === "W") {
                     // The app process has exited, with hex status given by data[2-3]
-                    let status: number = parseInt(data.substring(2, 4), 16);
-                    endStatus = status;
+                    // let status: number = parseInt(data.substring(2, 4), 16);
+                    // endStatus = status;
                     socket.end();
                 } else if (data[1] === "X") {
                     // The app rocess exited because of signal given by data[2-3]
-                    let signal: number = parseInt(data.substring(2, 4), 16);
-                    endSignal = signal;
+                    // let signal: number = parseInt(data.substring(2, 4), 16);
+                    // endSignal = signal;
                     socket.end();
                 } else if (data.substring(1, 3) === "OK") {
                     // last command was received OK;

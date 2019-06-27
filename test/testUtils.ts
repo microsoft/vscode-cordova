@@ -61,7 +61,7 @@ export function isUrlReachable(url: string): Q.Promise<boolean> {
     http.get(url, (res) => {
         deferred.resolve(true);
         res.resume();
-    }).on("error", (err: Error) => {
+    }).on("error", (_err: Error) => {
         deferred.resolve(false);
     });
 

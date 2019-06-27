@@ -233,13 +233,12 @@ export module Telemetry {
         private static PII_HASH_KEY: string = "959069c9-9e93-4fa1-bf16-3f8120d7db0c";
         public name: string;
         public properties: ITelemetryProperties;
-        private eventId: string;
+        // private eventId: string;
 
         constructor(name: string, properties?: ITelemetryProperties) {
             this.name = name;
             this.properties = properties || {};
-
-            this.eventId = TelemetryUtils.generateGuid();
+            // this.eventId = TelemetryUtils.generateGuid();
         }
 
         public setPiiProperty(name: string, value: string): void {
@@ -250,6 +249,34 @@ export module Telemetry {
 
             if (Telemetry.isInternal()) {
                 this.properties[name + ".nothashed"] = value;
+            }
+        }
+    }
+
+    /**
+     * `TelemetryActivity` automatically includes timing data, used for scenarios where we want to track performance.
+     * Calls to `start()` and `end()` are optional, if not called explicitly then the constructor will be the start and send will be the end.
+     * This event will include a property called `completion.time` which represents time in milliseconds.
+     */
+    export class TelemetryActivity extends TelemetryEvent {
+        private startTime: [number, number];
+        private endTime: [number, number];
+
+        constructor(name: string, properties?: ITelemetryProperties) {
+            super(name, properties);
+            this.start();
+        }
+
+        public start(): void {
+            this.startTime = process.hrtime();
+        }
+
+        public end(): void {
+            if (!this.endTime) {
+                this.endTime = process.hrtime(this.startTime);
+
+                // convert [seconds, nanoseconds] to milliseconds and include as property
+                this.properties["completion.time"] = this.endTime[0] * 1000 + this.endTime[1] / 1000000;
             }
         }
     }
@@ -271,6 +298,9 @@ export module Telemetry {
     export function send(event: TelemetryEvent, ignoreOptIn: boolean = false): Q.Promise<void> {
         return TelemetryUtils.initDeferred.promise.then(function () {
             if (Telemetry.isOptedIn || ignoreOptIn) {
+                if (event instanceof TelemetryActivity) {
+                    (<TelemetryActivity>event).end();
+                }
                 TelemetryUtils.addCommonProperties(event);
 
                 try {

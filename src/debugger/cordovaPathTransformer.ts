@@ -21,11 +21,9 @@ export class CordovaPathTransformer extends BasePathTransformer {
     private _webRoot: string;
     private _projectTypes;
     private _ionicLiveReload: boolean;
-    private _outputLogger: (message: string, error?: boolean | string) => void;
 
-    constructor(outputLogger: (message: string) => void) {
+    constructor() {
         super();
-        this._outputLogger = outputLogger;
         (<any>global).cordovaPathTransformer = this;
     }
 

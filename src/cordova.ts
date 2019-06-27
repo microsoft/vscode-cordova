@@ -27,16 +27,27 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 let projectsCache: {[key: string]: any} = {};
 
 export function activate(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
+    // Asynchronously enable telemetry
+    Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: "" });
 
-    const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
+    let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
+    try {
+        context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
 
-    if (workspaceFolders) {
-        registerCordovaCommands(context);
-        workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
-            onFolderAdded(context, folder);
-        });
+        const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
+
+        if (workspaceFolders) {
+            registerCordovaCommands(context);
+            workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
+                onFolderAdded(context, folder);
+            });
+        }
+        activateExtensionEvent.properties["cordova.workspaceFoldersCount"] = workspaceFolders.length;
+    } catch (e) {
+        activateExtensionEvent.properties["cordova.error"] = true;
     }
+
+    Telemetry.send(activateExtensionEvent);
 }
 
 export function deactivate(): void {
@@ -61,28 +72,25 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     let workspaceRoot = folder.uri.fsPath;
     let cordovaProjectRoot = CordovaProjectHelper.getCordovaProjectRoot(workspaceRoot);
 
-    // Asynchronously enable telemetry
-    Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: workspaceRoot });
-
     if (!cordovaProjectRoot) {
         return;
     }
 
     if (path.resolve(cordovaProjectRoot) !== path.resolve(workspaceRoot)) {
         vscode.window.showWarningMessage("VSCode Cordova extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated.");
-
         return;
     }
 
-    let activateExtensionEvent = TelemetryHelper.createTelemetryEvent("activate");
-
+    // Send project type to telemetry for each workspace folder
+    let cordovaProjectTypeEvent = TelemetryHelper.createTelemetryEvent("cordova.projectType");
     TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
         .then((projType) => {
-            activateExtensionEvent.properties["projectType"] = projType;
+            cordovaProjectTypeEvent.properties["projectType"] = projType;
         })
         .finally(() => {
-            Telemetry.send(activateExtensionEvent);
-        }).done();
+            Telemetry.send(cordovaProjectTypeEvent);
+        })
+        .done();
 
     // We need to update the type definitions added to the project
     // as and when plugins are added or removed. For this reason,
