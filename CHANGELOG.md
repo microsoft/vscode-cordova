@@ -1,5 +1,5 @@
 ## 1.8.3
-* Enhanced extension security
+* Fixed security vulnerabilities
 * Bumped Typescript version to `2.9.2`
 
 ## 1.8.2
