@@ -49,8 +49,6 @@ export function activate(context: vscode.ExtensionContext): void {
         Telemetry.send(activateExtensionEvent);
         throw e;
     }
-
-    Telemetry.send(activateExtensionEvent);
 }
 
 export function deactivate(): void {
