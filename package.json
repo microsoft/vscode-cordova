@@ -30,8 +30,15 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:typescript",
+    "onDebug",
+    "onCommand:cordova.prepare",
+    "onCommand:cordova.build",
+    "onCommand:cordova.run",
+    "onCommand:ionic.prepare",
+    "onCommand:ionic.build",
+    "onCommand:ionic.run",
+    "onCommand:cordova.simulate.android",
+    "onCommand:cordova.simulate.ios",
     "workspaceContains:config.xml",
     "workspaceContains:ionic.config.json"
   ],
