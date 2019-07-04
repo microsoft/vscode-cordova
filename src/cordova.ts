@@ -43,11 +43,12 @@ export function activate(context: vscode.ExtensionContext): void {
             });
         }
         activateExtensionEvent.properties["cordova.workspaceFoldersCount"] = workspaceFolders.length;
+        Telemetry.send(activateExtensionEvent);
     } catch (e) {
         activateExtensionEvent.properties["cordova.error"] = true;
+        Telemetry.send(activateExtensionEvent);
+        throw e;
     }
-
-    Telemetry.send(activateExtensionEvent);
 }
 
 export function deactivate(): void {
@@ -367,7 +368,7 @@ function selectProject(): Q.Promise<any> {
     } else if (keys.length === 1) {
         return Q.resolve(projectsCache[keys[0]]);
     } else {
-        return Q.reject();
+        return Q.reject(new Error("No Cordova project is found"));
     }
 }
 
