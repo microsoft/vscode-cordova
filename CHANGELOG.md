@@ -1,3 +1,7 @@
+## 1.8.4
+* Fixed security vulnerabilities
+* Improved activation events
+
 ## 1.8.3
 * Fixed security vulnerabilities
 * Bumped Typescript version to `2.9.2`
