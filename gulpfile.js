@@ -152,8 +152,8 @@ gulp.task('release', function () {
 
             /* copy over the release package license files */
             console.log('Preparing license files for release...');
-            fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/releaselicense.txt'));
-            fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/release3party.txt'));
+            fs.writeFileSync('LICENSE.txt', fs.readFileSync('release/LICENSE.txt'));
+            fs.writeFileSync('ThirdPartyNotices.txt', fs.readFileSync('release/ThirdPartyNotices.txt'));
         }).then(() => {
             console.log('Creating release package...');
             return executeCommand(path.resolve(__dirname), 'vsce package');
