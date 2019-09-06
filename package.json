@@ -442,7 +442,8 @@
                   "webpack:///./*": "${cwd}/*",
                   "webpack:///src/*": "${cwd}/*",
                   "webpack:///*": "*",
-                  "webpack:///./~/*": "${cwd}/node_modules/*"
+                  "webpack:///./~/*": "${cwd}/node_modules/*",
+                  "./*": "${cwd}/*"
                 }
               }
             }
@@ -525,7 +526,8 @@
                   "webpack:///./*": "${cwd}/*",
                   "webpack:///src/*": "${cwd}/*",
                   "webpack:///*": "*",
-                  "webpack:///./~/*": "${cwd}/node_modules/*"
+                  "webpack:///./~/*": "${cwd}/node_modules/*",
+                  "./*": "${cwd}/*"
                 }
               }
             }

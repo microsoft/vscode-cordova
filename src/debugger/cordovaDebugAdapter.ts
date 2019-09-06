@@ -109,6 +109,7 @@ const DefaultWebSourceMapPathOverrides: ISourceMapPathOverrides = {
     "webpack:///./*": "${cwd}/*",
     "webpack:///*": "*",
     "webpack:///src/*": "${cwd}/*",
+    "./*": "${cwd}/*",
 };
 
 export class CordovaDebugAdapter extends ChromeDebugAdapter {
