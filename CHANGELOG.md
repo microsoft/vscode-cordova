@@ -1,3 +1,8 @@
+## 1.8.6
+* Fixed security vulnerabilities
+* deps: cordova-simulate@0.6.6
+* Fixed source mapping for Ionic 4 applications on Angular 8, which caused unverified breakpoints while debugging
+
 ## 1.8.5
 * Fixed security vulnerabilities
 
