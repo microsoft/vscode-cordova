@@ -1107,7 +1107,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             let isIosSimulator: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("emulate") !== -1;
             let iosDeviceAppReadyRegex: RegExp = /\(lldb\)\W+run\r?\nsuccess/;
             let iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
-            let appReadyRegex: RegExp = /launch success/i;
+            let appReadyRegex: RegExp = /launch success|run successful/i;
 
             if (isIosDevice) {
                 return iosDeviceAppReadyRegex;
