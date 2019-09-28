@@ -69,9 +69,6 @@ To start the debugger, choose a target from the target drop-down list, and then 
 
 You can debug your app on an Android emulator or an Android/iOS device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
-> **Troubleshooting tip:**
-If nothing happens when starting the debugger, make sure the directory with the cordova portion of your project is at the top level of the workspace. If, for instance, you have one parent directory, and the cordova codebase is under a subdirectory, it is recommended to use a [multi-root workspace approach](https://code.visualstudio.com/docs/editor/multi-root-workspaces) so that the debugger can find the necessary Cordova files easily.
-
 > **Visual Studio Emulator for Android:**
 To deploy your app to the Visual Studio Emulator for Android using our extension, you first need to manually launch the emulator. Once it is running, select the ```Run Android on Device``` debug target rather than the emulator target. If *ADB* didn't automatically recognize the VS Android emulator when you launched it, you will need to run ```adb connect [EMULATOR'S IP]``` on the command prompt before trying to deploy. To find out the IP address of your emulator, click the double arrow icon at the bottom of the emulator's side-menu to open the "Additional Tools" window, and go to the "Network" tab. Use the IP of an appropriate network adapter in the list.
 
@@ -80,6 +77,8 @@ We won't go into all of the great things that you can do with the Visual Studio 
 > **Troubleshooting tip:**
 If you receive an error stating that ADB is not recognized as an internal or external command, you'll have to update your path variable to include the location of your *ADB* executable file. The *ADB* executable file is located in a subfolder along with your other Android SDK files. For example, on a Windows computer, the location of the *ADB* executable file would likely be here: ```C:\Program Files (x86)\Android\android-sdk\platform-tools```.
 
+> **Troubleshooting tip:**
+If nothing happens when starting the debugger, make sure the directory with the cordova portion of your project is at the top level of the workspace. If, for instance, you have one parent directory, and the cordova codebase is under a subdirectory, it is recommended to use a [multi-root workspace approach](https://code.visualstudio.com/docs/editor/multi-root-workspaces) so that the debugger can find the necessary Cordova files easily.
 
 ## Find Cordova commands in the Command Palette
 
