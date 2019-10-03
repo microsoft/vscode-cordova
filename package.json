@@ -582,8 +582,8 @@
     "q": "^1.4.1",
     "semver": "5.1.0",
     "socket.io-client": "^2.2.0",
-    "vscode-chrome-debug-core": "^6.7.46",
-    "vscode-debugadapter": "^1.34.0",
+    "vscode-chrome-debug-core": "^6.8.0",
+    "vscode-debugadapter": "^1.37.1",
     "vscode-extension-telemetry": "0.0.5",
     "winreg": "0.0.13",
     "xcode": "^2.0.0"
