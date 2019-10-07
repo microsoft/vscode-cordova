@@ -1,3 +1,7 @@
+## 1.9.0
+* Added [inline breakpoints feature](https://github.com/microsoft/vscode/issues/31612) support
+* Add additional string to verify application build status for Ionic apps with live reload
+
 ## 1.8.6
 * Fixed security vulnerabilities
 * deps: cordova-simulate@0.6.6
