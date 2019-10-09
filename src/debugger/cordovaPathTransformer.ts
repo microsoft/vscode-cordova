@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {logger, utils, chromeUtils, IPathMapping, ISetBreakpointsArgs, BasePathTransformer, IStackTraceResponseBody} from "vscode-chrome-debug-core";
+import {logger, utils, chromeUtils, IPathMapping, BasePathTransformer, IStackTraceResponseBody} from "vscode-chrome-debug-core";
 import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from "./cordovaDebugAdapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import { TelemetryHelper } from "../utils/telemetryHelper";
@@ -38,27 +38,27 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return super.attach(args);
     }
 
-    public setBreakpoints(args: ISetBreakpointsArgs): ISetBreakpointsArgs {
-        if (!args.source.path) {
+    public setBreakpoints(args: DebugProtocol.Source): DebugProtocol.Source {
+        if (!args.path) {
             // sourceReference script, nothing to do
             return args;
         }
 
-        if (utils.isURL(args.source.path)) {
+        if (utils.isURL(args.path)) {
             // already a url, use as-is
-            logger.log(`Paths.setBP: ${args.source.path} is already a URL`);
+            logger.log(`Paths.setBP: ${args.path} is already a URL`);
             return args;
         }
 
-        const path = utils.canonicalizeUrl(args.source.path);
+        const path = utils.canonicalizeUrl(args.path);
         const url = this.getTargetPathFromClientPath(path);
         if (url) {
-            args.source.path = url;
-            logger.log(`Paths.setBP: Resolved ${path} to ${args.source.path}`);
+            args.path = url;
+            logger.log(`Paths.setBP: Resolved ${path} to ${args.path}`);
             return args;
         } else {
             logger.log(`Paths.setBP: No target url cached yet for client path: ${path}.`);
-            args.source.path = path;
+            args.path = path;
             return args;
         }
     }
