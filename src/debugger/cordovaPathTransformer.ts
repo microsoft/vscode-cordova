@@ -38,28 +38,28 @@ export class CordovaPathTransformer extends BasePathTransformer {
         return super.attach(args);
     }
 
-    public setBreakpoints(args: DebugProtocol.Source): DebugProtocol.Source {
-        if (!args.path) {
+    public setBreakpoints(source: DebugProtocol.Source): DebugProtocol.Source {
+        if (!source.path) {
             // sourceReference script, nothing to do
-            return args;
+            return source;
         }
 
-        if (utils.isURL(args.path)) {
+        if (utils.isURL(source.path)) {
             // already a url, use as-is
-            logger.log(`Paths.setBP: ${args.path} is already a URL`);
-            return args;
+            logger.log(`Paths.setBP: ${source.path} is already a URL`);
+            return source;
         }
 
-        const path = utils.canonicalizeUrl(args.path);
+        const path = utils.canonicalizeUrl(source.path);
         const url = this.getTargetPathFromClientPath(path);
         if (url) {
-            args.path = url;
-            logger.log(`Paths.setBP: Resolved ${path} to ${args.path}`);
-            return args;
+            source.path = url;
+            logger.log(`Paths.setBP: Resolved ${path} to ${source.path}`);
+            return source;
         } else {
             logger.log(`Paths.setBP: No target url cached yet for client path: ${path}.`);
-            args.path = path;
-            return args;
+            source.path = path;
+            return source;
         }
     }
 
