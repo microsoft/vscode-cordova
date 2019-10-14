@@ -30,7 +30,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onDebugResolve:cordova",
+    "onDebug",
     "onCommand:cordova.prepare",
     "onCommand:cordova.build",
     "onCommand:cordova.run",
