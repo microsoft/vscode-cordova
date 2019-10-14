@@ -79,6 +79,12 @@ export interface ICordovaCommonRequestArgs extends ICommonRequestArgs {
     cwd?: string;
 }
 
+interface DebuggingProperties {
+    // Workaround to handle breakpoint location requests correctly on some platforms
+    platform: string;
+    target?: string;
+}
+
 const WIN_APPDATA = process.env.LOCALAPPDATA || "/";
 const DEFAULT_CHROME_PATH = {
     LINUX: "/usr/bin/google-chrome",
@@ -118,8 +124,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
     private static pidofNotFoundError = "/system/bin/sh: pidof: not found";
     // Workaround to handle breakpoint location requests correctly on some platforms
-    private static debuggingPlatform;
-    private static debuggingTarget;
+    private static debuggingProperties: DebuggingProperties;
 
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
@@ -223,8 +228,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     // ios-webkit-debug-proxy work on a rather old version of Chrome DevTools and doesn't support breakpoints location request
     // so we need to filter out breakpoint locations requests from iOS device/emulator debugging sessions to avoid errors
     public breakpointLocations(args: DebugProtocol.BreakpointLocationsArguments, _telemetryPropertyCollector?: ITelemetryPropertyCollector, requestSeq?: number): Promise<DebugProtocol.BreakpointLocationsResponse["body"]> {
-        if (CordovaDebugAdapter.debuggingPlatform === "ios" &&
-            CordovaDebugAdapter.debuggingTarget === "device"
+        if (CordovaDebugAdapter.debuggingProperties.platform === "ios" &&
+            CordovaDebugAdapter.debuggingProperties.target === "device"
         ) {
             return Promise.resolve({ breakpoints: [] });
         } else {
@@ -234,8 +239,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     public launch(launchArgs: ICordovaLaunchRequestArgs): Promise<void> {
         this.previousLaunchArgs = launchArgs;
-        CordovaDebugAdapter.debuggingPlatform = launchArgs.platform;
-        CordovaDebugAdapter.debuggingTarget = launchArgs.target;
+        CordovaDebugAdapter.debuggingProperties = {
+            platform: launchArgs.platform,
+            target: launchArgs.target,
+        };
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
             .then(() => TelemetryHelper.generate("launch", (generator) => {
@@ -325,8 +332,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
     public attach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
         this.previousAttachArgs = attachArgs;
-        CordovaDebugAdapter.debuggingPlatform = attachArgs.platform;
-        CordovaDebugAdapter.debuggingTarget = attachArgs.target;
+        CordovaDebugAdapter.debuggingProperties = {
+            platform: attachArgs.platform,
+            target: attachArgs.target,
+        };
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
             .then(() => TelemetryHelper.generate("attach", (generator) => {
