@@ -119,7 +119,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static pidofNotFoundError = "/system/bin/sh: pidof: not found";
     private static debuggingProperties: {
         platform: string;
-        target: string;
+        target?: string;
     };
 
 
