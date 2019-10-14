@@ -79,6 +79,11 @@ export interface ICordovaCommonRequestArgs extends ICommonRequestArgs {
     cwd?: string;
 }
 
+interface DebuggingProperties {
+    platform: string;
+    target?: string;
+};
+
 const WIN_APPDATA = process.env.LOCALAPPDATA || "/";
 const DEFAULT_CHROME_PATH = {
     LINUX: "/usr/bin/google-chrome",
@@ -117,10 +122,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
     private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
     private static pidofNotFoundError = "/system/bin/sh: pidof: not found";
-    private static debuggingProperties: {
-        platform: string;
-        target?: string;
-    };
+    private static debuggingProperties: DebuggingProperties;
 
 
     private outputLogger: (message: string, error?: boolean | string) => void;
