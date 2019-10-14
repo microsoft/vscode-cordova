@@ -80,7 +80,6 @@ export interface ICordovaCommonRequestArgs extends ICommonRequestArgs {
 }
 
 interface DebuggingProperties {
-    // Workaround to handle breakpoint location requests correctly on some platforms
     platform: string;
     target?: string;
 }
