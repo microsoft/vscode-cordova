@@ -1,6 +1,8 @@
 ## 1.9.0
 * Added [inline breakpoints feature](https://github.com/microsoft/vscode/issues/31612) support
 * Added additional string to verify application build status for Ionic apps with live reload [#572](https://github.com/microsoft/vscode-cordova/pull/572)
+* Optimized extension activation events [#584](https://github.com/microsoft/vscode-cordova/pull/584)
+* Updated core debugger dependencies
 
 ## 1.8.6
 * Fixed security vulnerabilities
@@ -16,7 +18,7 @@
 
 ## 1.8.3
 * Fixed security vulnerabilities
-* Bumped Typescript version to `2.9.2`
+
 
 ## 1.8.2
 * Deps: `cordova-simulate@0.6.2`
