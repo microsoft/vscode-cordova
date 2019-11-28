@@ -211,6 +211,11 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 Due to recent changes in macOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as macOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
 
+### Error `'Debugger' domain was not foundError processing "<attach/launch>": 'Debugger' domain was not found: [object Object]`
+
+Due to recent changes in iOS we cannot connect to Ionic and Cordova applications which are using WKWebView for content rendering. This caused by changes in Webkit protocol in iOS version above 12.2. As soon as the [ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy) version with the corresponding compatibility fix will be released, this issue should be resolved.
+You can read more about the issue [here](https://github.com/microsoft/vscode-cordova/issues/564).
+
 ### Error `'Cannot connect to runtime process, timeout after {0} ms - (reason: {1}).', '{_timeout}', '{_error}'` occured while running debug scenarios
 
 Try to increase attach timeout by adding `attachTimeout` configuration parameter.
