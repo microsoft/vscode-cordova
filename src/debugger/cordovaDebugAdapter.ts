@@ -163,11 +163,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS, [projectRoot]);
+        return CordovaDebugAdapter.sendMessage(projectRoot, messaging.ExtensionMessage.GET_RUN_ARGUMENTS);
     }
 
     public static getCordovaExecutable(projectRoot: string): Q.Promise<string> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_CORDOVA_EXECUTABLE, [projectRoot]);
+        return CordovaDebugAdapter.sendMessage(projectRoot, messaging.ExtensionMessage.GET_CORDOVA_EXECUTABLE);
     }
 
     private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
@@ -210,8 +210,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
     }
 
-    private static sendLaunchMessage(projectRoot: string, func: (projectRoot: string) => Q.Promise<any>): Q.Promise<any> {
-        return func(projectRoot)
+    private static sendMessage(projectRoot: string, extensionMessage: messaging.ExtensionMessage): Q.Promise<any> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(extensionMessage, [projectRoot])
             .catch(err => {
                 throw new Error(`${err.message} Please check whether 'cwd' parameter contains the path to the workspace root directory.`);
             });
@@ -271,8 +271,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                 return Q.all([
                     TelemetryHelper.determineProjectTypes(launchArgs.cwd),
-                    CordovaDebugAdapter.sendLaunchMessage(launchArgs.cwd, CordovaDebugAdapter.getRunArguments),
-                    CordovaDebugAdapter.sendLaunchMessage(launchArgs.cwd, CordovaDebugAdapter.getCordovaExecutable),
+                    CordovaDebugAdapter.getRunArguments(launchArgs.cwd),
+                    CordovaDebugAdapter.getCordovaExecutable(launchArgs.cwd),
                 ]).then(([projectType, runArguments, cordovaExecutable]) => {
                     launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
                     launchArgs.env = CordovaProjectHelper.getEnvArgument(launchArgs);
