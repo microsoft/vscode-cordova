@@ -77,6 +77,9 @@ We won't go into all of the great things that you can do with the Visual Studio 
 > **Troubleshooting tip:**
 If you receive an error stating that ADB is not recognized as an internal or external command, you'll have to update your path variable to include the location of your *ADB* executable file. The *ADB* executable file is located in a subfolder along with your other Android SDK files. For example, on a Windows computer, the location of the *ADB* executable file would likely be here: ```C:\Program Files (x86)\Android\android-sdk\platform-tools```.
 
+> **Troubleshooting tip:**
+If nothing happens when starting the debugger, make sure the directory with the cordova portion of your project is at the top level of the workspace. If, for instance, you have one parent directory, and the cordova codebase is under a subdirectory, it is recommended to use a [multi-root workspace approach](https://code.visualstudio.com/docs/editor/multi-root-workspaces) so that the debugger can find the necessary Cordova files easily.
+
 ## Find Cordova commands in the Command Palette
 
 In the Command Palette, type ```Cordova``` and choose a command.
