@@ -210,6 +210,13 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         }
     }
 
+    private static sendLaunchMessage(projectRoot: string, func: (projectRoot: string) => Q.Promise<any>): Q.Promise<any> {
+        return func(projectRoot)
+            .catch(err => {
+                throw new Error(`${err.message} Please check whether 'cwd' parameter contains the path to the workspace root directory.`);
+            });
+    }
+
     /**
      * Target type for telemetry
      */
@@ -264,8 +271,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
                 return Q.all([
                     TelemetryHelper.determineProjectTypes(launchArgs.cwd),
-                    CordovaDebugAdapter.getRunArguments(launchArgs.cwd),
-                    CordovaDebugAdapter.getCordovaExecutable(launchArgs.cwd),
+                    CordovaDebugAdapter.sendLaunchMessage(launchArgs.cwd, CordovaDebugAdapter.getRunArguments),
+                    CordovaDebugAdapter.sendLaunchMessage(launchArgs.cwd, CordovaDebugAdapter.getCordovaExecutable),
                 ]).then(([projectType, runArguments, cordovaExecutable]) => {
                     launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
                     launchArgs.env = CordovaProjectHelper.getEnvArgument(launchArgs);
@@ -322,7 +329,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         return this.attach(launchArgs);
                     }
                 });
-            }).done(resolve, reject)));
+            }).done(resolve, reject))
+            .catch(err => {
+                this.outputLogger(err.message || err, true);
+                reject(err);
+            }));
     }
 
     public isSimulateTarget(target: string) {

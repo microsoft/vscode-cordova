@@ -252,7 +252,12 @@ export class TelemetryHelper {
 
         // Write out new list of previousPlugins
         pluginFileJson.plugins = pluginsFileList;
-        fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson), "utf8");
+        try {
+            fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson), "utf8");
+        } catch (err) {
+            throw new Error(err.message + " It seems that 'cwd' parameter doesn't refer to the workspace root directory. " +
+                "Please make sure that 'cwd' contains the path to the workspace root directory.");
+        }
     }
 
     private static setTelemetryEventProperty(event: Telemetry.TelemetryEvent, propertyName: string, propertyValue: string, isPii: boolean): void {
