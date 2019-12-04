@@ -163,11 +163,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
     }
 
     public static getRunArguments(projectRoot: string): Q.Promise<string[]> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_RUN_ARGUMENTS, [projectRoot]);
+        return CordovaDebugAdapter.sendMessage(projectRoot, messaging.ExtensionMessage.GET_RUN_ARGUMENTS);
     }
 
     public static getCordovaExecutable(projectRoot: string): Q.Promise<string> {
-        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(messaging.ExtensionMessage.GET_CORDOVA_EXECUTABLE, [projectRoot]);
+        return CordovaDebugAdapter.sendMessage(projectRoot, messaging.ExtensionMessage.GET_CORDOVA_EXECUTABLE);
     }
 
     private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
@@ -208,6 +208,13 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         } else {
             return ChromeDebugCoreUtils.existsSync(defaultPaths.LINUX) ? defaultPaths.LINUX : null;
         }
+    }
+
+    private static sendMessage(projectRoot: string, extensionMessage: messaging.ExtensionMessage): Q.Promise<any> {
+        return new messaging.ExtensionMessageSender(projectRoot).sendMessage(extensionMessage, [projectRoot])
+            .catch(err => {
+                throw new Error(`${err.message} Please check whether 'cwd' parameter contains the path to the workspace root directory.`);
+            });
     }
 
     /**
@@ -322,7 +329,11 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                         return this.attach(launchArgs);
                     }
                 });
-            }).done(resolve, reject)));
+            }).done(resolve, reject))
+            .catch(err => {
+                this.outputLogger(err.message || err, true);
+                reject(err);
+            }));
     }
 
     public isSimulateTarget(target: string) {

@@ -62,7 +62,7 @@ export class ExtensionMessageSender {
         });
 
         socket.on("error", function (data: any) {
-            deferred.reject(new Error("An error occurred while handling message: " + ExtensionMessage[message] + data));
+            deferred.reject(new Error(`An error occurred while handling message: ${ExtensionMessage[message]} ${data}`));
         });
 
         socket.on("end", function () {
