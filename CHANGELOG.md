@@ -1,3 +1,9 @@
+## 1.9.1
+* Added error notifications about usage of incorrect `cwd` parameter when trying to debug a project located in a subdirectory [#593](https://github.com/microsoft/vscode-cordova/pull/593)
+* Updated troubleshooting documentation for the issue [#574](https://github.com/microsoft/vscode-cordova/issues/574) ([#575](https://github.com/microsoft/vscode-cordova/pull/575)), thanks to [David Cox-Espenlaub(@newdaveespionage)](https://github.com/newdaveespionage)
+* Fixed security vulnerabilities
+* Updated core debugger dependency
+
 ## 1.9.0
 * Added [inline breakpoints feature](https://github.com/microsoft/vscode/issues/31612) support
 * Added additional string to verify application build status for Ionic apps with live reload [#572](https://github.com/microsoft/vscode-cordova/pull/572)
