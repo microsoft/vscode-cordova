@@ -263,6 +263,9 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 }
                 generator.add("target", CordovaDebugAdapter.getTargetType(launchArgs.target), false);
                 launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
+                if (launchArgs.cwd === null) {
+                    throw new Error("Current working directory doesn't contain a Cordova project. Please open a Cordova project as a workspace root and try again.");
+                }
                 launchArgs.timeout = launchArgs.attachTimeout;
 
                 let platform = launchArgs.platform && launchArgs.platform.toLowerCase();
