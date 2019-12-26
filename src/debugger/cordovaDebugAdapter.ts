@@ -656,24 +656,20 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         if (launchArgs.target.toLowerCase() === "device") {
             // Workaround for dealing with new build system in XCode 10
             // https://github.com/apache/cordova-ios/issues/407
-            let args = ["run", "ios"];
-            // if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
-                // args = ["build", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
+            let args = ["run", "ios", "--device", "--buildFlag=-UseModernBuildSystem=0"];
+            /*if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
+                args = ["run", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];*/
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
             } else if (runArguments && runArguments.length) {
                 args.push(...runArguments);
-            } else {
-                args.push("--device");
-                // Verify if we are using Ionic livereload
-                if (launchArgs.ionicLiveReload) {
-                    if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
-                        // Livereload is enabled, let Ionic do the launch
-                        args = ["run", "ios", "--device", "--livereload"];
-                    } else {
-                        this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
-                    }
+            } else if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
+                if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
+                    // Livereload is enabled, let Ionic do the launch
+                    args = ["run", "ios", "--device", "--livereload"];
+                } else {
+                    this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
                 }
             }
 
@@ -687,7 +683,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // cordova run ios does not terminate, so we do not know when to try and attach.
             this.outputLogger("Installing and launching app on device");
             return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
-                .then(() => CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort))
+                .then((vv) => {
+                    console.log(vv);
+                    return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort);
+                })
                 .then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
