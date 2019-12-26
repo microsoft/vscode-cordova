@@ -650,16 +650,15 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         this.outputLogger("Launching app (This may take a while)...");
 
         let iosDebugProxyPort = launchArgs.iosDebugProxyPort || 9221;
-        let appStepLaunchTimeout = launchArgs.appStepLaunchTimeout || 5000;
 
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
             // Workaround for dealing with new build system in XCode 10
             // https://github.com/apache/cordova-ios/issues/407
-            let args = ["build", "ios", "--buildFlag=-UseModernBuildSystem=0"];
-            if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
-                args = ["build", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
+            let args = ["run", "ios"];
+            // if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
+                // args = ["build", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
@@ -686,53 +685,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
-            // Instead, we try to launch manually using homebrew.
-            return cordovaRunCommand(command, args, launchArgs.env, workingDirectory).then(() => {
-                let buildFolder = path.join(workingDirectory, "platforms", "ios", "build", "device");
-
-                this.outputLogger("Installing app on device");
-
-                let installPromise = Q.nfcall(fs.readdir, buildFolder).then((files: string[]) => {
-                    let ipaFiles = files.filter((file) => /\.ipa$/.test(file));
-
-                    if (ipaFiles.length !== 0) {
-                        return path.join(buildFolder, ipaFiles[0]);
-                    }
-
-                    // No .ipa was found, look for a .app to convert to .ipa using xcrun
-                    let appFiles = files.filter((file) => /\.app$/.test(file));
-
-                    if (appFiles.length === 0) {
-                        throw new Error("Unable to find a .app or a .ipa to install");
-                    }
-
-                    let appFile = path.join(buildFolder, appFiles[0]);
-                    let ipaFile = path.join(buildFolder, path.basename(appFile, path.extname(appFile)) + ".ipa"); // Convert [path]/foo.app to [path]/foo.ipa
-                    let execArgs = ["-v", "-sdk", "iphoneos", "PackageApplication", `${appFile}`, "-o", `${ipaFile}`];
-
-                    return execCommand("xcrun", execArgs, errorLogger).then(() => ipaFile).catch((): string => {
-                        throw new Error(`Error converting ${path.basename(appFile)} to .ipa`);
-                    });
-                }).then((ipaFile: string) => {
-                    return execCommand("ideviceinstaller", ["-i", ipaFile], errorLogger).catch((err: Error): any => {
-                        let errorCode: string = (<any>err).code;
-                        if (errorCode && errorCode === "ENOENT") {
-                            throw new Error("Unable to find ideviceinstaller. Please ensure it is in your PATH and re-open Visual Studio Code");
-                        }
-                        throw err;
-                    });
-                });
-
-                return Q.all([CordovaIosDeviceLauncher.getBundleIdentifier(workingDirectory), installPromise]);
-            }, undefined, (progress) => {
-                this.outputLogger(progress[0], progress[1]);
-            }).spread((appBundleId) => {
-                // App is now built and installed. Try to launch
-                this.outputLogger("Launching app");
-                return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort).then(() => {
-                    return CordovaIosDeviceLauncher.startApp(appBundleId, iosDebugProxyPort, appStepLaunchTimeout);
-                });
-            }).then(() => void (0));
+            this.outputLogger("Installing and launching app on device");
+            return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
+                .then(() => CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort))
+                .then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
             return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.env, workingDirectory).then(() => {

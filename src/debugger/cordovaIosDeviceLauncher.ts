@@ -5,7 +5,6 @@
 
 import * as child_process from "child_process";
 import * as fs from "fs";
-import * as net from "net";
 import * as path from "path";
 import * as pl from "plist";
 import * as Q from "q";
@@ -84,14 +83,6 @@ export class CordovaIosDeviceLauncher {
         return deferred.promise;
     }
 
-    // Attempt to start the app on the device, using the debug server proxy on a given port.
-    // Returns a socket speaking remote gdb protocol with the debug server proxy.
-    public static startApp(packageId: string, proxyPort: number, appLaunchStepTimeout: number): Q.Promise<string> {
-        // When a user has many apps installed on their device, the response from ideviceinstaller may be large (500k or more)
-        // This exceeds the maximum stdout size that exec allows, so we redirect to a temp file.
-        return CordovaIosDeviceLauncher.getPathOnDevice(packageId).then(function (path: string): Q.Promise<string> { return CordovaIosDeviceLauncher.startAppViaDebugger(proxyPort, path, appLaunchStepTimeout); });
-    }
-
     public static getPathOnDevice(packageId: string): Q.Promise<string> {
         return promiseExec("ideviceinstaller -l -o xml > /tmp/$$.ideviceinstaller && echo /tmp/$$.ideviceinstaller")
         .catch(function (err: any): any {
@@ -117,114 +108,6 @@ export class CordovaIosDeviceLauncher {
 
             throw new Error("Application not installed on the device");
         });
-    }
-
-    public static startAppViaDebugger(portNumber: number, packagePath: string, appLaunchStepTimeout: number): Q.Promise<string> {
-        let encodedPath: string = CordovaIosDeviceLauncher.encodePath(packagePath);
-
-        // We need to send 3 messages to the proxy, waiting for responses between each message:
-        // A(length of encoded path),0,(encoded path)
-        // Hc0
-        // c
-        // We expect a '+' for each message sent, followed by a $OK#9a to indicate that everything has worked.
-        // For more info, see http://www.opensource.apple.com/source/lldb/lldb-167.2/docs/lldb-gdb-remote.txt
-        let socket: net.Socket = new net.Socket();
-        let initState: number = 0;
-        // let endStatus: number = null;
-        // let endSignal: number = null;
-
-        let deferred1: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
-        let deferred2: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
-        let deferred3: Q.Deferred<net.Socket> = Q.defer<net.Socket>();
-
-        socket.on("data", function (data: any): void {
-            data = data.toString();
-            while (data[0] === "+") { data = data.substring(1); }
-            // Acknowledge any packets sent our way
-            if (data[0] === "$") {
-                socket.write("+");
-                if (data[1] === "W") {
-                    // The app process has exited, with hex status given by data[2-3]
-                    // let status: number = parseInt(data.substring(2, 4), 16);
-                    // endStatus = status;
-                    socket.end();
-                } else if (data[1] === "X") {
-                    // The app rocess exited because of signal given by data[2-3]
-                    // let signal: number = parseInt(data.substring(2, 4), 16);
-                    // endSignal = signal;
-                    socket.end();
-                } else if (data.substring(1, 3) === "OK") {
-                    // last command was received OK;
-                    if (initState === 1) {
-                        deferred1.resolve(socket);
-                    } else if (initState === 2) {
-                        deferred2.resolve(socket);
-                    } else if (initState === 3) {
-                        // iOS 10 no longer responds with output O message, so we assume the app is started after the device acknowledges our request to begin execution.
-                        deferred3.resolve(socket);
-                        initState++;
-                    }
-                } else if (data[1] === "O") {
-                    // STDOUT was written to, and the rest of the input until reaching a '#' is a hex-encoded string of that output
-                    if (initState === 3) {
-                        deferred3.resolve(socket);
-                        initState++;
-                    }
-                } else if (data[1] === "E") {
-                    // An error has occurred, with error code given by data[2-3]: parseInt(data.substring(2, 4), 16)
-                    deferred1.reject("Unable to launch application.");
-                    deferred2.reject("Unable to launch application.");
-                    deferred3.reject("Unable to launch application.");
-                }
-            } else if (data === "" && initState === 3) {
-                // On iOS 10.2.1 (and maybe others) after 'c' message debug server doesn't respond with '$OK', see also
-                // http://www.embecosm.com/appnotes/ean4/embecosm-howto-rsp-server-ean4-issue-2.html#sec_exchange_cont
-                deferred3.resolve(socket);
-                initState++;
-            }
-        });
-
-        socket.on("end", function (): void {
-            deferred1.reject("Unable to launch application.");
-            deferred2.reject("Unable to launch application.");
-            deferred3.reject("Unable to launch application.");
-        });
-
-        socket.on("error", function (err: Error): void {
-            deferred1.reject(err);
-            deferred2.reject(err);
-            deferred3.reject(err);
-        });
-
-        socket.connect(portNumber, "localhost", function (): void {
-            // set argument 0 to the (encoded) path of the app
-            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand("A" + encodedPath.length + ",0," + encodedPath);
-            initState++;
-            socket.write(cmd);
-            setTimeout(function (): void {
-                deferred1.reject("Timeout launching application. Is the device locked?");
-            }, appLaunchStepTimeout);
-        });
-
-        return deferred1.promise.then(function (sock: net.Socket): Q.Promise<net.Socket> {
-            // Set the step and continue thread to any thread
-            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand("Hc0");
-            initState++;
-            sock.write(cmd);
-            setTimeout(function (): void {
-                deferred2.reject("Timeout launching application. Is the device locked?");
-            }, appLaunchStepTimeout);
-            return deferred2.promise;
-        }).then(function (sock: net.Socket): Q.Promise<net.Socket> {
-            // Continue execution; actually start the app running.
-            let cmd: string = CordovaIosDeviceLauncher.makeGdbCommand("c");
-            initState++;
-            sock.write(cmd);
-            setTimeout(function (): void {
-                deferred3.reject("Timeout launching application. Is the device locked?");
-            }, appLaunchStepTimeout);
-            return deferred3.promise;
-        }).then(() => packagePath);
     }
 
     public static encodePath(packagePath: string): string {
@@ -310,26 +193,6 @@ export class CordovaIosDeviceLauncher {
 
             return deferred.promise;
         });
-    }
-
-    private static makeGdbCommand(command: string): string {
-        let commandString: string = "$" + command + "#";
-        let stringSum: number = 0;
-        for (let i: number = 0; i < command.length; i++) {
-            stringSum += command.charCodeAt(i);
-        }
-
-        /* tslint:disable:no-bitwise */
-        // We need some bitwise operations to calculate the checksum
-        stringSum = stringSum & 0xFF;
-        /* tslint:enable:no-bitwise */
-        let checksum: string = stringSum.toString(16).toUpperCase();
-        if (checksum.length < 2) {
-            checksum = "0" + checksum;
-        }
-
-        commandString += checksum;
-        return commandString;
     }
 }
 
