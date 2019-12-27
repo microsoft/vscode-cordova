@@ -654,11 +654,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
-            // Workaround for dealing with new build system in XCode 10
-            // https://github.com/apache/cordova-ios/issues/407
             let args = ["run", "ios", "--device", "--buildFlag=-UseModernBuildSystem=0"];
-            /*if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
-                args = ["run", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];*/
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
@@ -683,9 +679,10 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             // cordova run ios does not terminate, so we do not know when to try and attach.
             this.outputLogger("Installing and launching app on device");
             return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
-                .then((vv) => {
-                    console.log(vv);
+                .then(() => {
                     return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort);
+                }, undefined, (progress) => {
+                    this.outputLogger(progress[0], progress[1]);
                 })
                 .then(() => void (0));
         } else {
