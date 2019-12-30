@@ -674,7 +674,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
-            // 'cordova run ios --device' command is used for installation and launching of an application on an iOS device
+            // cordova run ios does not terminate, so we do not know when to try and attach.
+            // Therefore we parses the command's output to find the special key, which means that the application has been successfully launched.
             this.outputLogger("Installing and launching app on device");
             return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
                 .then(() => {
