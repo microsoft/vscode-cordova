@@ -663,16 +663,14 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             } else if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
                 if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
                     // Livereload is enabled, let Ionic do the launch
-                    args = ["run", "ios", "--device", "--livereload"];
+                    // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
+                    args.push("--livereload", "--external");
                 } else {
                     this.outputLogger(CordovaDebugAdapter.NO_LIVERELOAD_WARNING);
                 }
             }
 
             if (args.indexOf("--livereload") > -1) {
-                if (args[0] === "build") {
-                    args[0] = "run";
-                }
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
             }
 
@@ -1096,7 +1094,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             let isIosDevice: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("--device") !== -1;
             let isIosSimulator: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("emulate") !== -1;
-            let iosDeviceAppReadyRegex: RegExp = /\(lldb\)\W+run\r?\nsuccess/;
+            let iosDeviceAppReadyRegex: RegExp = /compiled successfully/i;
             let iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
             let appReadyRegex: RegExp = /launch success|run successful/i;
 
