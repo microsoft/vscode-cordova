@@ -654,6 +654,8 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === "device") {
+            // Workaround for dealing with new build system in XCode 10
+            // https://github.com/apache/cordova-ios/issues/407
             let args = ["run", "ios", "--device", "--buildFlag=-UseModernBuildSystem=0"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
