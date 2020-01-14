@@ -675,7 +675,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             }
 
             // cordova run ios does not terminate, so we do not know when to try and attach.
-            // Therefore we parses the command's output to find the special key, which means that the application has been successfully launched.
+            // Therefore we parse the command's output to find the special key, which means that the application has been successfully launched.
             this.outputLogger("Installing and launching app on device");
             return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
                 .then(() => {
