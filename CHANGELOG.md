@@ -1,3 +1,7 @@
+## 1.9.2
+* Fixed launching and deployment of Cordova and Ionic applications on iOS 13+ devices [#600](https://github.com/microsoft/vscode-cordova/pull/600)
+* deps: cordova-simulate@0.7.0
+
 ## 1.9.1
 * Added error notifications about usage of incorrect `cwd` parameter on debugging a project located in a subdirectory [#593](https://github.com/microsoft/vscode-cordova/pull/593)
 * Updated troubleshooting documentation for the issue [#574](https://github.com/microsoft/vscode-cordova/issues/574) ([#575](https://github.com/microsoft/vscode-cordova/pull/575)), thanks to [David Cox-Espenlaub(@newdaveespionage)](https://github.com/newdaveespionage)
