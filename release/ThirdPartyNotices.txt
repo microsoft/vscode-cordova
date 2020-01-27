@@ -706,6 +706,31 @@ limitations under the License.
 
 -------------------------------------------------------------------
 
+shasum-object 1.0.0 - Apache-2.0
+https://github.com/goto-bus-stop/shasum-object
+Copyright 2019 Renee Kooi <renee@kooi.me>
+
+# [Apache License 2.0](https://spdx.org/licenses/Apache-2.0)
+
+Copyright 2019 Renée Kooi <renee@kooi.me>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+> http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
 undeclared-identifiers 1.1.3 - Apache-2.0
 https://github.com/goto-bus-stop/undeclared-identifiers
 Copyright 2018 Renee Kooi <renee@kooi.me>
@@ -1212,13 +1237,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -------------------------------------------------------------------
 
-anymatch 3.0.3 - ISC
+anymatch 3.1.1 - ISC
 https://github.com/micromatch/anymatch
-Copyright (c) 2014 Elan Shanker
+Copyright (c) 2019 Elan Shanker, Paul Miller (https://paulmillr.com)
 
 The ISC License
 
-Copyright (c) 2014 Elan Shanker
+Copyright (c) 2019 Elan Shanker, Paul Miller (https://paulmillr.com)
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -1356,7 +1381,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -------------------------------------------------------------------
 
-glob-parent 5.0.0 - ISC
+glob-parent 5.1.0 - ISC
 https://github.com/gulpjs/glob-parent#readme
 Copyright (c) 2015, 2019 Elan Shanker
 
@@ -1406,7 +1431,8 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -------------------------------------------------------------------
 
-inherits 2.0.1 - ISC
+inherits 2.0.3 - ISC
+https://github.com/isaacs/inherits#readme
 Copyright (c) Isaac Z. Schlueter
 
 The ISC License
@@ -1431,8 +1457,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 -------------------------------------------------------------------
 
-inherits 2.0.3 - ISC
-https://github.com/isaacs/inherits#readme
+inherits 2.0.1 - ISC
 Copyright (c) Isaac Z. Schlueter
 
 The ISC License
@@ -1554,7 +1579,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -------------------------------------------------------------------
 
-parse-asn1 5.1.4 - ISC
+parse-asn1 5.1.5 - ISC
 https://github.com/crypto-browserify/parse-asn1#readme
 Copyright (c) 2017, crypto-browserify contributors
 
@@ -1657,7 +1682,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -------------------------------------------------------------------
 
-setprototypeof 1.0.2 - ISC
+setprototypeof 1.1.1 - ISC
 https://github.com/wesleytodd/setprototypeof
 Copyright (c) 2015, Wes Todd
 
@@ -1680,7 +1705,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -------------------------------------------------------------------
 
-setprototypeof 1.1.1 - ISC
+setprototypeof 1.0.2 - ISC
 https://github.com/wesleytodd/setprototypeof
 Copyright (c) 2015, Wes Todd
 
@@ -1805,7 +1830,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-acorn 7.0.0 - MIT
+acorn 7.1.0 - MIT
 https://github.com/acornjs/acorn
 Copyright (c) 2012-2018 by various contributors
 
@@ -2274,7 +2299,7 @@ THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-base64id 1.0.0 - MIT
+base64id 2.0.0 - MIT
 https://github.com/faeldt/base64id#readme
 Copyright (c) 2012-2016 Kristian Faeldt <faeldt_kristian@cyberagent.co.jp>
 
@@ -2844,7 +2869,7 @@ IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-buffer 5.4.0 - MIT
+buffer 5.4.3 - MIT
 https://github.com/feross/buffer
 Copyright (c) Feross Aboukhadijeh, and other contributors.
 Copyright (c) Feross Aboukhadijeh (http://feross.org), and other contributors.
@@ -3127,9 +3152,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -------------------------------------------------------------------
 
-chokidar 3.0.2 - MIT
+chokidar 3.3.1 - MIT
 https://github.com/paulmillr/chokidar
-(c) Paul Miller (https://paulmillr.com)
+(c) Paul Miller <https://paulmillr.com>
 Copyright (c) 2012-2019 Paul Miller (https://paulmillr.com), Elan Shanker
 
 The MIT License (MIT)
@@ -3403,7 +3428,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -------------------------------------------------------------------
 
-compressible 2.0.17 - MIT
+compressible 2.0.18 - MIT
 https://github.com/jshttp/compressible#readme
 Copyright (c) 2013 Jonathan Ong
 Copyright (c) 2014 Jeremiah Senkpiel
@@ -3540,8 +3565,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-console-browserify 1.1.0 - MIT
-https://github.com/Raynos/console-browserify
+console-browserify 1.2.0 - MIT
+https://github.com/browserify/console-browserify
 Copyright (c) 2012 Raynos.
 
 Copyright (c) 2012 Raynos.
@@ -3683,8 +3708,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-cookie 0.3.1 - MIT
-https://github.com/jshttp/cookie
+cookie 0.4.0 - MIT
+https://github.com/jshttp/cookie#readme
 Copyright (c) 2012-2014 Roman Shtylman
 Copyright (c) 2015 Douglas Christopher Wilson
 Copyright (c) 2012-2014 Roman Shtylman <shtylman@gmail.com>
@@ -3720,8 +3745,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-cookie 0.4.0 - MIT
-https://github.com/jshttp/cookie#readme
+cookie 0.3.1 - MIT
+https://github.com/jshttp/cookie
 Copyright (c) 2012-2014 Roman Shtylman
 Copyright (c) 2015 Douglas Christopher Wilson
 Copyright (c) 2012-2014 Roman Shtylman <shtylman@gmail.com>
@@ -3931,66 +3956,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-date-now 0.1.4 - MIT
-https://github.com/Colingo/date-now
-Copyright (c) 2012 Colingo.
-
-Copyright (c) 2012 Colingo.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-
--------------------------------------------------------------------
-
--------------------------------------------------------------------
-
 debug 4.1.1 - MIT
-https://github.com/visionmedia/debug#readme
-Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
-Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca>
-
-(The MIT License)
-
-Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software
-and associated documentation files (the 'Software'), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
--------------------------------------------------------------------
-
--------------------------------------------------------------------
-
-debug 3.1.0 - MIT
 https://github.com/visionmedia/debug#readme
 Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
 Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca>
@@ -4024,6 +3990,36 @@ debug 2.6.9 - MIT
 https://github.com/visionmedia/debug#readme
 Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
 Copyright (c) 2014-2016 TJ Holowaychuk <tj@vision-media.ca>
+
+(The MIT License)
+
+Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the 'Software'), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+debug 3.1.0 - MIT
+https://github.com/visionmedia/debug#readme
+Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
+Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca>
 
 (The MIT License)
 
@@ -4112,34 +4108,38 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-deps-sort 2.0.0 - MIT
+deps-sort 2.0.1 - MIT
 https://github.com/substack/deps-sort
+Copyright (c) James Halliday and browserify contributors
 
-This software is released under the MIT license:
+The MIT License (MIT)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
+Copyright (c) James Halliday and browserify contributors
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
 
 -------------------------------------------------------------------
 
 -------------------------------------------------------------------
 
-des.js 1.0.0 - MIT
+des.js 1.0.1 - MIT
 https://github.com/indutny/des.js#readme
 Copyright Fedor Indutny, 2015.
 
@@ -4310,7 +4310,7 @@ THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-elliptic 6.5.0 - MIT
+elliptic 6.5.2 - MIT
 https://github.com/indutny/elliptic
 Copyright Fedor Indutny, 2014.
 
@@ -4360,7 +4360,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-engine.io 3.3.2 - MIT
+engine.io 3.4.0 - MIT
 https://github.com/socketio/engine.io
 Copyright (c) 2014 Guillermo Rauch <guillermo@learnboost.com>
 
@@ -4418,6 +4418,71 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+engine.io-client 3.4.0 - MIT
+https://github.com/socketio/engine.io-client
+Copyright (c) 2014 Automattic, Inc.
+Copyright (c) 2012 Niklas von Hertzen
+Copyright (c) 2014-2015 Automattic <dev@cloudup.com>
+
+(The MIT License)
+
+Copyright (c) 2014-2015 Automattic <dev@cloudup.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+engine.io-parser 2.2.0 - MIT
+https://github.com/socketio/engine.io-parser
+Copyright (c) 2016 Guillermo Rauch
+
+(The MIT License)
+
+Copyright (c) 2016 Guillermo Rauch (@rauchg)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
@@ -4688,6 +4753,41 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
+fast-safe-stringify 2.0.7 - MIT
+https://github.com/davidmarkclements/fast-safe-stringify#readme
+Copyright (c) 2016 David Mark Clements
+Copyright (c) 2017 David Mark Clements & Matteo Collina
+Copyright (c) 2018 David Mark Clements, Matteo Collina & Ruben Bridgewater
+
+The MIT License (MIT)
+
+Copyright (c) 2016 David Mark Clements
+Copyright (c) 2017 David Mark Clements & Matteo Collina
+Copyright (c) 2018 David Mark Clements, Matteo Collina & Ruben Bridgewater
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
 fill-range 7.0.1 - MIT
 https://github.com/jonschlinkert/fill-range
 Copyright (c) 2014-present, Jon Schlinkert.
@@ -4821,16 +4921,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-fsevents 2.0.7 - MIT
+fsevents 2.1.2 - MIT
 https://github.com/fsevents/fsevents
-(c) 2018 by Philipp Dunkel, Ben Noordhuis, Elan Shankar
-Copyright (c) 2010-2018 by Philipp Dunkel, Ben Noordhuis, Elan Shankar
-Copyright (c) 2010-2019 by Philipp Dunkel, Ben Noordhuis, Elan Shankar
+(c) 2018 by Philipp Dunkel, Ben Noordhuis, Elan Shankar, Paul Miller
+Copyright (c) 2010-2019 by Philipp Dunkel, Ben Noordhuis, Elan Shankar, Paul Miller
 
 MIT License
 -----------
 
-Copyright (C) 2010-2019 by Philipp Dunkel, Ben Noordhuis, Elan Shankar
+Copyright (C) 2010-2019 by Philipp Dunkel, Ben Noordhuis, Elan Shankar, Paul Miller
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -5519,7 +5618,7 @@ THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-isarray 2.0.1 - MIT
+isarray 1.0.0 - MIT
 https://github.com/juliangruber/isarray
 Copyright (c) 2013 Julian Gruber <julian@juliangruber.com>
 
@@ -5537,7 +5636,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -------------------------------------------------------------------
 
-isarray 1.0.0 - MIT
+isarray 2.0.1 - MIT
 https://github.com/juliangruber/isarray
 Copyright (c) 2013 Julian Gruber <julian@juliangruber.com>
 
@@ -5900,6 +5999,39 @@ THE SOFTWARE.
 
 -------------------------------------------------------------------
 
+mime-db 1.43.0 - MIT
+https://github.com/jshttp/mime-db#readme
+Copyright (c) 2014 Jonathan Ong
+Copyright (c) 2014 Jonathan Ong me@jongleberry.com
+
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Jonathan Ong me@jongleberry.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
 mime-types 2.1.24 - MIT
 https://github.com/jshttp/mime-types#readme
 Copyright (c) 2014 Jonathan Ong
@@ -6039,7 +6171,7 @@ THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-module-deps 6.2.1 - MIT
+module-deps 6.2.2 - MIT
 https://github.com/browserify/module-deps
 
 This software is released under the MIT license:
@@ -6097,7 +6229,7 @@ SOFTWARE.
 
 -------------------------------------------------------------------
 
-ms 2.1.1 - MIT
+ms 2.0.0 - MIT
 https://github.com/zeit/ms#readme
 Copyright (c) 2016 Zeit, Inc.
 
@@ -6128,7 +6260,7 @@ SOFTWARE.
 
 -------------------------------------------------------------------
 
-ms 2.0.0 - MIT
+ms 2.1.1 - MIT
 https://github.com/zeit/ms#readme
 Copyright (c) 2016 Zeit, Inc.
 
@@ -6752,7 +6884,7 @@ SOFTWARE.
 
 -------------------------------------------------------------------
 
-picomatch 2.0.7 - MIT
+picomatch 2.2.1 - MIT
 https://github.com/micromatch/picomatch
 Copyright (c) 2017-present, Jon Schlinkert.
 Copyright (c) 2017-present, Jon Schlinkert (https://github.com/jonschlinkert).
@@ -6974,7 +7106,7 @@ SOFTWARE.
 
 -------------------------------------------------------------------
 
-punycode 1.4.1 - MIT
+punycode 1.3.2 - MIT
 https://mths.be/punycode
 Copyright Mathias Bynens <https://mathiasbynens.be/>
 
@@ -7004,7 +7136,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-punycode 1.3.2 - MIT
+punycode 1.4.1 - MIT
 https://mths.be/punycode
 Copyright Mathias Bynens <https://mathiasbynens.be/>
 
@@ -7342,7 +7474,7 @@ IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-readable-stream 3.4.0 - MIT
+readable-stream 3.5.0 - MIT
 https://github.com/nodejs/readable-stream#readme
 Copyright Joyent, Inc. and other Node contributors.
 
@@ -7399,9 +7531,10 @@ IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-readdirp 3.1.2 - MIT
+readdirp 3.3.0 - MIT
 https://github.com/paulmillr/readdirp
 Copyright (c) 2012-2019 Thorsten Lorenz, Paul Miller (https://paulmillr.com)
+Copyright (c) 2012-2019 Thorsten Lorenz, Paul Miller <https://paulmillr.com>
 
 MIT License
 
@@ -7430,8 +7563,8 @@ SOFTWARE.
 
 -------------------------------------------------------------------
 
-resolve 1.10.0 - MIT
-https://github.com/browserify/resolve#readme
+resolve 1.1.7 - MIT
+https://github.com/substack/node-resolve#readme
 
 This software is released under the MIT license:
 
@@ -7457,8 +7590,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-resolve 1.1.7 - MIT
-https://github.com/substack/node-resolve#readme
+resolve 1.10.0 - MIT
+https://github.com/browserify/resolve#readme
 
 This software is released under the MIT license:
 
@@ -7716,7 +7849,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-shell-quote 1.7.1 - MIT
+shell-quote 1.7.2 - MIT
 https://github.com/substack/node-shell-quote
 Copyright (c) 2013 James Halliday (mail@substack.net)
 
@@ -7841,7 +7974,7 @@ THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-socket.io 2.2.0 - MIT
+socket.io 2.3.0 - MIT
 https://github.com/socketio/socket.io#readme
 Copyright (c) 2014-2018 Automattic <dev@cloudup.com>
 
@@ -7873,7 +8006,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-socket.io-adapter 1.1.1 - MIT
+socket.io-adapter 1.1.2 - MIT
 https://github.com/socketio/socket.io-adapter#readme
 Copyright (c) 2014 Guillermo Rauch <guillermo@learnboost.com>
 
@@ -7898,6 +8031,39 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+socket.io-client 2.3.0 - MIT
+https://github.com/Automattic/socket.io-client#readme
+(c) 2014-2019 Guillermo Rauch
+Copyright (c) 2014 Guillermo Rauch
+Copyright (c) 2012 Niklas von Hertzen
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Guillermo Rauch
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
 -------------------------------------------------------------------
 
@@ -7931,6 +8097,36 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+socket.io-parser 3.4.0 - MIT
+https://github.com/Automattic/socket.io-parser#readme
+Copyright (c) 2014 Guillermo Rauch <guillermo@learnboost.com>
+
+(The MIT License)
+
+Copyright (c) 2014 Guillermo Rauch <guillermo@learnboost.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the 'Software'), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 -------------------------------------------------------------------
 
@@ -9010,10 +9206,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -------------------------------------------------------------------
 
-vm-browserify 1.1.0 - MIT
+vm-browserify 1.1.2 - MIT
 https://github.com/substack/vm-browserify#readme
 
-This software is released under the MIT license:
+MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -9132,6 +9328,56 @@ THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
 BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+vscode-uri 2.1.1 - MIT
+https://github.com/Microsoft/vscode-uri#readme
+Copyright (c) Microsoft
+Copyright (c) Microsoft Corporation.
+
+The MIT License (MIT)
+
+Copyright (c) Microsoft
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+
+ws 7.2.1 - MIT
+https://github.com/websockets/ws
+Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
+
+The MIT License (MIT)
+
+Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 -------------------------------------------------------------------
