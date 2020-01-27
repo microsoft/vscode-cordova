@@ -1,5 +1,6 @@
 ## 1.9.2
 * Fixed launching and deployment of Cordova and Ionic applications on iOS 13+ devices [#600](https://github.com/microsoft/vscode-cordova/pull/600)
+* Enhanced error handling in case an opened project is not a Cordova project [#599](https://github.com/microsoft/vscode-cordova/pull/599)
 * deps: cordova-simulate@0.7.0
 
 ## 1.9.1
