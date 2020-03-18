@@ -1,3 +1,7 @@
+## 1.9.3
+* Improved extension security [#603](https://github.com/microsoft/vscode-cordova/pull/603), [#604](https://github.com/microsoft/vscode-cordova/pull/604)
+* Updated extension dependencies [#604](https://github.com/microsoft/vscode-cordova/pull/604)
+
 ## 1.9.2
 * Fixed launching and deployment of Cordova and Ionic applications on iOS 13+ devices [#600](https://github.com/microsoft/vscode-cordova/pull/600)
 * Enhanced error handling in case an opened project is not a Cordova project [#599](https://github.com/microsoft/vscode-cordova/pull/599)
