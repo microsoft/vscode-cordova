@@ -16,13 +16,13 @@ steps:
 displayName: Start xvfb
 condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
-steps:
-  - task: BatchScript@1
-    displayName: 'Run script prepareBuild.bat'
-    inputs:
-      filename: prepareBuild.bat
-      modifyEnvironment: true
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
+- task: BatchScript@1
+displayName: 'Run script prepareBuild.bat'
+inputs:
+  filename: prepareBuild.bat
+  modifyEnvironment: true
+condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
 
 - bash: gulp
   displayName: 'Build and run hostless tests'
