@@ -4,7 +4,7 @@ steps:
   inputs:
     versionSpec: 10.x
 
-- bash: npm install vsce -g --force
+- bash: npm install gulp vsce -g --force
   displayName: 'npm install gulp vsce -g'
 
 - bash: npm ci
