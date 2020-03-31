@@ -11,18 +11,18 @@ steps:
   displayName: 'npm ci'
 
 - bash: |
-  /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-  echo ">>> Started xvfb"
-displayName: Start xvfb
-condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
+    /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    echo ">>> Started xvfb"
+  displayName: Start xvfb
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
 
 - task: BatchScript@1
-displayName: 'Run script prepareBuild.bat'
-inputs:
-  filename: prepareBuild.bat
-  modifyEnvironment: true
-condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+  displayName: 'Run script prepareBuild.bat'
+  inputs:
+    filename: prepareBuild.bat
+    modifyEnvironment: true
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
 
 - bash: gulp
   displayName: 'Build and run hostless tests'
