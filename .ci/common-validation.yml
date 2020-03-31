@@ -16,7 +16,6 @@ steps:
 displayName: Start xvfb
 condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
-
 - task: BatchScript@1
 displayName: 'Run script prepareBuild.bat'
 inputs:
