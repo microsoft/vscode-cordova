@@ -65,7 +65,7 @@ Name                               | Description                                
 
 To start the debugger, choose a target from the target drop-down list, and then either click the start button (![Configure-gear](images/debug-icon.png)) or press F5.
 
-![Cordova launch targets](images/debug-targets.png)
+![Cordova launch  targets](images/debug-targets.png)
 
 You can debug your app on an Android emulator or an Android/iOS device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
