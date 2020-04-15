@@ -340,6 +340,11 @@ export class CordovaProjectHelper {
                     && semver.gtr("3.0.0", ionicVersion));
                 versions.isIonic3 = semver.ltr(highestNotSupportedIonic3BetaVersion, ionicVersion);
             }
+
+            // Assuming for now that latest version is 3
+            if (ionicVersion === "latest" || ionicVersion === "nightly") {
+                versions.isIonic3 = true;
+            }
         }
 
         // Ionic 4 & 5 check
@@ -361,6 +366,11 @@ export class CordovaProjectHelper {
                 versions.isIonic4 = (semver.ltr(highestNotSupportedIonic4BetaVersion, ionicVersion)
                     && semver.gtr("5.0.0", ionicVersion));
                 versions.isIonic5 = semver.ltr(highestNotSupportedIonic5BetaVersion, ionicVersion);
+            }
+
+            // Assuming for now that latest version is 5
+            if (ionicVersion === "latest" || ionicVersion === "nightly") {
+                versions.isIonic5 = true;
             }
         }
         return versions;
