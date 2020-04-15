@@ -117,8 +117,9 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     // extensionServer takes care of disposing the simulator instance
     context.subscriptions.push(extensionServer);
 
+    const ionicVersions = CordovaProjectHelper.checkIonicVersions(cordovaProjectRoot);
     // In case of Ionic 1 project register completions providers for html and javascript snippets
-    if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
+    if (ionicVersions.isIonic1) {
         context.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 IonicCompletionProvider.JS_DOCUMENT_SELECTOR,
@@ -131,12 +132,12 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     }
 
     // Install Ionic type definitions if necessary
-    if (CordovaProjectHelper.isIonicProject(cordovaProjectRoot)) {
+    if (CordovaProjectHelper.isIonicAngularProject(cordovaProjectRoot)) {
         let ionicTypings: string[] = [
             path.join("jquery", "jquery.d.ts"),
             path.join("cordova-ionic", "plugins", "keyboard.d.ts"),
         ];
-        if (CordovaProjectHelper.isIonic1Project(cordovaProjectRoot)) {
+        if (ionicVersions.isIonic1) {
             ionicTypings = ionicTypings.concat([
                 path.join("angularjs", "angular.d.ts"),
                 path.join("ionic", "ionic.d.ts"),
@@ -150,10 +151,12 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
         return;
     }
 
-    // Skip adding typings for cordova in case of Typescript or Ionic2 projects
+    // Skip adding typings for cordova in case of Typescript or Ionic (except v1) projects
     // to avoid conflicts between typings we install and user-installed ones.
-    if (!CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) &&
-        !CordovaProjectHelper.isIonic4Project(cordovaProjectRoot) &&
+    if (!ionicVersions.isIonic2 &&
+        !ionicVersions.isIonic3 &&
+        !ionicVersions.isIonic4 &&
+        !ionicVersions.isIonic5 &&
         !CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
 
         // Install the type defintion files for Cordova
@@ -249,8 +252,11 @@ function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     // wrapper around core plugins. We also won't try to manage typings
     // in typescript projects as it might break compilation due to conflicts
     // between typings we install and user-installed ones.
-    if (CordovaProjectHelper.isIonic2Project(cordovaProjectRoot) ||
-        CordovaProjectHelper.isIonic4Project(cordovaProjectRoot) ||
+    const ionicVersions = CordovaProjectHelper.checkIonicVersions(cordovaProjectRoot);
+    if (ionicVersions.isIonic2 ||
+        ionicVersions.isIonic3 ||
+        ionicVersions.isIonic4 ||
+        ionicVersions.isIonic5 ||
         CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
 
         return;

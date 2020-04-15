@@ -467,7 +467,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
                     // Livereload is enabled, let Ionic do the launch
                     args.push("--livereload");
                 } else {
@@ -663,7 +663,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             } else if (runArguments && runArguments.length) {
                 args.push(...runArguments);
             } else if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
-                if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
                     // Livereload is enabled, let Ionic do the launch
                     // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
                     args.push("--livereload", "--external");
@@ -692,7 +692,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                 // Workaround for dealing with new build system in XCode 10
                 // https://github.com/apache/cordova-ios/issues/407
                 let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
-                if (projectType.ionic || projectType.ionic2 || projectType.ionic4)
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType))
                     args = ["emulate", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
 
                 if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
@@ -705,7 +705,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                     }
                     // Verify if we are using Ionic livereload
                     if (launchArgs.ionicLiveReload) {
-                        if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
+                        if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
                             // Livereload is enabled, let Ionic do the launch
                             args.push("--livereload");
                         } else {
@@ -996,7 +996,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
-        if (!projectType.ionic && !projectType.ionic2 && !projectType.ionic4) {
+        if (!CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
             let errorMessage = "Serving to the browser is currently only supported for Ionic projects";
 
             errorLogger(errorMessage);

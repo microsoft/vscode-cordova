@@ -167,16 +167,22 @@ export class TelemetryHelper {
             return deferred.promise;
         };
 
-        let isIonic1 = CordovaProjectHelper.isIonic1Project(projectRoot);
-        let isIonic2 = CordovaProjectHelper.isIonic2Project(projectRoot);
-        let isIonic4 = CordovaProjectHelper.isIonic4Project(projectRoot);
+        let ionicVersions = CordovaProjectHelper.checkIonicVersions(projectRoot);
         let meteor = promiseExists(path.join(projectRoot, ".meteor"));
         let mobilefirst = promiseExists(path.join(projectRoot, ".project"));
         let phonegap = promiseExists(path.join(projectRoot, "www", "res", ".pgbomit"));
         let cordova = promiseExists(path.join(projectRoot, "config.xml"));
         return Q.all([meteor, mobilefirst, phonegap, cordova])
             .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
-                return { ionic: isIonic1, ionic2: isIonic2, ionic4: isIonic4, meteor: isMeteor, mobilefirst: isMobilefirst, phonegap: isPhonegap, cordova: isCordova };
+                return { isIonic1: ionicVersions.isIonic1,
+                         isIonic2: ionicVersions.isIonic2,
+                         isIonic3: ionicVersions.isIonic3,
+                         isIonic4: ionicVersions.isIonic4,
+                         isIonic5: ionicVersions.isIonic5,
+                         isMeteor: isMeteor,
+                         isMobilefirst: isMobilefirst,
+                         isPhonegap: isPhonegap,
+                         isCordova: isCordova };
             });
     }
 
