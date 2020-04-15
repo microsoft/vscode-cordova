@@ -269,7 +269,7 @@ export class CordovaProjectHelper {
     }
 
     /**
-     * Helper function to determine whether the project is an project or not
+     * Helper function to determine whether the project is an Ionic Angular project or not
      */
     public static isIonicAngularProject(projectRoot: string): boolean {
         const versions = this.checkIonicVersions(projectRoot);
