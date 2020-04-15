@@ -38,7 +38,7 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
 
 export function cordovaRunCommand(command: string, args: string[], env, cordovaRootPath: string): Q.Promise<string[]> {
     let defer = Q.defer<string[]>();
-    let isIonicProject = CordovaProjectHelper.isIonicProject(cordovaRootPath);
+    let isIonicProject = CordovaProjectHelper.isIonicAngularProject(cordovaRootPath);
     let output = "";
     let stderr = "";
     let cordovaProcess = cordovaStartCommand(command, args, env, cordovaRootPath);
@@ -93,7 +93,7 @@ export function cordovaRunCommand(command: string, args: string[], env, cordovaR
 }
 
 export function cordovaStartCommand(command: string, args: string[], env: any, cordovaRootPath: string): child_process.ChildProcess {
-    const isIonic = CordovaProjectHelper.isIonicProject(cordovaRootPath);
+    const isIonic = CordovaProjectHelper.isIonicAngularProject(cordovaRootPath);
     const isIonicServe: boolean = args.indexOf("serve") >= 0;
 
     if (isIonic && !isIonicServe) {

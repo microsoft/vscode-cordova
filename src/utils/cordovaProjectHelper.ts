@@ -363,7 +363,7 @@ export class CordovaProjectHelper {
                 versions.isIonic5 = semver.ltr(highestNotSupportedIonic5BetaVersion, ionicVersion);
             }
         }
-
+        return versions;
     }
 
     /**
