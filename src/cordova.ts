@@ -151,7 +151,7 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
         return;
     }
 
-    // Skip adding typings for cordova in case of Typescript or Ionic2 projects
+    // Skip adding typings for cordova in case of Typescript or Ionic (except v1) projects
     // to avoid conflicts between typings we install and user-installed ones.
     if (!ionicVersions.isIonic2 &&
         !ionicVersions.isIonic3 &&
