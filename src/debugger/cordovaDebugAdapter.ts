@@ -467,7 +467,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (projectType.ionic || projectType.ionic2 || projectType.ionic4) {
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
                     // Livereload is enabled, let Ionic do the launch
                     args.push("--livereload");
                 } else {
