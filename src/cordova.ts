@@ -17,6 +17,7 @@ import {TelemetryHelper} from "./utils/telemetryHelper";
 import {TsdHelper} from "./utils/tsdHelper";
 
 import {IonicCompletionProvider} from "./extension/completionProviders";
+import { CordovaDebugAdapterDescriptorFactory } from "./extension/cordovaDebugAdapterDescriptorFactory";
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -33,6 +34,9 @@ export function activate(context: vscode.ExtensionContext): void {
     let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
     try {
         context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
+
+        const cordovaFactory = new CordovaDebugAdapterDescriptorFactory();
+        context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("cordova", cordovaFactory));
 
         const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
 
