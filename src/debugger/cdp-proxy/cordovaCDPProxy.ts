@@ -59,7 +59,7 @@ export class CordovaCDPProxy {
         this.applicationTargetPort = applicationTargetPort;
     }
 
-    private async onConnectionHandler([debuggerTarget, request]: [Connection, IncomingMessage]): Promise<void> {
+    private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
         this.debuggerTarget = debuggerTarget;
 
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
@@ -123,11 +123,11 @@ export class CordovaCDPProxy {
     }
 
     private onDebuggerTargetError(err: Error) {
-        this.logger.error("Error on debugger transport", err);
+        this.logger.log(`Error on debugger transport: ${err}`);
     }
 
     private onApplicationTargetError(err: Error) {
-        this.logger.error("Error on application transport", err);
+        this.logger.log(`Error on application transport: ${err}`);
     }
 
     private async onDebuggerTargetClosed() {

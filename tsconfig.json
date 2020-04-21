@@ -7,10 +7,17 @@
         "sourceMap": true,
         "outDir": "out",
         "noUnusedLocals": true,
-        "noUnusedParameters": true
+        "noUnusedParameters": true,
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
+        "node_modules/@types",
+        "node_modules/@types*",
+        "/node_modules",
+        "../node_modules",
+        "*node_modules*",
+        "/node_modules*",
         "debugger/testapp/node_modules",
         "CordovaTypings",
         "out",

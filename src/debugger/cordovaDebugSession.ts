@@ -5,12 +5,15 @@ import * as vscode from "vscode";
 import * as Q from "q";
 import * as path from "path";
 import * as fs from "fs";
-import { LoggingDebugSession, Logger, logger, OutputEvent } from "vscode-debugadapter";
+import { LoggingDebugSession, OutputEvent } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
-import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
-import { generateRandomPortNumber } from "../utils/extensionHelper";
+// import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
+import * as elementtree from "elementtree";
+import { generateRandomPortNumber, retryAsync } from "../utils/extensionHelper";
 import { TelemetryHelper } from "../utils/telemetryHelper";
 import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
+import { Telemetry } from "../utils/telemetry";
+import { execCommand } from "./extension";
 
 enum DebugSessionStatus {
     FirstConnection,
@@ -340,8 +343,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             // Safari remote inspector protocol requires setBreakpointsActive
                             // method to be called for breakpoints to work (see #193 and #247)
                             // In case of error do not reject promise but continue debugging
-                            super.chrome.Debugger.setBreakpointsActive({ active: true })
-                                .catch(() => this.outputLogger("Failed to call \"setBreakpointsActive\" of debugging frontend. Debugging will continue..."));
+                            // super.chrome.Debugger.setBreakpointsActive({ active: true })
+                            //     .catch(() => this.outputLogger("Failed to call \"setBreakpointsActive\" of debugging frontend. Debugging will continue..."));
 
                             this.attachedDeferred.resolve(void 0);
                         });
@@ -353,6 +356,198 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 throw err;
             });
         }).done(resolve, reject)));
+    }
+
+    private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
+        let workingDirectory = launchArgs.cwd;
+
+        // Prepare the command line args
+        let isDevice = launchArgs.target.toLowerCase() === "device";
+        let args = ["run", "android"];
+
+        if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
+            args.push(...launchArgs.runArguments);
+        } else if (runArguments && runArguments.length) {
+            args.push(...runArguments);
+        } else {
+            args.push(isDevice ? "--device" : "--emulator", "--verbose");
+            if (["device", "emulator"].indexOf(launchArgs.target.toLowerCase()) === -1) {
+                args.push(`--target=${launchArgs.target}`);
+            }
+
+            // Verify if we are using Ionic livereload
+            if (launchArgs.ionicLiveReload) {
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                    // Livereload is enabled, let Ionic do the launch
+                    args.push("--livereload");
+                } else {
+                    this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
+                }
+            }
+        }
+
+        if (args.indexOf("--livereload") > -1) {
+            return this.startIonicDevServer(launchArgs, args).then(() => void 0);
+        }
+        const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
+        let cordovaResult = cordovaRunCommand(command, args, launchArgs.env, workingDirectory).then((output) => {
+            let runOutput = output[0];
+            let stderr = output[1];
+
+            // Ionic ends process with zero code, so we need to look for
+            // strings with error content to detect failed process
+            let errorMatch = /(ERROR.*)/.test(runOutput) || /error:.*/i.test(stderr);
+            if (errorMatch) {
+                throw new Error(`Error running android`);
+            }
+
+            this.outputLogger("App successfully launched");
+        }, undefined, (progress) => {
+            this.outputLogger(progress[0], progress[1]);
+        });
+
+        return cordovaResult;
+    }
+
+    private attachAndroid(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
+        let errorLogger = (message: string) => this.outputLogger(message, true);
+        // Determine which device/emulator we are targeting
+
+        // For devices we look for "device" string but skip lines with "emulator"
+        const deviceFilter = (line: string) => /\w+\tdevice/.test(line) && !/emulator/.test(line);
+        const emulatorFilter = (line: string) => /device/.test(line) && /emulator/.test(line);
+
+        let adbDevicesResult: Q.Promise<string> = this.runAdbCommand(["devices"], errorLogger)
+            .then<string>((devicesOutput) => {
+
+                const targetFilter = attachArgs.target.toLowerCase() === "device" ? deviceFilter :
+                    attachArgs.target.toLowerCase() === "emulator" ? emulatorFilter :
+                        (line: string) => line.match(attachArgs.target);
+
+                const result = devicesOutput.split("\n")
+                    .filter(targetFilter)
+                    .map(line => line.replace(/\tdevice/, "").replace("\r", ""))[0];
+
+                if (!result) {
+                    errorLogger(devicesOutput);
+                    throw new Error(`Unable to find target ${attachArgs.target}`);
+                }
+
+                return result;
+            }, (err: Error): any => {
+                let errorCode: string = (<any>err).code;
+                if (errorCode && errorCode === "ENOENT") {
+                    throw new Error("Unable to find adb. Please ensure it is in your PATH and re-open Visual Studio Code");
+                }
+
+                throw err;
+            });
+
+        let packagePromise: Q.Promise<string> = Q.nfcall(fs.readFile, path.join(attachArgs.cwd, ANDROID_MANIFEST_PATH))
+            .catch((err) => {
+                if (err && err.code === "ENOENT") {
+                    return Q.nfcall(fs.readFile, path.join(attachArgs.cwd, ANDROID_MANIFEST_PATH_8));
+                }
+                throw err;
+            })
+            .then((manifestContents) => {
+                let parsedFile = elementtree.XML(manifestContents.toString());
+                let packageKey = "package";
+                return parsedFile.attrib[packageKey];
+            });
+
+        return Q.all([packagePromise, adbDevicesResult])
+            .spread((appPackageName: string, targetDevice: string) => {
+            let pidofCommandArguments = ["-s", targetDevice, "shell", "pidof", appPackageName];
+            let getPidCommandArguments = ["-s", targetDevice, "shell", "ps"];
+            let getSocketsCommandArguments = ["-s", targetDevice, "shell", "cat /proc/net/unix"];
+
+            let findAbstractNameFunction = () =>
+                // Get the pid from app package name
+                this.runAdbCommand(pidofCommandArguments, errorLogger)
+                    .then((pid) => {
+                        if (pid && /^[0-9]+$/.test(pid.trim())) {
+                            return pid.trim();
+                        }
+
+                        throw Error(CordovaDebugSession.pidofNotFoundError);
+
+                    }).catch((err) => {
+                        if (err.message !== CordovaDebugSession.pidofNotFoundError) {
+                            return;
+                        }
+
+                        return this.runAdbCommand(getPidCommandArguments, errorLogger)
+                            .then((psResult) => {
+                                const lines = psResult.split("\n");
+                                const keys = lines.shift().split(PS_FIELDS_SPLITTER_RE);
+                                const nameIdx = keys.indexOf("NAME");
+                                const pidIdx = keys.indexOf("PID");
+                                for (const line of lines) {
+                                    const fields = line.trim().split(PS_FIELDS_SPLITTER_RE).filter(field => !!field);
+                                    if (fields.length < nameIdx) {
+                                        continue;
+                                    }
+                                    if (fields[nameIdx] === appPackageName) {
+                                        return fields[pidIdx];
+                                    }
+                                }
+                            });
+                    })
+                    // Get the "_devtools_remote" abstract name by filtering /proc/net/unix with process inodes
+                    .then(pid =>
+                        this.runAdbCommand(getSocketsCommandArguments, errorLogger)
+                            .then((getSocketsResult) => {
+                                const lines = getSocketsResult.split("\n");
+                                const keys = lines.shift().split(/[\s\r]+/);
+                                const flagsIdx = keys.indexOf("Flags");
+                                const stIdx = keys.indexOf("St");
+                                const pathIdx = keys.indexOf("Path");
+                                for (const line of lines) {
+                                    const fields = line.split(/[\s\r]+/);
+                                    if (fields.length < 8) {
+                                        continue;
+                                    }
+                                    // flag = 00010000 (16) -> accepting connection
+                                    // state = 01 (1) -> unconnected
+                                    if (fields[flagsIdx] !== "00010000" || fields[stIdx] !== "01") {
+                                        continue;
+                                    }
+                                    const pathField = fields[pathIdx];
+                                    if (pathField.length < 1 || pathField[0] !== "@") {
+                                        continue;
+                                    }
+                                    if (pathField.indexOf("_devtools_remote") === -1) {
+                                        continue;
+                                    }
+
+                                    if (pathField === `@webview_devtools_remote_${pid}`) {
+                                        // Matches the plain cordova webview format
+                                        return pathField.substr(1);
+                                    }
+
+                                    if (pathField === `@${appPackageName}_devtools_remote`) {
+                                        // Matches the crosswalk format of "@PACKAGENAME_devtools_remote
+                                        return pathField.substr(1);
+                                    }
+                                    // No match, keep searching
+                                }
+                            })
+                    );
+
+            return retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, "Unable to find localabstract name of cordova app")
+                .then((abstractName) => {
+                    // Configure port forwarding to the app
+                    let forwardSocketCommandArguments = ["-s", targetDevice, "forward", `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
+                    this.outputLogger("Forwarding debug port");
+                    return this.runAdbCommand(forwardSocketCommandArguments, errorLogger).then(() => {
+                        this.adbPortForwardingInfo = { targetDevice, port: attachArgs.port };
+                    });
+                });
+        }).then(() => {
+            let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
+            return args;
+        });
     }
 
     protected disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): void {
@@ -383,17 +578,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
             };
 
             vscode.debug.startDebugging(
-                this.appLauncher.getWorkspaceFolder(),
+                // this.appLauncher.getWorkspaceFolder(),
                 attachArguments,
                 this.session
             )
             .then((childDebugSessionStarted: boolean) => {
                 if (childDebugSessionStarted) {
                     this.debugSessionStatus = DebugSessionStatus.ConnectionDone;
-                    if (resolve) {
-                        this.debugSessionStatus = DebugSessionStatus.ConnectionAllowed;
-                        resolve();
-                    }
                 } else {
                     this.debugSessionStatus = DebugSessionStatus.ConnectionFailed;
                     throw new Error("Cannot start child debug session");
@@ -408,5 +599,32 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             throw new Error("Cannot connect to debugger worker: Chrome debugger proxy is offline");
         }
+    }
+
+    /**
+     * Initializes telemetry.
+     */
+    private initializeTelemetry(projectRoot: string): Q.Promise<any> {
+        if (!this.telemetryInitialized) {
+            this.telemetryInitialized = true;
+            let version = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "..", "package.json"), "utf-8")).version;
+            // Enable telemetry, forced on for now.
+            return Telemetry.init("cordova-tools-debug-adapter", version, { isExtensionProcess: false, projectRoot: projectRoot })
+                .catch((e) => {
+                    this.outputLogger("Could not initialize telemetry." + e.message || e.error || e.data || e);
+                });
+        } else {
+            return Q.resolve(void 0);
+        }
+    }
+
+    private runAdbCommand(args, errorLogger): Q.Promise<string> {
+        const originalPath = process.env["PATH"];
+        if (process.env["ANDROID_HOME"]) {
+            process.env["PATH"] += path.delimiter + path.join(process.env["ANDROID_HOME"], "platform-tools");
+        }
+        return execCommand("adb", args, errorLogger).finally(() => {
+            process.env["PATH"] = originalPath;
+        });
     }
 }
