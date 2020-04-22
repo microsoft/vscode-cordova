@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import Q = require("q");
+import * as http from "http";
 
 export function generateRandomPortNumber() {
     return Math.round(Math.random() * 40000 + 3000);
@@ -25,4 +26,22 @@ export function retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) =
             return retry();
         },
         retry);
+}
+
+export function promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
+    let deferred = Q.defer<string>();
+    let req = http.get(url, function(res) {
+        let responseString = "";
+        res.on("data", (data: Buffer) => {
+            responseString += data.toString();
+        });
+        res.on("end", () => {
+            deferred.resolve(responseString);
+        });
+    });
+    req.on("error", (err: Error) => {
+        this.outputLogger(reqErrMessage);
+        deferred.reject(err);
+    });
+    return deferred.promise;
 }

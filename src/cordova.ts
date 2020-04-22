@@ -8,10 +8,10 @@ import * as vscode from "vscode";
 
 import {CordovaProjectHelper} from "./utils/cordovaProjectHelper";
 import {CordovaCommandHelper} from "./utils/cordovaCommandHelper";
-import {ExtensionServer} from "./extension/extensionServer";
+// import {ExtensionServer} from "./extension/extensionServer";
 import * as Q from "q";
 import * as semver from "semver";
-import {PluginSimulator} from "./extension/simulate";
+// import {PluginSimulator} from "./extension/simulate";
 import {Telemetry} from "./utils/telemetry";
 import {TelemetryHelper} from "./utils/telemetryHelper";
 import {TsdHelper} from "./utils/tsdHelper";
@@ -108,18 +108,18 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     watcher.onDidCreate(() => updatePluginTypeDefinitions(cordovaProjectRoot));
     context.subscriptions.push(watcher);
 
-    let simulator: PluginSimulator = new PluginSimulator();
-    let extensionServer: ExtensionServer = new ExtensionServer(simulator, workspaceRoot);
-    extensionServer.setup();
+    // let simulator: PluginSimulator = new PluginSimulator();
+    // let extensionServer: ExtensionServer = new ExtensionServer(simulator, workspaceRoot);
+    // extensionServer.setup();
 
     projectsCache[workspaceRoot] = {
-        extensionServer,
+        // extensionServer,
         cordovaProjectRoot,
         folder,
     };
 
     // extensionServer takes care of disposing the simulator instance
-    context.subscriptions.push(extensionServer);
+    // context.subscriptions.push(extensionServer);
 
     const ionicVersions = CordovaProjectHelper.checkIonicVersions(cordovaProjectRoot);
     // In case of Ionic 1 project register completions providers for html and javascript snippets

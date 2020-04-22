@@ -578,6 +578,7 @@
   },
   "dependencies": {
     "cordova-simulate": "^0.8.0",
+    "devtools-protocol": "0.0.760817",
     "elementtree": "^0.1.6",
     "ip": "^1.1.5",
     "plist": "^2.0.1",
