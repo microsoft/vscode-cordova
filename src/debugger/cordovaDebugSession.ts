@@ -479,10 +479,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private establishDebugSession(): void {
         if (this.cordovaCdpProxy) {
             const attachArguments = {
-                type: "pwa-node",
+                type: "pwa-chrome",
                 request: "attach",
                 name: "Attach",
-                continueOnAttach: true,
                 port: this.cdpProxyPort,
                 smartStep: false,
                 // The unique identifier of the debug session. It is used to distinguish Cordova extension's
