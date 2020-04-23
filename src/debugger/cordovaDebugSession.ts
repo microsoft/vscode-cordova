@@ -371,7 +371,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }).then(() => {
                     // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
                     if (platform !== "serve" && platform !== "browser" && !this.isSimulateTarget(launchArgs.target)) {
-                        return this.attach(launchArgs);
+                        return this.attachRequest(response, launchArgs, request);
                     }
                 });
             }).done(resolve, reject))
@@ -379,9 +379,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 this.outputLogger(err.message || err, true);
                 reject(err);
             }));
-    }
-    protected attach(launchArgs: any): any {
-        throw new Error(launchArgs);
     }
 
     protected attachRequest(response: DebugProtocol.AttachResponse, attachArgs: ICordovaAttachRequestArgs, request?: DebugProtocol.Request): Promise<void>  {
@@ -395,6 +392,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
             .then(() => TelemetryHelper.generate("attach", (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || "emulator";
+
+            this.cordovaCdpProxy = new CordovaCDPProxy(
+                "127.0.0.1",
+                this.cdpProxyPort
+            );
             generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             attachArgs.timeout = attachArgs.attachTimeout;
@@ -403,7 +405,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
-            return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
+            this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+            return this.cordovaCdpProxy.createServer()
+                .then(() => TelemetryHelper.determineProjectTypes(attachArgs.cwd))
                 .then((projectType) => generator.add("projectType", projectType, false))
                 .then(() => {
                     this.outputLogger(`Attaching to ${platform}`);
@@ -421,25 +425,29 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }).then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
                     this.outputLogger("Attaching to app.");
                     this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
-                    return this.attach(processedAttachArgs)
-                        .catch((err) => {
-                            if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
-                                // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
-                                // just ignore it
-                                // https://github.com/Microsoft/vscode-cordova/issues/297
-                                return void 0;
-                            }
-                            throw err;
-                        })
-                        .then(() => {
-                            // Safari remote inspector protocol requires setBreakpointsActive
-                            // method to be called for breakpoints to work (see #193 and #247)
-                            // In case of error do not reject promise but continue debugging
-                            // super.chrome.Debugger.setBreakpointsActive({ active: true })
-                            //     .catch(() => this.outputLogger("Failed to call \"setBreakpointsActive\" of debugging frontend. Debugging will continue..."));
+                    return new Promise((resolve, reject) => {
+                        this.establishDebugSession();
+                        resolve();
+                    })
+                    .catch((err) => {
+                        if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
+                            // Bug in `vscode-chrome-debug-core` calling unimplemented method Debugger.setAsyncCallStackDepth
+                            // just ignore it
+                            // https://github.com/Microsoft/vscode-cordova/issues/297
+                            return void 0;
+                        }
+                        reject(err);
+                    })
+                    .then(() => {
+                        // Safari remote inspector protocol requires setBreakpointsActive
+                        // method to be called for breakpoints to work (see #193 and #247)
+                        // In case of error do not reject promise but continue debugging
+                        // super.chrome.Debugger.setBreakpointsActive({ active: true })
+                        //     .catch(() => this.outputLogger("Failed to call \"setBreakpointsActive\" of debugging frontend. Debugging will continue..."));
 
-                            this.attachedDeferred.resolve(void 0);
-                        });
+                        // this.attachedDeferred.resolve(void 0);
+                        resolve();
+                    });
                 });
         }).catch((err) => {
             this.outputLogger(err.message || err.format || err, true);
@@ -503,7 +511,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 throw err;
             });
         } else {
-
             throw new Error("Cannot connect to debugger worker: Chrome debugger proxy is offline");
         }
     }
@@ -1275,8 +1282,6 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
     private getErrorMessage(e: any): string {
         return e.message || e.error || e.data || e;
     }
-
-
 
     private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         let workingDirectory = launchArgs.cwd;
