@@ -493,9 +493,16 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 attachArguments,
                 this.session
             )
-            .then(() => resolve,
+            .then((childDebugSessionStarted: boolean) => {
+                if (childDebugSessionStarted) {
+                    if (resolve) {
+                        resolve();
+                    }
+                } else {
+                    throw new Error("Cannot start child debug session");
+                }
+            },
             err => {
-                // this.debugSessionStatus = DebugSessionStatus.ConnectionFailed;
 
                 throw err;
             });
