@@ -425,9 +425,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }).then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
                     this.outputLogger("Attaching to app.");
                     this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
-                    return new Promise((resolve, reject) => {
-                        this.establishDebugSession();
-                        resolve();
+                    return new Promise((resolve) => {
+                        this.establishDebugSession(resolve);
                     })
                     .catch((err) => {
                         if (err.message && err.message.indexOf(MISSING_API_ERROR) > -1) {
@@ -451,7 +450,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 });
         }).catch((err) => {
             this.outputLogger(err.message || err.format || err, true);
-
             return this.cleanUp().then(() => {
                 throw err;
             });
@@ -464,7 +462,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.cordovaCdpProxy = null;
         }
 
-
         if (this.pluginSimulator) {
             this.pluginSimulator.dispose();
             this.pluginSimulator = null;
@@ -476,7 +473,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         super.disconnectRequest(response, args, request);
     }
 
-    private establishDebugSession(): void {
+    private establishDebugSession(resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
         if (this.cordovaCdpProxy) {
             const attachArguments = {
                 type: "pwa-chrome",
@@ -496,14 +493,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 attachArguments,
                 this.session
             )
-            .then(() => {
-                // if (childDebugSessionStarted) {
-                //     this.debugSessionStatus = DebugSessionStatus.ConnectionDone;
-                // } else {
-                //     this.debugSessionStatus = DebugSessionStatus.ConnectionFailed;
-                //     throw new Error("Cannot start child debug session");
-                // }
-            },
+            .then(() => resolve,
             err => {
                 // this.debugSessionStatus = DebugSessionStatus.ConnectionFailed;
 
@@ -941,6 +931,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
         if (this.simulateDebugHost) {
             this.simulateDebugHost.close();
             this.simulateDebugHost = null;
+        }
+
+        if (this.cordovaCdpProxy) {
+            this.cordovaCdpProxy.stopServer();
+            this.cordovaCdpProxy = null;
         }
 
         // Wait on all the cleanups
