@@ -503,7 +503,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }
             },
             err => {
-
                 throw err;
             });
         } else {
