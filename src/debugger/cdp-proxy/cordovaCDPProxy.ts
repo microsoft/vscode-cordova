@@ -11,17 +11,16 @@ import {
 } from "vscode-cdp-proxy";
 import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/OutputChannelLogger";
-import { LogLevel } from "../extension/log/LogHelper";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
 
 export class CordovaCDPProxy {
 
-    private readonly PROXY_LOG_TAGS = {
-        DEBUGGER_COMMAND: "Command Debugger To Target",
-        APPLICATION_COMMAND: "Command Target To Debugger",
-        DEBUGGER_REPLY: "Reply From Debugger To Target",
-        APPLICATION_REPLY: "Reply From Target To Debugger",
-    };
+    // private readonly PROXY_LOG_TAGS = {
+    //     DEBUGGER_COMMAND: "Command Debugger To Target",
+    //     APPLICATION_COMMAND: "Command Target To Debugger",
+    //     DEBUGGER_REPLY: "Reply From Debugger To Target",
+    //     APPLICATION_REPLY: "Reply From Target To Debugger",
+    // };
 
     private server: Server | null;
     private hostAddress: string;
@@ -29,16 +28,14 @@ export class CordovaCDPProxy {
     private debuggerTarget: Connection;
     private applicationTarget: Connection;
     private logger: OutputChannelLogger;
-    private logLevel: LogLevel;
     private firstStop: boolean;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
 
-    constructor(hostAddress: string, port: number, logLevel: LogLevel) {
+    constructor(hostAddress: string, port: number) {
         this.port = port;
         this.hostAddress = hostAddress;
-        this.logger = OutputChannelLogger.getChannel("React Native Chrome Proxy", true, false, true);
-        this.logLevel = logLevel;
+        this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
         this.firstStop = true;
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
     }
@@ -62,7 +59,7 @@ export class CordovaCDPProxy {
         this.applicationTargetPort = applicationTargetPort;
     }
 
-    private async onConnectionHandler([debuggerTarget, request]: [Connection, IncomingMessage]): Promise<void> {
+    private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
         this.debuggerTarget = debuggerTarget;
 
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
@@ -87,7 +84,7 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetCommand(evt: IProtocolCommand) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
+        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
         this.applicationTarget.send(evt);
     }
 
@@ -95,7 +92,7 @@ export class CordovaCDPProxy {
         if (evt.method === "Debugger.paused" && this.firstStop) {
             evt.params = this.handleAppBundleFirstPauseEvent(evt);
         }
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
+        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
         this.debuggerTarget.send(evt);
     }
 
@@ -116,21 +113,21 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetReply(evt: IProtocolError | IProtocolSuccess) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
         this.applicationTarget.send(evt);
     }
 
     private handleApplicationTargetReply(evt: IProtocolError | IProtocolSuccess) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
         this.debuggerTarget.send(evt);
     }
 
     private onDebuggerTargetError(err: Error) {
-        this.logger.error("Error on debugger transport", err);
+        this.logger.log(`Error on debugger transport: ${err}`);
     }
 
     private onApplicationTargetError(err: Error) {
-        this.logger.error("Error on application transport", err);
+        this.logger.log(`Error on application transport: ${err}`);
     }
 
     private async onDebuggerTargetClosed() {

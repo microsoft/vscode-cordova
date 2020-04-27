@@ -26,6 +26,7 @@ import {IProjectType} from "../utils/cordovaProjectHelper";
 import {settingsHome} from "../utils/settingsHelper";
 import {Telemetry} from "../utils/telemetry";
 import {SimulationInfo} from "../common/simulationInfo";
+import { retryAsync } from "../utils/extensionHelper";
 
 const MISSING_API_ERROR = "Debugger.setAsyncCallStackDepth";
 const ANDROID_MANIFEST_PATH = path.join("platforms", "android", "AndroidManifest.xml");
@@ -170,25 +171,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
         return CordovaDebugAdapter.sendMessage(projectRoot, messaging.ExtensionMessage.GET_CORDOVA_EXECUTABLE);
     }
 
-    private static retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
-        const retry = () => {
-            if (iteration < maxRetries) {
-                return Q.delay(delay).then(() => CordovaDebugAdapter.retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
-            }
 
-            throw new Error(failure);
-        };
-
-        return func()
-            .then(result => {
-                if (condition(result)) {
-                    return result;
-                }
-
-                return retry();
-            },
-            retry);
-    }
 
     private static getBrowserPath(target: string): string {
         const platform = ChromeDebugCoreUtils.getPlatform();
@@ -625,7 +608,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
                             })
                     );
 
-            return CordovaDebugAdapter.retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, "Unable to find localabstract name of cordova app")
+            return retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, "Unable to find localabstract name of cordova app")
                 .then((abstractName) => {
                     // Configure port forwarding to the app
                     let forwardSocketCommandArguments = ["-s", targetDevice, "forward", `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
@@ -782,7 +765,7 @@ export class CordovaDebugAdapter extends ChromeDebugAdapter {
             this.outputLogger("Configuring debugging proxy");
 
             const retry = function<T> (func, condition, retryCount): Q.Promise<T> {
-                return CordovaDebugAdapter.retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview");
+                return retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview");
             };
 
             const getBundleIdentifier = (): Q.IWhenable<string> => {

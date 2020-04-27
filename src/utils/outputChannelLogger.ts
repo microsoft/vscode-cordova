@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 const channels: { [channelName: string]: OutputChannelLogger } = {};
 
 export class OutputChannelLogger {
+
     public static MAIN_CHANNEL_NAME: string = "Cordova Tools";
     private outputChannel: vscode.OutputChannel;
 

@@ -1,16 +1,26 @@
 ﻿{
     "compilerOptions": {
+        "moduleResolution": "node",
         "module": "commonjs",
+        "target": "ES6",
+        "lib": [
+            "es2015"
+        ],
         "noImplicitAny": false,
         "removeComments": false,
-        "target": "ES6",
         "sourceMap": true,
         "outDir": "out",
         "noUnusedLocals": true,
-        "noUnusedParameters": true
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
+        "node_modules/@types",
+        "node_modules/@types*",
+        "/node_modules",
+        "../node_modules",
+        "*node_modules*",
+        "/node_modules*",
         "debugger/testapp/node_modules",
         "CordovaTypings",
         "out",
