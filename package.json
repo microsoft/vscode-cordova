@@ -577,8 +577,8 @@
   },
   "dependencies": {
     "cordova-simulate": "^0.8.0",
-    "devtools-protocol": "0.0.760817",
     "elementtree": "^0.1.6",
+    "execa": "^4.0.0",
     "ip": "^1.1.5",
     "plist": "^2.0.1",
     "q": "^1.4.1",
@@ -589,6 +589,7 @@
     "vscode-debugadapter": "^1.39.1",
     "vscode-debugprotocol": "^1.40.0",
     "vscode-extension-telemetry": "0.0.5",
+    "vscode-js-debug-browsers": "^1.0.0",
     "winreg": "0.0.13",
     "xcode": "^2.1.0"
   },
@@ -602,6 +603,7 @@
     "@types/semver": "^5.5.0",
     "@types/socket.io-client": "^1.4.29",
     "del": "^2.2.2",
+    "devtools-protocol": "0.0.760817",
     "fancy-log": "^1.3.3",
     "gulp": "^4.0.2",
     "gulp-mocha": "^6.0.0",
