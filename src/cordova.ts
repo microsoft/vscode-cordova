@@ -326,7 +326,13 @@ function launchSimulateCommand(cordovaProjectRoot: string, options: SimulateOpti
     return TelemetryHelper.generate("simulateCommand", (generator) => {
         return TelemetryHelper.determineProjectTypes(cordovaProjectRoot)
             .then((projectType) => {
-                generator.add("simulateOptions", options, false);
+                generator.add("simulateOptions", {
+                    platform: options.platform,
+                    target: options.target,
+                    livereload: options.livereload,
+                    forceprepare: options.forceprepare,
+                    corsproxy: options.corsproxy,
+                }, false);
                 generator.add("projectType", projectType, false);
                 // visibleTextEditors is null proof (returns empty array if no editors visible)
                 generator.add("visibleTextEditorsCount", vscode.window.visibleTextEditors.length, false);
