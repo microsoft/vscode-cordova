@@ -1,7 +1,7 @@
 ## 1.9.4
 * Improved extension security [#620](https://github.com/microsoft/vscode-cordova/pull/620)
 * Internal changes:
-    * Added YAML Azure Pipelines support for the extension repository
+    * Added YAML Azure Pipelines support for the extension repository [#607](https://github.com/microsoft/vscode-cordova/pull/607)
     * Enhanced extension telemetry [#619](https://github.com/microsoft/vscode-cordova/pull/619), [#611](https://github.com/microsoft/vscode-cordova/pull/611)
 
 ## 1.9.3
