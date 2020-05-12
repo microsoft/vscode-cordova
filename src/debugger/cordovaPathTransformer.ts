@@ -132,7 +132,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
         let defaultPath = "";
         let foldersForSearch = [this._webRoot, this._cordovaRoot, wwwRoot];
 
-        if (this._projectTypes.ionic4) {
+        if (this._projectTypes.isIonic4 || this._projectTypes.isIonic5) {
             // We don't need to connect ts files with js in www folder
             // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
             // don't use www directory anymore. If www directory is fulfilled and livereload is used then
