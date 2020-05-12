@@ -577,7 +577,7 @@
     "vscode:prepublish": "gulp"
   },
   "dependencies": {
-    "cordova-simulate": "^0.8.0",
+    "cordova-simulate": "^0.8.1",
     "elementtree": "^0.1.6",
     "plist": "^3.0.1",
     "q": "^1.4.1",
