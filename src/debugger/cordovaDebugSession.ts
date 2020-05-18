@@ -27,8 +27,6 @@ import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { PluginSimulator } from "../extension/simulate";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 
-
-
 // enum DebugSessionStatus {
 //     FirstConnection,
 //     FirstConnectionPending,
