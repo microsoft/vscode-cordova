@@ -153,8 +153,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private chromeProc: child_process.ChildProcess;
     // private nodeSession: vscode.DebugSession | null;
     // private debugSessionStatus: DebugSessionStatus;
-    private onDidStartDebugSessionHandler: vscode.Disposable;
-    private onDidTerminateDebugSessionHandler: vscode.Disposable;
 
 
     constructor(private session: vscode.DebugSession) {
@@ -389,10 +387,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.cordovaCdpProxy.stopServer();
             this.cordovaCdpProxy = null;
         }
-
-        this.onDidStartDebugSessionHandler.dispose();
-        this.onDidTerminateDebugSessionHandler.dispose();
-
         super.disconnectRequest(response, args, request);
     }
 
