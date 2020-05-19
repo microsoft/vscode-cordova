@@ -15,14 +15,15 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
     public pluginSimulator: PluginSimulator;
     public workspaceRoot: vscode.WorkspaceFolder;
 
-    public constructor(pluginSimulator: PluginSimulator, projectRoot: vscode.WorkspaceFolder) {
+    public constructor(pluginSimulator: PluginSimulator, workspaceRoot: vscode.WorkspaceFolder) {
+        this.workspaceRoot = workspaceRoot;
         this.pluginSimulator = pluginSimulator;
     }
 
     public static getWorkspaceManagerByProjectRootPath(projectRootPath: string): CordovaWorkspaceManager {
         const workspaceManager = ProjectsStorage.projectsCache[projectRootPath.toLowerCase()];
         if (!workspaceManager) {
-            throw new Error(`Could not find AppLauncher by the project root path ${projectRootPath}`);
+            throw new Error(`Could not find workspace manager by the project root path ${projectRootPath}`);
         }
         return workspaceManager;
     }
