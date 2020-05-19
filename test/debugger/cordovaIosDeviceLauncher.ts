@@ -5,8 +5,6 @@ import * as mockery from "mockery";
 
 // Used only for the type to allow mocking
 import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from "../../src/debugger/cordovaIosDeviceLauncher";
-import { assert } from "should";
-
 let CordovaIosDeviceLauncher: typeof _CordovaIosDeviceLauncher;
 
 describe("cordovaIosDeviceLauncher", function () {
