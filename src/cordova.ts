@@ -18,6 +18,9 @@ import {TsdHelper} from "./utils/tsdHelper";
 
 import {IonicCompletionProvider} from "./extension/completionProviders";
 import { CordovaDebugAdapterDescriptorFactory } from "./extension/cordovaDebugAdapterDescriptorFactory";
+import { ProjectsStorage } from "./extension/projectsStorage";
+import { PluginSimulator } from "./extension/simulate";
+import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -25,7 +28,6 @@ let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
 let JSCONFIG_FILENAME = "jsconfig.json";
 let TSCONFIG_FILENAME = "tsconfig.json";
 
-let projectsCache: {[key: string]: any} = {};
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
@@ -108,15 +110,11 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     watcher.onDidCreate(() => updatePluginTypeDefinitions(cordovaProjectRoot));
     context.subscriptions.push(watcher);
 
-    // let simulator: PluginSimulator = new PluginSimulator();
-    // let extensionServer: ExtensionServer = new ExtensionServer(simulator, workspaceRoot);
-    // extensionServer.setup();
+    let simulator: PluginSimulator = new PluginSimulator();
+    let workspaceManager: CordovaWorkspaceManager = new CordovaWorkspaceManager(simulator, folder);
 
-    projectsCache[workspaceRoot] = {
-        // extensionServer,
-        cordovaProjectRoot,
-        folder,
-    };
+    ProjectsStorage.addFolder(folder, workspaceManager);
+
 
     // extensionServer takes care of disposing the simulator instance
     // context.subscriptions.push(extensionServer);
@@ -193,7 +191,7 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
 }
 
 function onFolderRemoved(folder: vscode.WorkspaceFolder): void {
-    delete projectsCache[folder.uri.fsPath];
+     ProjectsStorage.delFolder(folder);
 }
 
 function getPluginTypingsJson(): any {
@@ -339,7 +337,7 @@ function launchSimulateCommand(cordovaProjectRoot: string, options: SimulateOpti
     }).then((projectType) => {
         const uri = vscode.Uri.file(cordovaProjectRoot);
         const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
-        return projectsCache[workspaceFolder.uri.fsPath].extensionServer.pluginSimulator.simulate(cordovaProjectRoot, options, projectType);
+        return ProjectsStorage.getFolder(workspaceFolder).pluginSimulator.simulate(cordovaProjectRoot, options, projectType);
     });
 }
 
@@ -365,18 +363,18 @@ function registerCordovaCommands(context: vscode.ExtensionContext): void {
 }
 
 function selectProject(): Q.Promise<any> {
-    let keys = Object.keys(projectsCache);
+    let keys = Object.keys(ProjectsStorage.projectsCache);
     if (keys.length > 1) {
         return Q.Promise((resolve, reject) => {
             vscode.window.showQuickPick(keys)
                 .then((selected) => {
                     if (selected) {
-                        resolve(projectsCache[selected]);
+                        resolve(ProjectsStorage.projectsCache[selected]);
                     }
                 }, reject);
         });
     } else if (keys.length === 1) {
-        return Q.resolve(projectsCache[keys[0]]);
+        return Q.resolve(ProjectsStorage.projectsCache[keys[0]]);
     } else {
         return Q.reject(new Error("No Cordova project is found"));
     }

@@ -24,8 +24,7 @@ import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
-import { PluginSimulator } from "../extension/simulate";
-import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
+import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -131,9 +130,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     // Workaround to handle breakpoint location requests correctly on some platforms
     // private static debuggingProperties: DebuggingProperties;
 
-
-    public pluginSimulator: PluginSimulator;
-
+    private workspaceManager: CordovaWorkspaceManager;
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
     private ionicLivereloadProcess: child_process.ChildProcess;
@@ -174,7 +171,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cordovaCdpProxy = null;
         // this.debugSessionStatus = DebugSessionStatus.FirstConnection;
         this.telemetryInitialized = false;
-        this.pluginSimulator = new PluginSimulator();
         this.outputLogger = (message: string, error?: boolean | string) => {
             let category = "console";
             if (error === true) {
@@ -191,15 +187,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.sendEvent(new OutputEvent(message + newLine, category));
         };
         this.attachedDeferred = Q.defer<void>();
-    }
-
-    public static getRunArguments(fsPath: string): Q.Promise<string[]> {
-        return Q.resolve(CordovaCommandHelper.getRunArguments(fsPath));
-    }
-
-
-    public static getCordovaExecutable(fsPath: string): Q.Promise<string> {
-        return Q.resolve(CordovaCommandHelper.getCordovaExecutable(fsPath));
     }
 
     /**
@@ -225,43 +212,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return Q.resolve({});
     }
 
-    /**
-     * Prepares for simulate debugging. The server and simulate host are launched here.
-     * The application host is launched by the debugger.
-     *
-     * Returns info about the running simulate server
-     */
-    public simulate(fsPath: string, simulateOptions: simulate.SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
-        return this.launchSimulateServer(fsPath, simulateOptions, projectType)
-            .then((simulateInfo: SimulationInfo) => {
-               return this.launchSimHost(simulateOptions.target).then(() => simulateInfo);
-            });
-    }
-
-    /**
-     * Launches the simulate server. Only the server is launched here.
-     *
-     * Returns info about the running simulate server
-     */
-    public launchSimulateServer(fsPath: string, simulateOptions: simulate.SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
-        return this.pluginSimulator.launchServer(fsPath, simulateOptions, projectType);
-    }
-
-    /**
-     * Launches sim-host using an already running simulate server.
-     */
-    public launchSimHost(target: string): Q.Promise<void> {
-        return this.pluginSimulator.launchSimHost(target);
-    }
-
-    /**
-     * Returns the number of currently visible editors.
-     */
-    public getVisibleEditorsCount(): Q.Promise<number> {
-        // visibleTextEditors is null proof (returns empty array if no editors visible)
-        return Q.resolve(vscode.window.visibleTextEditors.length);
-    }
-
     public isSimulateTarget(target: string) {
         return CordovaDebugSession.SIMULATE_TARGETS.indexOf(target) > -1;
     }
@@ -278,6 +228,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
         // };
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
+            .then(() => {
+                this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(launchArgs.cwd);
+            })
             .then(() => TelemetryHelper.generate("launch", (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
                 if (!launchArgs.target) {
@@ -301,8 +254,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
                 return Q.all([
                     TelemetryHelper.determineProjectTypes(launchArgs.cwd),
-                    CordovaDebugSession.getRunArguments(launchArgs.cwd),
-                    CordovaDebugSession.getCordovaExecutable(launchArgs.cwd),
+                    this.workspaceManager.getRunArguments(launchArgs.cwd),
+                    this.workspaceManager.getCordovaExecutable(launchArgs.cwd),
                 ]).then(([projectType, runArguments, cordovaExecutable]) => {
                     launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
                     launchArgs.env = CordovaProjectHelper.getEnvArgument(launchArgs);
@@ -373,6 +326,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
         // };
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
+            .then(() => {
+                this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(attachArgs.cwd);
+            })
             .then(() => TelemetryHelper.generate("attach", (generator) => {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || "emulator";
@@ -434,11 +390,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.cordovaCdpProxy = null;
         }
 
-        if (this.pluginSimulator) {
-            this.pluginSimulator.dispose();
-            this.pluginSimulator = null;
-        }
-
         this.onDidStartDebugSessionHandler.dispose();
         this.onDidTerminateDebugSessionHandler.dispose();
 
@@ -461,8 +412,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             };
 
             vscode.debug.startDebugging(
-                // this.appLauncher.getWorkspaceFolder(),
-                vscode.workspace.workspaceFolders[0],
+                this.workspaceManager.workspaceRoot,
                 attachArguments,
                 this.session
             )
@@ -530,7 +480,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         let simulateInfo: SimulationInfo;
 
-        let getEditorsTelemetry = this.getVisibleEditorsCount()
+        let getEditorsTelemetry = this.workspaceManager.getVisibleEditorsCount()
             .then((editorsCount) => {
                 generator.add("visibleTextEditors", editorsCount, false);
             }).catch((e) => {
@@ -540,13 +490,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
         let launchSimulate = Q(void 0)
             .then(() => {
                 let simulateOptions = this.convertLaunchArgsToSimulateArgs(launchArgs);
-                return this.launchSimulateServer(launchArgs.cwd, simulateOptions, projectType);
+                return this.workspaceManager.launchSimulateServer(launchArgs.cwd, simulateOptions, projectType);
             }).then((simInfo: SimulationInfo) => {
                 simulateInfo = simInfo;
                 return this.connectSimulateDebugHost(simulateInfo);
             }).then(() => {
                 launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugSession.CHROME_DATA_DIR);
-                return this.launchSimHost(launchArgs.target);
+                return this.workspaceManager.launchSimHost(launchArgs.target);
             }).then(() => {
                 // Launch Chrome and attach
                 launchArgs.url = simulateInfo.appHostUrl;
