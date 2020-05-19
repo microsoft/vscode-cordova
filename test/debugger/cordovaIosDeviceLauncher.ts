@@ -5,6 +5,7 @@ import * as mockery from "mockery";
 
 // Used only for the type to allow mocking
 import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from "../../src/debugger/cordovaIosDeviceLauncher";
+import { assert } from "should";
 
 let CordovaIosDeviceLauncher: typeof _CordovaIosDeviceLauncher;
 
@@ -50,7 +51,7 @@ describe("cordovaIosDeviceLauncher", function () {
         };
 
         return CordovaIosDeviceLauncher.getBundleIdentifier("testApp").then((bundleId) => {
-            bundleId.should.equal("test.bundle.identifier");
+            should.equal(bundleId, "test.bundle.identifier");
         });
     });
 });
