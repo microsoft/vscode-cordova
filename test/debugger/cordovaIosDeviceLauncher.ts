@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as mockery from "mockery";
+import * as should from "should";
 
 // Used only for the type to allow mocking
 import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from "../../src/debugger/cordovaIosDeviceLauncher";
