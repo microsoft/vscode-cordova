@@ -404,7 +404,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
                 // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
                 cordovaDebugSessionId: this.session.id,
-                sourceMapPathOverrides: this.getSourceMapPathOverrides(vscode.workspace.workspaceFolders[0].uri.fsPath, DefaultWebSourceMapPathOverrides),
+                sourceMapPathOverrides: this.getSourceMapPathOverrides(this.workspaceManager.workspaceRoot.uri.fsPath, DefaultWebSourceMapPathOverrides),
             };
 
             vscode.debug.startDebugging(
