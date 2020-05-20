@@ -130,6 +130,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
     // Workaround to handle breakpoint location requests correctly on some platforms
     // private static debuggingProperties: DebuggingProperties;
 
+    private readonly cdpProxyPort: number;
+    private readonly cdpProxyHostAddress: string;
+    private isSettingsInitialized: boolean;
     private workspaceManager: CordovaWorkspaceManager;
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
@@ -142,8 +145,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private attachedDeferred: Q.Deferred<void>;
     // private debugSessionStatus: DebugSessionStatus;
 
-    private readonly cdpProxyPort: number;
-    private readonly cdpProxyHostAddress: string;
+
     // private readonly terminateCommand: string;
     // private readonly pwaNodeSessionName: string;
 
@@ -227,7 +229,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
             .then(() => {
-                this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(launchArgs.cwd);
+                this.initializeSettings(launchArgs);
             })
             .then(() => TelemetryHelper.generate("launch", (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
@@ -325,7 +327,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
             .then(() => {
-                this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(attachArgs.cwd);
+                this.initializeSettings(attachArgs);
             })
             .then(() => TelemetryHelper.generate("attach", (generator) => {
             attachArgs.port = attachArgs.port || 9222;
@@ -424,6 +426,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
             });
         } else {
             throw new Error("Cannot connect to debugger worker: Chrome debugger proxy is offline");
+        }
+    }
+
+    private initializeSettings(args: ICordovaAttachRequestArgs | ICordovaLaunchRequestArgs): void {
+        if (!this.isSettingsInitialized) {
+            this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(args.cwd);
+            this.isSettingsInitialized = true;
         }
     }
 
