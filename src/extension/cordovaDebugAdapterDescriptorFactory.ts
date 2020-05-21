@@ -16,9 +16,9 @@ export class CordovaDebugAdapterDescriptorFactory implements vscode.DebugAdapter
         if (!this.server) {
             // start listening on a random port
             this.server = Net.createServer(socket => {
-                const rnDebugSession = new CordovaDebugSession(this.vscodeDebugSession);
-                rnDebugSession.setRunAsServer(true);
-                rnDebugSession.start(<NodeJS.ReadableStream>socket, socket);
+                const cordovaDebugSession = new CordovaDebugSession(this.vscodeDebugSession);
+                cordovaDebugSession.setRunAsServer(true);
+                cordovaDebugSession.start(<NodeJS.ReadableStream>socket, socket);
             }).listen(0);
         }
 
