@@ -12,6 +12,7 @@ import {
 import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/OutputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
+import { CancellationToken } from "vscode";
 
 export class CordovaCDPProxy {
 
@@ -30,6 +31,7 @@ export class CordovaCDPProxy {
     private logger: OutputChannelLogger;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
+    private cancellationToken: CancellationToken | undefined;
 
     constructor(hostAddress: string, port: number) {
         this.port = port;
@@ -38,7 +40,8 @@ export class CordovaCDPProxy {
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
     }
 
-    public createServer(): Promise<void> {
+    public createServer(cancellationToken: CancellationToken): Promise<void> {
+        this.cancellationToken = cancellationToken;
         return Server.create({ port: this.port, host: this.hostAddress })
             .then((server: Server) => {
                 this.server = server;
@@ -55,6 +58,7 @@ export class CordovaCDPProxy {
             this.server.dispose();
             this.server = null;
         }
+        this.cancellationToken = undefined;
     }
 
     public setApplicationTargetPort(applicationTargetPort: number): void {
@@ -65,8 +69,16 @@ export class CordovaCDPProxy {
         this.debuggerTarget = debuggerTarget;
 
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
-
-        const browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+        let browserInspectUri: string;
+        if (this.cancellationToken) {
+            browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
+                `http://localhost:${this.applicationTargetPort}`,
+                10,
+                this.cancellationToken
+            );
+        } else {
+            browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+        }
 
         this.applicationTarget = new Connection(await WebSocketTransport.create(browserInspectUri));
 

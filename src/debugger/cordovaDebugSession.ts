@@ -152,6 +152,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private cordovaCdpProxy: CordovaCDPProxy | null;
     private chromeProc: child_process.ChildProcess;
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
+    private cancellationTokenSource: vscode.CancellationTokenSource;
     // private nodeSession: vscode.DebugSession | null;
     // private debugSessionStatus: DebugSessionStatus;
 
@@ -161,6 +162,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         // constants definition
         this.cdpProxyPort = generateRandomPortNumber();
+        this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         // this.terminateCommand = "terminate"; // the "terminate" command is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself
         this.pwaChromeSessionName = "pwa-chrome"; // the name of Chrome debug session created by js-debug extension
@@ -349,7 +351,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
             this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-            return this.cordovaCdpProxy.createServer()
+            return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token)
                 .then(() => TelemetryHelper.determineProjectTypes(attachArgs.cwd))
                 .then((projectType) => generator.add("projectType", projectType, false))
                 .then(() => {
@@ -391,6 +393,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
             await this.cordovaCdpProxy.stopServer();
             this.cordovaCdpProxy = null;
         }
+        this.cancellationTokenSource.cancel();
+        this.cancellationTokenSource.dispose();
 
         this.onDidTerminateDebugSessionHandler.dispose();
         super.disconnectRequest(response, args, request);
