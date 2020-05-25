@@ -24,6 +24,7 @@ import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
+import { CordovaDebugAdapterDescriptorFactory } from "../extension/cordovaDebugAdapterDescriptorFactory";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -120,8 +121,6 @@ export interface IAttachRequestArgs extends DebugProtocol.AttachRequestArguments
 export interface ILaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, IAttachRequestArgs { }
 
 export class CordovaDebugSession extends LoggingDebugSession {
-
-
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
     private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
@@ -157,7 +156,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     // private debugSessionStatus: DebugSessionStatus;
 
 
-    constructor(private session: vscode.DebugSession) {
+    constructor(private session: vscode.DebugSession, private descriptorFactory: CordovaDebugAdapterDescriptorFactory) {
         super();
 
         // constants definition
@@ -397,6 +396,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cancellationTokenSource.dispose();
 
         this.onDidTerminateDebugSessionHandler.dispose();
+        this.descriptorFactory.terminate(this.session);
         super.disconnectRequest(response, args, request);
     }
 
