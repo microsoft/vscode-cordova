@@ -43,6 +43,9 @@
     "workspaceContains:config.xml",
     "workspaceContains:ionic.config.json"
   ],
+  "extensionKind": [
+    "workspace"
+  ],
   "main": "./out/src/cordova",
   "contributes": {
     "commands": [
