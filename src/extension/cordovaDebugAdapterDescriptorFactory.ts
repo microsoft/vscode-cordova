@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import * as Net from "net";
 import { CordovaDebugSession } from "../debugger/cordovaDebugSession";
 
-export class CordovaDebugAdapterDescriptorFactory implements vscode.DebugAdapterDescriptorFactory {
+export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFactory {
 
     private servers = new Map<string, Net.Server>();
     private connections = new Map<string, Net.Socket>();
@@ -24,29 +24,32 @@ export class CordovaDebugAdapterDescriptorFactory implements vscode.DebugAdapter
     }
 
     public terminate(debugSession: vscode.DebugSession): void {
-        let connection = this.connections.get(debugSession.id);
-        if (connection) {
-            connection.removeAllListeners();
-            connection.on("error", () => undefined);
-            connection.destroy();
-            this.connections.delete(debugSession.id);
-        }
-        this.servers.get(debugSession.id)?.close(x => {
-            console.log(`closed ${debugSession?.name}`);
-        });
-        this.servers.delete(debugSession.id);
+        this.destroyServer(this.servers.get(debugSession.id), debugSession.id);
+        this.destroySocketConnection(this.connections.get(debugSession.id), debugSession.id);
     }
 
     public dispose(): void {
         this.servers.forEach((server, key) => {
-            server.close();
-            this.servers.delete(key);
+            this.destroyServer(server, key);
         });
         this.connections.forEach((conn, key) => {
+            this.destroySocketConnection(conn, key);
+        });
+    }
+
+    private destroyServer(server: Net.Server, sessionId: string) {
+        if (server) {
+            server.close();
+            this.servers.delete(sessionId);
+        }
+    }
+
+    private destroySocketConnection(conn: Net.Socket, sessionId: string) {
+        if (conn) {
             conn.removeAllListeners();
             conn.on("error", () => undefined);
             conn.destroy();
-            this.connections.delete(key);
-        });
+            this.connections.delete(sessionId);
+        }
     }
 }

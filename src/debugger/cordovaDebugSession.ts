@@ -24,7 +24,7 @@ import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
-import { CordovaDebugAdapterDescriptorFactory } from "../extension/cordovaDebugAdapterDescriptorFactory";
+import { CordovaSessionManager } from "../extension/cordovaDebugAdapterDescriptorFactory";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -156,7 +156,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     // private debugSessionStatus: DebugSessionStatus;
 
 
-    constructor(private session: vscode.DebugSession, private sessionManager: CordovaDebugAdapterDescriptorFactory) {
+    constructor(private session: vscode.DebugSession, private sessionManager: CordovaSessionManager) {
         super();
 
         // constants definition
