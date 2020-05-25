@@ -156,7 +156,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     // private debugSessionStatus: DebugSessionStatus;
 
 
-    constructor(private session: vscode.DebugSession, private descriptorFactory: CordovaDebugAdapterDescriptorFactory) {
+    constructor(private session: vscode.DebugSession, private sessionManager: CordovaDebugAdapterDescriptorFactory) {
         super();
 
         // constants definition
@@ -388,15 +388,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
-        if (this.cordovaCdpProxy) {
-            await this.cordovaCdpProxy.stopServer();
-            this.cordovaCdpProxy = null;
-        }
-        this.cancellationTokenSource.cancel();
-        this.cancellationTokenSource.dispose();
-
-        this.onDidTerminateDebugSessionHandler.dispose();
-        this.descriptorFactory.terminate(this.session);
+        this.cleanUp();
         super.disconnectRequest(response, args, request);
     }
 
@@ -889,6 +881,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
             await this.cordovaCdpProxy.stopServer();
             this.cordovaCdpProxy = null;
         }
+        this.cancellationTokenSource.cancel();
+        this.cancellationTokenSource.dispose();
+
+        this.onDidTerminateDebugSessionHandler.dispose();
+        this.sessionManager.terminate(this.session);
 
         // Wait on all the cleanups
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
