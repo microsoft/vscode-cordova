@@ -24,27 +24,27 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
     }
 
     public terminate(debugSession: vscode.DebugSession): void {
-        this.destroyServer(this.servers.get(debugSession.id), debugSession.id);
-        this.destroySocketConnection(this.connections.get(debugSession.id), debugSession.id);
+        this.destroyServer(debugSession.id, this.servers.get(debugSession.id));
+        this.destroySocketConnection(debugSession.id, this.connections.get(debugSession.id));
     }
 
     public dispose(): void {
         this.servers.forEach((server, key) => {
-            this.destroyServer(server, key);
+            this.destroyServer(key, server);
         });
         this.connections.forEach((conn, key) => {
-            this.destroySocketConnection(conn, key);
+            this.destroySocketConnection(key, conn);
         });
     }
 
-    private destroyServer(server: Net.Server, sessionId: string) {
+    private destroyServer(sessionId: string, server?: Net.Server) {
         if (server) {
             server.close();
             this.servers.delete(sessionId);
         }
     }
 
-    private destroySocketConnection(conn: Net.Socket, sessionId: string) {
+    private destroySocketConnection(sessionId: string, conn?: Net.Socket) {
         if (conn) {
             conn.removeAllListeners();
             conn.on("error", () => undefined);

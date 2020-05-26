@@ -24,7 +24,7 @@ import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
-import { CordovaSessionManager } from "../extension/cordovaDebugAdapterDescriptorFactory";
+import { CordovaSessionManager } from "../extension/cordovaSessionManager";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -414,6 +414,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
                 cordovaDebugSessionId: this.session.id,
                 sourceMapPathOverrides: this.getSourceMapPathOverrides(this.workspaceManager.workspaceRoot.uri.fsPath, DefaultWebSourceMapPathOverrides),
+                sourceMaps: true,
             };
 
             vscode.debug.startDebugging(

@@ -17,7 +17,7 @@ import {TelemetryHelper} from "./utils/telemetryHelper";
 import {TsdHelper} from "./utils/tsdHelper";
 
 import {IonicCompletionProvider} from "./extension/completionProviders";
-import { CordovaSessionManager } from "./extension/cordovaDebugAdapterDescriptorFactory";
+import { CordovaSessionManager } from "./extension/cordovaSessionManager";
 import { ProjectsStorage } from "./extension/projectsStorage";
 import { PluginSimulator } from "./extension/simulate";
 import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
