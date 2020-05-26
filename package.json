@@ -22,7 +22,7 @@
   "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
-    "vscode": "^1.33.0"
+    "vscode": "^1.40.0"
   },
   "categories": [
     "Debuggers",
@@ -42,6 +42,9 @@
     "onCommand:cordova.simulate.ios",
     "workspaceContains:config.xml",
     "workspaceContains:ionic.config.json"
+  ],
+  "extensionKind": [
+    "workspace"
   ],
   "main": "./out/src/cordova",
   "contributes": {
@@ -174,6 +177,7 @@
             "type": "cordova",
             "request": "launch",
             "platform": "serve",
+            "target": "chrome",
             "cwd": "${workspaceFolder}",
             "devServerAddress": "localhost",
             "sourceMaps": true,
@@ -273,6 +277,7 @@
               "name": "${1:Serve to the browser (ionic serve)}",
               "type": "cordova",
               "request": "launch",
+              "target": "chrome",
               "platform": "serve",
               "devServerAddress": "${2:localhost}",
               "sourceMaps": true,
@@ -585,7 +590,6 @@
     "semver": "5.1.0",
     "socket.io-client": "^2.3.0",
     "vscode-cdp-proxy": "^0.2.0",
-    "vscode-chrome-debug-core": "^6.8.8",
     "vscode-debugadapter": "^1.39.1",
     "vscode-debugprotocol": "^1.40.0",
     "vscode-extension-telemetry": "0.0.5",

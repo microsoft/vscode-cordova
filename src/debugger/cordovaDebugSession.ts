@@ -13,7 +13,6 @@ import * as execa from "execa";
 import * as chromeBrowserHelper from "vscode-js-debug-browsers";
 import { LoggingDebugSession, OutputEvent } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
-// import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import * as elementtree from "elementtree";
 import { generateRandomPortNumber, retryAsync, promiseGet } from "../utils/extensionHelper";
 import { TelemetryHelper, ISimulateTelemetryProperties, TelemetryGenerator } from "../utils/telemetryHelper";
@@ -25,6 +24,7 @@ import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
+import { CordovaSessionManager } from "../extension/cordovaSessionManager";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -121,8 +121,6 @@ export interface IAttachRequestArgs extends DebugProtocol.AttachRequestArguments
 export interface ILaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, IAttachRequestArgs { }
 
 export class CordovaDebugSession extends LoggingDebugSession {
-
-
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
     private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
@@ -132,7 +130,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private readonly cdpProxyPort: number;
     private readonly cdpProxyHostAddress: string;
-    private isSettingsInitialized: boolean;
     private workspaceManager: CordovaWorkspaceManager;
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
@@ -147,30 +144,36 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
 
     // private readonly terminateCommand: string;
-    // private readonly pwaNodeSessionName: string;
+    private readonly pwaChromeSessionName: string;
 
     // private projectRootPath: string;
-    // private isSettingsInitialized: boolean; // used to prevent parameters reinitialization when attach is called from launch function
+    private isSettingsInitialized: boolean; // used to prevent parameters reinitialization when attach is called from launch function
     private cordovaCdpProxy: CordovaCDPProxy | null;
     private chromeProc: child_process.ChildProcess;
+    private onDidTerminateDebugSessionHandler: vscode.Disposable;
+    private cancellationTokenSource: vscode.CancellationTokenSource;
     // private nodeSession: vscode.DebugSession | null;
     // private debugSessionStatus: DebugSessionStatus;
 
 
-    constructor(private session: vscode.DebugSession) {
+    constructor(private session: vscode.DebugSession, private sessionManager: CordovaSessionManager) {
         super();
 
         // constants definition
         this.cdpProxyPort = generateRandomPortNumber();
+        this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         // this.terminateCommand = "terminate"; // the "terminate" command is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself
-        // this.pwaNodeSessionName = "pwa-node"; // the name of node debug session created by js-debug extension
+        this.pwaChromeSessionName = "pwa-chrome"; // the name of Chrome debug session created by js-debug extension
 
         // variables definition
         // this.isSettingsInitialized = false;
         this.cordovaCdpProxy = null;
         // this.debugSessionStatus = DebugSessionStatus.FirstConnection;
         this.telemetryInitialized = false;
+        this.onDidTerminateDebugSessionHandler = vscode.debug.onDidTerminateDebugSession(
+            this.handleTerminateDebugSession.bind(this)
+        );
         this.outputLogger = (message: string, error?: boolean | string) => {
             let category = "console";
             if (error === true) {
@@ -347,7 +350,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
             this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-            return this.cordovaCdpProxy.createServer()
+            return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token)
                 .then(() => TelemetryHelper.determineProjectTypes(attachArgs.cwd))
                 .then((projectType) => generator.add("projectType", projectType, false))
                 .then(() => {
@@ -384,18 +387,24 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }).done(resolve, reject)));
     }
 
-    protected disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): void {
-        if (this.cordovaCdpProxy) {
-            this.cordovaCdpProxy.stopServer();
-            this.cordovaCdpProxy = null;
-        }
+    protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
+        this.cleanUp();
         super.disconnectRequest(response, args, request);
+    }
+
+    private handleTerminateDebugSession(debugSession: vscode.DebugSession) {
+        if (
+            debugSession.configuration.cordovaDebugSessionId === this.session.id
+            && debugSession.type === this.pwaChromeSessionName
+        ) {
+            this.session.customRequest("disconnect");
+        }
     }
 
     private establishDebugSession(resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
         if (this.cordovaCdpProxy) {
-            const attachArguments = {
-                type: "pwa-chrome",
+            const attachArguments: vscode.DebugConfiguration = {
+                type: this.pwaChromeSessionName,
                 request: "attach",
                 name: "Attach",
                 port: this.cdpProxyPort,
@@ -404,13 +413,17 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
                 // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
                 cordovaDebugSessionId: this.session.id,
-                sourceMapPathOverrides: this.getSourceMapPathOverrides(vscode.workspace.workspaceFolders[0].uri.fsPath, DefaultWebSourceMapPathOverrides),
+                sourceMapPathOverrides: this.getSourceMapPathOverrides(this.workspaceManager.workspaceRoot.uri.fsPath, DefaultWebSourceMapPathOverrides),
+                sourceMaps: true,
             };
 
             vscode.debug.startDebugging(
                 this.workspaceManager.workspaceRoot,
                 attachArguments,
-                this.session
+                {
+                    parentSession: this.session,
+                    consoleMode: vscode.DebugConsoleMode.MergeWithParent,
+                }
             )
             .then((childDebugSessionStarted: boolean) => {
                 if (childDebugSessionStarted) {
@@ -816,7 +829,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         });
     }
 
-    private cleanUp(): Q.Promise<void> {
+    private async cleanUp(): Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
         if (this.chromeProc) {
@@ -866,9 +879,14 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
 
         if (this.cordovaCdpProxy) {
-            this.cordovaCdpProxy.stopServer();
+            await this.cordovaCdpProxy.stopServer();
             this.cordovaCdpProxy = null;
         }
+        this.cancellationTokenSource.cancel();
+        this.cancellationTokenSource.dispose();
+
+        this.onDidTerminateDebugSessionHandler.dispose();
+        this.sessionManager.terminate(this.session);
 
         // Wait on all the cleanups
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);

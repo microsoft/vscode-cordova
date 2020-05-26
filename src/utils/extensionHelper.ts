@@ -28,6 +28,10 @@ export function retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) =
         retry);
 }
 
+export function delay(duration: number): Promise<void> {
+    return new Promise<void>(resolve => setTimeout(resolve, duration));
+}
+
 export function promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
     let deferred = Q.defer<string>();
     let req = http.get(url, function(res) {

@@ -12,6 +12,7 @@ import {
 import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/OutputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
+import { CancellationToken } from "vscode";
 
 export class CordovaCDPProxy {
 
@@ -28,19 +29,19 @@ export class CordovaCDPProxy {
     private debuggerTarget: Connection;
     private applicationTarget: Connection;
     private logger: OutputChannelLogger;
-    private firstStop: boolean;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
+    private cancellationToken: CancellationToken | undefined;
 
     constructor(hostAddress: string, port: number) {
         this.port = port;
         this.hostAddress = hostAddress;
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
-        this.firstStop = true;
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
     }
 
-    public createServer(): Promise<void> {
+    public createServer(cancellationToken: CancellationToken): Promise<void> {
+        this.cancellationToken = cancellationToken;
         return Server.create({ port: this.port, host: this.hostAddress })
             .then((server: Server) => {
                 this.server = server;
@@ -48,11 +49,16 @@ export class CordovaCDPProxy {
             });
     }
 
-    public stopServer(): void {
+    public async stopServer(): Promise<void> {
+        if (this.applicationTarget) {
+            await this.applicationTarget.close();
+            this.applicationTarget = null;
+        }
         if (this.server) {
             this.server.dispose();
             this.server = null;
         }
+        this.cancellationToken = undefined;
     }
 
     public setApplicationTargetPort(applicationTargetPort: number): void {
@@ -63,8 +69,16 @@ export class CordovaCDPProxy {
         this.debuggerTarget = debuggerTarget;
 
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
-
-        const browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+        let browserInspectUri: string;
+        if (this.cancellationToken) {
+            browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
+                `http://localhost:${this.applicationTargetPort}`,
+                10,
+                this.cancellationToken
+            );
+        } else {
+            browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+        }
 
         this.applicationTarget = new Connection(await WebSocketTransport.create(browserInspectUri));
 
@@ -77,7 +91,7 @@ export class CordovaCDPProxy {
         this.applicationTarget.onReply(this.handleApplicationTargetReply.bind(this));
         this.debuggerTarget.onReply(this.handleDebuggerTargetReply.bind(this));
 
-        this.debuggerTarget.onEnd(this.onDebuggerTargetClosed.bind(this));
+        // this.debuggerTarget.onEnd(this.onDebuggerTargetClosed.bind(this));
 
         // dequeue any messages we got in the meantime
         this.debuggerTarget.unpause();
@@ -89,27 +103,8 @@ export class CordovaCDPProxy {
     }
 
     private handleApplicationTargetCommand(evt: IProtocolCommand) {
-        if (evt.method === "Debugger.paused" && this.firstStop) {
-            evt.params = this.handleAppBundleFirstPauseEvent(evt);
-        }
         // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
         this.debuggerTarget.send(evt);
-    }
-
-    /** Since the bundle runs inside the Node.js VM in `debuggerWorker.js` in runtime
-     *  Node debug adapter need time to parse new added code source maps
-     *  So we added `debugger;` statement at the start of the bundle code
-     *  and wait for the adapter to receive a signal to stop on that statement
-     *  and then change pause reason to `Break on start` so js-debug can process all breakpoints in the bundle and
-     *  continue the code execution using `continueOnAttach` flag
-     */
-    private handleAppBundleFirstPauseEvent(evt: IProtocolCommand): any {
-        let params: any = evt.params;
-        if (params.reason && params.reason === "other") {
-            this.firstStop = false;
-            params.reason = "Break on start";
-        }
-        return params;
     }
 
     private handleDebuggerTargetReply(evt: IProtocolError | IProtocolSuccess) {
@@ -128,9 +123,5 @@ export class CordovaCDPProxy {
 
     private onApplicationTargetError(err: Error) {
         this.logger.log(`Error on application transport: ${err}`);
-    }
-
-    private async onDebuggerTargetClosed() {
-        this.firstStop = true;
     }
 }

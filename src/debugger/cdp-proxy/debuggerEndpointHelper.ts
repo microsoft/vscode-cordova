@@ -6,6 +6,8 @@ import * as ipModule from "ip";
 const dns = require("dns").promises;
 import * as http from "http";
 import * as https from "https";
+import { CancellationToken } from "vscode";
+import { delay } from "../../utils/extensionHelper";
 
 export class DebuggerEndpointHelper {
     private localv4: Buffer;
@@ -14,6 +16,36 @@ export class DebuggerEndpointHelper {
     constructor() {
         this.localv4 = ipModule.toBuffer("127.0.0.1");
         this.localv6 = ipModule.toBuffer("::1");
+    }
+
+    /**
+     * Attempts to retrieve the debugger websocket URL for a process listening
+     * at the given address, retrying until available.
+     * @param browserURL -- Address like `http://localhost:1234`
+     * @param cancellationToken -- Cancellation for this operation
+     */
+    public async retryGetWSEndpoint(
+        browserURL: string,
+        attemptNumber: number,
+        cancellationToken: CancellationToken
+    ): Promise<string> {
+        try {
+            return await this.getWSEndpoint(browserURL);
+        } catch (err) {
+            if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
+
+                const internalError = new Error(`Could not connect to the debug target at ${browserURL}: ${err.message}`);
+
+                if (cancellationToken.isCancellationRequested) {
+                    throw new Error("Operation canceled");
+                }
+
+                throw internalError;
+            }
+
+            await delay(1000);
+            return await this.retryGetWSEndpoint(browserURL, --attemptNumber, cancellationToken);
+        }
     }
 
     /**
