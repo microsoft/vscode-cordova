@@ -25,6 +25,7 @@ import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
 import { CordovaSessionManager } from "../extension/cordovaSessionManager";
+import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -336,10 +337,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || "emulator";
 
-            this.cordovaCdpProxy = new CordovaCDPProxy(
-                this.cdpProxyHostAddress,
-                this.cdpProxyPort
-            );
             generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             attachArgs.timeout = attachArgs.attachTimeout;
@@ -349,10 +346,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
-            this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-            return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token)
-                .then(() => TelemetryHelper.determineProjectTypes(attachArgs.cwd))
-                .then((projectType) => generator.add("projectType", projectType, false))
+            return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
+                .then((projectType) => {
+                    let sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+                    this.cordovaCdpProxy = new CordovaCDPProxy(
+                        this.cdpProxyHostAddress,
+                        this.cdpProxyPort,
+                        sourcemapPathTransformer,
+                        projectType
+                    );
+                    this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+                    generator.add("projectType", projectType, false);
+                    return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token);
+                })
                 .then(() => {
                     if (target === "device" || target === "emulator") {
                         this.outputLogger(`Attaching to ${platform}`);
@@ -408,6 +414,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 request: "attach",
                 name: "Attach",
                 port: this.cdpProxyPort,
+                webRoot: `${this.workspaceManager.workspaceRoot.uri.fsPath}/www`,
                 smartStep: false,
                 // The unique identifier of the debug session. It is used to distinguish Cordova extension's
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
