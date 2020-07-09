@@ -154,14 +154,17 @@ export class CordovaCDPProxy {
     private fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPath(reqParams.url);
         if (process.platform === "win32") {
-            absoluteSourcePath = absoluteSourcePath.split("\\").join("/"); // transform to URL standard
+            reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard
+        } else {
+            reqParams.url = "file://" + absoluteSourcePath;
         }
-        reqParams.url = absoluteSourcePath;
         return reqParams;
     }
 
     private fixIonicSourcemapRegexp(reqParams: any): any {
-        const regExp = /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g;
+        const regExp = process.platform === "win32" ?
+            /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g :
+            /.*\\\/www\\\/(.*\.js)/g;
         let foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
