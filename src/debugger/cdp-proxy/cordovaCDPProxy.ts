@@ -35,6 +35,7 @@ export class CordovaCDPProxy {
     private cancellationToken: CancellationToken | undefined;
     private sourcemapPathTransformer: SourcemapPathTransformer;
     private projectType: IProjectType;
+    private simulatePortPart: string;
 
     constructor(hostAddress: string, port: number, sourcemapPathTransformer: SourcemapPathTransformer, projectType: IProjectType) {
         this.port = port;
@@ -43,6 +44,7 @@ export class CordovaCDPProxy {
         this.projectType = projectType;
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
+        this.simulatePortPart = "";
     }
 
     public createServer(cancellationToken: CancellationToken): Promise<void> {
@@ -68,6 +70,10 @@ export class CordovaCDPProxy {
 
     public setApplicationTargetPort(applicationTargetPort: number): void {
         this.applicationTargetPort = applicationTargetPort;
+    }
+
+    public setSimulatePortPart(simulatePort: number) {
+        this.simulatePortPart = `:${simulatePort}`;
     }
 
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
@@ -153,10 +159,14 @@ export class CordovaCDPProxy {
 
     private fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPath(reqParams.url);
-        if (process.platform === "win32") {
-            reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard
+        if (absoluteSourcePath) {
+            if (process.platform === "win32") {
+                reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard
+            } else {
+                reqParams.url = "file://" + absoluteSourcePath;
+            }
         } else {
-            reqParams.url = "file://" + absoluteSourcePath;
+            reqParams.url = "";
         }
         return reqParams;
     }
@@ -168,7 +178,7 @@ export class CordovaCDPProxy {
         let foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = "http:\\/\\/localhost\\/" + uriPart;
+            reqParams.urlRegex = `http:\\/\\/localhost${this.simulatePortPart}\\/${uriPart}`;
         }
         return reqParams;
     }

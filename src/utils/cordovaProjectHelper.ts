@@ -461,4 +461,14 @@ export class CordovaProjectHelper {
 
         return env;
     }
+
+    public static properJoin(...segments: string[]): string {
+        if (path.posix.isAbsolute(segments[0])) {
+            return path.posix.join(...segments);
+        } else if (path.win32.isAbsolute(segments[0])) {
+            return path.win32.join(...segments);
+        } else {
+            return path.join(...segments);
+        }
+    }
 }

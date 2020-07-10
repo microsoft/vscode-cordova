@@ -5,7 +5,6 @@ import * as path from "path";
 import * as fs from "fs";
 import * as url from "url";
 import { ICordovaAttachRequestArgs } from "../cordovaDebugSession";
-import { properJoin } from "../../utils/pathHelper";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 
@@ -71,7 +70,7 @@ export class SourcemapPathTransformer {
     private targetUrlToClientPath(sourceUrlPath: string, searchFolder: string): string {
         const rest = sourceUrlPath.substring(1);
         const absoluteSourcePath = rest ?
-            properJoin(searchFolder, rest) :
+            CordovaProjectHelper.properJoin(searchFolder, rest) :
             searchFolder;
 
         return CordovaProjectHelper.existsSync(absoluteSourcePath) ?

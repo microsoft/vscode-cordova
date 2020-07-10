@@ -53,6 +53,9 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
 
     // Ionic livereload properties
     ionicLiveReload?: boolean;
+
+    // Cordova-simulate properties
+    simulatePort?: number;
 }
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
@@ -73,7 +76,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     runtimeArgs?: string[];
 
     // Cordova-simulate properties
-    simulatePort?: number;
     livereload?: boolean;
     forceprepare?: boolean;
     simulateTempDir?: string;
@@ -356,6 +358,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         projectType
                     );
                     this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+                    if (attachArgs.simulatePort) {
+                        this.cordovaCdpProxy.setSimulatePortPart(attachArgs.simulatePort);
+                    }
                     generator.add("projectType", projectType, false);
                     return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token);
                 })
@@ -414,8 +419,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 request: "attach",
                 name: "Attach",
                 port: this.cdpProxyPort,
+                continueOnAttach: true,
                 webRoot: `${this.workspaceManager.workspaceRoot.uri.fsPath}/www`,
-                smartStep: false,
                 // The unique identifier of the debug session. It is used to distinguish Cordova extension's
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
                 // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
