@@ -22,6 +22,7 @@ import { execCommand, cordovaRunCommand, killChildProcess, cordovaStartCommand }
 import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
+import { LogLevel } from "../utils/log/logHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
 import { CordovaSessionManager } from "../extension/cordovaSessionManager";
@@ -40,7 +41,6 @@ const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", 
 
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
     timeout: number;
-    cwd: string; /* Automatically set by VS Code to the currently opened folder */
     platform: string;
     target?: string;
     webkitRangeMin?: number;
@@ -141,7 +141,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private telemetryInitialized: boolean;
     private attachedDeferred: Q.Deferred<void>;
     // private debugSessionStatus: DebugSessionStatus;
-
+    private cdpProxyLogLevel: LogLevel;
 
     // private readonly terminateCommand: string;
     private readonly pwaChromeSessionName: string;
@@ -350,7 +350,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
             this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-            return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token)
+            return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token)
                 .then(() => TelemetryHelper.determineProjectTypes(attachArgs.cwd))
                 .then((projectType) => generator.add("projectType", projectType, false))
                 .then(() => {
@@ -374,7 +374,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 .then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
                     this.outputLogger("Attaching to app.");
                     this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
-                    this.establishDebugSession();
+                    this.establishDebugSession(processedAttachArgs);
                 })
                 .catch((err) => {
                     reject(err);
@@ -401,13 +401,14 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private establishDebugSession(resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
+    private establishDebugSession(attachArgs: IAttachRequestArgs, resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
         if (this.cordovaCdpProxy) {
             const attachArguments: vscode.DebugConfiguration = {
                 type: this.pwaChromeSessionName,
                 request: "attach",
                 name: "Attach",
                 port: this.cdpProxyPort,
+                trace: attachArgs.trace || false,
                 smartStep: false,
                 // The unique identifier of the debug session. It is used to distinguish Cordova extension's
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
@@ -446,6 +447,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         if (!this.isSettingsInitialized) {
             this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(args.cwd);
             this.isSettingsInitialized = true;
+            this.cdpProxyLogLevel = args.trace ? LogLevel.Custom : LogLevel.None;
         }
     }
 

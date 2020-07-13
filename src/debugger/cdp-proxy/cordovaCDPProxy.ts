@@ -10,18 +10,19 @@ import {
     IProtocolSuccess
 } from "vscode-cdp-proxy";
 import { IncomingMessage } from "http";
-import { OutputChannelLogger } from "../../utils/OutputChannelLogger";
+import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
+import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
 
 export class CordovaCDPProxy {
 
-    // private readonly PROXY_LOG_TAGS = {
-    //     DEBUGGER_COMMAND: "Command Debugger To Target",
-    //     APPLICATION_COMMAND: "Command Target To Debugger",
-    //     DEBUGGER_REPLY: "Reply From Debugger To Target",
-    //     APPLICATION_REPLY: "Reply From Target To Debugger",
-    // };
+    private readonly PROXY_LOG_TAGS = {
+        DEBUGGER_COMMAND: "Command Debugger To Target",
+        APPLICATION_COMMAND: "Command Target To Debugger",
+        DEBUGGER_REPLY: "Reply From Debugger To Target",
+        APPLICATION_REPLY: "Reply From Target To Debugger",
+    };
 
     private server: Server | null;
     private hostAddress: string;
@@ -31,17 +32,20 @@ export class CordovaCDPProxy {
     private logger: OutputChannelLogger;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
+    private logLevel: LogLevel;
     private cancellationToken: CancellationToken | undefined;
 
-    constructor(hostAddress: string, port: number) {
+    constructor(hostAddress: string, port: number, logLevel: LogLevel = LogLevel.None) {
         this.port = port;
         this.hostAddress = hostAddress;
-        this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
+        this.logLevel = logLevel;
+        this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
     }
 
-    public createServer(cancellationToken: CancellationToken): Promise<void> {
+    public createServer(logLevel: LogLevel, cancellationToken: CancellationToken): Promise<void> {
         this.cancellationToken = cancellationToken;
+        this.logLevel = logLevel;
         return Server.create({ port: this.port, host: this.hostAddress })
             .then((server: Server) => {
                 this.server = server;
@@ -98,22 +102,22 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetCommand(evt: IProtocolCommand) {
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
         this.applicationTarget.send(evt);
     }
 
     private handleApplicationTargetCommand(evt: IProtocolCommand) {
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
         this.debuggerTarget.send(evt);
     }
 
     private handleDebuggerTargetReply(evt: IProtocolError | IProtocolSuccess) {
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
         this.applicationTarget.send(evt);
     }
 
     private handleApplicationTargetReply(evt: IProtocolError | IProtocolSuccess) {
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
         this.debuggerTarget.send(evt);
     }
 
