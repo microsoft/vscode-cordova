@@ -14,6 +14,7 @@ import { CDP_API_NAMES } from "./CDPAPINames";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
+import { ICordovaAttachRequestArgs } from "../cordovaDebugSession";
 
 export class CordovaCDPProxy {
 
@@ -35,16 +36,20 @@ export class CordovaCDPProxy {
     private cancellationToken: CancellationToken | undefined;
     private sourcemapPathTransformer: SourcemapPathTransformer;
     private projectType: IProjectType;
-    private simulatePortPart: string;
+    private applicationPortPart: string;
+    private platform: string;
+    private ionicLiveReload?: boolean;
 
-    constructor(hostAddress: string, port: number, sourcemapPathTransformer: SourcemapPathTransformer, projectType: IProjectType) {
+    constructor(hostAddress: string, port: number, sourcemapPathTransformer: SourcemapPathTransformer, projectType: IProjectType, args: ICordovaAttachRequestArgs) {
         this.port = port;
         this.hostAddress = hostAddress;
         this.sourcemapPathTransformer = sourcemapPathTransformer;
         this.projectType = projectType;
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
-        this.simulatePortPart = "";
+        this.applicationPortPart = "";
+        this.platform = args.platform;
+        this.ionicLiveReload = args.ionicLiveReload;
     }
 
     public createServer(cancellationToken: CancellationToken): Promise<void> {
@@ -72,8 +77,8 @@ export class CordovaCDPProxy {
         this.applicationTargetPort = applicationTargetPort;
     }
 
-    public setSimulatePortPart(simulatePort: number) {
-        this.simulatePortPart = `:${simulatePort}`;
+    public setApplicationPortPart(port: number | string) {
+        this.applicationPortPart = `:${port}`;
     }
 
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
@@ -165,7 +170,7 @@ export class CordovaCDPProxy {
             } else {
                 reqParams.url = "file://" + absoluteSourcePath;
             }
-        } else {
+        } else if (!(this.platform === "serve" || this.ionicLiveReload)) {
             reqParams.url = "";
         }
         return reqParams;
@@ -178,7 +183,7 @@ export class CordovaCDPProxy {
         let foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = `http:\\/\\/localhost${this.simulatePortPart}\\/${uriPart}`;
+            reqParams.urlRegex = `http:\\/\\/localhost${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
     }

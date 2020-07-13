@@ -6,6 +6,7 @@ import * as child_process from "child_process";
 import * as Q from "q";
 import * as path from "path";
 import * as fs from "fs";
+import { URL } from "url";
 import * as simulate from "cordova-simulate";
 import * as os from "os";
 import * as io from "socket.io-client";
@@ -53,6 +54,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
 
     // Ionic livereload properties
     ionicLiveReload?: boolean;
+    devServerPort?: number;
 
     // Cordova-simulate properties
     simulatePort?: number;
@@ -64,8 +66,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     appStepLaunchTimeout?: number;
 
     // Ionic livereload properties
-    ionicLiveReload?: boolean;
-    devServerPort?: number;
     devServerAddress?: string;
     devServerTimeout?: number;
 
@@ -355,11 +355,15 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         this.cdpProxyHostAddress,
                         this.cdpProxyPort,
                         sourcemapPathTransformer,
-                        projectType
+                        projectType,
+                        attachArgs
                     );
                     this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+                    if (attachArgs.platform === "serve") {
+                        this.cordovaCdpProxy.setApplicationPortPart(attachArgs.devServerPort);
+                    }
                     if (attachArgs.simulatePort) {
-                        this.cordovaCdpProxy.setSimulatePortPart(attachArgs.simulatePort);
+                        this.cordovaCdpProxy.setApplicationPortPart(attachArgs.simulatePort);
                     }
                     generator.add("projectType", projectType, false);
                     return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token);
@@ -1084,6 +1088,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         const urls = externalUrls[1].split(", ").map(x => x.trim());
                         serverUrls.push(...urls);
                     }
+                    const serveURLInst = new URL(serverUrls[0]);
+                    launchArgs.devServerPort = (+serveURLInst.port);
                     appDeferred.resolve(serverUrls);
                 }
             }
