@@ -55,6 +55,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     // Ionic livereload properties
     ionicLiveReload?: boolean;
     devServerPort?: number;
+    devServerAddress?: string;
 
     // Cordova-simulate properties
     simulatePort?: number;
@@ -66,7 +67,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     appStepLaunchTimeout?: number;
 
     // Ionic livereload properties
-    devServerAddress?: string;
     devServerTimeout?: number;
 
     // Chrome debug properties

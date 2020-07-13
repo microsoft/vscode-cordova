@@ -38,6 +38,7 @@ export class CordovaCDPProxy {
     private projectType: IProjectType;
     private applicationPortPart: string;
     private platform: string;
+    private applicationServerAddress: string;
     private ionicLiveReload?: boolean;
 
     constructor(hostAddress: string, port: number, sourcemapPathTransformer: SourcemapPathTransformer, projectType: IProjectType, args: ICordovaAttachRequestArgs) {
@@ -50,6 +51,7 @@ export class CordovaCDPProxy {
         this.applicationPortPart = "";
         this.platform = args.platform;
         this.ionicLiveReload = args.ionicLiveReload;
+        this.applicationServerAddress = args.devServerAddress || "localhost";
     }
 
     public createServer(cancellationToken: CancellationToken): Promise<void> {
@@ -126,7 +128,7 @@ export class CordovaCDPProxy {
         if (
             evt.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED
             && evt.params.url
-            && evt.params.url.startsWith("http://localhost")
+            && evt.params.url.startsWith(`http://${this.applicationServerAddress}`)
         ) {
             evt.params = this.fixSourcemapLocation(evt.params);
         }
@@ -183,7 +185,7 @@ export class CordovaCDPProxy {
         let foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = `http:\\/\\/localhost${this.applicationPortPart}\\/${uriPart}`;
+            reqParams.urlRegex = `http:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
     }
