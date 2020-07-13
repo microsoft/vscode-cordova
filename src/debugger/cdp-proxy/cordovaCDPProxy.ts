@@ -48,6 +48,8 @@ export class CordovaCDPProxy {
         this.projectType = projectType;
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
+        // we use an application port part, which looks like ":<port>", since on debugging
+        // Ionic apps we don't need a colon after "localhost" in the link
         this.applicationPortPart = "";
         this.platform = args.platform;
         this.ionicLiveReload = args.ionicLiveReload;

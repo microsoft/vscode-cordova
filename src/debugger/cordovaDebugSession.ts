@@ -423,7 +423,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 request: "attach",
                 name: "Attach",
                 port: this.cdpProxyPort,
-                continueOnAttach: true,
                 webRoot: `${this.workspaceManager.workspaceRoot.uri.fsPath}/www`,
                 // The unique identifier of the debug session. It is used to distinguish Cordova extension's
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
