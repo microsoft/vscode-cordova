@@ -5,6 +5,7 @@ import * as child_process from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as Q from "q";
+import { URL } from "url";
 import * as semver from "semver";
 import * as os from "os";
 
@@ -470,5 +471,10 @@ export class CordovaProjectHelper {
         } else {
             return path.join(...segments);
         }
+    }
+
+    public static getPortFromURL(url: string): number {
+        const serveURLInst = new URL(url);
+        return +serveURLInst.port;
     }
 }

@@ -39,6 +39,7 @@ export class CordovaCDPProxy {
     private applicationPortPart: string;
     private platform: string;
     private applicationServerAddress: string;
+    private isSimulate: boolean;
     private ionicLiveReload?: boolean;
 
     constructor(hostAddress: string, port: number, sourcemapPathTransformer: SourcemapPathTransformer, projectType: IProjectType, args: ICordovaAttachRequestArgs) {
@@ -54,6 +55,16 @@ export class CordovaCDPProxy {
         this.platform = args.platform;
         this.ionicLiveReload = args.ionicLiveReload;
         this.applicationServerAddress = args.devServerAddress || "localhost";
+
+        if (args.platform === "serve") {
+            this.setApplicationPortPart(args.devServerPort);
+        }
+        if (args.simulatePort) {
+            this.setApplicationPortPart(args.simulatePort);
+            this.isSimulate = true;
+        } else {
+            this.isSimulate = false;
+        }
     }
 
     public createServer(cancellationToken: CancellationToken): Promise<void> {
@@ -144,7 +155,7 @@ export class CordovaCDPProxy {
 
         if (
             evt.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL
-            && CordovaProjectHelper.isIonicAngularProjectByProjectType(this.projectType)
+            && (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.projectType) || this.isSimulate)
         ) {
             evt.params = this.fixIonicSourcemapRegexp(evt.params);
         }
