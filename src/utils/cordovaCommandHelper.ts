@@ -8,7 +8,7 @@ import * as util from "util";
 import { window, WorkspaceConfiguration, workspace, Uri } from "vscode";
 
 import { TelemetryHelper } from "./telemetryHelper";
-import { OutputChannelLogger } from "./outputChannelLogger";
+import { OutputChannelLogger } from "./log/outputChannelLogger";
 import { CordovaProjectHelper } from "./cordovaProjectHelper";
 
 export class CordovaCommandHelper {

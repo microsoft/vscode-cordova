@@ -7,8 +7,9 @@ import {
     WebSocketTransport
 } from "vscode-cdp-proxy";
 import { IncomingMessage } from "http";
-import { OutputChannelLogger } from "../../utils/OutputChannelLogger";
+import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
+import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
 import { CDP_API_NAMES } from "./CDPAPINames";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
@@ -33,6 +34,7 @@ export class CordovaCDPProxy {
     private logger: OutputChannelLogger;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
+    private logLevel: LogLevel;
     private cancellationToken: CancellationToken | undefined;
     private sourcemapPathTransformer: SourcemapPathTransformer;
     private projectType: IProjectType;
@@ -42,12 +44,20 @@ export class CordovaCDPProxy {
     private isSimulate: boolean;
     private ionicLiveReload?: boolean;
 
-    constructor(hostAddress: string, port: number, sourcemapPathTransformer: SourcemapPathTransformer, projectType: IProjectType, args: ICordovaAttachRequestArgs) {
+    constructor(
+        hostAddress: string,
+        port: number,
+        sourcemapPathTransformer: SourcemapPathTransformer,
+        projectType: IProjectType,
+        args: ICordovaAttachRequestArgs,
+        logLevel: LogLevel = LogLevel.None
+    ) {
         this.port = port;
         this.hostAddress = hostAddress;
         this.sourcemapPathTransformer = sourcemapPathTransformer;
         this.projectType = projectType;
-        this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false);
+        this.logLevel = logLevel;
+        this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         // we use an application port part, which looks like ":<port>", since on debugging
         // Ionic apps we don't need a colon after "localhost" in the link
@@ -67,8 +77,9 @@ export class CordovaCDPProxy {
         }
     }
 
-    public createServer(cancellationToken: CancellationToken): Promise<void> {
+    public createServer(logLevel: LogLevel, cancellationToken: CancellationToken): Promise<void> {
         this.cancellationToken = cancellationToken;
+        this.logLevel = logLevel;
         return Server.create({ port: this.port, host: this.hostAddress })
             .then((server: Server) => {
                 this.server = server;
@@ -129,14 +140,12 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetCommand(evt: any) {
-        console.log(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND + JSON.stringify(evt, null , 2));
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
         this.applicationTarget.send(evt);
     }
 
     private handleApplicationTargetCommand(evt: any) {
-        console.log(this.PROXY_LOG_TAGS.APPLICATION_COMMAND + JSON.stringify(evt, null , 2));
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
 
         if (
             evt.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED
@@ -150,8 +159,7 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetReply(evt: any) {
-        console.log(this.PROXY_LOG_TAGS.DEBUGGER_REPLY + JSON.stringify(evt, null , 2));
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
 
         if (
             evt.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL
@@ -164,8 +172,7 @@ export class CordovaCDPProxy {
     }
 
     private handleApplicationTargetReply(evt: any) {
-        console.log(this.PROXY_LOG_TAGS.APPLICATION_REPLY + JSON.stringify(evt, null , 2));
-        // this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
         this.debuggerTarget.send(evt);
     }
 

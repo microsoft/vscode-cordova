@@ -326,6 +326,11 @@
                 "description": "Use JavaScriptsource maps (if they exist)",
                 "default": false
               },
+              "trace": {
+                "type": "boolean",
+                "default": true,
+                "description": "Trace may be set to 'true' to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk."
+              },
               "port": {
                 "type": "number",
                 "description": "Port to forward through to the target for debugging",
@@ -481,6 +486,11 @@
                 "type": "number",
                 "description": "Port to use for remote debugging.",
                 "default": 9222
+              },
+              "trace": {
+                "type": "boolean",
+                "default": true,
+                "description": "Trace may be set to 'true' to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk."
               },
               "webkitRangeMin": {
                 "type": "number",
