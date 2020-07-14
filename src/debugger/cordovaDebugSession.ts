@@ -25,6 +25,7 @@ import { settingsHome } from "../utils/settingsHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
 import { CordovaSessionManager } from "../extension/cordovaSessionManager";
+import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 
 // enum DebugSessionStatus {
 //     FirstConnection,
@@ -52,6 +53,11 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
 
     // Ionic livereload properties
     ionicLiveReload?: boolean;
+    devServerPort?: number;
+    devServerAddress?: string;
+
+    // Cordova-simulate properties
+    simulatePort?: number;
 }
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
@@ -60,9 +66,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     appStepLaunchTimeout?: number;
 
     // Ionic livereload properties
-    ionicLiveReload?: boolean;
-    devServerPort?: number;
-    devServerAddress?: string;
     devServerTimeout?: number;
 
     // Chrome debug properties
@@ -72,7 +75,6 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     runtimeArgs?: string[];
 
     // Cordova-simulate properties
-    simulatePort?: number;
     livereload?: boolean;
     forceprepare?: boolean;
     simulateTempDir?: string;
@@ -336,10 +338,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             attachArgs.port = attachArgs.port || 9222;
             attachArgs.target = attachArgs.target || "emulator";
 
-            this.cordovaCdpProxy = new CordovaCDPProxy(
-                this.cdpProxyHostAddress,
-                this.cdpProxyPort
-            );
             generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
             attachArgs.timeout = attachArgs.attachTimeout;
@@ -349,10 +347,20 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
 
-            this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-            return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token)
-                .then(() => TelemetryHelper.determineProjectTypes(attachArgs.cwd))
-                .then((projectType) => generator.add("projectType", projectType, false))
+            return TelemetryHelper.determineProjectTypes(attachArgs.cwd)
+                .then((projectType) => {
+                    let sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+                    this.cordovaCdpProxy = new CordovaCDPProxy(
+                        this.cdpProxyHostAddress,
+                        this.cdpProxyPort,
+                        sourcemapPathTransformer,
+                        projectType,
+                        attachArgs
+                    );
+                    this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+                    generator.add("projectType", projectType, false);
+                    return this.cordovaCdpProxy.createServer(this.cancellationTokenSource.token);
+                })
                 .then(() => {
                     if (target === "device" || target === "emulator") {
                         this.outputLogger(`Attaching to ${platform}`);
@@ -408,7 +416,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 request: "attach",
                 name: "Attach",
                 port: this.cdpProxyPort,
-                smartStep: false,
+                webRoot: `${this.workspaceManager.workspaceRoot.uri.fsPath}/www`,
                 // The unique identifier of the debug session. It is used to distinguish Cordova extension's
                 // debug sessions from other ones. So we can save and process only the extension's debug sessions
                 // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
@@ -515,6 +523,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 return this.workspaceManager.launchSimHost(launchArgs.target);
             }).then(() => {
                 // Launch Chrome and attach
+                launchArgs.simulatePort = CordovaProjectHelper.getPortFromURL(simulateInfo.appHostUrl);
                 launchArgs.url = simulateInfo.appHostUrl;
                 this.outputLogger("Attaching to app");
 
@@ -1072,6 +1081,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         const urls = externalUrls[1].split(", ").map(x => x.trim());
                         serverUrls.push(...urls);
                     }
+                    launchArgs.devServerPort = CordovaProjectHelper.getPortFromURL(serverUrls[0]);
                     appDeferred.resolve(serverUrls);
                 }
             }
