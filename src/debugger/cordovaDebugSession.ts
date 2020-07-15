@@ -11,8 +11,10 @@ import * as os from "os";
 import * as io from "socket.io-client";
 import * as execa from "execa";
 import * as chromeBrowserHelper from "vscode-js-debug-browsers";
-import { LoggingDebugSession, OutputEvent } from "vscode-debugadapter";
+import { LoggingDebugSession, OutputEvent, logger, Logger } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
+import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
+import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import * as elementtree from "elementtree";
 import { generateRandomPortNumber, retryAsync, promiseGet } from "../utils/extensionHelper";
 import { TelemetryHelper, ISimulateTelemetryProperties, TelemetryGenerator } from "../utils/telemetryHelper";
@@ -40,51 +42,6 @@ import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 const ANDROID_MANIFEST_PATH = path.join("platforms", "android", "AndroidManifest.xml");
 const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", "main", "AndroidManifest.xml");
 
-export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments, IAttachRequestArgs {
-    timeout: number;
-    platform: string;
-    target?: string;
-    webkitRangeMin?: number;
-    webkitRangeMax?: number;
-    attachAttempts?: number;
-    attachDelay?: number;
-    attachTimeout?: number;
-    simulatorInExternalBrowser?: boolean;
-
-    // Ionic livereload properties
-    ionicLiveReload?: boolean;
-    devServerPort?: number;
-    devServerAddress?: string;
-
-    // Cordova-simulate properties
-    simulatePort?: number;
-}
-
-export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
-    timeout: number;
-    iosDebugProxyPort?: number;
-    appStepLaunchTimeout?: number;
-
-    // Ionic livereload properties
-    devServerTimeout?: number;
-
-    // Chrome debug properties
-    url?: string;
-    userDataDir?: string;
-    runtimeExecutable?: string;
-    runtimeArgs?: string[];
-
-    // Cordova-simulate properties
-    livereload?: boolean;
-    forceprepare?: boolean;
-    simulateTempDir?: string;
-    corsproxy?: boolean;
-    runArguments?: string[];
-    cordovaExecutable?: string;
-    envFile?: string;
-    env?: any;
-}
-
 // interface DebuggingProperties {
 //     platform: string;
 //     target?: string;
@@ -98,29 +55,6 @@ enum TargetType {
     Device = "device",
     Chrome = "chrome",
 }
-
-export interface IStringDictionary<T> {
-    [name: string]: T;
-}
-export type ISourceMapPathOverrides = IStringDictionary<string>;
-// Keep in sync with sourceMapPathOverrides package.json default values
-const DefaultWebSourceMapPathOverrides: ISourceMapPathOverrides = {
-    "webpack:///./~/*": "${cwd}/node_modules/*",
-    "webpack:///./*": "${cwd}/*",
-    "webpack:///*": "*",
-    "webpack:///src/*": "${cwd}/*",
-    "./*": "${cwd}/*",
-};
-
-export interface IAttachRequestArgs extends DebugProtocol.AttachRequestArguments {
-    cwd: string; /* Automatically set by VS Code to the currently opened folder */
-    port: number;
-    url?: string;
-    address?: string;
-    trace?: string;
-}
-
-export interface ILaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, IAttachRequestArgs { }
 
 export class CordovaDebugSession extends LoggingDebugSession {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -144,6 +78,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private attachedDeferred: Q.Deferred<void>;
     // private debugSessionStatus: DebugSessionStatus;
     private cdpProxyLogLevel: LogLevel;
+    private jsDebugConfigAdapter: JsDebugConfigAdapter;
 
     // private readonly terminateCommand: string;
     private readonly pwaChromeSessionName: string;
@@ -173,6 +108,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cordovaCdpProxy = null;
         // this.debugSessionStatus = DebugSessionStatus.FirstConnection;
         this.telemetryInitialized = false;
+        this.jsDebugConfigAdapter = new JsDebugConfigAdapter();
         this.onDidTerminateDebugSessionHandler = vscode.debug.onDidTerminateDebugSession(
             this.handleTerminateDebugSession.bind(this)
         );
@@ -263,7 +199,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.workspaceManager.getCordovaExecutable(launchArgs.cwd),
                 ]).then(([projectType, runArguments, cordovaExecutable]) => {
                     launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
-                    launchArgs.env = CordovaProjectHelper.getEnvArgument(launchArgs);
+                    launchArgs.allEnv = CordovaProjectHelper.getEnvArgument(launchArgs);
                     generator.add("projectType", projectType, false);
                     this.outputLogger(`Launching for ${platform} (This may take a while)...`);
 
@@ -378,7 +314,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         return attachArgs;
                     }
                 })
-                .then((processedAttachArgs: IAttachRequestArgs & { url?: string }) => {
+                .then((processedAttachArgs: ICordovaAttachRequestArgs & { url?: string }) => {
                     this.outputLogger("Attaching to app.");
                     this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
                     this.establishDebugSession(processedAttachArgs);
@@ -408,22 +344,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private establishDebugSession(attachArgs: IAttachRequestArgs, resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
+    private establishDebugSession(attachArgs: ICordovaAttachRequestArgs, resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
         if (this.cordovaCdpProxy) {
-            const attachArguments: vscode.DebugConfiguration = {
-                type: this.pwaChromeSessionName,
-                request: "attach",
-                name: "Attach",
-                port: this.cdpProxyPort,
-                trace: attachArgs.trace || false,
-                webRoot: `${this.workspaceManager.workspaceRoot.uri.fsPath}/www`,
-                // The unique identifier of the debug session. It is used to distinguish Cordova extension's
-                // debug sessions from other ones. So we can save and process only the extension's debug sessions
-                // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
-                cordovaDebugSessionId: this.session.id,
-                sourceMapPathOverrides: this.getSourceMapPathOverrides(this.workspaceManager.workspaceRoot.uri.fsPath, DefaultWebSourceMapPathOverrides),
-                sourceMaps: true,
-            };
+            const attachArguments = this.jsDebugConfigAdapter.createDebuggingConfigForCordova(
+                attachArgs,
+                this.cdpProxyPort,
+                this.session.id
+            );
 
             vscode.debug.startDebugging(
                 this.workspaceManager.workspaceRoot,
@@ -454,6 +381,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         if (!this.isSettingsInitialized) {
             this.workspaceManager = CordovaWorkspaceManager.getWorkspaceManagerByProjectRootPath(args.cwd);
             this.isSettingsInitialized = true;
+            logger.setup(args.trace ? Logger.LogLevel.Verbose : Logger.LogLevel.Log);
             this.cdpProxyLogLevel = args.trace ? LogLevel.Custom : LogLevel.None;
         }
     }
@@ -644,7 +572,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             // cordova run ios does not terminate, so we do not know when to try and attach.
             // Therefore we parse the command's output to find the special key, which means that the application has been successfully launched.
             this.outputLogger("Installing and launching app on device");
-            return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
+            return cordovaRunCommand(command, args, launchArgs.allEnv, workingDirectory)
                 .then(() => {
                     return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort);
                 }, undefined, (progress) => {
@@ -653,7 +581,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 .then(() => void (0));
         } else {
             let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
-            return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.env, workingDirectory).then(() => {
+            return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.allEnv, workingDirectory).then(() => {
                 // Workaround for dealing with new build system in XCode 10
                 // https://github.com/apache/cordova-ios/issues/407
                 let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
@@ -683,12 +611,12 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     return this.startIonicDevServer(launchArgs, args).then(() => void 0);
                 }
 
-                return cordovaRunCommand(command, args, launchArgs.env, workingDirectory)
+                return cordovaRunCommand(command, args, launchArgs.allEnv, workingDirectory)
                     .progress((progress) => {
                         this.outputLogger(progress[0], progress[1]);
                     }).catch((err) => {
                         if (target === "emulator") {
-                            return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.env, workingDirectory).then((output) => {
+                            return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.allEnv, workingDirectory).then((output) => {
                                 // List out available targets
                                 errorLogger("Unable to run with given target.");
                                 errorLogger(output[0].replace(/\*+[^*]+\*+/g, "")); // Print out list of targets, without ** RUN SUCCEEDED **
@@ -732,7 +660,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         });
     }
 
-    private attachIos(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
+    private attachIos(attachArgs: ICordovaAttachRequestArgs): Q.Promise<ICordovaAttachRequestArgs> {
         let target = attachArgs.target.toLowerCase() === "emulator" ? "emulator" : attachArgs.target;
         let workingDirectory = attachArgs.cwd;
         const command = CordovaProjectHelper.getCliCommand(workingDirectory);
@@ -820,7 +748,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         }), (result) => result.relevantViews.length > 0, 5);
             };
 
-            const getAttachRequestArgs = (): Q.Promise<IAttachRequestArgs> =>
+            const getAttachRequestArgs = (): Q.Promise<ICordovaAttachRequestArgs> =>
                 CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax)
                     .then(getBundleIdentifier)
                     .then(getSimulatorProxyPort)
@@ -829,10 +757,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         return { port: targetPort, url: relevantViews[0].url };
                     })
                     .then(({ port, url }) => {
-                        const args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
-                        args.port = port;
-                        args.url = url;
-                        return args;
+                        attachArgs.port = port;
+                        attachArgs.url = url;
+                        return attachArgs;
                     });
 
             return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts);
@@ -897,6 +824,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         this.onDidTerminateDebugSessionHandler.dispose();
         this.sessionManager.terminate(this.session);
+
+        await logger.dispose();
 
         // Wait on all the cleanups
         return Q.allSettled([adbPortPromise, killServePromise]).then(() => void 0);
@@ -982,7 +911,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(launchArgs.cwd);
 
-        this.ionicLivereloadProcess = cordovaStartCommand(command, cliArgs, launchArgs.env, launchArgs.cwd);
+        this.ionicLivereloadProcess = cordovaStartCommand(command, cliArgs, launchArgs.allEnv, launchArgs.cwd);
         this.ionicLivereloadProcess.on("error", (err: { code: string }) => {
             if (err.code === "ENOENT") {
                 serverDeferred.reject(new Error("Ionic not found, please run 'npm install –g ionic' to install it globally"));
@@ -1270,7 +1199,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             return this.startIonicDevServer(launchArgs, args).then(() => void 0);
         }
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
-        let cordovaResult = cordovaRunCommand(command, args, launchArgs.env, workingDirectory).then((output) => {
+        let cordovaResult = cordovaRunCommand(command, args, launchArgs.allEnv, workingDirectory).then((output) => {
             let runOutput = output[0];
             let stderr = output[1];
 
@@ -1289,7 +1218,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         return cordovaResult;
     }
 
-    private attachAndroid(attachArgs: ICordovaAttachRequestArgs): Q.Promise<IAttachRequestArgs> {
+    private attachAndroid(attachArgs: ICordovaAttachRequestArgs): Q.Promise<ICordovaAttachRequestArgs> {
         let errorLogger = (message: string) => this.outputLogger(message, true);
         // Determine which device/emulator we are targeting
 
@@ -1425,40 +1354,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                     });
                 });
         }).then(() => {
-            let args: IAttachRequestArgs = JSON.parse(JSON.stringify(attachArgs));
-            return args;
+            return attachArgs;
         });
-    }
-
-    private getSourceMapPathOverrides(cwd: string, sourceMapPathOverrides?: ISourceMapPathOverrides): ISourceMapPathOverrides {
-        return sourceMapPathOverrides ? this.resolveWebRootPattern(cwd, sourceMapPathOverrides, /*warnOnMissing=*/true) :
-                this.resolveWebRootPattern(cwd, DefaultWebSourceMapPathOverrides, /*warnOnMissing=*/false);
-    }
-    /**
-     * Returns a copy of sourceMapPathOverrides with the ${cwd} pattern resolved in all entries.
-     */
-    private resolveWebRootPattern(cwd: string, sourceMapPathOverrides: ISourceMapPathOverrides, warnOnMissing: boolean): ISourceMapPathOverrides {
-        const resolvedOverrides: ISourceMapPathOverrides = {};
-        // tslint:disable-next-line:forin
-        for (let pattern in sourceMapPathOverrides) {
-            const replacePattern = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, pattern, warnOnMissing);
-            const replacePatternValue = this.replaceWebRootInSourceMapPathOverridesEntry(cwd, sourceMapPathOverrides[pattern], warnOnMissing);
-            resolvedOverrides[replacePattern] = replacePatternValue;
-        }
-        return resolvedOverrides;
-    }
-
-    private replaceWebRootInSourceMapPathOverridesEntry(cwd: string, entry: string, warnOnMissing: boolean): string {
-        const cwdIndex = entry.indexOf("${cwd}");
-        if (cwdIndex === 0) {
-            if (cwd) {
-                return entry.replace("${cwd}", cwd);
-            } else if (warnOnMissing) {
-                this.outputLogger("Warning: sourceMapPathOverrides entry contains ${cwd}, but cwd is not set");
-            }
-        } else if (cwdIndex > 0) {
-            this.outputLogger("Warning: in a sourceMapPathOverrides entry, ${cwd} is only valid at the beginning of the path");
-        }
-        return entry;
     }
 }
