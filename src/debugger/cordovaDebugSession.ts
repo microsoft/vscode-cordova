@@ -13,6 +13,7 @@ import * as execa from "execa";
 import * as chromeBrowserHelper from "vscode-js-debug-browsers";
 import { LoggingDebugSession, OutputEvent, logger, Logger } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
+import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import * as elementtree from "elementtree";
 import { generateRandomPortNumber, retryAsync, promiseGet } from "../utils/extensionHelper";
@@ -41,58 +42,6 @@ import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 const ANDROID_MANIFEST_PATH = path.join("platforms", "android", "AndroidManifest.xml");
 const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", "main", "AndroidManifest.xml");
 
-export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments {
-    cwd: string; /* Automatically set by VS Code to the currently opened folder */
-    port: number;
-    url?: string;
-    address?: string;
-    trace?: string;
-    timeout: number;
-    platform: string;
-    target?: string;
-    envFile?: string;
-    env?: any;
-    allEnv?: any;
-    skipFiles?: [];
-    sourceMaps?: boolean;
-    sourceMapPathOverrides?: ISourceMapPathOverrides;
-    webkitRangeMin?: number;
-    webkitRangeMax?: number;
-    attachAttempts?: number;
-    attachDelay?: number;
-    attachTimeout?: number;
-    simulatorInExternalBrowser?: boolean;
-
-    // Ionic livereload properties
-    ionicLiveReload?: boolean;
-    devServerPort?: number;
-    devServerAddress?: string;
-
-    // Cordova-simulate properties
-    simulatePort?: number;
-    livereload?: boolean;
-}
-
-export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
-    iosDebugProxyPort?: number;
-    appStepLaunchTimeout?: number;
-
-    // Ionic livereload properties
-    devServerTimeout?: number;
-
-    // Chrome debug properties
-    userDataDir?: string;
-    runtimeExecutable?: string;
-    runtimeArgs?: string[];
-
-    // Cordova-simulate properties
-    forceprepare?: boolean;
-    simulateTempDir?: string;
-    corsproxy?: boolean;
-    runArguments?: string[];
-    cordovaExecutable?: string;
-}
-
 // interface DebuggingProperties {
 //     platform: string;
 //     target?: string;
@@ -106,11 +55,6 @@ enum TargetType {
     Device = "device",
     Chrome = "chrome",
 }
-
-export interface IStringDictionary<T> {
-    [name: string]: T;
-}
-export type ISourceMapPathOverrides = IStringDictionary<string>;
 
 export class CordovaDebugSession extends LoggingDebugSession {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app

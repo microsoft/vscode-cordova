@@ -1,8 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { ICordovaAttachRequestArgs, ISourceMapPathOverrides } from "./cordovaDebugSession";
+import { ICordovaAttachRequestArgs } from "./requestArgs";
 import { logger } from "vscode-debugadapter";
+
+export interface IStringDictionary<T> {
+    [name: string]: T;
+}
+export type ISourceMapPathOverrides = IStringDictionary<string>;
 
 export class JsDebugConfigAdapter {
     // Keep in sync with sourceMapPathOverrides package.json default values

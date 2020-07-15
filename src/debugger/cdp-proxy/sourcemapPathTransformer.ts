@@ -4,7 +4,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as url from "url";
-import { ICordovaAttachRequestArgs } from "../cordovaDebugSession";
+import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 

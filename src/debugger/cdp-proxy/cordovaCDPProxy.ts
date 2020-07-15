@@ -15,7 +15,7 @@ import { CDP_API_NAMES } from "./CDPAPINames";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../cordovaDebugSession";
+import { ICordovaAttachRequestArgs } from "../requestArgs";
 
 export class CordovaCDPProxy {
 
