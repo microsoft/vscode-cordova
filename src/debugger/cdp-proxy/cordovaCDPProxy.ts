@@ -11,10 +11,11 @@ import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
 import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
-import { CDP_API_NAMES } from "./CDPAPINames";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
-import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
+import { CDPMessageHandlerBase } from "./CDPMessageHandlers/CDPMessageHandlerBase";
+import { PureCDPMessageHandler } from "./CDPMessageHandlers/pureCDPMessageHandler";
+import { TargetedCDPMessageHandler } from "./CDPMessageHandlers/targetedCDPMessageHandler";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 
 export class CordovaCDPProxy {
@@ -36,13 +37,7 @@ export class CordovaCDPProxy {
     private applicationTargetPort: number;
     private logLevel: LogLevel;
     private cancellationToken: CancellationToken | undefined;
-    private sourcemapPathTransformer: SourcemapPathTransformer;
-    private projectType: IProjectType;
-    private applicationPortPart: string;
-    private platform: string;
-    private applicationServerAddress: string;
-    private isSimulate: boolean;
-    private ionicLiveReload?: boolean;
+    private CDPMessageHandler: CDPMessageHandlerBase;
 
     constructor(
         hostAddress: string,
@@ -54,26 +49,13 @@ export class CordovaCDPProxy {
     ) {
         this.port = port;
         this.hostAddress = hostAddress;
-        this.sourcemapPathTransformer = sourcemapPathTransformer;
-        this.projectType = projectType;
         this.logLevel = logLevel;
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
-        // we use an application port part, which looks like ":<port>", since on debugging
-        // Ionic apps we don't need a colon after "localhost" in the link
-        this.applicationPortPart = "";
-        this.platform = args.platform;
-        this.ionicLiveReload = args.ionicLiveReload;
-        this.applicationServerAddress = args.devServerAddress || "localhost";
-
-        if (args.platform === "serve") {
-            this.setApplicationPortPart(args.devServerPort);
-        }
-        if (args.simulatePort) {
-            this.setApplicationPortPart(args.simulatePort);
-            this.isSimulate = true;
+        if (args.platform === "ios" && (args.target === "emulator" || args.target === "device")) {
+            this.CDPMessageHandler = new TargetedCDPMessageHandler(sourcemapPathTransformer, projectType, args);
         } else {
-            this.isSimulate = false;
+            this.CDPMessageHandler = new PureCDPMessageHandler(sourcemapPathTransformer, projectType, args);
         }
     }
 
@@ -101,10 +83,6 @@ export class CordovaCDPProxy {
 
     public setApplicationTargetPort(applicationTargetPort: number): void {
         this.applicationTargetPort = applicationTargetPort;
-    }
-
-    public setApplicationPortPart(port: number | string) {
-        this.applicationPortPart = `:${port}`;
     }
 
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
@@ -139,41 +117,48 @@ export class CordovaCDPProxy {
         this.debuggerTarget.unpause();
     }
 
-    private handleDebuggerTargetCommand(evt: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
-        this.applicationTarget.send(evt);
-    }
+    private handleDebuggerTargetCommand(event: any) {
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
+        const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
-    private handleApplicationTargetCommand(evt: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(evt, null , 2), this.logLevel);
-
-        if (
-            evt.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED
-            && evt.params.url
-            && evt.params.url.startsWith(`http://${this.applicationServerAddress}`)
-        ) {
-            evt.params = this.fixSourcemapLocation(evt.params);
+        if (processedMessage.sendBack) {
+            this.debuggerTarget?.send(processedMessage.event);
+        } else {
+            this.applicationTarget?.send(processedMessage.event);
         }
-
-        this.debuggerTarget.send(evt);
     }
 
-    private handleDebuggerTargetReply(evt: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
+    private handleApplicationTargetCommand(event: any) {
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
+        const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
-        if (
-            evt.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL
-            && (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.projectType) || this.isSimulate)
-        ) {
-            evt.params = this.fixIonicSourcemapRegexp(evt.params);
+        if (processedMessage.sendBack) {
+            this.applicationTarget?.send(processedMessage.event);
+        } else {
+            this.debuggerTarget?.send(processedMessage.event);
         }
-
-        this.applicationTarget.send(evt);
     }
 
-    private handleApplicationTargetReply(evt: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(evt, null , 2), this.logLevel);
-        this.debuggerTarget.send(evt);
+    private handleDebuggerTargetReply(event: any) {
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2), this.logLevel);
+        const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
+
+        if (processedMessage.sendBack) {
+            this.debuggerTarget?.send(processedMessage.event);
+        } else {
+            this.applicationTarget?.send(processedMessage.event);
+        }
+    }
+
+    private handleApplicationTargetReply(event: any) {
+        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2), this.logLevel);
+        const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
+
+        if (processedMessage.sendBack) {
+            this.applicationTarget?.send(processedMessage.event);
+        } else {
+            this.debuggerTarget?.send(processedMessage.event);
+        }
     }
 
     private onDebuggerTargetError(err: Error) {
@@ -182,31 +167,5 @@ export class CordovaCDPProxy {
 
     private onApplicationTargetError(err: Error) {
         this.logger.log(`Error on application transport: ${err}`);
-    }
-
-    private fixSourcemapLocation(reqParams: any): any {
-        let absoluteSourcePath = this.sourcemapPathTransformer.getClientPath(reqParams.url);
-        if (absoluteSourcePath) {
-            if (process.platform === "win32") {
-                reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard
-            } else {
-                reqParams.url = "file://" + absoluteSourcePath;
-            }
-        } else if (!(this.platform === "serve" || this.ionicLiveReload)) {
-            reqParams.url = "";
-        }
-        return reqParams;
-    }
-
-    private fixIonicSourcemapRegexp(reqParams: any): any {
-        const regExp = process.platform === "win32" ?
-            /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g :
-            /.*\\\/www\\\/(.*\.js)/g;
-        let foundStrings = regExp.exec(reqParams.urlRegex);
-        if (foundStrings && foundStrings[1]) {
-            const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = `http:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
-        }
-        return reqParams;
     }
 }
