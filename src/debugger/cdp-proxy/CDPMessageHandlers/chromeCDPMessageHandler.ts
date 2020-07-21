@@ -8,7 +8,7 @@ import { IProjectType } from "../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../requestArgs";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
 
-export class PureCDPMessageHandler extends CDPMessageHandlerBase {
+export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
     private isSimulate: boolean;
 
     constructor(

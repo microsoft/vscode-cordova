@@ -14,8 +14,8 @@ import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { CDPMessageHandlerBase } from "./CDPMessageHandlers/CDPMessageHandlerBase";
-import { PureCDPMessageHandler } from "./CDPMessageHandlers/pureCDPMessageHandler";
-import { TargetedCDPMessageHandler } from "./CDPMessageHandlers/targetedCDPMessageHandler";
+import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
+import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 
 export class CordovaCDPProxy {
@@ -53,9 +53,9 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         if (args.platform === "ios" && (args.target === "emulator" || args.target === "device")) {
-            this.CDPMessageHandler = new TargetedCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+            this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
         } else {
-            this.CDPMessageHandler = new PureCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+            this.CDPMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, args);
         }
     }
 

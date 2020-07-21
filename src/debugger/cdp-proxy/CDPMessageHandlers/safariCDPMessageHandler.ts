@@ -6,7 +6,7 @@ import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../requestArgs";
 
-export class TargetedCDPMessageHandler extends CDPMessageHandlerBase {
+export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
