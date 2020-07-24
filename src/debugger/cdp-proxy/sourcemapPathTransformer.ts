@@ -24,7 +24,13 @@ export class SourcemapPathTransformer {
      }
 
     public getClientPath(sourceUrl: string): string {
-        let sourceUrlPath = url.parse(sourceUrl).pathname;
+        let sourceUrlPath;
+        try {
+            sourceUrlPath = url.parse(sourceUrl).pathname || "/";
+        } catch (err) {
+            sourceUrlPath = "/";
+        }
+
         let wwwRoot = path.join(this._cordovaRoot, "www");
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's

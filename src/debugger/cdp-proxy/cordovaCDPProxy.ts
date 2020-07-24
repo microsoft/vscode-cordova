@@ -17,6 +17,7 @@ import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/C
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
 import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
+import { TargetType } from "../cordovaDebugSession";
 
 export class CordovaCDPProxy {
 
@@ -55,7 +56,7 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
-        if (args.platform === "ios" && (args.target === "emulator" || args.target === "device")) {
+        if (args.platform === "ios" && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = false;
         } else {

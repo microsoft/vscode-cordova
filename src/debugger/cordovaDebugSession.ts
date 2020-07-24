@@ -50,7 +50,7 @@ const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
 
-enum TargetType {
+export enum TargetType {
     Emulator = "emulator",
     Device = "device",
     Chrome = "chrome",
@@ -106,7 +106,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         // this.terminateCommand = "terminate"; // the "terminate" command is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself
-        if (session.configuration.platform === "ios" && (session.configuration.target === "emulator" || session.configuration.target === "device")) {
+        if (session.configuration.platform === "ios"
+            && (session.configuration.target === TargetType.Emulator || session.configuration.target === TargetType.Device)
+        ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
         } else {
             this.pwaSessionName = PwaDebugType.Chrome; // the name of Chrome debug session created by js-debug extension
@@ -306,7 +308,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
                 })
                 .then(() => {
-                    if (target === "device" || target === "emulator") {
+                    if (target === TargetType.Device || target === TargetType.Emulator) {
                         this.outputLogger(`Attaching to ${platform}`);
                         switch (platform) {
                             case "android":
@@ -566,7 +568,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
-        if (launchArgs.target.toLowerCase() === "device") {
+        if (launchArgs.target.toLowerCase() === TargetType.Device) {
             // Workaround for dealing with new build system in XCode 10
             // https://github.com/apache/cordova-ios/issues/407
             let args = ["run", "ios", "--device", "--buildFlag=-UseModernBuildSystem=0"];
@@ -699,7 +701,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             };
 
             const getBundleIdentifier = (): Q.IWhenable<string> => {
-                if (attachArgs.target.toLowerCase() === "device") {
+                if (attachArgs.target.toLowerCase() === TargetType.Device) {
                     return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
                         .then(CordovaIosDeviceLauncher.getPathOnDevice)
                         .then(path.basename);
@@ -720,7 +722,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     try {
                         let endpointsList = JSON.parse(response);
                         let devices = endpointsList.filter((entry) =>
-                            attachArgs.target.toLowerCase() === "device" ? entry.deviceId !== "SIMULATOR"
+                            attachArgs.target.toLowerCase() === TargetType.Device ? entry.deviceId !== "SIMULATOR"
                                 : entry.deviceId === "SIMULATOR"
                         );
                         let device = devices[0];
@@ -741,7 +743,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         .then((response: string) => {
                             try {
                                 const webviewsList = JSON.parse(response);
-                                if (webviewsList.ength === 0) {
+                                if (webviewsList.length === 0) {
                                     throw new Error("Unable to find target app");
                                 }
                                 if (!webviewsList[0].webSocketDebuggerUrl) {
@@ -1173,7 +1175,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         let workingDirectory = launchArgs.cwd;
 
         // Prepare the command line args
-        let isDevice = launchArgs.target.toLowerCase() === "device";
+        let isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
         let args = ["run", "android"];
 
         if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
@@ -1231,7 +1233,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         let adbDevicesResult: Q.Promise<string> = this.runAdbCommand(["devices"], errorLogger)
             .then<string>((devicesOutput) => {
 
-                const targetFilter = attachArgs.target.toLowerCase() === "device" ? deviceFilter :
+                const targetFilter = attachArgs.target.toLowerCase() === TargetType.Device ? deviceFilter :
                     attachArgs.target.toLowerCase() === "emulator" ? emulatorFilter :
                         (line: string) => line.match(attachArgs.target);
 
