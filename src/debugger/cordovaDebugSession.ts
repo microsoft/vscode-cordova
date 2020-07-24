@@ -56,6 +56,11 @@ enum TargetType {
     Chrome = "chrome",
 }
 
+export enum PwaDebugType {
+    Node = "pwa-node",
+    Chrome = "pwa-chrome",
+}
+
 export class CordovaDebugSession extends LoggingDebugSession {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
@@ -81,7 +86,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private jsDebugConfigAdapter: JsDebugConfigAdapter;
 
     // private readonly terminateCommand: string;
-    private readonly pwaChromeSessionName: string;
+    private readonly pwaSessionName: PwaDebugType;
 
     // private projectRootPath: string;
     private isSettingsInitialized: boolean; // used to prevent parameters reinitialization when attach is called from launch function
@@ -101,7 +106,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         // this.terminateCommand = "terminate"; // the "terminate" command is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself
-        this.pwaChromeSessionName = "pwa-chrome"; // the name of Chrome debug session created by js-debug extension
+        if (session.configuration.platform === "ios" && (session.configuration.target === "emulator" || session.configuration.target === "device")) {
+            this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
+        } else {
+            this.pwaSessionName = PwaDebugType.Chrome; // the name of Chrome debug session created by js-debug extension
+        }
 
         // variables definition
         // this.isSettingsInitialized = false;
@@ -317,6 +326,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 .then((processedAttachArgs: ICordovaAttachRequestArgs & { url?: string }) => {
                     this.outputLogger("Attaching to app.");
                     this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
+                    if (this.cordovaCdpProxy && processedAttachArgs.webSocketDebuggerUrl) {
+                        this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
+                    }
                     this.establishDebugSession(processedAttachArgs);
                 })
                 .catch((err) => {
@@ -338,7 +350,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private handleTerminateDebugSession(debugSession: vscode.DebugSession) {
         if (
             debugSession.configuration.cordovaDebugSessionId === this.session.id
-            && debugSession.type === this.pwaChromeSessionName
+            && debugSession.type === this.pwaSessionName
         ) {
             this.session.customRequest("disconnect");
         }
@@ -346,11 +358,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private establishDebugSession(attachArgs: ICordovaAttachRequestArgs, resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
         if (this.cordovaCdpProxy) {
-            const attachArguments = this.jsDebugConfigAdapter.createDebuggingConfigForCordova(
-                attachArgs,
-                this.cdpProxyPort,
-                this.session.id
-            );
+            const attachArguments = this.pwaSessionName === PwaDebugType.Chrome ?
+                this.jsDebugConfigAdapter.createChromeDebuggingConfig(
+                    attachArgs,
+                    this.cdpProxyPort,
+                    this.pwaSessionName,
+                    this.session.id
+                ) :
+                this.jsDebugConfigAdapter.createSafariDebuggingConfig(
+                    attachArgs,
+                    this.cdpProxyPort,
+                    this.pwaSessionName,
+                    this.session.id
+                );
 
             vscode.debug.startDebugging(
                 this.workspaceManager.workspaceRoot,
@@ -715,50 +735,32 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 });
             };
 
-            const findWebViews = ({ packagePath, targetPort }) => {
+            const getWebSocketDebuggerUrl = ({ targetPort }) => {
                 return retry(() =>
                     promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
                         .then((response: string) => {
                             try {
                                 const webviewsList = JSON.parse(response);
-                                const foundWebViews = webviewsList.filter((entry) => {
-                                    if (this.ionicDevServerUrls) {
-                                        return this.ionicDevServerUrls.some(url => entry.url.indexOf(url) === 0);
-                                    } else {
-                                        return entry.url.indexOf(encodeURIComponent(packagePath)) !== -1;
-                                    }
-                                });
-                                if (!foundWebViews.length && webviewsList.length === 1) {
-                                    this.outputLogger("Unable to find target app webview, trying to fallback to the only running webview");
-                                    return {
-                                        relevantViews: webviewsList,
-                                        targetPort,
-                                    };
-                                }
-                                if (!foundWebViews.length) {
+                                if (webviewsList.ength === 0) {
                                     throw new Error("Unable to find target app");
                                 }
-                                return {
-                                    relevantViews: foundWebViews,
-                                    targetPort,
-                                };
+                                if (!webviewsList[0].webSocketDebuggerUrl) {
+                                    throw new Error("Web Socket Debugger Url is empty");
+                                }
+                                return webviewsList[0].webSocketDebuggerUrl;
                             } catch (e) {
                                 throw new Error("Unable to find target app");
                             }
-                        }), (result) => result.relevantViews.length > 0, 5);
+                        }), (result) => !!result, 5);
             };
 
             const getAttachRequestArgs = (): Q.Promise<ICordovaAttachRequestArgs> =>
                 CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax)
                     .then(getBundleIdentifier)
                     .then(getSimulatorProxyPort)
-                    .then(findWebViews)
-                    .then(({ relevantViews, targetPort }) => {
-                        return { port: targetPort, url: relevantViews[0].url };
-                    })
-                    .then(({ port, url }) => {
-                        attachArgs.port = port;
-                        attachArgs.url = url;
+                    .then(getWebSocketDebuggerUrl)
+                    .then((webSocketDebuggerUrl: string) => {
+                        attachArgs.webSocketDebuggerUrl = webSocketDebuggerUrl;
                         return attachArgs;
                     });
 

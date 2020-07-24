@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { CDPMessageHandlerBase, ProcessedCDPMessage } from "./CDPMessageHandlerBase";
+import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "./CDPAPINames";
 import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
@@ -30,7 +30,7 @@ export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
     }
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
-        let sendBack = false;
+        let dispatchDirection = DispatchDirection.FORWARD;
         if (
             event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL
             && (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.projectType) || this.isSimulate)
@@ -40,12 +40,12 @@ export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
 
         return {
             event,
-            sendBack,
+            dispatchDirection,
         };
     }
 
     public processApplicationCDPMessage(event: any): ProcessedCDPMessage {
-        let sendBack = false;
+        let dispatchDirection = DispatchDirection.FORWARD;
         if (
             event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED
             && event.params.url
@@ -56,7 +56,7 @@ export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
 
         return {
             event,
-            sendBack,
+            dispatchDirection,
         };
     }
 

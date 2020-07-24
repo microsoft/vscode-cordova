@@ -13,7 +13,7 @@ import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
-import { CDPMessageHandlerBase } from "./CDPMessageHandlers/CDPMessageHandlerBase";
+import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
 import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
@@ -30,14 +30,16 @@ export class CordovaCDPProxy {
     private server: Server | null;
     private hostAddress: string;
     private port: number;
-    private debuggerTarget: Connection;
-    private applicationTarget: Connection;
+    private debuggerTarget: Connection | null;
+    private applicationTarget: Connection | null;
     private logger: OutputChannelLogger;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
     private logLevel: LogLevel;
     private cancellationToken: CancellationToken | undefined;
     private CDPMessageHandler: CDPMessageHandlerBase;
+    private communicationPreparationsDone: boolean;
+    private browserInspectUri: string;
 
     constructor(
         hostAddress: string,
@@ -52,10 +54,13 @@ export class CordovaCDPProxy {
         this.logLevel = logLevel;
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
+        this.browserInspectUri = args.webSocketDebuggerUrl || "";
         if (args.platform === "ios" && (args.target === "emulator" || args.target === "device")) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+            this.communicationPreparationsDone = false;
         } else {
             this.CDPMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+            this.communicationPreparationsDone = true;
         }
     }
 
@@ -78,6 +83,8 @@ export class CordovaCDPProxy {
             this.server.dispose();
             this.server = null;
         }
+
+        this.browserInspectUri = "";
         this.cancellationToken = undefined;
     }
 
@@ -85,22 +92,28 @@ export class CordovaCDPProxy {
         this.applicationTargetPort = applicationTargetPort;
     }
 
+    public setBrowserInspectUri(browserInspectUri: string) {
+        this.browserInspectUri = browserInspectUri;
+    }
+
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
         this.debuggerTarget = debuggerTarget;
 
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
-        let browserInspectUri: string;
-        if (this.cancellationToken) {
-            browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
-                `http://localhost:${this.applicationTargetPort}`,
-                10,
-                this.cancellationToken
-            );
-        } else {
-            browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+
+        if (!this.browserInspectUri) {
+            if (this.cancellationToken) {
+                this.browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
+                    `http://localhost:${this.applicationTargetPort}`,
+                    20,
+                    this.cancellationToken
+                );
+            } else {
+                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+            }
         }
 
-        this.applicationTarget = new Connection(await WebSocketTransport.create(browserInspectUri));
+        this.applicationTarget = new Connection(await WebSocketTransport.create(this.browserInspectUri));
 
         this.applicationTarget.onError(this.onApplicationTargetError.bind(this));
         this.debuggerTarget.onError(this.onDebuggerTargetError.bind(this));
@@ -111,19 +124,20 @@ export class CordovaCDPProxy {
         this.applicationTarget.onReply(this.handleApplicationTargetReply.bind(this));
         this.debuggerTarget.onReply(this.handleDebuggerTargetReply.bind(this));
 
-        // this.debuggerTarget.onEnd(this.onDebuggerTargetClosed.bind(this));
+        this.applicationTarget.onEnd(this.onApplicationTargetClosed.bind(this));
+        this.debuggerTarget.onEnd(this.onDebuggerTargetClosed.bind(this));
 
         // dequeue any messages we got in the meantime
-        this.debuggerTarget.unpause();
+        this.unpauseDebuggerTarget();
     }
 
     private handleDebuggerTargetCommand(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
-        if (processedMessage.sendBack) {
+        if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
             this.debuggerTarget?.send(processedMessage.event);
-        } else {
+        } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.applicationTarget?.send(processedMessage.event);
         }
     }
@@ -132,9 +146,14 @@ export class CordovaCDPProxy {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
-        if (processedMessage.sendBack) {
+        if (processedMessage.communicationPreparationsDone) {
+            this.communicationPreparationsDone = true;
+            this.unpauseDebuggerTarget();
+        }
+
+        if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
             this.applicationTarget?.send(processedMessage.event);
-        } else {
+        } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.debuggerTarget?.send(processedMessage.event);
         }
     }
@@ -143,9 +162,9 @@ export class CordovaCDPProxy {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2), this.logLevel);
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
-        if (processedMessage.sendBack) {
+        if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
             this.debuggerTarget?.send(processedMessage.event);
-        } else {
+        } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.applicationTarget?.send(processedMessage.event);
         }
     }
@@ -154,9 +173,9 @@ export class CordovaCDPProxy {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2), this.logLevel);
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
-        if (processedMessage.sendBack) {
+        if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
             this.applicationTarget?.send(processedMessage.event);
-        } else {
+        } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.debuggerTarget?.send(processedMessage.event);
         }
     }
@@ -167,5 +186,22 @@ export class CordovaCDPProxy {
 
     private onApplicationTargetError(err: Error) {
         this.logger.log(`Error on application transport: ${err}`);
+    }
+
+    private async onApplicationTargetClosed() {
+        this.applicationTarget = null;
+    }
+
+    private async onDebuggerTargetClosed() {
+        this.CDPMessageHandler.processDebuggerCDPMessage({method: "close"});
+        this.debuggerTarget = null;
+        this.communicationPreparationsDone = false;
+        this.browserInspectUri = "";
+    }
+
+    private unpauseDebuggerTarget(): void {
+        if (this.debuggerTarget && this.communicationPreparationsDone) {
+            this.debuggerTarget.unpause();
+        }
     }
 }

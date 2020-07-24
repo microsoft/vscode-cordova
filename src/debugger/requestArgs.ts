@@ -19,6 +19,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     skipFiles?: [];
     sourceMaps?: boolean;
     sourceMapPathOverrides?: ISourceMapPathOverrides;
+    webSocketDebuggerUrl?: string;
     webkitRangeMin?: number;
     webkitRangeMax?: number;
     attachAttempts?: number;
