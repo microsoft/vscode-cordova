@@ -328,8 +328,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 .then((processedAttachArgs: ICordovaAttachRequestArgs & { url?: string }) => {
                     this.outputLogger("Attaching to app.");
                     this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
-                    if (this.cordovaCdpProxy && processedAttachArgs.webSocketDebuggerUrl) {
-                        this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
+                    if (this.cordovaCdpProxy) {
+                        if (processedAttachArgs.webSocketDebuggerUrl) {
+                            this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
+                        }
+                        this.cordovaCdpProxy.configureCDPMessageHandlerAfterAttachment(processedAttachArgs);
                     }
                     this.establishDebugSession(processedAttachArgs);
                 })
@@ -703,8 +706,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             const getBundleIdentifier = (): Q.IWhenable<string> => {
                 if (attachArgs.target.toLowerCase() === TargetType.Device) {
                     return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
-                        .then(CordovaIosDeviceLauncher.getPathOnDevice)
-                        .then(path.basename);
+                        .then(CordovaIosDeviceLauncher.getPathOnDevice);
                 } else {
                     return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, "platforms", "ios", "build", "emulator")).then((entries: string[]) => {
                         let filtered = entries.filter((entry) => /\.app$/.test(entry));
@@ -717,7 +719,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }
             };
 
-            const getSimulatorProxyPort = (packagePath): Q.IWhenable<{ packagePath: string; targetPort: number }> => {
+            const getSimulatorProxyPort = (iOSAppPackagePath): Q.IWhenable<{ iOSAppPackagePath: string; targetPort: number; iOSVersion: string }> => {
                 return promiseGet(`http://localhost:${attachArgs.port}/json`, "Unable to communicate with ios_webkit_debug_proxy").then((response: string) => {
                     try {
                         let endpointsList = JSON.parse(response);
@@ -728,8 +730,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         let device = devices[0];
                         // device.url is of the form 'localhost:port'
                         return {
-                            packagePath,
+                            iOSAppPackagePath,
                             targetPort: parseInt(device.url.split(":")[1], 10),
+                            iOSVersion: device.deviceOSVersion,
                         };
                     } catch (e) {
                         throw new Error("Unable to find iOS target device/simulator. Please check that \"Settings > Safari > Advanced > Web Inspector = ON\" or try specifying a different \"port\" parameter in launch.json");
@@ -737,7 +740,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 });
             };
 
-            const getWebSocketDebuggerUrl = ({ targetPort }) => {
+            const getWebSocketDebuggerUrl = ({ iOSAppPackagePath, targetPort, iOSVersion }) => {
                 return retry(() =>
                     promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
                         .then((response: string) => {
@@ -749,7 +752,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                                 if (!webviewsList[0].webSocketDebuggerUrl) {
                                     throw new Error("Web Socket Debugger Url is empty");
                                 }
-                                return webviewsList[0].webSocketDebuggerUrl;
+                                return {
+                                    webSocketDebuggerUrl: webviewsList[0].webSocketDebuggerUrl,
+                                    iOSVersion,
+                                    iOSAppPackagePath,
+                                };
                             } catch (e) {
                                 throw new Error("Unable to find target app");
                             }
@@ -761,8 +768,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     .then(getBundleIdentifier)
                     .then(getSimulatorProxyPort)
                     .then(getWebSocketDebuggerUrl)
-                    .then((webSocketDebuggerUrl: string) => {
+                    .then(({ webSocketDebuggerUrl, iOSVersion, iOSAppPackagePath }) => {
                         attachArgs.webSocketDebuggerUrl = webSocketDebuggerUrl;
+                        attachArgs.iOSVersion = iOSVersion;
+                        attachArgs.iOSAppPackagePath = iOSAppPackagePath;
                         return attachArgs;
                     });
 

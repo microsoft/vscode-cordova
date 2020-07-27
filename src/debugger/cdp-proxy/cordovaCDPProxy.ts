@@ -6,6 +6,7 @@ import {
     Server,
     WebSocketTransport
 } from "vscode-cdp-proxy";
+import * as semver from "semver";
 import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
@@ -16,6 +17,7 @@ import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
 import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
+import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { TargetType } from "../cordovaDebugSession";
 
@@ -58,7 +60,7 @@ export class CordovaCDPProxy {
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
         if (args.platform === "ios" && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
-            this.communicationPreparationsDone = false;
+            this.communicationPreparationsDone = !CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
         } else {
             this.CDPMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = true;
@@ -95,6 +97,17 @@ export class CordovaCDPProxy {
 
     public setBrowserInspectUri(browserInspectUri: string) {
         this.browserInspectUri = browserInspectUri;
+    }
+
+    public configureCDPMessageHandlerAfterAttachment(args: ICordovaAttachRequestArgs) {
+        if (
+            args.iOSVersion
+            && !this.communicationPreparationsDone
+            && semver.lt(args.iOSVersion, "12.2.0")
+        ) {
+            this.communicationPreparationsDone = true;
+        }
+        this.CDPMessageHandler.configureHandlerAfterAttachment(args);
     }
 
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {

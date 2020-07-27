@@ -21,16 +21,29 @@ export class SourcemapPathTransformer {
         this._webRoot = args.address || this._cordovaRoot;
         this._ionicLiveReload = args.ionicLiveReload || false;
         this._projectTypes = projectTypes;
-     }
+    }
 
-    public getClientPath(sourceUrl: string): string {
-        let sourceUrlPath;
-        try {
-            sourceUrlPath = url.parse(sourceUrl).pathname || "/";
-        } catch (err) {
-            sourceUrlPath = "/";
+    public getClientPathFromFileBasedUrl(sourceUrl: string): string {
+        const regExp = new RegExp(`file:\\/\\/\\/.*\\.app(?:\\/www)*(\\/.*\\.(js|html))`, "g");
+        let foundStrings = regExp.exec(sourceUrl);
+        if (foundStrings && foundStrings[1]) {
+            return this.getClientPath(foundStrings[1]);
+        } else {
+            return this.getClientPath("/");
         }
+    }
 
+    public getClientPathFromHttpBasedUrl(sourceUrl: string): string {
+        let relativeSourcePath;
+        try {
+            relativeSourcePath = url.parse(sourceUrl).pathname || "/";
+        } catch (err) {
+            relativeSourcePath = "/";
+        }
+        return this.getClientPath(relativeSourcePath);
+    }
+
+    public getClientPath(relativeSourcePath: string): string {
         let wwwRoot = path.join(this._cordovaRoot, "www");
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
@@ -53,7 +66,7 @@ export class SourcemapPathTransformer {
 
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
         for (const searchFolder of foldersForSearch) {
-            let mappedPath = this.targetUrlToClientPath(sourceUrlPath, searchFolder);
+            let mappedPath = this.targetUrlToClientPath(relativeSourcePath, searchFolder);
 
             if (mappedPath) {
                 defaultPath = mappedPath;

@@ -49,4 +49,5 @@ export abstract class CDPMessageHandlerBase {
 
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
     public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
+    public abstract configureHandlerAfterAttachment(args: ICordovaAttachRequestArgs): void;
 }

@@ -27,6 +27,10 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     attachTimeout?: number;
     simulatorInExternalBrowser?: boolean;
 
+    // iOS debug properties
+    iOSVersion?: string;
+    iOSAppPackagePath?: string;
+
     // Ionic livereload properties
     ionicLiveReload?: boolean;
     devServerPort?: number;
