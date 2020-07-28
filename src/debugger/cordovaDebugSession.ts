@@ -62,6 +62,19 @@ export enum PwaDebugType {
     Chrome = "pwa-chrome",
 }
 
+export enum PlatformType {
+    Android = "android",
+    IOS = "ios",
+    Windows = "windows",
+    Serve = "serve",
+    AmazonFireos = "amazon_fireos",
+    Blackberry10 = "blackberry10",
+    Firefoxos = "firefoxos",
+    Ubuntu = "ubuntu",
+    Wp8 = "wp8",
+    Browser = "browser",
+}
+
 interface IOSProcessedParams {
     iOSVersion: string;
     iOSAppPackagePath: string;
@@ -114,7 +127,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         // this.terminateCommand = "terminate"; // the "terminate" command is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself
-        if (session.configuration.platform === "ios"
+        if (session.configuration.platform === PlatformType.IOS
             && (session.configuration.target === TargetType.Emulator || session.configuration.target === TargetType.Device)
         ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
@@ -194,10 +207,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
             .then(() => TelemetryHelper.generate("launch", (generator) => {
                 launchArgs.port = launchArgs.port || 9222;
                 if (!launchArgs.target) {
-                    if (launchArgs.platform === "browser") {
+                    if (launchArgs.platform === PlatformType.Browser) {
                         launchArgs.target = "chrome";
                     } else {
-                        launchArgs.target = "emulator";
+                        launchArgs.target = TargetType.Emulator;
                     }
                     this.outputLogger(`Parameter target is not set - ${launchArgs.target} will be used`);
                 }
@@ -223,37 +236,37 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.outputLogger(`Launching for ${platform} (This may take a while)...`);
 
                     switch (platform) {
-                        case "android":
+                        case PlatformType.Android:
                             generator.add("platform", platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchAndroid(launchArgs, projectType, runArguments);
                             }
-                        case "ios":
+                        case PlatformType.IOS:
                             generator.add("platform", platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 return this.launchIos(launchArgs, projectType, runArguments);
                             }
-                        case "windows":
+                        case PlatformType.Windows:
                             generator.add("platform", platform, false);
                             if (this.isSimulateTarget(launchArgs.target)) {
                                 return this.launchSimulate(launchArgs, projectType, generator);
                             } else {
                                 throw new Error(`Debugging ${platform} platform is not supported.`);
                             }
-                        case "serve":
+                        case PlatformType.Serve:
                             generator.add("platform", platform, false);
                             return this.launchServe(launchArgs, projectType, runArguments);
                         // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
-                        case "amazon_fireos":
-                        case "blackberry10":
-                        case "firefoxos":
-                        case "ubuntu":
-                        case "wp8":
-                        case "browser":
+                        case PlatformType.AmazonFireos:
+                        case PlatformType.Blackberry10:
+                        case PlatformType.Firefoxos:
+                        case PlatformType.Ubuntu:
+                        case PlatformType.Wp8:
+                        case PlatformType.Browser:
                             generator.add("platform", platform, false);
                             return this.launchSimulate(launchArgs, projectType, generator);
                         default:
@@ -267,7 +280,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     });
                 }).then(() => {
                     // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
-                    if (platform !== "serve" && platform !== "browser" && !this.isSimulateTarget(launchArgs.target)) {
+                    if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !this.isSimulateTarget(launchArgs.target)) {
                         return this.session.customRequest("attach", launchArgs);
                     }
                 });
@@ -291,7 +304,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             })
             .then(() => TelemetryHelper.generate("attach", (generator) => {
             attachArgs.port = attachArgs.port || 9222;
-            attachArgs.target = attachArgs.target || "emulator";
+            attachArgs.target = attachArgs.target || TargetType.Emulator;
 
             generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
             attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
@@ -319,10 +332,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     if (target === TargetType.Device || target === TargetType.Emulator) {
                         this.outputLogger(`Attaching to ${platform}`);
                         switch (platform) {
-                            case "android":
+                            case PlatformType.Android:
                                 generator.add("platform", platform, false);
                                 return this.attachAndroid(attachArgs);
-                            case "ios":
+                            case PlatformType.IOS:
                                 generator.add("platform", platform, false);
                                 return this.attachIos(attachArgs);
                             default:
@@ -613,7 +626,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 })
                 .then(() => void (0));
         } else {
-            let target = launchArgs.target.toLowerCase() === "emulator" ? "emulator" : launchArgs.target;
+            let target = launchArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : launchArgs.target;
             return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.allEnv, workingDirectory).then(() => {
                 // Workaround for dealing with new build system in XCode 10
                 // https://github.com/apache/cordova-ios/issues/407
@@ -626,7 +639,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 } else if (runArguments && runArguments.length) {
                     args.push(...runArguments);
                 } else {
-                    if (target === "emulator") {
+                    if (target === TargetType.Emulator) {
                         args.push("--target=" + target);
                     }
                     // Verify if we are using Ionic livereload
@@ -648,7 +661,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     .progress((progress) => {
                         this.outputLogger(progress[0], progress[1]);
                     }).catch((err) => {
-                        if (target === "emulator") {
+                        if (target === TargetType.Emulator) {
                             return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.allEnv, workingDirectory).then((output) => {
                                 // List out available targets
                                 errorLogger("Unable to run with given target.");
@@ -668,7 +681,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             const message = "Invalid target. Please, check target parameter value in your debug configuration and make sure it's a valid iPhone device identifier. Proceed to https://aka.ms/AA3xq86 for more information.";
             throw new Error(message);
         };
-        if (target === "emulator") {
+        if (target === TargetType.Emulator) {
             simulatorTargetIsNotSupported();
         }
         return cordovaRunCommand(cordovaCommand, ["emulate", "ios", "--list"], env, workingDirectory).then((output) => {
@@ -694,7 +707,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private attachIos(attachArgs: ICordovaAttachRequestArgs): Q.Promise<ICordovaAttachRequestArgs> {
-        let target = attachArgs.target.toLowerCase() === "emulator" ? "emulator" : attachArgs.target;
+        let target = attachArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : attachArgs.target;
         let workingDirectory = attachArgs.cwd;
         const command = CordovaProjectHelper.getCliCommand(workingDirectory);
         // TODO add env support for attach
@@ -730,6 +743,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
             const getSimulatorProxyPort = (iOSAppPackagePath): Q.IWhenable<{ iOSAppPackagePath: string; targetPort: number; iOSVersion: string }> => {
                 return promiseGet(`http://localhost:${attachArgs.port}/json`, "Unable to communicate with ios_webkit_debug_proxy").then((response: string) => {
                     try {
+                        // An example of a json response from IWDP
+                        // [{
+                        //     "deviceId": "00008020-XXXXXXXXXXXXXXXX",
+                        //     "deviceName": "iPhone name",
+                        //     "deviceOSVersion": "13.4.1",
+                        //     "url": "localhost:9223"
+                        //  }]
                         let endpointsList = JSON.parse(response);
                         let devices = endpointsList.filter((entry) =>
                             attachArgs.target.toLowerCase() === TargetType.Device ? entry.deviceId !== "SIMULATOR"
@@ -753,6 +773,16 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
                         .then((response: string) => {
                             try {
+                                // An example of a json response from IWDP
+                                // [{
+                                //     "devtoolsFrontendUrl": "",
+                                //     "faviconUrl": "",
+                                //     "thumbnailUrl": "/thumb/ionic://localhost/tabs/tab1",
+                                //     "title": "Ionic App",
+                                //     "url": "ionic://localhost/tabs/tab1",
+                                //     "webSocketDebuggerUrl": "ws://localhost:9223/devtools/page/1",
+                                //     "appId": "PID:37819"
+                                //  }]
                                 const webviewsList = JSON.parse(response);
                                 if (webviewsList.length === 0) {
                                     throw new Error("Unable to find target app");
@@ -1259,7 +1289,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             .then<string>((devicesOutput) => {
 
                 const targetFilter = attachArgs.target.toLowerCase() === TargetType.Device ? deviceFilter :
-                    attachArgs.target.toLowerCase() === "emulator" ? emulatorFilter :
+                    attachArgs.target.toLowerCase() === TargetType.Emulator ? emulatorFilter :
                         (line: string) => line.match(attachArgs.target);
 
                 const result = devicesOutput.split("\n")

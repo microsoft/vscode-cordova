@@ -5,6 +5,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as url from "url";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
+import { PlatformType } from "../cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 
@@ -59,7 +60,7 @@ export class SourcemapPathTransformer {
             // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
             // don't use www directory anymore. If www directory is fulfilled and livereload is used then
             // source maps could be messed up.
-            if (this._platform === "serve" || this._ionicLiveReload) {
+            if (this._platform === PlatformType.Serve || this._ionicLiveReload) {
                 foldersForSearch.pop();
             }
         }

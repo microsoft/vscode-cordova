@@ -13,6 +13,7 @@ import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
 import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
+import { PlatformType } from "../cordovaDebugSession";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
@@ -58,7 +59,7 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
-        if (args.platform === "ios" && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
+        if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = !CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
         } else {

@@ -7,6 +7,7 @@ import {Simulator, SimulateOptions, launchBrowser} from "cordova-simulate";
 import {CordovaSimulateTelemetry} from "../utils/cordovaSimulateTelemetry";
 import {IProjectType, CordovaProjectHelper} from "../utils/cordovaProjectHelper";
 import {SimulationInfo} from "../common/simulationInfo";
+import {PlatformType} from "../debugger/cordovaDebugSession";
 import * as vscode from "vscode";
 
 /**
@@ -80,7 +81,7 @@ export class PluginSimulator implements vscode.Disposable {
                             simHostUrl: this.simulator.simHostUrl(),
                             urlRoot: this.simulator.urlRoot(),
                         };
-                        if ((projectType.isIonic2 || projectType.isIonic3) && platform && platform !== "browser") {
+                        if ((projectType.isIonic2 || projectType.isIonic3) && platform && platform !== PlatformType.Browser) {
                             this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`;
                         }
                         return this.simulationInfo;

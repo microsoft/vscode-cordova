@@ -7,6 +7,7 @@ import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../requestArgs";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
+import { PlatformType } from "../../cordovaDebugSession";
 
 export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
     private isSimulate: boolean;
@@ -18,7 +19,7 @@ export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
     ) {
         super(sourcemapPathTransformer, projectType, args);
 
-        if (args.platform === "serve" || args.ionicLiveReload) {
+        if (args.platform === PlatformType.Serve || args.ionicLiveReload) {
             this.applicationPortPart = `:${args.devServerPort}`;
         }
         if (args.simulatePort) {
@@ -70,7 +71,7 @@ export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
             } else {
                 reqParams.url = "file://" + absoluteSourcePath;
             }
-        } else if (!(this.platform === "serve" || this.ionicLiveReload)) {
+        } else if (!(this.platform === PlatformType.Serve || this.ionicLiveReload)) {
             reqParams.url = "";
         }
         return reqParams;

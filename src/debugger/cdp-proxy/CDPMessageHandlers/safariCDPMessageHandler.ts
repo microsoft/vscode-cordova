@@ -70,7 +70,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
     public processApplicationCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        let communicationPreparationsDone = undefined;
+        let communicationPreparationsDone = false;
 
         if (this.isTargeted) {
             if (!event.method || !event.method.match(/^Target/)) {
