@@ -18,7 +18,7 @@ export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
     ) {
         super(sourcemapPathTransformer, projectType, args);
 
-        if (args.platform === "serve") {
+        if (args.platform === "serve" || args.ionicLiveReload) {
             this.applicationPortPart = `:${args.devServerPort}`;
         }
         if (args.simulatePort) {

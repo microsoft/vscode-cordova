@@ -24,6 +24,10 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         this.targetId = "";
         this.isTargeted = true;
         this.isIonicProject = CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
+
+        if (args.ionicLiveReload) {
+            this.applicationPortPart = `:${args.devServerPort}`;
+        }
     }
 
     public configureHandlerAfterAttachment(args: ICordovaAttachRequestArgs) {
@@ -34,6 +38,9 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             } else {
                 throw new Error("\".app\" file isn't found");
             }
+        }
+        if (args.devServerAddress) {
+            this.applicationServerAddress = args.devServerAddress;
         }
     }
 
@@ -86,11 +93,11 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             && event.params.url
             && (
                 event.params.url.startsWith(`ionic://${this.applicationServerAddress}`)
+                || event.params.url.startsWith(`http://${this.applicationServerAddress}`)
                 || event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
             )
         ) {
             event.params = this.fixSourcemapLocation(event.params);
-            console.log(event.params);
         }
 
         if (event.result && event.result.properties) {
@@ -126,7 +133,8 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
             if (this.isIonicProject) {
-                reqParams.urlRegex = `ionic:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
+                reqParams.urlRegex = (this.ionicLiveReload ? "http"  : "ionic") +
+                `:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
             } else {
                 const fixedRemotePath = (this.iOSAppPackagePath.split("\/").join("\\/")).split(".").join("\\.");
                 reqParams.urlRegex = `file:\\/\\/${fixedRemotePath}\\/www\\/${uriPart}`;

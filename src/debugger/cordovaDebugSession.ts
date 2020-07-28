@@ -6,6 +6,7 @@ import * as child_process from "child_process";
 import * as Q from "q";
 import * as path from "path";
 import * as fs from "fs";
+import * as url from "url";
 import * as simulate from "cordova-simulate";
 import * as os from "os";
 import * as io from "socket.io-client";
@@ -59,6 +60,13 @@ export enum TargetType {
 export enum PwaDebugType {
     Node = "pwa-node",
     Chrome = "pwa-chrome",
+}
+
+interface IOSProcessedParams {
+    iOSVersion: string;
+    iOSAppPackagePath: string;
+    webSocketDebuggerUrl: string;
+    ionicDevServerUrl?: string;
 }
 
 export class CordovaDebugSession extends LoggingDebugSession {
@@ -740,7 +748,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 });
             };
 
-            const getWebSocketDebuggerUrl = ({ iOSAppPackagePath, targetPort, iOSVersion }) => {
+            const getWebSocketDebuggerUrl = ({ iOSAppPackagePath, targetPort, iOSVersion }): Q.IWhenable<IOSProcessedParams> => {
                 return retry(() =>
                     promiseGet(`http://localhost:${targetPort}/json`, "Unable to communicate with target")
                         .then((response: string) => {
@@ -752,10 +760,15 @@ export class CordovaDebugSession extends LoggingDebugSession {
                                 if (!webviewsList[0].webSocketDebuggerUrl) {
                                     throw new Error("Web Socket Debugger Url is empty");
                                 }
+                                let ionicDevServerUrl;
+                                if (this.ionicDevServerUrls) {
+                                    ionicDevServerUrl = this.ionicDevServerUrls.find(url => webviewsList[0].url.indexOf(url) === 0);
+                                }
                                 return {
                                     webSocketDebuggerUrl: webviewsList[0].webSocketDebuggerUrl,
                                     iOSVersion,
                                     iOSAppPackagePath,
+                                    ionicDevServerUrl,
                                 };
                             } catch (e) {
                                 throw new Error("Unable to find target app");
@@ -768,10 +781,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     .then(getBundleIdentifier)
                     .then(getSimulatorProxyPort)
                     .then(getWebSocketDebuggerUrl)
-                    .then(({ webSocketDebuggerUrl, iOSVersion, iOSAppPackagePath }) => {
-                        attachArgs.webSocketDebuggerUrl = webSocketDebuggerUrl;
-                        attachArgs.iOSVersion = iOSVersion;
-                        attachArgs.iOSAppPackagePath = iOSAppPackagePath;
+                    .then((iOSProcessedParams: IOSProcessedParams) => {
+                        attachArgs.webSocketDebuggerUrl = iOSProcessedParams.webSocketDebuggerUrl;
+                        attachArgs.iOSVersion = iOSProcessedParams.iOSVersion;
+                        attachArgs.iOSAppPackagePath = iOSProcessedParams.iOSAppPackagePath;
+                        if (iOSProcessedParams.ionicDevServerUrl) {
+                            attachArgs.devServerAddress = url.parse(iOSProcessedParams.ionicDevServerUrl).hostname;
+                        }
                         return attachArgs;
                     });
 
