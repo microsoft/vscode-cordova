@@ -5,6 +5,7 @@ import {logger, utils, chromeUtils, IPathMapping, BasePathTransformer, IStackTra
 import {ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs} from "./cordovaDebugAdapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import { TelemetryHelper } from "../utils/telemetryHelper";
+import { IProjectType } from "../utils/cordovaProjectHelper";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -19,7 +20,7 @@ export class CordovaPathTransformer extends BasePathTransformer {
     private _cordovaRoot: string;
     private _platform: string;
     private _webRoot: string;
-    private _projectTypes;
+    private _projectTypes: IProjectType;
     private _ionicLiveReload: boolean;
 
     constructor() {
