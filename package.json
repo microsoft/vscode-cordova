@@ -139,7 +139,8 @@
             "target": "device",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false
           },
           {
             "name": "Attach to running iOS on device",
@@ -149,7 +150,8 @@
             "target": "device",
             "port": 9220,
             "sourceMaps": true,
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false
           },
           {
             "name": "Run Android on emulator",
@@ -170,7 +172,8 @@
             "target": "emulator",
             "port": 9222,
             "sourceMaps": true,
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "ionicLiveReload": false
           },
           {
             "name": "Serve to the browser (ionic serve)",
@@ -254,7 +257,8 @@
               "platform": "android",
               "target": "${1:device|emulator}",
               "cwd": "^\"\\${workspaceFolder}\"",
-              "sourceMaps": true
+              "sourceMaps": true,
+              "ionicLiveReload": false
             }
           },
           {
@@ -267,7 +271,8 @@
               "platform": "ios",
               "target": "device",
               "cwd": "^\"\\${workspaceFolder}\"",
-              "sourceMaps": true
+              "sourceMaps": true,
+              "ionicLiveReload": false
             }
           },
           {

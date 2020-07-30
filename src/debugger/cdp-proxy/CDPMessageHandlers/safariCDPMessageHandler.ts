@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
+import * as url from "url";
 import * as semver from "semver";
 import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "./CDPAPINames";
@@ -26,7 +27,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         this.isIonicProject = CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
 
         if (args.ionicLiveReload) {
-            this.applicationPortPart = `:${args.devServerPort}`;
+            this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
         }
     }
 
@@ -89,15 +90,15 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
         }
 
-        if (event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED
-            && event.params.url
-            && (
+        if (event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url) {
+            this.tryToGetIonicDevServerConnectionDataFromURL(event.params.url);
+            if (
                 event.params.url.startsWith(`ionic://${this.applicationServerAddress}`)
                 || event.params.url.startsWith(`http://${this.applicationServerAddress}`)
                 || event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
-            )
-        ) {
-            event.params = this.fixSourcemapLocation(event.params);
+            ) {
+                event.params = this.fixSourcemapLocation(event.params);
+            }
         }
 
         if (event.result && event.result.properties) {
@@ -121,7 +122,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
         if (absoluteSourcePath) {
             reqParams.url = "file://" + absoluteSourcePath;
-        } else if (!this.ionicLiveReload) {
+        } else if (!(this.ionicLiveReload && this.debugRequestType === "launch")) {
             reqParams.url = "";
         }
         return reqParams;
@@ -141,5 +142,19 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
         }
         return reqParams;
+    }
+
+    private tryToGetIonicDevServerConnectionDataFromURL(sourceURL: string) {
+        if (this.ionicLiveReload && !this.applicationPortPart) {
+            try {
+                const parsedURL = url.parse(sourceURL);
+                this.applicationPortPart = parsedURL.port ? `:${parsedURL.port}` : "";
+                if (parsedURL.hostname) {
+                    this.applicationServerAddress = parsedURL.hostname;
+                }
+            } catch (err) {
+                // do nothing, try to check another URL
+            }
+        }
     }
 }

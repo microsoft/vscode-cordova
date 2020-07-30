@@ -7,6 +7,7 @@ import { DebugProtocol } from "vscode-debugprotocol";
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments {
     cwd: string; /* Automatically set by VS Code to the currently opened folder */
     port: number;
+    request: string;
     url?: string;
     address?: string;
     trace?: string;

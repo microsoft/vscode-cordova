@@ -730,6 +730,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         .then(CordovaIosDeviceLauncher.getPathOnDevice);
                 } else {
                     return Q.nfcall(fs.readdir, path.join(attachArgs.cwd, "platforms", "ios", "build", "emulator")).then((entries: string[]) => {
+                        // TODO requires changes in case of implementing debugging on iOS simulators
                         let filtered = entries.filter((entry) => /\.app$/.test(entry));
                         if (filtered.length > 0) {
                             return filtered[0];

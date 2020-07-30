@@ -29,6 +29,7 @@ export abstract class CDPMessageHandlerBase {
     protected projectType: IProjectType;
     protected applicationPortPart: string;
     protected platform: string;
+    protected debugRequestType: string;
     protected applicationServerAddress: string;
     protected ionicLiveReload?: boolean;
 
@@ -45,6 +46,7 @@ export abstract class CDPMessageHandlerBase {
         this.platform = args.platform;
         this.ionicLiveReload = args.ionicLiveReload;
         this.applicationServerAddress = args.devServerAddress || "localhost";
+        this.debugRequestType = args.request;
     }
 
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;

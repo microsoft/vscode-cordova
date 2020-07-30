@@ -15,6 +15,7 @@ export class SourcemapPathTransformer {
     private _webRoot: string;
     private _projectTypes: IProjectType;
     private _ionicLiveReload: boolean;
+    private _debugRequestType: string;
 
     constructor(args: ICordovaAttachRequestArgs, projectTypes: IProjectType) {
         this._cordovaRoot = args.cwd;
@@ -22,6 +23,7 @@ export class SourcemapPathTransformer {
         this._webRoot = args.address || this._cordovaRoot;
         this._ionicLiveReload = args.ionicLiveReload || false;
         this._projectTypes = projectTypes;
+        this._debugRequestType = args.request;
     }
 
     public getClientPathFromFileBasedUrl(sourceUrl: string): string {
@@ -60,7 +62,9 @@ export class SourcemapPathTransformer {
             // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
             // don't use www directory anymore. If www directory is fulfilled and livereload is used then
             // source maps could be messed up.
-            if (this._platform === PlatformType.Serve || this._ionicLiveReload) {
+            if ((this._platform === PlatformType.Serve || this._ionicLiveReload)
+                && this._debugRequestType === "launch"
+            ) {
                 foldersForSearch.pop();
             }
         }
