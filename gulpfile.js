@@ -15,6 +15,7 @@ var typescript = require('typescript');
 var libtslint = require('tslint');
 var tslint = require('gulp-tslint');
 var del = require('del');
+var vscodeTest = require('vscode-test');
 
 function executeCordovaCommand(cwd, command) {
     var cordovaCmd = os.platform() === 'darwin' ? 'cordova' : 'cordova.cmd';
@@ -115,13 +116,25 @@ gulp.task('watch', gulp.series('build', function (cb) {
     return gulp.watch(sources, gulp.series('build'));
 }));
 
-gulp.task('run-test', function () {
-    return gulp.src('out/test/debugger/**/*.test.js', { read: false })
-        .pipe(mocha({ ui: 'tdd' }))
-        .on('error', function (e) {
-            log(e ? e.toString() : 'error in test task!');
-            this.emit('end');
+gulp.task('run-test', async function () {
+    try {
+        // The folder containing the Extension Manifest package.json
+        // Passed to `--extensionDevelopmentPath`
+        const extensionDevelopmentPath = __dirname;
+        // The path to the extension test runner script
+        // Passed to --extensionTestsPath
+        const extensionTestsPath = path.resolve(__dirname, "out", "test", "index");
+        console.log(extensionTestsPath);
+        // Download VS Code, unzip it and run the integration test
+        await vscodeTest.runTests({
+          extensionDevelopmentPath,
+          extensionTestsPath,
         });
+    } catch (err) {
+        console.error(err);
+        console.error("Failed to run tests");
+        process.exit(1);
+    }
 });
 
 gulp.task('test', gulp.series('build-test', 'run-test'));
