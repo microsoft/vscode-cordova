@@ -5,14 +5,15 @@ import * as mockery from "mockery";
 
 // Used only for the type to allow mocking
 import {CordovaIosDeviceLauncher as _CordovaIosDeviceLauncher} from "../../src/debugger/cordovaIosDeviceLauncher";
+import { suiteSetup } from "mocha";
 
 let CordovaIosDeviceLauncher: typeof _CordovaIosDeviceLauncher;
 
-describe("cordovaIosDeviceLauncher", function () {
+suite("cordovaIosDeviceLauncher", function () {
     let plistMock: any = {};
     let fsMock: any = {};
 
-    before(() => {
+    suiteSetup(() => {
         // warnOnUnregistered is set to false because of https://github.com/mfncooper/mockery/issues/59
         mockery.enable({warnOnReplace: false, useCleanCache: true, warnOnUnregistered: false});
         mockery.registerAllowables([
@@ -27,11 +28,11 @@ describe("cordovaIosDeviceLauncher", function () {
         mockery.registerMock("plist", plistMock);
         CordovaIosDeviceLauncher = require("../../src/debugger/cordovaIosDeviceLauncher").CordovaIosDeviceLauncher;
     });
-    after(() => {
+    suiteTeardown(() => {
         mockery.disable();
     });
 
-    beforeEach(() => {
+    setup(() => {
         let mocksToReset = [fsMock, plistMock];
         mocksToReset.forEach(mock => {
             for (let prop in mock) {
@@ -42,7 +43,7 @@ describe("cordovaIosDeviceLauncher", function () {
         });
     });
 
-    it("should be able to find the bundle identifier", () => {
+    test("should be able to find the bundle identifier", () => {
         fsMock.readFileSync = (_file: string) => "";
         fsMock.readdir = (_path: string, callback: (err: Error, result: string[]) => void) => callback(null, ["foo", "bar.xcodeproj"]);
         plistMock.parse = (_file: string) => {
