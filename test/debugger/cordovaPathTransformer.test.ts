@@ -5,8 +5,8 @@ import {CordovaPathTransformer} from "../../src/debugger/cordovaPathTransformer"
 import * as path from "path";
 import "should";
 
-describe("CordovaPathTransformer", () => {
-    it("should correctly convert merges paths for android", async () => {
+suite("CordovaPathTransformer", () => {
+    test("should correctly convert merges paths for android", async () => {
         let pathTransformer = new CordovaPathTransformer();
         // __dirname is '/out/test/debugger' so we need to step up three levels to escape completely
         let testapp = path.join(__dirname, "..", "..", "..", "test", "testProject");
