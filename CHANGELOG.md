@@ -1,3 +1,8 @@
+## 1.9.5
+* Improved extension security [#639](https://github.com/microsoft/vscode-cordova/pull/639), [#642](https://github.com/microsoft/vscode-cordova/pull/642), [#621](https://github.com/microsoft/vscode-cordova/pull/621)
+* Internal changes:
+    * Migrated unit tests to vscode-test [#645](https://github.com/microsoft/vscode-cordova/pull/645)
+
 ## 1.9.4
 * Improved extension security [#620](https://github.com/microsoft/vscode-cordova/pull/620)
 * Internal changes:
