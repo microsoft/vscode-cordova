@@ -12,9 +12,16 @@ import { ICordovaAttachRequestArgs } from "../../requestArgs";
 
 export declare type ProtocolMessage = IProtocolCommand | IProtocolSuccess | IProtocolError;
 
+export enum DispatchDirection {
+    FORWARD,
+    BACK,
+    CANCEL,
+}
+
 export interface ProcessedCDPMessage {
     event: ProtocolMessage;
-    sendBack: boolean;
+    dispatchDirection: DispatchDirection;
+    communicationPreparationsDone?: boolean;
 }
 
 export abstract class CDPMessageHandlerBase {
@@ -22,6 +29,7 @@ export abstract class CDPMessageHandlerBase {
     protected projectType: IProjectType;
     protected applicationPortPart: string;
     protected platform: string;
+    protected debugRequestType: string;
     protected applicationServerAddress: string;
     protected ionicLiveReload?: boolean;
 
@@ -38,8 +46,10 @@ export abstract class CDPMessageHandlerBase {
         this.platform = args.platform;
         this.ionicLiveReload = args.ionicLiveReload;
         this.applicationServerAddress = args.devServerAddress || "localhost";
+        this.debugRequestType = args.request;
     }
 
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
     public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
+    public abstract configureHandlerAfterAttachment(args: ICordovaAttachRequestArgs): void;
 }

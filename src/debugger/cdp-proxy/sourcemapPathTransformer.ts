@@ -5,6 +5,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as url from "url";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
+import { PlatformType } from "../cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 
@@ -14,6 +15,7 @@ export class SourcemapPathTransformer {
     private _webRoot: string;
     private _projectTypes: IProjectType;
     private _ionicLiveReload: boolean;
+    private _debugRequestType: string;
 
     constructor(args: ICordovaAttachRequestArgs, projectTypes: IProjectType) {
         this._cordovaRoot = args.cwd;
@@ -21,10 +23,30 @@ export class SourcemapPathTransformer {
         this._webRoot = args.address || this._cordovaRoot;
         this._ionicLiveReload = args.ionicLiveReload || false;
         this._projectTypes = projectTypes;
-     }
+        this._debugRequestType = args.request;
+    }
 
-    public getClientPath(sourceUrl: string): string {
-        let sourceUrlPath = url.parse(sourceUrl).pathname;
+    public getClientPathFromFileBasedUrl(sourceUrl: string): string {
+        const regExp = new RegExp(`file:\\/\\/\\/.*\\.app(?:\\/www)*(\\/.*\\.(js|html))`, "g");
+        let foundStrings = regExp.exec(sourceUrl);
+        if (foundStrings && foundStrings[1]) {
+            return this.getClientPath(foundStrings[1]);
+        } else {
+            return this.getClientPath("/");
+        }
+    }
+
+    public getClientPathFromHttpBasedUrl(sourceUrl: string): string {
+        let relativeSourcePath;
+        try {
+            relativeSourcePath = url.parse(sourceUrl).pathname || "/";
+        } catch (err) {
+            relativeSourcePath = "/";
+        }
+        return this.getClientPath(relativeSourcePath);
+    }
+
+    public getClientPath(relativeSourcePath: string): string {
         let wwwRoot = path.join(this._cordovaRoot, "www");
 
         // Given an absolute file:/// (such as from the iOS simulator) vscode-chrome-debug's
@@ -40,14 +62,16 @@ export class SourcemapPathTransformer {
             // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
             // don't use www directory anymore. If www directory is fulfilled and livereload is used then
             // source maps could be messed up.
-            if (this._platform === "serve" || this._ionicLiveReload) {
+            if ((this._platform === PlatformType.Serve || this._ionicLiveReload)
+                && this._debugRequestType === "launch"
+            ) {
                 foldersForSearch.pop();
             }
         }
 
         // Find the mapped local file. Try looking first in the user-specified webRoot, then in the project root, and then in the www folder
         for (const searchFolder of foldersForSearch) {
-            let mappedPath = this.targetUrlToClientPath(sourceUrlPath, searchFolder);
+            let mappedPath = this.targetUrlToClientPath(relativeSourcePath, searchFolder);
 
             if (mappedPath) {
                 defaultPath = mappedPath;

@@ -7,6 +7,7 @@ import { DebugProtocol } from "vscode-debugprotocol";
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments {
     cwd: string; /* Automatically set by VS Code to the currently opened folder */
     port: number;
+    request: string;
     url?: string;
     address?: string;
     trace?: string;
@@ -19,12 +20,17 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     skipFiles?: [];
     sourceMaps?: boolean;
     sourceMapPathOverrides?: ISourceMapPathOverrides;
+    webSocketDebuggerUrl?: string;
     webkitRangeMin?: number;
     webkitRangeMax?: number;
     attachAttempts?: number;
     attachDelay?: number;
     attachTimeout?: number;
     simulatorInExternalBrowser?: boolean;
+
+    // iOS debug properties
+    iOSVersion?: string;
+    iOSAppPackagePath?: string;
 
     // Ionic livereload properties
     ionicLiveReload?: boolean;

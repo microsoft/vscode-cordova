@@ -19,13 +19,26 @@ export class JsDebugConfigAdapter {
         "./*": "${cwd}/*",
     };
 
-    public createDebuggingConfigForCordova(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, sessionId: string): any {
+    public createChromeDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
         return Object.assign({}, this.getExistingExtraArgs(attachArgs), {
-            type: "pwa-chrome",
+            type: pwaSessionName,
             request: "attach",
             name: "Attach",
             port: cdpProxyPort,
             webRoot: `${attachArgs.cwd}/www`,
+            // The unique identifier of the debug session. It is used to distinguish Cordova extension's
+            // debug sessions from other ones. So we can save and process only the extension's debug sessions
+            // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
+            cordovaDebugSessionId: sessionId,
+        });
+    }
+
+    public createSafariDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
+        return Object.assign({}, this.getExistingExtraArgs(attachArgs), {
+            type: pwaSessionName,
+            request: "attach",
+            name: "Attach",
+            port: cdpProxyPort,
             // The unique identifier of the debug session. It is used to distinguish Cordova extension's
             // debug sessions from other ones. So we can save and process only the extension's debug sessions
             // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
