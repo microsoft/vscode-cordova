@@ -186,7 +186,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         debugConfigPicker.ignoreFocusOut = true;
         debugConfigPicker.title = "Pick debug configurations";
         debugConfigPicker.items = this.pickConfig;
-        debugConfigPicker.selectedItems = [this.pickConfig[4]];
+        debugConfigPicker.selectedItems = [this.pickConfig[4]]; // the scenario "Run Android on emulator" is selected by default
         return debugConfigPicker;
     }
 }
