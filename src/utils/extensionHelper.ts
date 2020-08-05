@@ -3,15 +3,22 @@
 
 import Q = require("q");
 import * as http from "http";
+import { CancellationToken } from "vscode";
+import { CANCELLATION_ERROR_NAME } from "../debugger/cordovaDebugSession";
 
 export function generateRandomPortNumber() {
     return Math.round(Math.random() * 40000 + 3000);
 }
 
-export function retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string): Q.Promise<T> {
+export function retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delay: number, failure: string, cancellationToken?: CancellationToken): Q.Promise<T> {
     const retry = () => {
+        if (cancellationToken && cancellationToken.isCancellationRequested) {
+            let cancelError = new Error(CANCELLATION_ERROR_NAME);
+            cancelError.name = CANCELLATION_ERROR_NAME;
+            throw cancelError;
+        }
         if (iteration < maxRetries) {
-            return Q.delay(delay).then(() => retryAsync(func, condition, maxRetries, iteration + 1, delay, failure));
+            return Q.delay(delay).then(() => retryAsync(func, condition, maxRetries, iteration + 1, delay, failure, cancellationToken));
         }
 
         throw new Error(failure);

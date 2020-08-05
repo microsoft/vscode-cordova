@@ -12,7 +12,7 @@ import * as os from "os";
 import * as io from "socket.io-client";
 import * as execa from "execa";
 import * as chromeBrowserHelper from "vscode-js-debug-browsers";
-import { LoggingDebugSession, OutputEvent, logger, Logger } from "vscode-debugadapter";
+import { LoggingDebugSession, OutputEvent, logger, Logger, ErrorDestination } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
@@ -50,6 +50,8 @@ const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", 
 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
+
+export const CANCELLATION_ERROR_NAME = "tokenCanceled";
 
 export enum TargetType {
     Emulator = "emulator",
@@ -273,22 +275,23 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             generator.add("unknownPlatform", platform, true);
                             throw new Error(`Unknown Platform: ${platform}`);
                     }
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     this.outputLogger(err.message || err, true);
                     return this.cleanUp().then(() => {
                         throw err;
                     });
-                }).then(() => {
+                })
+                .then(() => {
                     // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
                     if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !this.isSimulateTarget(launchArgs.target)) {
                         return this.session.customRequest("attach", launchArgs);
                     }
                 });
             }).done(resolve, reject))
-            .catch(err => {
-                this.outputLogger(err.message || err, true);
-                reject(err);
-            }));
+            .catch(err => reject(err))
+        )
+        .catch(err => this.showError(err, response));
     }
 
     protected attachRequest(response: DebugProtocol.AttachResponse, attachArgs: ICordovaAttachRequestArgs, request?: DebugProtocol.Request): Promise<void>  {
@@ -356,20 +359,42 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         this.cordovaCdpProxy.configureCDPMessageHandlerAfterAttachment(processedAttachArgs);
                     }
                     this.establishDebugSession(processedAttachArgs);
-                })
-                .catch((err) => {
-                    reject(err);
                 });
-        }).catch((err) => {
-            this.outputLogger(err.message || err.format || err, true);
-            return this.cleanUp().then(() => {
-                throw err;
-            });
-        }).done(resolve, reject)));
+            })
+            .catch((err) => {
+                this.outputLogger(err.message || err.format || err, true);
+                return this.cleanUp().then(() => {
+                    throw err;
+                });
+            }).done(resolve, reject))
+            .catch(err => reject(err))
+        )
+        .then(() => {
+            this.sendResponse(response);
+        })
+        .catch(err => {
+            this.showError(err, response);
+        });
+    }
+
+    protected showError(error: Error, response: DebugProtocol.Response): void {
+
+        // We can't print error messages after the debugging session is stopped. This could break the extension work.
+        if (error.name === CANCELLATION_ERROR_NAME) {
+            return;
+        }
+        const errorString = error.message || error.name || "Error";
+        this.sendErrorResponse(
+            response,
+            { format: errorString , id: 1 },
+            undefined,
+            undefined,
+            ErrorDestination.User
+        );
     }
 
     protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
-        this.cleanUp();
+        await this.cleanUp();
         super.disconnectRequest(response, args, request);
     }
 
@@ -720,8 +745,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
             // Start the tunnel through to the webkit debugger on the device
             this.outputLogger("Configuring debugging proxy");
 
-            const retry = function<T> (func, condition, retryCount): Q.Promise<T> {
-                return retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview");
+            const retry = function<T> (func, condition, retryCount, cancellationToken): Q.Promise<T> {
+                return retryAsync(func, condition, retryCount, 1, attachArgs.attachDelay, "Unable to find webview", cancellationToken);
             };
 
             const getBundleIdentifier = (): Q.IWhenable<string> => {
@@ -804,7 +829,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             } catch (e) {
                                 throw new Error("Unable to find target app");
                             }
-                        }), (result) => !!result, 5);
+                        }),
+                        (result) => !!result,
+                        5,
+                        this.cancellationTokenSource.token
+                    );
             };
 
             const getAttachRequestArgs = (): Q.Promise<ICordovaAttachRequestArgs> =>
@@ -822,7 +851,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         return attachArgs;
                     });
 
-            return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts);
+            return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts, this.cancellationTokenSource.token);
         });
     }
 
@@ -1404,15 +1433,23 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                             })
                     );
 
-            return retryAsync(findAbstractNameFunction, (match) => !!match, 5, 1, 5000, "Unable to find localabstract name of cordova app")
-                .then((abstractName) => {
-                    // Configure port forwarding to the app
-                    let forwardSocketCommandArguments = ["-s", targetDevice, "forward", `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
-                    this.outputLogger("Forwarding debug port");
-                    return this.runAdbCommand(forwardSocketCommandArguments, errorLogger).then(() => {
-                        this.adbPortForwardingInfo = { targetDevice, port: attachArgs.port };
-                    });
+            return retryAsync(
+                findAbstractNameFunction,
+                (match) => !!match,
+                5,
+                1,
+                5000,
+                "Unable to find localabstract name of cordova app",
+                this.cancellationTokenSource.token
+            )
+            .then((abstractName) => {
+                // Configure port forwarding to the app
+                let forwardSocketCommandArguments = ["-s", targetDevice, "forward", `tcp:${attachArgs.port}`, `localabstract:${abstractName}`];
+                this.outputLogger("Forwarding debug port");
+                return this.runAdbCommand(forwardSocketCommandArguments, errorLogger).then(() => {
+                    this.adbPortForwardingInfo = { targetDevice, port: attachArgs.port };
                 });
+            });
         }).then(() => {
             return attachArgs;
         });
