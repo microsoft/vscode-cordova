@@ -5,6 +5,26 @@ import * as vscode from "vscode";
 
 export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProvider {
     private debugConfigurations = {
+        "Run Android on emulator": {
+            "name": "Run Android on emulator",
+            "type": "cordova",
+            "request": "launch",
+            "platform": "android",
+            "target": "emulator",
+            "port": 9222,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}",
+        },
+        "Attach to running Android on emulator": {
+            "name": "Attach to running Android on emulator",
+            "type": "cordova",
+            "request": "attach",
+            "platform": "android",
+            "target": "emulator",
+            "port": 9222,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}",
+        },
         "Run Android on device": {
             "name": "Run Android on device",
             "type": "cordova",
@@ -42,26 +62,6 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             "platform": "ios",
             "target": "device",
             "port": 9220,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-        },
-        "Run Android on emulator": {
-            "name": "Run Android on emulator",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "android",
-            "target": "emulator",
-            "port": 9222,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-        },
-        "Attach to running Android on emulator": {
-            "name": "Attach to running Android on emulator",
-            "type": "cordova",
-            "request": "attach",
-            "platform": "android",
-            "target": "emulator",
-            "port": 9222,
             "sourceMaps": true,
             "cwd": "${workspaceFolder}",
         },
@@ -113,6 +113,14 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
 
     private pickConfig: ReadonlyArray<vscode.QuickPickItem> = [
         {
+            label: "Run Android on emulator",
+            description: "Run and debug Cordova app on Android emulator",
+        },
+        {
+            label: "Attach to running Android on emulator",
+            description: "Attach to running Cordova app on Android emulator",
+        },
+        {
             label: "Run Android on device",
             description: "Run and debug Cordova app on Android device",
         },
@@ -127,14 +135,6 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         {
             label: "Attach to running iOS on device",
             description: "Attach to running Cordova app on iOS device",
-        },
-        {
-            label: "Run Android on emulator",
-            description: "Run and debug Cordova app on Android emulator",
-        },
-        {
-            label: "Attach to running Android on emulator",
-            description: "Attach to running Cordova app on Android emulator",
         },
         {
             label: "Serve to the browser (ionic serve)",
@@ -186,7 +186,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         debugConfigPicker.ignoreFocusOut = true;
         debugConfigPicker.title = "Pick debug configurations";
         debugConfigPicker.items = this.pickConfig;
-        debugConfigPicker.selectedItems = [this.pickConfig[4]]; // the scenario "Run Android on emulator" is selected by default
+        debugConfigPicker.selectedItems = [this.pickConfig[0]]; // the scenario "Run Android on emulator" is selected by default
         return debugConfigPicker;
     }
 }

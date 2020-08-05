@@ -29,8 +29,6 @@ let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
 let JSCONFIG_FILENAME = "jsconfig.json";
 let TSCONFIG_FILENAME = "tsconfig.json";
 
-let debugConfigProvider: vscode.Disposable;
-
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
     Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: "" });
@@ -40,7 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
         context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
 
         const configProvider = new CordovaDebugConfigProvider();
-        debugConfigProvider = vscode.debug.registerDebugConfigurationProvider("cordova", configProvider);
+        context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider("cordova", configProvider));
 
         const cordovaFactory = new CordovaSessionManager();
         context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("cordova", cordovaFactory));
@@ -64,7 +62,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function deactivate(): void {
     console.log("Extension has been deactivated");
-    debugConfigProvider.dispose();
 }
 
 function onChangeWorkspaceFolders(context: vscode.ExtensionContext, event: vscode.WorkspaceFoldersChangeEvent) {
