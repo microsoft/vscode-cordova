@@ -108,128 +108,31 @@
           ]
         },
         "runtime": "node",
-        "initialConfigurations": [
-          {
-            "name": "Run Android on device",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "android",
-            "target": "device",
-            "port": 9222,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-            "ionicLiveReload": false
-          },
-          {
-            "name": "Run iOS on device",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "ios",
-            "target": "device",
-            "port": 9220,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-            "ionicLiveReload": false
-          },
-          {
-            "name": "Attach to running android on device",
-            "type": "cordova",
-            "request": "attach",
-            "platform": "android",
-            "target": "device",
-            "port": 9222,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-            "ionicLiveReload": false
-          },
-          {
-            "name": "Attach to running iOS on device",
-            "type": "cordova",
-            "request": "attach",
-            "platform": "ios",
-            "target": "device",
-            "port": 9220,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-            "ionicLiveReload": false
-          },
-          {
-            "name": "Run Android on emulator",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "android",
-            "target": "emulator",
-            "port": 9222,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-            "ionicLiveReload": false
-          },
-          {
-            "name": "Attach to running android on emulator",
-            "type": "cordova",
-            "request": "attach",
-            "platform": "android",
-            "target": "emulator",
-            "port": 9222,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-            "ionicLiveReload": false
-          },
-          {
-            "name": "Serve to the browser (ionic serve)",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "serve",
-            "target": "chrome",
-            "cwd": "${workspaceFolder}",
-            "devServerAddress": "localhost",
-            "sourceMaps": true,
-            "ionicLiveReload": true
-          },
-          {
-            "name": "Simulate Android in browser",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "android",
-            "target": "chrome",
-            "simulatePort": 8000,
-            "livereload": true,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}"
-          },
-          {
-            "name": "Simulate iOS in browser",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "ios",
-            "target": "chrome",
-            "simulatePort": 8000,
-            "livereload": true,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}"
-          },
-          {
-            "name": "Run Browser",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "browser",
-            "target": "chrome",
-            "simulatePort": 8000,
-            "livereload": true,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}"
-          }
-        ],
         "configurationSnippets": [
           {
-            "label": "Cordova: Run on Android",
-            "description": "Run and debug Cordova app on Android device/emulator",
+            "label": "Cordova: Run Android on device",
+            "description": "Run and debug Cordova app on Android device",
             "body": {
-              "name": "${2:Run android on ${1:device|emulator}}",
+              "name": "Run Android on device",
               "type": "cordova",
               "request": "launch",
               "platform": "android",
-              "target": "${1:device|emulator}",
+              "target": "device",
+              "port": 9222,
+              "sourceMaps": true,
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
+            "label": "Cordova: Run Android on emulator",
+            "description": "Run and debug Cordova app on Android emulator",
+            "body": {
+              "name": "Run Android on emulator",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "android",
+              "target": "emulator",
+              "port": 9222,
               "sourceMaps": true,
               "cwd": "^\"\\${workspaceFolder}\""
             }
@@ -242,62 +145,107 @@
               "type": "cordova",
               "request": "launch",
               "platform": "ios",
-              "target": "$device",
+              "target": "device",
+              "port": 9220,
               "sourceMaps": true,
               "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
-            "label": "Cordova: Attach to Android",
-            "description": "Attach to running Cordova app on Android device/emulator",
+            "label": "Cordova: Attach to running Android on device",
+            "description": "Attach to running Cordova app on Android device",
             "body": {
-              "name": "${2:Attach to android on ${1:device|emulator}}",
+              "name": "Attach to running Android on device",
               "type": "cordova",
               "request": "attach",
               "platform": "android",
-              "target": "${1:device|emulator}",
-              "cwd": "^\"\\${workspaceFolder}\"",
+              "target": "device",
+              "port": 9222,
               "sourceMaps": true,
-              "ionicLiveReload": false
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
-            "label": "Cordova: Attach to iOS device",
+            "label": "Cordova: Attach to running Android on emulator",
+            "description": "Attach to running Cordova app on Android emulator",
+            "body": {
+              "name": "Attach to running Android on emulator",
+              "type": "cordova",
+              "request": "attach",
+              "platform": "android",
+              "target": "emulator",
+              "port": 9222,
+              "sourceMaps": true,
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
+            "label": "Cordova: Attach to running iOS on device",
             "description": "Attach to running Cordova app on iOS device",
             "body": {
-              "name": "Attach to iOS on device",
+              "name": "Attach to running iOS on device",
               "type": "cordova",
               "request": "attach",
               "platform": "ios",
               "target": "device",
-              "cwd": "^\"\\${workspaceFolder}\"",
+              "port": 9220,
               "sourceMaps": true,
-              "ionicLiveReload": false
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
             "label": "Cordova: Serve",
             "description": "Serve to the browser (currently supported only for Ionic)",
             "body": {
-              "name": "${1:Serve to the browser (ionic serve)}",
+              "name": "Serve to the browser (Ionic Serve)",
               "type": "cordova",
               "request": "launch",
               "target": "chrome",
               "platform": "serve",
-              "devServerAddress": "${2:localhost}",
+              "devServerAddress": "${1:localhost}",
               "sourceMaps": true,
               "ionicLiveReload": true,
               "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
-            "label": "Cordova: Simulate",
-            "description": "Simulate Cordova Android/iOS application in browser",
+            "label": "Cordova: Simulate Android in browser",
+            "description": "Simulate Cordova Android application in browser",
             "body": {
-              "name": "${2:Simulate ${1:android|ios} in browser}",
+              "name": "Simulate Android in browser",
               "type": "cordova",
               "request": "launch",
-              "platform": "${1:android|ios}",
+              "platform": "android",
+              "target": "chrome",
+              "simulatePort": 8000,
+              "livereload": true,
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "sourceMaps": true
+            }
+          },
+          {
+            "label": "Cordova: Simulate iOS in browser",
+            "description": "Simulate Cordova iOS application in browser",
+            "body": {
+              "name": "Simulate iOS in browser",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "ios",
+              "target": "chrome",
+              "simulatePort": 8000,
+              "livereload": true,
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "sourceMaps": true
+            }
+          },
+          {
+            "label": "Cordova: Run Browser",
+            "description": "Run and debug Cordova application in browser",
+            "body": {
+              "name": "Run Browser",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "browser",
               "target": "chrome",
               "simulatePort": 8000,
               "livereload": true,

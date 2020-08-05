@@ -20,6 +20,7 @@ import {IonicCompletionProvider} from "./extension/completionProviders";
 import { CordovaSessionManager } from "./extension/cordovaSessionManager";
 import { ProjectsStorage } from "./extension/projectsStorage";
 import { PluginSimulator } from "./extension/simulate";
+import { CordovaDebugConfigProvider } from "./extension/debugConfigurationProvider";
 import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
@@ -28,7 +29,6 @@ let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
 let JSCONFIG_FILENAME = "jsconfig.json";
 let TSCONFIG_FILENAME = "tsconfig.json";
 
-
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
     Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: "" });
@@ -36,6 +36,9 @@ export function activate(context: vscode.ExtensionContext): void {
     let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
     try {
         context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((event) => onChangeWorkspaceFolders(context, event)));
+
+        const configProvider = new CordovaDebugConfigProvider();
+        context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider("cordova", configProvider));
 
         const cordovaFactory = new CordovaSessionManager();
         context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("cordova", cordovaFactory));
