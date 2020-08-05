@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as vscode from "vscode";
+import { TelemetryHelper } from "../utils/telemetryHelper";
+import { Telemetry } from "../utils/telemetry";
 
 export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProvider {
     private debugConfigurations = {
@@ -35,16 +37,6 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             "sourceMaps": true,
             "cwd": "${workspaceFolder}",
         },
-        "Run iOS on device": {
-            "name": "Run iOS on device",
-            "type": "cordova",
-            "request": "launch",
-            "platform": "ios",
-            "target": "device",
-            "port": 9220,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}",
-        },
         "Attach to running Android on device": {
             "name": "Attach to running Android on device",
             "type": "cordova",
@@ -52,6 +44,16 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             "platform": "android",
             "target": "device",
             "port": 9222,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}",
+        },
+        "Run iOS on device": {
+            "name": "Run iOS on device",
+            "type": "cordova",
+            "request": "launch",
+            "platform": "ios",
+            "target": "device",
+            "port": 9220,
             "sourceMaps": true,
             "cwd": "${workspaceFolder}",
         },
@@ -125,12 +127,12 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             description: "Run and debug Cordova app on Android device",
         },
         {
-            label: "Run iOS on device",
-            description: "Run and debug Cordova app on iOS device",
-        },
-        {
             label: "Attach to running Android on device",
             description: "Attach to running Cordova app on Android device",
+        },
+        {
+            label: "Run iOS on device",
+            description: "Run and debug Cordova app on iOS device",
         },
         {
             label: "Attach to running iOS on device",
@@ -159,7 +161,10 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             const configPicker = this.prepareDebugConfigPicker();
             const disposables: vscode.Disposable[] = [];
             const pickHandler = () => {
+                let chosenConfigsEvent = TelemetryHelper.createTelemetryEvent("chosenDebugConfigurations");
                 let selected: string[] = configPicker.selectedItems.map(element => element.label);
+                chosenConfigsEvent.properties["selectedItems"] = selected;
+                Telemetry.send(chosenConfigsEvent);
                 const launchConfig = this.gatherDebugScenarios(selected);
                 disposables.forEach(d => d.dispose());
                 resolve(launchConfig);
