@@ -197,7 +197,7 @@
             "label": "Cordova: Serve",
             "description": "Serve to the browser (currently supported only for Ionic)",
             "body": {
-              "name": "Serve to the browser (ionic serve)",
+              "name": "Serve to the browser (Ionic Serve)",
               "type": "cordova",
               "request": "launch",
               "target": "chrome",

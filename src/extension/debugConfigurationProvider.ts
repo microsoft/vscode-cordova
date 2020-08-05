@@ -67,8 +67,8 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             "sourceMaps": true,
             "cwd": "${workspaceFolder}",
         },
-        "Serve to the browser (ionic serve)": {
-            "name": "Serve to the browser (ionic serve)",
+        "Serve to the browser (Ionic Serve)": {
+            "name": "Serve to the browser (Ionic Serve)",
             "type": "cordova",
             "request": "launch",
             "platform": "serve",
@@ -139,7 +139,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             description: "Attach to running Cordova app on iOS device",
         },
         {
-            label: "Serve to the browser (ionic serve)",
+            label: "Serve to the browser (Ionic Serve)",
             description: "Serve to the browser (currently supported only for Ionic)",
         },
         {
