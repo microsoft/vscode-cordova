@@ -195,5 +195,3 @@ export class CordovaIosDeviceLauncher {
         });
     }
 }
-
-process.on("exit", CordovaIosDeviceLauncher.cleanup);
