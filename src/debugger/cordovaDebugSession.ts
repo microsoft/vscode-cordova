@@ -84,6 +84,13 @@ interface IOSProcessedParams {
     ionicDevServerUrl?: string;
 }
 
+interface WebviewData {
+    devtoolsFrontendUrl: string;
+    title: string;
+    url: string;
+    webSocketDebuggerUrl: string;
+}
+
 export class CordovaDebugSession extends LoggingDebugSession {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...";
@@ -809,19 +816,20 @@ export class CordovaDebugSession extends LoggingDebugSession {
                                 //     "webSocketDebuggerUrl": "ws://localhost:9223/devtools/page/1",
                                 //     "appId": "PID:37819"
                                 //  }]
-                                const webviewsList = JSON.parse(response);
+                                const webviewsList: Array<WebviewData> = JSON.parse(response);
                                 if (webviewsList.length === 0) {
                                     throw new Error("Unable to find target app");
                                 }
-                                if (!webviewsList[0].webSocketDebuggerUrl) {
+                                const cordovaWebview = this.getCordovaWebview(webviewsList, iOSAppPackagePath, !!attachArgs.ionicLiveReload);
+                                if (!cordovaWebview.webSocketDebuggerUrl) {
                                     throw new Error("Web Socket Debugger Url is empty");
                                 }
                                 let ionicDevServerUrl;
                                 if (this.ionicDevServerUrls) {
-                                    ionicDevServerUrl = this.ionicDevServerUrls.find(url => webviewsList[0].url.indexOf(url) === 0);
+                                    ionicDevServerUrl = this.ionicDevServerUrls.find(url => cordovaWebview.url.indexOf(url) === 0);
                                 }
                                 return {
-                                    webSocketDebuggerUrl: webviewsList[0].webSocketDebuggerUrl,
+                                    webSocketDebuggerUrl: cordovaWebview.webSocketDebuggerUrl,
                                     iOSVersion,
                                     iOSAppPackagePath,
                                     ionicDevServerUrl,
@@ -853,6 +861,22 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             return retry(getAttachRequestArgs, () => true, attachArgs.attachAttempts, this.cancellationTokenSource.token);
         });
+    }
+
+    private getCordovaWebview(webviewsList: Array<WebviewData>, iOSAppPackagePath: string, ionicLiveReload: boolean): WebviewData {
+        let cordovaWebview = webviewsList.find(webviewData => {
+            if (webviewData.url.includes(iOSAppPackagePath)) {
+                return true;
+            }
+            if (!ionicLiveReload && webviewData.url.startsWith("ionic://")) {
+                return true;
+            }
+            if (this.ionicDevServerUrls) {
+                return this.ionicDevServerUrls.findIndex(url => webviewData.url.indexOf(url) === 0) >= 0;
+            }
+            return false;
+        });
+        return cordovaWebview || webviewsList[0];
     }
 
     private async cleanUp(): Promise<void> {
@@ -910,6 +934,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
         this.cancellationTokenSource.cancel();
         this.cancellationTokenSource.dispose();
+
+        // Stop IWDP if necessary
+        CordovaIosDeviceLauncher.cleanup();
 
         this.onDidTerminateDebugSessionHandler.dispose();
         this.sessionManager.terminate(this.session);
