@@ -557,6 +557,7 @@
     "vscode-debugprotocol": "^1.40.0",
     "vscode-extension-telemetry": "0.0.5",
     "vscode-js-debug-browsers": "^1.0.0",
+    "vscode-nls": "^4.1.2",
     "winreg": "0.0.13",
     "xcode": "^2.1.0"
   },
@@ -583,6 +584,7 @@
     "tslint": "^5.20.1",
     "typescript": "^3.8.3",
     "vsce": "^1.74.0",
-    "vscode": "^1.1.36"
+    "vscode": "^1.1.36",
+    "vscode-nls-dev": "^3.3.2"
   }
 }

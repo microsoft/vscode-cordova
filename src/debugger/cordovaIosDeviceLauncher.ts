@@ -9,6 +9,9 @@ import * as path from "path";
 import * as pl from "plist";
 import * as Q from "q";
 import * as xcode from "xcode";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 let promiseExec = Q.denodeify(child_process.exec);
 
@@ -31,7 +34,7 @@ export class CordovaIosDeviceLauncher {
         return Q.nfcall(fs.readdir, path.join(projectRoot, "platforms", "ios")).then((files: string[]) => {
             let xcodeprojfiles = files.filter((file: string) => /\.xcodeproj$/.test(file));
             if (xcodeprojfiles.length === 0) {
-                throw new Error("Unable to find xcodeproj file");
+                throw new Error(localize("UnableToFindXCodeProjFile", "Unable to find xcodeproj file"));
             }
             let xcodeprojfile = xcodeprojfiles[0];
             let projectName = /^(.*)\.xcodeproj/.exec(xcodeprojfile)[1];
