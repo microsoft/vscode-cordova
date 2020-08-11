@@ -43,7 +43,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const cordovaFactory = new CordovaSessionManager();
         context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("cordova", cordovaFactory));
 
-        const workspaceFolders: vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
+        const workspaceFolders: ReadonlyArray<vscode.WorkspaceFolder> | undefined = vscode.workspace.workspaceFolders;
 
         if (workspaceFolders) {
             registerCordovaCommands(context);
