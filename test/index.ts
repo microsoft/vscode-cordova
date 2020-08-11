@@ -1,14 +1,43 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-let testRunner = require("vscode/lib/testrunner");
+import * as path from "path";
+import * as Mocha from "mocha";
+import * as glob from "glob";
 
-// You can directly control Mocha options by uncommenting the following lines
-// See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options for more info
-testRunner.configure({
-    ui: "tdd", 		// the TDD UI is being used in extension.test.ts (suite, test, etc.)
-    useColors: true, // colored output from test results
-    timeout: 150000,
-});
+export function run(): Promise<void> {
+    const mocha = new Mocha ({
+        ui: "tdd",
+        grep: "extensionContext",
+        useColors: true,
+        timeout: 150000,
+    });
 
-module.exports = testRunner;
+    mocha.invert();
+
+    const testsRoot = __dirname;
+    // Register Mocha options
+    return new Promise((resolve, reject) => {
+        glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
+            if (err) {
+                return reject(err);
+            }
+
+            // Add files to the test suite
+            files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+
+            try {
+                // Run the mocha test
+                mocha.run((failures: any) => {
+                    if (failures > 0) {
+                        reject(new Error(`${failures} tests failed.`));
+                    } else {
+                        resolve();
+                    }
+                });
+            } catch (err) {
+                reject(err);
+            }
+        });
+    });
+}
