@@ -1,21 +1,22 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-var child_process = require('child_process');
-var fs = require('fs');
-var gulp = require('gulp');
-var mocha = require('gulp-mocha');
-var sourcemaps = require('gulp-sourcemaps');
-var ts = require('gulp-typescript');
-var log = require('fancy-log');
-var os = require('os');
-var path = require('path');
-var Q = require('q');
-var typescript = require('typescript');
-var libtslint = require('tslint');
-var tslint = require('gulp-tslint');
-var del = require('del');
-var vscodeTest = require('vscode-test');
+const child_process = require('child_process');
+const fs = require('fs');
+const gulp = require('gulp');
+const mocha = require('gulp-mocha');
+const sourcemaps = require('gulp-sourcemaps');
+const ts = require('gulp-typescript');
+const log = require('fancy-log');
+const os = require('os');
+const path = require('path');
+const Q = require('q');
+const typescript = require('typescript');
+const libtslint = require('tslint');
+const tslint = require('gulp-tslint');
+const del = require('del');
+const nls = require('vscode-nls-dev');
+const vscodeTest = require('vscode-test');
 
 function executeCordovaCommand(cwd, command) {
     var cordovaCmd = os.platform() === 'darwin' ? 'cordova' : 'cordova.cmd';
@@ -58,12 +59,32 @@ var tests = [
     'test/*.ts'
 ];
 
+const ExtensionName = "msjsdiag.vscode-cordova";
+const translationProjectName = "vscode-extensions";
+const defaultLanguages = [
+    { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
+    { id: "zh-cn", folderName: "chs", transifexId: "zh-hans" },
+    { id: "ja", folderName: "jpn" },
+    { id: "ko", folderName: "kor" },
+    { id: "de", folderName: "deu" },
+    { id: "fr", folderName: "fra" },
+    { id: "es", folderName: "esn" },
+    { id: "ru", folderName: "rus" },
+    { id: "it", folderName: "ita" },
+
+    // These language-pack languages are included for VS but excluded from the vscode package
+    { id: "cs", folderName: "csy" },
+    { id: "tr", folderName: "trk" },
+    { id: "pt-br", folderName: "ptb", transifexId: "pt-BR" },
+    { id: "pl", folderName: "plk" }
+];
+
 var tsConfig = require('./tsconfig.json');
 var projectConfig = tsConfig.compilerOptions;
 projectConfig.typescript = typescript;
 
 function fixSources() {
-    return sourcemaps.mapSources(function(sourcePath) {
+    return sourcemaps.mapSources(function (sourcePath) {
         return sourcePath.replace('..', '.');
     });
 }
@@ -73,6 +94,10 @@ gulp.task('compile-src', function () {
         .pipe(sourcemaps.init())
         .pipe(ts(projectConfig))
         .pipe(fixSources())
+        .pipe(nls.createMetaDataFiles())
+        .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
+        .pipe(nls.bundleMetaDataFiles(ExtensionName, 'dist'))
+        .pipe(nls.bundleLanguageFiles())
         .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: __dirname }))
         .pipe(gulp.dest('out'));
 });
@@ -127,8 +152,8 @@ gulp.task('run-test', async function () {
         console.log(extensionTestsPath);
         // Download VS Code, unzip it and run the integration test
         await vscodeTest.runTests({
-          extensionDevelopmentPath,
-          extensionTestsPath,
+            extensionDevelopmentPath,
+            extensionTestsPath,
         });
     } catch (err) {
         console.error(err);
@@ -144,8 +169,8 @@ gulp.task('prepare-integration-tests', gulp.series('build', function () {
 }));
 
 gulp.task('watch-build-test', gulp.series('build', 'run-test', function () {
-        return gulp.watch(sources, gulp.series('build', 'run-test'));
-    })
+    return gulp.watch(sources, gulp.series('build', 'run-test'));
+})
 );
 
 gulp.task('release', function () {
@@ -196,3 +221,37 @@ gulp.task('clean-test', function () {
 gulp.task('clean', gulp.series('clean-src', 'clean-test'));
 
 gulp.task('default', gulp.series('clean', 'build', 'run-test'));
+
+// Creates package.i18n.json files for all languages from {workspaceRoot}/i18n folder into project root
+gulp.task("add-i18n", () => {
+    return gulp.src(["package.nls.json"])
+        .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
+        .pipe(gulp.dest("."))
+});
+
+// Creates MLCP readable .xliff file and saves it locally
+gulp.task("translations-export", gulp.series("build", function runTranslationExport() {
+    return gulp.src(["package.nls.json", "./out/nls.metadata.header.json", "./out/nls.metadata.json"])
+        .pipe(nls.createXlfFiles(translationProjectName, ExtensionName))
+        .pipe(gulp.dest(path.join("..", `${translationProjectName}-localization-export`)));
+}));
+
+// Imports localization from raw localized MLCP strings to VS Code .i18n.json files
+gulp.task("translations-import", (done) => {
+    var options = minimist(process.argv.slice(2), {
+        string: "location",
+        default: {
+            location: "../vscode-translations-import"
+        }
+    });
+    es.merge(defaultLanguages.map((language) => {
+        let id = language.transifexId || language.id;
+        log(path.join(options.location, id, "vscode-extensions", `${ExtensionName}.xlf`));
+        return gulp.src(path.join(options.location, id, "vscode-extensions", `${ExtensionName}.xlf`))
+            .pipe(nls.prepareJsonFiles())
+            .pipe(gulp.dest(path.join("./i18n", language.folderName)));
+    }))
+        .pipe(es.wait(() => {
+            done();
+        }));
+});
