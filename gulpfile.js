@@ -18,6 +18,7 @@ const del = require("del");
 const nls = require("vscode-nls-dev");
 const vscodeTest = require("vscode-test");
 const webpack = require("webpack");
+const filter = require("gulp-filter");
 
 function executeCordovaCommand(cwd, command) {
   var cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
@@ -62,6 +63,7 @@ const distSrcDir = `${distDir}/src`;
 
 var tests = ["test/debugger/**/*.ts", "test/*.ts"];
 
+const tsProject = ts.createProject("tsconfig.json");
 const ExtensionName = "msjsdiag.vscode-cordova";
 const translationProjectName = "vscode-extensions";
 const defaultLanguages = [
@@ -326,8 +328,20 @@ gulp.task(
   })
 );
 
+function readJson(file) {
+  const contents = fs
+    .readFileSync(path.join(__dirname, file), "utf-8")
+    .toString();
+  return JSON.parse(contents);
+}
+
+function writeJson(file, jsonObj) {
+  const content = JSON.stringify(jsonObj, null, 2);
+  fs.writeFileSync(path.join(__dirname, file), content);
+}
+
 gulp.task("release", function () {
-  var licenseFiles = ["LICENSE.txt", "ThirdPartyNotices.txt"];
+  var backupFiles = ["LICENSE.txt", "ThirdPartyNotices.txt", "package.json"];
   var backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-cordova"));
   if (!fs.existsSync(backupFolder)) {
     fs.mkdirSync(backupFolder);
@@ -337,7 +351,7 @@ gulp.task("release", function () {
     .then(function () {
       /* back up LICENSE.txt, ThirdPartyNotices.txt, README.md */
       console.log("Backing up license files to " + backupFolder + "...");
-      licenseFiles.forEach(function (fileName) {
+      backupFiles.forEach(function (fileName) {
         fs.writeFileSync(
           path.join(backupFolder, fileName),
           fs.readFileSync(fileName)
@@ -353,13 +367,17 @@ gulp.task("release", function () {
       );
     })
     .then(() => {
+      let packageJson = readJson("package.json");
+      packageJson.main = "./dist/cordova-extension";
+      writeJson("package.json", packageJson);
+      log("Creating release package...");
       console.log("Creating release package...");
       return executeCommand(path.resolve(__dirname), "vsce package");
     })
     .finally(function () {
       /* restore backed up files */
       console.log("Restoring modified files...");
-      licenseFiles.forEach(function (fileName) {
+      backupFiles.forEach(function (fileName) {
         fs.writeFileSync(
           path.join(__dirname, fileName),
           fs.readFileSync(path.join(backupFolder, fileName))
@@ -380,7 +398,12 @@ gulp.task("clean-test", function () {
 
 gulp.task("clean", gulp.series("clean-src", "clean-test"));
 
-gulp.task("default", gulp.series("clean", "build", "run-test"));
+gulp.task(
+  "prod-build",
+  gulp.series("clean", "webpack-bundle", generateSrcLocBundle)
+);
+
+gulp.task("default", gulp.series("clean", "prod-build"));
 
 // Creates package.i18n.json files for all languages from {workspaceRoot}/i18n folder into project root
 gulp.task("add-i18n", () => {

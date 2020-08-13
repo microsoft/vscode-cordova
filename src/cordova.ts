@@ -198,7 +198,7 @@ function onFolderRemoved(folder: vscode.WorkspaceFolder): void {
 
 function getPluginTypingsJson(): any {
     if (CordovaProjectHelper.existsSync(PLUGIN_TYPE_DEFS_PATH)) {
-        return require(PLUGIN_TYPE_DEFS_PATH);
+        return customRequire(PLUGIN_TYPE_DEFS_PATH);
     }
 
     console.error("Cordova plugin type declaration mapping file 'pluginTypings.json' is missing from the extension folder.");
