@@ -132,6 +132,7 @@ export class PluginSimulator implements vscode.Disposable {
             }
         }
 
+        const packageFound = Q.defer<typeof CordovaSimulate>();
         if (!this.packageInstallProc) {
             this.packageInstallProc = cp.spawn(process.platform === "win32" ? "npm.cmd" : "npm",
                 ["install", this.CORDOVA_SIMULATE_PACKAGE, "--verbose", "--no-save"],
@@ -139,10 +140,11 @@ export class PluginSimulator implements vscode.Disposable {
 
             this.packageInstallProc.once("exit", (code: number) => {
                 if (code === 0) {
-                    return Q.resolve(customRequire(this.CORDOVA_SIMULATE_PACKAGE));
+                    this.simulatePackage = customRequire(this.CORDOVA_SIMULATE_PACKAGE);
+                    packageFound.resolve(this.simulatePackage);
                 } else {
                     OutputChannelLogger.getMainChannel().log("Error while installing cordova-simulate");
-                    Q.reject("Error while installing cordova-simulate");
+                    packageFound.reject("Error while installing cordova-simulate");
                 }
             });
 
@@ -166,10 +168,11 @@ export class PluginSimulator implements vscode.Disposable {
             const packageCheck = setInterval(() => {
                 if (this.simulatePackage) {
                     clearInterval(packageCheck);
-                    return Q.resolve(this.simulatePackage);
+                    packageFound.resolve(this.simulatePackage);
                 }
             }, 1000);
         }
+        return packageFound.promise;
     }
 
     private isServerRunning(): boolean {
