@@ -260,10 +260,9 @@ const generateSrcLocBundle = () => {
     .pipe(nls.bundleLanguageFiles())
     .pipe(
       filter([
-        "**/nls.bundle.*.json",
-        "**/nls.metadata.header.json",
-        "**/nls.metadata.json",
-        "!out/**",
+        "out/nls.bundle.*.json",
+        "out/nls.metadata.header.json",
+        "out/nls.metadata.json",
       ])
     )
     .pipe(gulp.dest("dist"));

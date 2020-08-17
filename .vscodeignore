@@ -8,10 +8,10 @@ gulpfile.js
 tsconfig.json
 tslint.json
 
-out/test/**
+out/**
+dist/src
 
 node_modules/**
-!node_modules/cordova-simulate
 .github/**
 .ci/**
 

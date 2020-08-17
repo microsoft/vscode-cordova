@@ -21,6 +21,7 @@ import { PluginSimulator } from "./extension/simulate";
 import { CordovaDebugConfigProvider } from "./extension/debugConfigurationProvider";
 import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
 import customRequire from "./common/customRequire";
+import { findFileInFolderHierarchy } from "./utils/extensionHelper";
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
@@ -30,7 +31,7 @@ let TSCONFIG_FILENAME = "tsconfig.json";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
-    Telemetry.init("cordova-tools", customRequire("./../../package.json").version, { isExtensionProcess: true, projectRoot: "" });
+    Telemetry.init("cordova-tools", customRequire(findFileInFolderHierarchy(__dirname, "package.json")).version, { isExtensionProcess: true, projectRoot: "" });
 
     let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
     try {
