@@ -24,7 +24,7 @@ import customRequire from "./common/customRequire";
 import { findFileInFolderHierarchy } from "./utils/extensionHelper";
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
-let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
+let PLUGIN_TYPE_DEFS_PATH = findFileInFolderHierarchy(__dirname, PLUGIN_TYPE_DEFS_FILENAME);
 let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
 let JSCONFIG_FILENAME = "jsconfig.json";
 let TSCONFIG_FILENAME = "tsconfig.json";

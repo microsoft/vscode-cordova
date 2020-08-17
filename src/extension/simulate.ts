@@ -135,8 +135,26 @@ export class PluginSimulator implements vscode.Disposable {
             if (code === 0) {
                 return Q.resolve(customRequire(this.CORDOVA_SIMULATE_PACKAGE));
             } else {
+                OutputChannelLogger.getMainChannel().log("Error while installing cordova-simulate");
                 Q.reject("Error while installing cordova-simulate");
             }
+        });
+
+        let lastDotTime = 0;
+        const printDot = () => {
+            const now = Date.now();
+            if (now - lastDotTime > 1500) {
+                lastDotTime = now;
+                OutputChannelLogger.getMainChannel().append(".");
+            }
+        };
+
+        depInstallProcess.stdout.on("data", () => {
+            printDot();
+        });
+
+        depInstallProcess.stderr.on("data", () => {
+            printDot();
         });
     }
 
