@@ -23,7 +23,8 @@ export class PluginSimulator implements vscode.Disposable {
     private simulator: CordovaSimulate.Simulator;
     private simulationInfo: SimulationInfo;
     private readonly CORDOVA_SIMULATE_PACKAGE = "cordova-simulate";
-    private cordovaPackage: typeof CordovaSimulate;
+    private simulatePackage: typeof CordovaSimulate;
+    private packageInstallProc: cp.ChildProcess | null = null;
 
     public simulate(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: IProjectType): Q.Promise<any> {
         return this.launchServer(fsPath, simulateOptions, projectType)
@@ -67,7 +68,7 @@ export class PluginSimulator implements vscode.Disposable {
                 let simulateTelemetryWrapper = new CordovaSimulateTelemetry();
                 simulateOptions.telemetry = simulateTelemetryWrapper;
 
-                this.simulator = new this.cordovaPackage.Simulator(simulateOptions);
+                this.simulator = new this.simulatePackage.Simulator(simulateOptions);
                 let platforms = CordovaProjectHelper.getInstalledPlatforms(workspaceFolder.uri.fsPath);
 
                 let platform = simulateOptions.platform;
@@ -114,15 +115,15 @@ export class PluginSimulator implements vscode.Disposable {
         }
     }
 
-    private getPackage(): Q.Promise<typeof CordovaSimulate> {
-        if (this.cordovaPackage) {
-            return Q.resolve(this.cordovaPackage);
+    public getPackage(): Q.Promise<typeof CordovaSimulate> {
+        if (this.simulatePackage) {
+            return Q.resolve(this.simulatePackage);
         }
         // Don't do the require if we don't actually need it
         try {
-            const simulatePackage = customRequire(this.CORDOVA_SIMULATE_PACKAGE) as typeof CordovaSimulate;
-            this.cordovaPackage = simulatePackage;
-            return Q.resolve(this.cordovaPackage);
+            const simulate = customRequire(this.CORDOVA_SIMULATE_PACKAGE) as typeof CordovaSimulate;
+            this.simulatePackage = simulate;
+            return Q.resolve(this.simulatePackage);
         } catch (e) {
             if (e.code === "MODULE_NOT_FOUND") {
                 OutputChannelLogger.getMainChannel().log("cordova-simulate dependency not present. Installing it...");
@@ -131,33 +132,44 @@ export class PluginSimulator implements vscode.Disposable {
             }
         }
 
-        const depInstallProcess = cp.spawn(process.platform === "win32" ? "npm.cmd" : "npm", ["install", this.CORDOVA_SIMULATE_PACKAGE, "--verbose", "--no-save"], { cwd: path.dirname(findFileInFolderHierarchy(__dirname, "package.json")) });
-        depInstallProcess.once("exit", (code: number) => {
-            if (code === 0) {
-                return Q.resolve(customRequire(this.CORDOVA_SIMULATE_PACKAGE));
-            } else {
-                OutputChannelLogger.getMainChannel().log("Error while installing cordova-simulate");
-                Q.reject("Error while installing cordova-simulate");
-            }
-        });
+        if (!this.packageInstallProc) {
+            this.packageInstallProc = cp.spawn(process.platform === "win32" ? "npm.cmd" : "npm",
+                ["install", this.CORDOVA_SIMULATE_PACKAGE, "--verbose", "--no-save"],
+                { cwd: path.dirname(findFileInFolderHierarchy(__dirname, "package.json")) });
 
-        let lastDotTime = 0;
-        const printDot = () => {
-            const now = Date.now();
-            if (now - lastDotTime > 1500) {
-                lastDotTime = now;
-                OutputChannelLogger.getMainChannel().append(".");
-            }
-        };
+            this.packageInstallProc.once("exit", (code: number) => {
+                if (code === 0) {
+                    return Q.resolve(customRequire(this.CORDOVA_SIMULATE_PACKAGE));
+                } else {
+                    OutputChannelLogger.getMainChannel().log("Error while installing cordova-simulate");
+                    Q.reject("Error while installing cordova-simulate");
+                }
+            });
 
-        depInstallProcess.stdout.on("data", () => {
-            printDot();
-        });
+            let lastDotTime = 0;
+            const printDot = () => {
+                const now = Date.now();
+                if (now - lastDotTime > 1500) {
+                    lastDotTime = now;
+                    OutputChannelLogger.getMainChannel().append(".");
+                }
+            };
 
-        depInstallProcess.stderr.on("data", (data: Buffer) => {
-            OutputChannelLogger.getMainChannel().log(data.toString());
-            printDot();
-        });
+            this.packageInstallProc.stdout.on("data", () => {
+                printDot();
+            });
+
+            this.packageInstallProc.stderr.on("data", (data: Buffer) => {
+                printDot();
+            });
+        } else {
+            const packageCheck = setInterval(() => {
+                if (this.simulatePackage) {
+                    clearInterval(packageCheck);
+                    return Q.resolve(this.simulatePackage);
+                }
+            }, 1000);
+        }
     }
 
     private isServerRunning(): boolean {
