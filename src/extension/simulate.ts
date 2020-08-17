@@ -12,6 +12,7 @@ import * as vscode from "vscode";
 import * as cp from "child_process";
 import customRequire from "../common/customRequire";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
+import { findFileInFolderHierarchy } from "../utils/extensionHelper";
 
 /**
  * Plugin simulation entry point.
@@ -130,7 +131,7 @@ export class PluginSimulator implements vscode.Disposable {
             }
         }
 
-        const depInstallProcess = cp.spawn(process.platform === "win32" ? "npm.cmd" : "npm", ["install", , "--verbose", "--no-save"]);
+        const depInstallProcess = cp.spawn(process.platform === "win32" ? "npm.cmd" : "npm", ["install", this.CORDOVA_SIMULATE_PACKAGE, "--verbose", "--no-save"], { cwd: path.dirname(findFileInFolderHierarchy(__dirname, "package.json")) });
         depInstallProcess.once("exit", (code: number) => {
             if (code === 0) {
                 return Q.resolve(customRequire(this.CORDOVA_SIMULATE_PACKAGE));
@@ -153,7 +154,8 @@ export class PluginSimulator implements vscode.Disposable {
             printDot();
         });
 
-        depInstallProcess.stderr.on("data", () => {
+        depInstallProcess.stderr.on("data", (data: Buffer) => {
+            OutputChannelLogger.getMainChannel().log(data.toString());
             printDot();
         });
     }
