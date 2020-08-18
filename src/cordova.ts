@@ -3,35 +3,35 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import {SimulateOptions} from "cordova-simulate";
+import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
-
-import {CordovaProjectHelper} from "./utils/cordovaProjectHelper";
-import {CordovaCommandHelper} from "./utils/cordovaCommandHelper";
+import { CordovaProjectHelper } from "./utils/cordovaProjectHelper";
+import { CordovaCommandHelper } from "./utils/cordovaCommandHelper";
 // import {ExtensionServer} from "./extension/extensionServer";
 import * as Q from "q";
 import * as semver from "semver";
 // import {PluginSimulator} from "./extension/simulate";
-import {Telemetry} from "./utils/telemetry";
-import {TelemetryHelper} from "./utils/telemetryHelper";
-import {TsdHelper} from "./utils/tsdHelper";
-
-import {IonicCompletionProvider} from "./extension/completionProviders";
+import { Telemetry } from "./utils/telemetry";
+import { TelemetryHelper } from "./utils/telemetryHelper";
+import { TsdHelper } from "./utils/tsdHelper";
+import { IonicCompletionProvider } from "./extension/completionProviders";
 import { CordovaSessionManager } from "./extension/cordovaSessionManager";
 import { ProjectsStorage } from "./extension/projectsStorage";
 import { PluginSimulator } from "./extension/simulate";
 import { CordovaDebugConfigProvider } from "./extension/debugConfigurationProvider";
 import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
+import customRequire from "./common/customRequire";
+import { findFileInFolderHierarchy } from "./utils/extensionHelper";
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
-let PLUGIN_TYPE_DEFS_PATH = path.resolve(__dirname, "..", "..", PLUGIN_TYPE_DEFS_FILENAME);
+let PLUGIN_TYPE_DEFS_PATH = findFileInFolderHierarchy(__dirname, PLUGIN_TYPE_DEFS_FILENAME);
 let CORDOVA_TYPINGS_QUERYSTRING = "cordova";
 let JSCONFIG_FILENAME = "jsconfig.json";
 let TSCONFIG_FILENAME = "tsconfig.json";
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
-    Telemetry.init("cordova-tools", require("./../../package.json").version, { isExtensionProcess: true, projectRoot: "" });
+    Telemetry.init("cordova-tools", customRequire(findFileInFolderHierarchy(__dirname, "package.json")).version, { isExtensionProcess: true, projectRoot: "" });
 
     let activateExtensionEvent = TelemetryHelper.createTelemetryActivity("activate");
     try {
@@ -194,12 +194,12 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
 }
 
 function onFolderRemoved(folder: vscode.WorkspaceFolder): void {
-     ProjectsStorage.delFolder(folder);
+    ProjectsStorage.delFolder(folder);
 }
 
 function getPluginTypingsJson(): any {
     if (CordovaProjectHelper.existsSync(PLUGIN_TYPE_DEFS_PATH)) {
-        return require(PLUGIN_TYPE_DEFS_PATH);
+        return customRequire(PLUGIN_TYPE_DEFS_PATH);
     }
 
     console.error("Cordova plugin type declaration mapping file 'pluginTypings.json' is missing from the extension folder.");
@@ -354,13 +354,13 @@ function registerCordovaCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.commands.registerCommand("cordova.simulate.android", () => {
         return selectProject()
             .then((project) => {
-                return launchSimulateCommand(project.cordovaProjectRoot,  { dir: project.folder.uri.fsPath, target: "chrome", platform: "android" });
+                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "android" });
             });
     }));
     context.subscriptions.push(vscode.commands.registerCommand("cordova.simulate.ios", () => {
         return selectProject()
             .then((project) => {
-                return launchSimulateCommand(project.cordovaProjectRoot,  { dir: project.folder.uri.fsPath, target: "chrome", platform: "ios" });
+                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "ios" });
             });
     }));
 }

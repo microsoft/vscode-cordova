@@ -575,6 +575,7 @@
     "fancy-log": "^1.3.3",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
+    "gulp-filter": "^6.0.0",
     "gulp-mocha": "^7.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-tslint": "^8.1.2",
@@ -582,10 +583,13 @@
     "mockery": "^1.4.0",
     "rimraf": "^2.7.1",
     "should": "^13.2.1",
+    "ts-loader": "^8.0.2",
     "tslint": "^5.20.1",
     "typescript": "^3.8.3",
     "vsce": "^1.74.0",
     "vscode-nls-dev": "^3.3.2",
-    "vscode-test": "^1.4.0"
+    "vscode-test": "^1.4.0",
+    "webpack": "^4.44.1",
+    "webpack-bundle-analyzer": "^3.8.0"
   }
 }

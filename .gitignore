@@ -3,6 +3,7 @@
 *.vsix
 node_modules/
 out/
+dist/
 test/testProject/.vscode/
 test/testProject/platforms/
 test/testProject/plugins/

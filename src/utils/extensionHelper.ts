@@ -1,8 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import Q = require("q");
+import * as Q from "q";
 import * as http from "http";
+import * as path from "path";
+import * as fs from "fs";
 import { CancellationToken } from "vscode";
 import { CANCELLATION_ERROR_NAME } from "../debugger/cordovaDebugSession";
 
@@ -32,7 +34,7 @@ export function retryAsync<T>(func: () => Q.Promise<T>, condition: (result: T) =
 
             return retry();
         },
-        retry);
+            retry);
 }
 
 export function delay(duration: number): Promise<void> {
@@ -41,7 +43,7 @@ export function delay(duration: number): Promise<void> {
 
 export function promiseGet(url: string, reqErrMessage: string): Q.Promise<string> {
     let deferred = Q.defer<string>();
-    let req = http.get(url, function(res) {
+    let req = http.get(url, function (res) {
         let responseString = "";
         res.on("data", (data: Buffer) => {
             responseString += data.toString();
@@ -55,4 +57,29 @@ export function promiseGet(url: string, reqErrMessage: string): Q.Promise<string
         deferred.reject(err);
     });
     return deferred.promise;
+}
+
+export function findFileInFolderHierarchy(dir: string, filename: string): string | null {
+    let parentPath: string;
+    let projectRoot: string = dir;
+    let atFsRoot: boolean = false;
+
+    while (!fs.existsSync(path.join(projectRoot, filename))) {
+        // Navigate up one level until either config.xml is found
+        parentPath = path.resolve(projectRoot, "..");
+        if (parentPath !== projectRoot) {
+            projectRoot = parentPath;
+        } else {
+            // we have reached the filesystem root
+            atFsRoot = true;
+            break;
+        }
+    }
+
+    if (atFsRoot) {
+        // We reached the fs root
+        return null;
+    }
+
+    return path.join(projectRoot, filename);
 }
