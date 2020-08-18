@@ -1,10 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {Hash} from "../utils/hash";
+import { Hash } from "../utils/hash";
 import * as Q from "q";
 import * as net from "net";
-
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 export let ErrorMarker = "vscode-cordova-error-marker";
 
 /**
@@ -62,14 +64,14 @@ export class ExtensionMessageSender {
         });
 
         socket.on("error", function (data: any) {
-            deferred.reject(new Error(`An error occurred while handling message: ${ExtensionMessage[message]} ${data}`));
+            deferred.reject(new Error(localize("HandlingMessageError", "An error occurred while handling message: {0}", `${ExtensionMessage[message]} ${data}`)));
         });
 
         socket.on("end", function () {
             try {
                 if (body.startsWith(ErrorMarker)) {
                     let errorString = body.replace(ErrorMarker, "");
-                    let error = new Error(errorString ? errorString : "An error occurred while handling message: " + ExtensionMessage[message]);
+                    let error = new Error(errorString ? errorString : localize("HandlingMessageError", "An error occurred while handling message: {0}", ExtensionMessage[message]));
                     deferred.reject(error);
                 } else {
                     let responseBody: any = body ? JSON.parse(body) : null;

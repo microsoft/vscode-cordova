@@ -8,6 +8,9 @@ import * as http from "http";
 import * as https from "https";
 import { CancellationToken } from "vscode";
 import { delay } from "../../utils/extensionHelper";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 export class DebuggerEndpointHelper {
     private localv4: Buffer;
@@ -34,10 +37,10 @@ export class DebuggerEndpointHelper {
         } catch (err) {
             if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
 
-                const internalError = new Error(`Could not connect to the debug target at ${browserURL}: ${err.message}`);
+                const internalError = new Error(localize("CouldNotConnectToTheDebugTarget", "Could not connect to the debug target at {0}: {1}", browserURL, err.message));
 
                 if (cancellationToken.isCancellationRequested) {
-                    throw new Error("Operation canceled");
+                    throw new Error(localize("OperationCancelled", "Operation canceled"));
                 }
 
                 throw internalError;
@@ -69,7 +72,7 @@ export class DebuggerEndpointHelper {
             return jsonList[0].webSocketDebuggerUrl;
         }
 
-        throw new Error("Could not find any debuggable target");
+        throw new Error(localize("CouldNotFindAnyDebuggableTarget", "Could not find any debuggable target"));
     }
 
     /**
