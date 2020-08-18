@@ -14,7 +14,7 @@ dist/src
 node_modules/**
 .github/**
 .ci/**
-
+release/**
 test/**
 src/**
 debugger/**
