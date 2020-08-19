@@ -69,7 +69,7 @@ export class CordovaCommandHelper {
                     process.on("error", (err: any) => {
                         // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
                         if (err.code === "ENOENT") {
-                            window.showErrorMessage(localize("{0} not found, please run \"npm install –g {1}\" to install {2} globally", cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
+                            window.showErrorMessage(localize("PackageNotFoundPleaseInstall", "{0} not found, please run \"npm install –g {1}\" to install {2} globally", cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
                         }
                         deferred.reject(err);
                     });
