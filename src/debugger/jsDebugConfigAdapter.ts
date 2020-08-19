@@ -3,6 +3,9 @@
 
 import { ICordovaAttachRequestArgs } from "./requestArgs";
 import { logger } from "vscode-debugadapter";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 export interface IStringDictionary<T> {
     [name: string]: T;
@@ -73,7 +76,7 @@ export class JsDebugConfigAdapter {
 
     private getSourceMapPathOverrides(cwd: string, sourceMapPathOverrides?: ISourceMapPathOverrides): ISourceMapPathOverrides {
         return sourceMapPathOverrides ? this.resolveWebRootPattern(cwd, sourceMapPathOverrides, /*warnOnMissing=*/true) :
-                this.resolveWebRootPattern(cwd, this.DefaultWebSourceMapPathOverrides, /*warnOnMissing=*/false);
+            this.resolveWebRootPattern(cwd, this.DefaultWebSourceMapPathOverrides, /*warnOnMissing=*/false);
     }
     /**
      * Returns a copy of sourceMapPathOverrides with the ${cwd} pattern resolved in all entries.
@@ -95,10 +98,10 @@ export class JsDebugConfigAdapter {
             if (cwd) {
                 return entry.replace("${cwd}", cwd);
             } else if (warnOnMissing) {
-                logger.warn("Warning: sourceMapPathOverrides entry contains ${cwd}, but cwd is not set");
+                logger.warn(localize("SourceMapOverridesEntryContainsCwd", "Warning: sourceMapPathOverrides entry contains ${cwd}, but cwd is not set"));
             }
         } else if (cwdIndex > 0) {
-            logger.warn("Warning: in a sourceMapPathOverrides entry, ${cwd} is only valid at the beginning of the path");
+            logger.warn(localize("InASourceMapOverridesEntryCwdValidAtTheBeginning", "Warning: in a sourceMapPathOverrides entry, ${cwd} is only valid at the beginning of the path"));
         }
         return entry;
     }
