@@ -2,10 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as child_process from "child_process";
-import {CordovaProjectHelper} from "../utils/cordovaProjectHelper";
+import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import * as Q from "q";
 import * as path from "path";
-import * as util from "util";
+import * as nls from "vscode-nls";
+import { findFileInFolderHierarchy } from "../utils/extensionHelper";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 // suppress the following strings because they are not actual errors:
 const errorsToSuppress = ["Run an Ionic project on a connected device"];
@@ -28,7 +31,7 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
         if (code !== 0) {
             errorLogger(stderr);
             errorLogger(stdout);
-            deferred.reject(`Error running '${command} ${args.join(" ")}'`);
+            deferred.reject(localize("ErrorRunningCommand", "Error running {0} {1}", command, args.join(" ")));
         }
         deferred.resolve(stdout);
     });
@@ -63,7 +66,7 @@ export function cordovaRunCommand(command: string, args: string[], env, cordovaR
     cordovaProcess.stdout.on("data", (data: Buffer) => {
         let str = data.toString().replace(/\u001b/g, "").replace(/\[2K\[G/g, ""); // Erasing `[2K[G` artifacts from DEBUG CONSOLE output
         output += str;
-        for (let message in isShown)  {
+        for (let message in isShown) {
             if (str.indexOf(message) > -1) {
                 if (!isShown[message]) {
                     isShown[message] = true;
@@ -80,7 +83,7 @@ export function cordovaRunCommand(command: string, args: string[], env, cordovaR
     });
     cordovaProcess.on("exit", exitCode => {
         if (exitCode) {
-            defer.reject(new Error(util.format("'%s %s' failed with exit code %d", command, args.join(" "), exitCode)));
+            defer.reject(new Error(localize("CommandFailedWithExitCode", "{0} {1} failed with exit code {2}", command, args.join(" "), exitCode)));
         } else {
             defer.resolve([output, stderr]);
         }
@@ -116,7 +119,7 @@ export function cordovaStartCommand(command: string, args: string[], env: any, c
 export function killTree(processId: number): void {
     const cmd = process.platform === "win32" ?
         `taskkill.exe /F /T /PID` :
-        path.join(__dirname, "../../../scripts/terminateProcess.sh");
+        path.join(findFileInFolderHierarchy(__dirname, "scripts"), "terminateProcess.sh");
 
     try {
         child_process.execSync(`${cmd} ${processId}`);
