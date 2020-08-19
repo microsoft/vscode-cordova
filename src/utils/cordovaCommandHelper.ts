@@ -4,8 +4,10 @@
 import * as child_process from "child_process";
 import * as Q from "q";
 import * as os from "os";
-import * as util from "util";
 import { window, WorkspaceConfiguration, workspace, Uri } from "vscode";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 import { TelemetryHelper } from "./telemetryHelper";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
@@ -56,7 +58,7 @@ export class CordovaCommandHelper {
                         commandToExecute += ` ${runArgs.join(" ")}`;
                     }
 
-                    logger.log(`########### EXECUTING: ${commandToExecute} ###########`);
+                    logger.log(localize("Executing", "########### EXECUTING: {0} ###########", commandToExecute));
                     const env = CordovaProjectHelper.getEnvArgument({
                         env: CordovaCommandHelper.getEnvArgs(projectRoot),
                         envFile: CordovaCommandHelper.getEnvFile(projectRoot),
@@ -67,7 +69,7 @@ export class CordovaCommandHelper {
                     process.on("error", (err: any) => {
                         // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
                         if (err.code === "ENOENT") {
-                            window.showErrorMessage(util.format("%s not found, please run \"npm install –g %s\" to install %s globally", cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
+                            window.showErrorMessage(localize("{0} not found, please run \"npm install –g {1}\" to install {2} globally", cliDisplayName, cliDisplayName.toLowerCase(), cliDisplayName));
                         }
                         deferred.reject(err);
                     });
@@ -81,7 +83,7 @@ export class CordovaCommandHelper {
                     });
 
                     process.stdout.on("close", () => {
-                        logger.log(`########### FINISHED EXECUTING: ${commandToExecute} ###########`);
+                        logger.log(localize("FinishedExecuting", "########### FINISHED EXECUTING: {0} ###########", commandToExecute));
                         deferred.resolve({});
                     });
 
@@ -131,7 +133,7 @@ export class CordovaCommandHelper {
                         return window.showQuickPick(platforms)
                             .then((platform) => {
                                 if (!platform) {
-                                    throw new Error("Platform selection was canceled. Please select target platform to continue!");
+                                    throw new Error(localize("PlatformSelectionWasCancelled", "Platform selection was canceled. Please select target platform to continue!"));
                                 }
 
                                 if (platform === "all") {
@@ -143,7 +145,7 @@ export class CordovaCommandHelper {
                     } else if (platforms.length === 1) {
                         return platforms[0];
                     } else {
-                        throw new Error("No any platforms installed");
+                        throw new Error(localize("NoAnyPlatformInstalled", "No any platforms installed"));
                     }
                 }
 

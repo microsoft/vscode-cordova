@@ -4,6 +4,9 @@
 import * as vscode from "vscode";
 import { TelemetryHelper } from "../utils/telemetryHelper";
 import { Telemetry } from "../utils/telemetry";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProvider {
     private debugConfigurations = {
@@ -116,43 +119,43 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
     private pickConfig: ReadonlyArray<vscode.QuickPickItem> = [
         {
             label: "Run Android on emulator",
-            description: "Run and debug Cordova app on Android emulator",
+            description: localize("RunAndDebugCordovaAppOnAndroidEmulator", "Run and debug Cordova app on Android emulator"),
         },
         {
             label: "Attach to running Android on emulator",
-            description: "Attach to running Cordova app on Android emulator",
+            description: localize("AttachToRunningCordovaAppOnAndroidEmulator", "Attach to running Cordova app on Android emulator"),
         },
         {
             label: "Run Android on device",
-            description: "Run and debug Cordova app on Android device",
+            description: localize("RunAndDebugCordovaAppOnAndroidDevice", "Run and debug Cordova app on Android device"),
         },
         {
             label: "Attach to running Android on device",
-            description: "Attach to running Cordova app on Android device",
+            description: localize("AttachToRunningCordovaAppOnAndroidDevice", "Attach to running Cordova app on Android device"),
         },
         {
             label: "Run iOS on device",
-            description: "Run and debug Cordova app on iOS device",
+            description: localize("RunAndDebugCordovaAppOniOSDevice", "Run and debug Cordova app on iOS device"),
         },
         {
             label: "Attach to running iOS on device",
-            description: "Attach to running Cordova app on iOS device",
+            description: localize("AttachToRunningCordovaAppOniOSDevice", "Attach to running Cordova app on iOS device"),
         },
         {
             label: "Serve to the browser (Ionic Serve)",
-            description: "Serve to the browser (currently supported only for Ionic)",
+            description: localize("ServeToTheBrowser", "Serve to the browser (currently supported only for Ionic)"),
         },
         {
             label: "Simulate Android in browser",
-            description: "Simulate Cordova Android application in browser",
+            description: localize("SimulateCordovaAndroidAppInBrowser", "Simulate Cordova Android application in browser"),
         },
         {
             label: "Simulate iOS in browser",
-            description: "Simulate Cordova iOS application in browser",
+            description: localize("SimulateCordovaiOSAppInBrowser", "Simulate Cordova iOS application in browser"),
         },
         {
             label: "Run Browser",
-            description: "Run and debug Cordova application in browser",
+            description: localize("RunAndDebugCordovaAppInBrowser", "Run and debug Cordova application in browser"),
         },
     ];
 
@@ -189,7 +192,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         const debugConfigPicker = vscode.window.createQuickPick();
         debugConfigPicker.canSelectMany = true;
         debugConfigPicker.ignoreFocusOut = true;
-        debugConfigPicker.title = "Pick debug configurations";
+        debugConfigPicker.title = localize("PickDebugConfigurations", "Pick debug configurations");
         debugConfigPicker.items = this.pickConfig;
         debugConfigPicker.selectedItems = [this.pickConfig[0]]; // the scenario "Run Android on emulator" is selected by default
         return debugConfigPicker;

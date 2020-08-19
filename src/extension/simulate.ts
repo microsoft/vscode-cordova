@@ -13,6 +13,9 @@ import * as cp from "child_process";
 import customRequire from "../common/customRequire";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 import { findFileInFolderHierarchy } from "../utils/extensionHelper";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 /**
  * Plugin simulation entry point.
@@ -41,7 +44,7 @@ export class PluginSimulator implements vscode.Disposable {
 
     public launchSimHost(target: string): Q.Promise<void> {
         if (!this.simulator) {
-            return Q.reject<void>(new Error("Launching sim host before starting simulation server"));
+            return Q.reject<void>(new Error(localize("LaunchingSimHostBeforeStartSimulationServer", "Launching sim host before starting simulation server")));
         }
         return this.getPackage()
             .then(simulate => {
@@ -81,13 +84,13 @@ export class PluginSimulator implements vscode.Disposable {
                         command = "ionic" + (isIonicCliVersionGte3 ? " cordova" : "");
                     }
 
-                    throw new Error(`Couldn't find platform ${platform} in project, please install it using '${command} platform add ${platform}'`);
+                    throw new Error(localize("CouldntFindPlatformInProject", "Couldn't find platform {0} in project, please install it using '{1} platform add {2}'", platform, command, platform));
                 }
 
                 return this.simulator.startSimulation()
                     .then(() => {
                         if (!this.simulator.isRunning()) {
-                            throw new Error("Error starting the simulation");
+                            throw new Error(localize("ErrorStartingTheSimulation", "Error starting the simulation"));
                         }
 
                         this.simulationInfo = {
@@ -126,7 +129,7 @@ export class PluginSimulator implements vscode.Disposable {
             return Q.resolve(this.simulatePackage);
         } catch (e) {
             if (e.code === "MODULE_NOT_FOUND") {
-                OutputChannelLogger.getMainChannel().log("cordova-simulate dependency not present. Installing it...");
+                OutputChannelLogger.getMainChannel().log(localize("CordovaSimulateDepNotPresent", "cordova-simulate dependency not present. Installing it..."));
             } else {
                 throw e;
             }
@@ -143,8 +146,8 @@ export class PluginSimulator implements vscode.Disposable {
                     this.simulatePackage = customRequire(this.CORDOVA_SIMULATE_PACKAGE);
                     packageFound.resolve(this.simulatePackage);
                 } else {
-                    OutputChannelLogger.getMainChannel().log("Error while installing cordova-simulate");
-                    packageFound.reject("Error while installing cordova-simulate");
+                    OutputChannelLogger.getMainChannel().log(localize("ErrorWhileInstallingCordovaSimulateDep", "Error while installing cordova-simulate dependency to the extension"));
+                    packageFound.reject(localize("ErrorWhileInstallingCordovaSimulateDep", "Error while installing cordova-simulate dependency to the extension"));
                 }
             });
 

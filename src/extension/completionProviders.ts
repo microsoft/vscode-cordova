@@ -6,6 +6,9 @@ import {
     CompletionItem, CompletionItemKind, CompletionItemProvider,
     DocumentSelector, SnippetString
 } from "vscode";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 // Types to outline TextMate snippets format, used in this extension's snippet files
 type TMSnippet = { prefix: string, body: string[], description: string };
@@ -34,7 +37,7 @@ export class IonicCompletionProvider implements CompletionItemProvider {
 
         } catch (err) {
             // Log error here and do not try to read snippets anymore
-            console.warn(`Failed to read snippets from ${this.completionsSource}`);
+            console.warn(localize("FailedToReadSnippetsFrom", "Failed to read snippets from {0}", this.completionsSource));
         }
 
         return this.snippetCompletions;

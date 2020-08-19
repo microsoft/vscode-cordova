@@ -22,6 +22,10 @@ import { CordovaDebugConfigProvider } from "./extension/debugConfigurationProvid
 import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
 import customRequire from "./common/customRequire";
 import { findFileInFolderHierarchy } from "./utils/extensionHelper";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
+
 
 let PLUGIN_TYPE_DEFS_FILENAME = "pluginTypings.json";
 let PLUGIN_TYPE_DEFS_PATH = findFileInFolderHierarchy(__dirname, PLUGIN_TYPE_DEFS_FILENAME);
@@ -87,7 +91,7 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
     }
 
     if (path.resolve(cordovaProjectRoot) !== path.resolve(workspaceRoot)) {
-        vscode.window.showWarningMessage("VSCode Cordova extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated.");
+        vscode.window.showWarningMessage(localize("ExtensionRequiresWorkspaceRootToBeCordovaProjectRoot", "VS Code Cordova Tools extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated."));
         return;
     }
 
@@ -128,12 +132,12 @@ function onFolderAdded(context: vscode.ExtensionContext, folder: vscode.Workspac
         context.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 IonicCompletionProvider.JS_DOCUMENT_SELECTOR,
-                new IonicCompletionProvider(path.resolve(__dirname, "../../snippets/ionicJs.json"))));
+                new IonicCompletionProvider(path.join(findFileInFolderHierarchy(__dirname, "snippets"), "ionicJs.json"))));
 
         context.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 IonicCompletionProvider.HTML_DOCUMENT_SELECTOR,
-                new IonicCompletionProvider(path.resolve(__dirname, "../../snippets/ionicHtml.json"))));
+                new IonicCompletionProvider(path.join(findFileInFolderHierarchy(__dirname, "snippets"), "ionicHtml.json"))));
     }
 
     // Install Ionic type definitions if necessary
@@ -202,7 +206,7 @@ function getPluginTypingsJson(): any {
         return customRequire(PLUGIN_TYPE_DEFS_PATH);
     }
 
-    console.error("Cordova plugin type declaration mapping file 'pluginTypings.json' is missing from the extension folder.");
+    console.error(localize("CordovaPluginTypeDeclarationMappingFileIsMissing", "Cordova plugin type declaration mapping file 'pluginTypings.json' is missing from the extension folder."));
     return null;
 }
 
@@ -379,7 +383,7 @@ function selectProject(): Q.Promise<any> {
     } else if (keys.length === 1) {
         return Q.resolve(ProjectsStorage.projectsCache[keys[0]]);
     } else {
-        return Q.reject(new Error("No Cordova project is found"));
+        return Q.reject(new Error(localize("NoCordovaProjectIsFound", "No Cordova project is found")));
     }
 }
 
