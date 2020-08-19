@@ -186,7 +186,7 @@ export class TelemetryHelper {
                     isMeteor: isMeteor,
                     isMobilefirst: isMobilefirst,
                     isPhonegap: isPhonegap,
-                    isCordova: isCordova
+                    isCordova: isCordova,
                 };
             });
     }
