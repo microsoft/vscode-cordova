@@ -2,14 +2,17 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as Q from "q";
-import {PluginSimulator} from "./simulate";
-import {SimulationInfo} from "../common/simulationInfo";
-import {SimulateOptions} from "cordova-simulate";
+import { PluginSimulator } from "./simulate";
+import { SimulationInfo } from "../common/simulationInfo";
+import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
-import {IProjectType} from "../utils/cordovaProjectHelper";
-import {Telemetry} from "../utils/telemetry";
+import { IProjectType } from "../utils/cordovaProjectHelper";
+import { Telemetry } from "../utils/telemetry";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { ProjectsStorage } from "./projectsStorage";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 export class CordovaWorkspaceManager implements vscode.Disposable {
     public pluginSimulator: PluginSimulator;
@@ -23,7 +26,7 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
     public static getWorkspaceManagerByProjectRootPath(projectRootPath: string): CordovaWorkspaceManager {
         const workspaceManager = ProjectsStorage.projectsCache[projectRootPath.toLowerCase()];
         if (!workspaceManager) {
-            throw new Error(`Could not find workspace manager by the project root path ${projectRootPath}`);
+            throw new Error(localize("CouldntFindWorkspaceManager", "Could not find workspace manager by the project root path {0}", projectRootPath));
         }
         return workspaceManager;
     }
@@ -55,7 +58,7 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
     public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Q.Promise<SimulationInfo> {
         return this.launchSimulateServer(fsPath, simulateOptions, projectType)
             .then((simulateInfo: SimulationInfo) => {
-               return this.launchSimHost(simulateOptions.target).then(() => simulateInfo);
+                return this.launchSimHost(simulateOptions.target).then(() => simulateInfo);
             });
     }
 

@@ -8,6 +8,9 @@ import * as Q from "q";
 import { URL } from "url";
 import * as semver from "semver";
 import * as os from "os";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 export interface IProjectType extends IIonicVersion {
     isMeteor: boolean;
@@ -46,36 +49,36 @@ export class CordovaProjectHelper {
     private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
 
     private static CORE_PLUGIN_LIST: string[] = ["cordova-plugin-battery-status",
-                                                "cordova-plugin-camera",
-                                                "cordova-plugin-console",
-                                                "cordova-plugin-contacts",
-                                                "cordova-plugin-device",
-                                                "cordova-plugin-device-motion",
-                                                "cordova-plugin-device-orientation",
-                                                "cordova-plugin-dialogs",
-                                                "cordova-plugin-file",
-                                                "cordova-plugin-file-transfer",
-                                                "cordova-plugin-geolocation",
-                                                "cordova-plugin-globalization",
-                                                "cordova-plugin-inappbrowser",
-                                                "cordova-plugin-media",
-                                                "cordova-plugin-media-capture",
-                                                "cordova-plugin-network-information",
-                                                "cordova-plugin-splashscreen",
-                                                "cordova-plugin-statusbar",
-                                                "cordova-plugin-vibration",
-                                                "cordova-plugin-ms-azure-mobile-apps",
-                                                "cordova-plugin-hockeyapp",
-                                                "cordova-plugin-code-push",
-                                                "cordova-plugin-bluetoothle",
-                                                "phonegap-plugin-push",
-                                                "cordova-plugin-ms-azure-mobile-engagement",
-                                                "cordova-plugin-whitelist",
-                                                "cordova-plugin-crosswalk-webview",
-                                                "cordova-plugin-ms-adal",
-                                                "com-intel-security-cordova-plugin",
-                                                "cordova-sqlite-storage",
-                                                "cordova-plugin-ms-intune-mam" ];
+        "cordova-plugin-camera",
+        "cordova-plugin-console",
+        "cordova-plugin-contacts",
+        "cordova-plugin-device",
+        "cordova-plugin-device-motion",
+        "cordova-plugin-device-orientation",
+        "cordova-plugin-dialogs",
+        "cordova-plugin-file",
+        "cordova-plugin-file-transfer",
+        "cordova-plugin-geolocation",
+        "cordova-plugin-globalization",
+        "cordova-plugin-inappbrowser",
+        "cordova-plugin-media",
+        "cordova-plugin-media-capture",
+        "cordova-plugin-network-information",
+        "cordova-plugin-splashscreen",
+        "cordova-plugin-statusbar",
+        "cordova-plugin-vibration",
+        "cordova-plugin-ms-azure-mobile-apps",
+        "cordova-plugin-hockeyapp",
+        "cordova-plugin-code-push",
+        "cordova-plugin-bluetoothle",
+        "phonegap-plugin-push",
+        "cordova-plugin-ms-azure-mobile-engagement",
+        "cordova-plugin-whitelist",
+        "cordova-plugin-crosswalk-webview",
+        "cordova-plugin-ms-adal",
+        "com-intel-security-cordova-plugin",
+        "cordova-sqlite-storage",
+        "cordova-plugin-ms-intune-mam"];
 
     /**
      *  Helper function check if a file exists.
@@ -168,7 +171,7 @@ export class CordovaProjectHelper {
      *  Helper function to get the list of platforms installed for the project.
      */
     public static getInstalledPlatforms(projectRoot: string): string[] {
-        let platformsPath: string = path.resolve(projectRoot,  CordovaProjectHelper.PLATFORMS_PATH);
+        let platformsPath: string = path.resolve(projectRoot, CordovaProjectHelper.PLATFORMS_PATH);
 
         if (!CordovaProjectHelper.existsSync(platformsPath)) {
             return [];
@@ -415,7 +418,7 @@ export class CordovaProjectHelper {
             const ionicVersion = CordovaProjectHelper.getIonicCliVersion(fsPath, command);
             return semver.gte(ionicVersion, version);
         } catch (err) {
-            console.error("Error while detecting Ionic CLI version", err);
+            console.error(localize("ErrorWhileDetectingIonicCLIVersion", "Error while detecting Ionic CLI version"), err);
         }
         return true;
     }
@@ -425,7 +428,7 @@ export class CordovaProjectHelper {
     }
 
     public static getEnvArgument(launchArgs): any {
-        let args = {...launchArgs};
+        let args = { ...launchArgs };
         let env = process.env;
 
         if (args.envFile) {
