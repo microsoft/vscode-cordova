@@ -5,7 +5,6 @@ import * as vscode from "vscode";
 import * as Net from "net";
 import { CordovaDebugSession } from "../debugger/cordovaDebugSession";
 
-
 export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFactory {
 
     private servers = new Map<string, Net.Server>();
