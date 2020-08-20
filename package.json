@@ -20,7 +20,7 @@
     "url": "https://github.com/Microsoft/vscode-cordova"
   },
   "bugs": "https://github.com/Microsoft/vscode-cordova/issues",
-  "license": "SEE LICENSE IN LICENSE.txt",
+  "license": "%cordova.license%",
   "engines": {
     "vscode": "^1.40.0"
   },
@@ -51,35 +51,43 @@
     "commands": [
       {
         "command": "cordova.build",
-        "title": "Cordova: Build"
+        "title": "%cordova.build%",
+        "category": "Cordova"
       },
       {
         "command": "cordova.run",
-        "title": "Cordova: Run"
+        "title": "%cordova.run%",
+        "category": "Cordova"
       },
       {
         "command": "cordova.prepare",
-        "title": "Cordova: Prepare"
+        "title": "%cordova.prepare%",
+        "category": "Cordova"
       },
       {
         "command": "cordova.simulate.android",
-        "title": "Cordova: Simulate Android in browser"
+        "title": "%cordova.simulate.android%",
+        "category": "Cordova"
       },
       {
         "command": "cordova.simulate.ios",
-        "title": "Cordova: Simulate iOS in browser"
+        "title": "%cordova.simulate.ios%",
+        "category": "Cordova"
       },
       {
         "command": "ionic.build",
-        "title": "Ionic: Build"
+        "title": "%cordova.ionic.build%",
+        "category": "Cordova"
       },
       {
         "command": "ionic.run",
-        "title": "Ionic: Run"
+        "title": "%cordova.ionic.run%",
+        "category": "Cordova"
       },
       {
         "command": "ionic.prepare",
-        "title": "Ionic: Prepare"
+        "title": "%cordova.ionic.prepare%",
+        "category": "Cordova"
       }
     ],
     "keybindings": [
@@ -111,7 +119,7 @@
         "configurationSnippets": [
           {
             "label": "Cordova: Run Android on device",
-            "description": "Run and debug Cordova app on Android device",
+            "description": "%cordova.snippets.androidRunOnDevice%",
             "body": {
               "name": "Run Android on device",
               "type": "cordova",
@@ -125,7 +133,7 @@
           },
           {
             "label": "Cordova: Run Android on emulator",
-            "description": "Run and debug Cordova app on Android emulator",
+            "description": "%cordova.snippets.androidRunOnEmulator%",
             "body": {
               "name": "Run Android on emulator",
               "type": "cordova",
@@ -139,7 +147,7 @@
           },
           {
             "label": "Cordova: Run on iOS device",
-            "description": "Run and debug Cordova app on iOS device",
+            "description": "%cordova.snippets.iOSRunOnDevice%",
             "body": {
               "name": "Run iOS on device",
               "type": "cordova",
@@ -153,7 +161,7 @@
           },
           {
             "label": "Cordova: Attach to running Android on device",
-            "description": "Attach to running Cordova app on Android device",
+            "description": "%cordova.snippets.androidAttachOnDevice%",
             "body": {
               "name": "Attach to running Android on device",
               "type": "cordova",
@@ -167,7 +175,7 @@
           },
           {
             "label": "Cordova: Attach to running Android on emulator",
-            "description": "Attach to running Cordova app on Android emulator",
+            "description": "%cordova.snippets.androidAttachOnEmulator%",
             "body": {
               "name": "Attach to running Android on emulator",
               "type": "cordova",
@@ -181,7 +189,7 @@
           },
           {
             "label": "Cordova: Attach to running iOS on device",
-            "description": "Attach to running Cordova app on iOS device",
+            "description": "%cordova.snippets.iOSAttachOnDevice%",
             "body": {
               "name": "Attach to running iOS on device",
               "type": "cordova",
@@ -195,7 +203,7 @@
           },
           {
             "label": "Cordova: Serve",
-            "description": "Serve to the browser (currently supported only for Ionic)",
+            "description": "%cordova.snippets.ionicServe%",
             "body": {
               "name": "Serve to the browser (Ionic Serve)",
               "type": "cordova",
@@ -210,7 +218,7 @@
           },
           {
             "label": "Cordova: Simulate Android in browser",
-            "description": "Simulate Cordova Android application in browser",
+            "description": "%cordova.snippets.simulateAndroid%",
             "body": {
               "name": "Simulate Android in browser",
               "type": "cordova",
@@ -225,7 +233,7 @@
           },
           {
             "label": "Cordova: Simulate iOS in browser",
-            "description": "Simulate Cordova iOS application in browser",
+            "description": "%cordova.snippets.simulateiOS%",
             "body": {
               "name": "Simulate iOS in browser",
               "type": "cordova",
@@ -240,7 +248,7 @@
           },
           {
             "label": "Cordova: Run Browser",
-            "description": "Run and debug Cordova application in browser",
+            "description": "%cordova.snippets.simulateBrowser%",
             "body": {
               "name": "Run Browser",
               "type": "cordova",

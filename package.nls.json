@@ -1,3 +1,22 @@
 {
-  "cordova.description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework."
+  "cordova.description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework.",
+  "cordova.license": "SEE LICENSE IN LICENSE.txt",
+  "cordova.build": "Cordova: Build",
+  "cordova.run": "Cordova: Run",
+  "cordova.prepare": "Cordova: Prepare",
+  "cordova.simulate.android": "Cordova: Simulate Android in browser",
+  "cordova.simulate.ios": "Cordova: Simulate iOS in browser",
+  "cordova.ionic.build": "Ionic: Build",
+  "cordova.ionic.run": "Ionic: Run",
+  "cordova.ionic.prepare": "Ionic: Prepare",
+  "cordova.snippets.androidRunOnDevice": "Run and debug Cordova app on Android device",
+  "cordova.snippets.androidRunOnEmulator": "Run and debug Cordova app on Android emulator",
+  "cordova.snippets.iOSRunOnDevice": "Run and debug Cordova app on iOS device",
+  "cordova.snippets.androidAttachOnDevice": "Attach to running Cordova app on Android device",
+  "cordova.snippets.androidAttachOnEmulator": "Attach to running Cordova app on Android emulator",
+  "cordova.snippets.iOSAttachOnDevice": "Attach to running Cordova app on iOS device",
+  "cordova.snippets.ionicServe": "Serve to the browser (currently supported only for Ionic)",
+  "cordova.snippets.simulateAndroid": "Simulate Cordova Android application in browser",
+  "cordova.snippets.simulateiOS": "Simulate Cordova iOS application in browser",
+  "cordova.snippets.simulateBrowser": "Run and debug Cordova application in browser"
 }
