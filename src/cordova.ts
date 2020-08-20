@@ -358,13 +358,13 @@ function registerCordovaCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.commands.registerCommand("cordova.simulate.android", () => {
         return selectProject()
             .then((project) => {
-                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "android" });
+                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "android", lang: vscode.env.language });
             });
     }));
     context.subscriptions.push(vscode.commands.registerCommand("cordova.simulate.ios", () => {
         return selectProject()
             .then((project) => {
-                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "ios" });
+                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "ios", lang: vscode.env.language });
             });
     }));
 }

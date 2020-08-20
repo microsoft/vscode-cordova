@@ -603,6 +603,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         result.forceprepare = launchArgs.forceprepare;
         result.simulationpath = launchArgs.simulateTempDir;
         result.corsproxy = launchArgs.corsproxy;
+        result.lang = vscode.env.language;
 
         return result;
     }
