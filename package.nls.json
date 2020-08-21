@@ -26,7 +26,7 @@
   "cordova.properties.launch.trace": "Trace may be set to 'true' to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk",
   "cordova.properties.launch.port": "Port to forward through to the target for debugging",
   "cordova.properties.launch.webkitRangeMin": "Start of port range to use for iOS device selection",
-  "cordova.properties.launch.webkitRangeMax": "",
+  "cordova.properties.launch.webkitRangeMax": "End of port range to use for iOS device selection",
   "cordova.properties.launch.attachAttempts": "Number of attempts to make when attaching to an iOS app",
   "cordova.properties.launch.attachDelay": "Time in milliseconds to wait between attempts to attach to an iOS app",
   "cordova.properties.launch.attachTimeout": "Time in milliseconds to wait before the debugger is attached to the debug session",
