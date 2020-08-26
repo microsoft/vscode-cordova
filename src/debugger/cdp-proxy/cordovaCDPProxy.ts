@@ -142,6 +142,9 @@ export class CordovaCDPProxy {
         this.applicationTarget.onEnd(this.onApplicationTargetClosed.bind(this));
         this.debuggerTarget.onEnd(this.onDebuggerTargetClosed.bind(this));
 
+        this.CDPMessageHandler.setApplicationTarget(this.applicationTarget);
+        this.CDPMessageHandler.setDebuggerTarget(this.debuggerTarget);
+
         // dequeue any messages we got in the meantime
         this.unpauseDebuggerTarget();
     }

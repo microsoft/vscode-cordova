@@ -15,6 +15,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     private isIonicProject: boolean;
     private isTargeted: boolean;
     private iOSAppPackagePath: string;
+    private isBackcompatConfigured: boolean;
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
@@ -24,6 +25,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         super(sourcemapPathTransformer, projectType, args);
         this.targetId = "";
         this.isTargeted = true;
+        this.isBackcompatConfigured = false;
         this.isIonicProject = CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
 
         if (args.ionicLiveReload) {
@@ -62,6 +64,10 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
                 },
             };
         }
+        
+        if (!this.isBackcompatConfigured && event.method === CDP_API_NAMES.RUNTIME_ENABLE) {
+            this.configureTargetForIWDPCommunication();
+        }
 
         return {
             event,
@@ -99,6 +105,10 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             ) {
                 event.params = this.fixSourcemapLocation(event.params);
             }
+        }
+
+        if (event.method === CDP_API_NAMES.CONSOLE_MESSAGE_ADDED) {
+            event = this.processDeprecatedConsoleMessage(event);
         }
 
         if (event.result && event.result.properties) {
@@ -156,5 +166,24 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
                 // do nothing, try to check another URL
             }
         }
+    }
+
+    private processDeprecatedConsoleMessage(event: any) {
+        return {
+            method: CDP_API_NAMES.RUNTIME_CONSOLE_API_CALLED,
+            params: {
+                type: event.params.message.type,
+                timestamp: event.params.message.timestamp,
+                args: event.params.message.parameters || [{ type: "string", value: event.params.message.text }],
+                stackTrace: { callFrames: event.params.message.stack || event.params.message.stackTrace },
+                executionContextId: 1,
+            },
+        };
+    }
+
+    private configureTargetForIWDPCommunication(): void {
+        this.isBackcompatConfigured = true;
+        this.applicationTarget?.api.Console.enable({});
+        this.applicationTarget?.api.Debugger.setBreakpointsActive({ active: true });
     }
 }
