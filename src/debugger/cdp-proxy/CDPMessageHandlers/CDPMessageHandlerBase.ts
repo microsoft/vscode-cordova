@@ -4,7 +4,8 @@
 import {
     IProtocolCommand,
     IProtocolSuccess,
-    IProtocolError
+    IProtocolError,
+    Connection
 } from "vscode-cdp-proxy";
 import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
@@ -32,6 +33,8 @@ export abstract class CDPMessageHandlerBase {
     protected debugRequestType: string;
     protected applicationServerAddress: string;
     protected ionicLiveReload?: boolean;
+    protected debuggerTarget: Connection | null;
+    protected applicationTarget: Connection | null;
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
@@ -52,4 +55,12 @@ export abstract class CDPMessageHandlerBase {
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
     public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
     public abstract configureHandlerAfterAttachment(args: ICordovaAttachRequestArgs): void;
+
+    public setDebuggerTarget(debuggerTarget: Connection | null): void {
+        this.debuggerTarget = debuggerTarget;
+    }
+
+    public setApplicationTarget(applicationTarget: Connection | null): void {
+        this.applicationTarget = applicationTarget;
+    }
 }

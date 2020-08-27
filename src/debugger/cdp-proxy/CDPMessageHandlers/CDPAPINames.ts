@@ -7,4 +7,7 @@ export const CDP_API_NAMES = {
     TARGET_TARGET_CREATED: "Target.targetCreated",
     TARGET_DISPATCH_MESSAGE_FROM_TARGET: "Target.dispatchMessageFromTarget",
     TARGET_SEND_MESSAGE_TO_TARGET: "Target.sendMessageToTarget",
+    RUNTIME_ENABLE: "Runtime.enable",
+    CONSOLE_MESSAGE_ADDED: "Console.messageAdded",
+    RUNTIME_CONSOLE_API_CALLED: "Runtime.consoleAPICalled",
 };
