@@ -64,7 +64,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
                 },
             };
         }
-        
+
         if (!this.isBackcompatConfigured && event.method === CDP_API_NAMES.RUNTIME_ENABLE) {
             this.configureTargetForIWDPCommunication();
         }
@@ -183,7 +183,11 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
     private configureTargetForIWDPCommunication(): void {
         this.isBackcompatConfigured = true;
-        this.applicationTarget?.api.Console.enable({});
-        this.applicationTarget?.api.Debugger.setBreakpointsActive({ active: true });
+        try {
+            this.applicationTarget?.api.Console.enable({});
+            this.applicationTarget?.api.Debugger.setBreakpointsActive({ active: true });
+        } catch (err) {
+            // Specifically ignore a fail here since it's only for backcompat
+        }
     }
 }
