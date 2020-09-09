@@ -8,6 +8,7 @@ gulpfile.js
 tsconfig.json
 tslint.json
 
+i18n/*
 out/**
 dist/src
 
