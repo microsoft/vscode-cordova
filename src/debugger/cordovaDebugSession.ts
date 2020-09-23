@@ -241,51 +241,52 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     TelemetryHelper.determineProjectTypes(launchArgs.cwd),
                     this.workspaceManager.getRunArguments(launchArgs.cwd),
                     this.workspaceManager.getCordovaExecutable(launchArgs.cwd),
-                ]).then(([projectType, runArguments, cordovaExecutable]) => {
-                    launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
-                    launchArgs.allEnv = CordovaProjectHelper.getEnvArgument(launchArgs);
-                    generator.add("projectType", projectType, false);
-                    this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", platform));
+                    ])
+                    .then(([projectType, runArguments, cordovaExecutable]) => {
+                        launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
+                        launchArgs.allEnv = CordovaProjectHelper.getEnvArgument(launchArgs);
+                        generator.add("projectType", projectType, false);
+                        this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", platform));
 
-                    switch (platform) {
-                        case PlatformType.Android:
-                            generator.add("platform", platform, false);
-                            if (this.isSimulateTarget(launchArgs.target)) {
+                        switch (platform) {
+                            case PlatformType.Android:
+                                generator.add("platform", platform, false);
+                                if (this.isSimulateTarget(launchArgs.target)) {
+                                    return this.launchSimulate(launchArgs, projectType, generator);
+                                } else {
+                                    return this.launchAndroid(launchArgs, projectType, runArguments);
+                                }
+                            case PlatformType.IOS:
+                                generator.add("platform", platform, false);
+                                if (this.isSimulateTarget(launchArgs.target)) {
+                                    return this.launchSimulate(launchArgs, projectType, generator);
+                                } else {
+                                    return this.launchIos(launchArgs, projectType, runArguments);
+                                }
+                            case PlatformType.Windows:
+                                generator.add("platform", platform, false);
+                                if (this.isSimulateTarget(launchArgs.target)) {
+                                    return this.launchSimulate(launchArgs, projectType, generator);
+                                } else {
+                                    throw new Error(`Debugging ${platform} platform is not supported.`);
+                                }
+                            case PlatformType.Serve:
+                                generator.add("platform", platform, false);
+                                return this.launchServe(launchArgs, projectType, runArguments);
+                            // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
+                            case PlatformType.AmazonFireos:
+                            case PlatformType.Blackberry10:
+                            case PlatformType.Firefoxos:
+                            case PlatformType.Ubuntu:
+                            case PlatformType.Wp8:
+                            case PlatformType.Browser:
+                                generator.add("platform", platform, false);
                                 return this.launchSimulate(launchArgs, projectType, generator);
-                            } else {
-                                return this.launchAndroid(launchArgs, projectType, runArguments);
-                            }
-                        case PlatformType.IOS:
-                            generator.add("platform", platform, false);
-                            if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, projectType, generator);
-                            } else {
-                                return this.launchIos(launchArgs, projectType, runArguments);
-                            }
-                        case PlatformType.Windows:
-                            generator.add("platform", platform, false);
-                            if (this.isSimulateTarget(launchArgs.target)) {
-                                return this.launchSimulate(launchArgs, projectType, generator);
-                            } else {
-                                throw new Error(`Debugging ${platform} platform is not supported.`);
-                            }
-                        case PlatformType.Serve:
-                            generator.add("platform", platform, false);
-                            return this.launchServe(launchArgs, projectType, runArguments);
-                        // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
-                        case PlatformType.AmazonFireos:
-                        case PlatformType.Blackberry10:
-                        case PlatformType.Firefoxos:
-                        case PlatformType.Ubuntu:
-                        case PlatformType.Wp8:
-                        case PlatformType.Browser:
-                            generator.add("platform", platform, false);
-                            return this.launchSimulate(launchArgs, projectType, generator);
-                        default:
-                            generator.add("unknownPlatform", platform, true);
-                            throw new Error(localize("UnknownPlatform", "Unknown Platform: {0}", platform));
-                    }
-                })
+                            default:
+                                generator.add("unknownPlatform", platform, true);
+                                throw new Error(localize("UnknownPlatform", "Unknown Platform: {0}", platform));
+                        }
+                    })
                     .catch((err) => {
                         this.outputLogger(err.message || err, true);
                         return this.cleanUp().then(() => {
@@ -298,9 +299,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             return this.session.customRequest("attach", launchArgs);
                         }
                     });
-            }).done(resolve, reject))
-            .catch(err => reject(err)))
-            .catch(err => this.showError(err, response));
+                }).done(resolve, reject)
+            )
+            .catch(err => reject(err))
+        )
+        .catch(err => this.showError(err, response));
     }
 
     protected attachRequest(response: DebugProtocol.AttachResponse, attachArgs: ICordovaAttachRequestArgs, request?: DebugProtocol.Request): Promise<void> {
@@ -361,23 +364,25 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             }
                             this.cordovaCdpProxy.configureCDPMessageHandlerAfterAttachment(processedAttachArgs);
                         }
-                        this.establishDebugSession(processedAttachArgs);
+                        this.establishDebugSession(processedAttachArgs, resolve);
                     });
-            })
+                })
                 .catch((err) => {
                     this.outputLogger(err.message || err.format || err, true);
                     return this.cleanUp().then(() => {
                         throw err;
                     });
-                }).done(resolve, reject))
+                })
+            )
             .catch(err => reject(err))
         )
-            .then(() => {
-                this.sendResponse(response);
-            })
-            .catch(err => {
-                this.showError(err, response);
-            });
+        .then(() => {
+            this.attachedDeferred.resolve(void 0);
+            this.sendResponse(response);
+        })
+        .catch(err => {
+            this.showError(err, response);
+        });
     }
 
     protected showError(error: Error, response: DebugProtocol.Response): void {
@@ -434,18 +439,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     consoleMode: vscode.DebugConsoleMode.MergeWithParent,
                 }
             )
-                .then((childDebugSessionStarted: boolean) => {
-                    if (childDebugSessionStarted) {
-                        if (resolve) {
-                            resolve();
-                        }
-                    } else {
-                        throw new Error(localize("CannotStartChildDebugSession", "Cannot start child debug session"));
+            .then((childDebugSessionStarted: boolean) => {
+                if (childDebugSessionStarted) {
+                    if (resolve) {
+                        resolve();
                     }
-                },
-                    err => {
-                        throw err;
-                    });
+                } else {
+                    throw new Error(localize("CannotStartChildDebugSession", "Cannot start child debug session"));
+                }
+            },
+                err => {
+                    throw err;
+                }
+            );
         } else {
             throw new Error(localize("CannotConnectToDebuggerWorkerProxyOffline", "Cannot connect to debugger worker: Chrome debugger proxy is offline"));
         }
@@ -540,26 +546,31 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private resetSimulateViewport(): Q.Promise<void> {
-        return this.attachedDeferred.promise;
-        // .promise.then(() =>
-        //     this.chrome.Emulation.clearDeviceMetricsOverride()
-        // ).then(() =>
-        //     this.chrome.Emulation.setEmulatedMedia({media: ""})
-        // ).then(() =>
-        //     this.chrome.Emulation.resetPageScaleFactor()
-        // );
+        return this.attachedDeferred.promise
+            .then(() => {
+                if (this.cordovaCdpProxy) {
+                    const appTargetAPI = this.cordovaCdpProxy.getAppTargetAPI();
+                    if (appTargetAPI) {
+                        appTargetAPI.Emulation.clearDeviceMetricsOverride();
+                        appTargetAPI.Emulation.setEmulatedMedia({media: ""});
+                        appTargetAPI.Emulation.resetPageScaleFactor();
+                    }
+                }
+            });
     }
 
     private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
-        return this.attachedDeferred.promise;
-        // .then(() =>
-        //     this.chrome.Emulation.setDeviceMetricsOverride({
-        //         width: data.width,
-        //         height: data.height,
-        //         deviceScaleFactor: 0,
-        //         mobile: true,
-        //     })
-        // );
+        return this.attachedDeferred.promise
+            .then(() => {
+                if (this.cordovaCdpProxy) {
+                    this.cordovaCdpProxy.getAppTargetAPI()?.Emulation.setDeviceMetricsOverride({
+                        width: data.width,
+                        height: data.height,
+                        deviceScaleFactor: 0,
+                        mobile: true,
+                    });
+                }
+            });
     }
 
     private connectSimulateDebugHost(simulateInfo: SimulationInfo): Q.Promise<void> {

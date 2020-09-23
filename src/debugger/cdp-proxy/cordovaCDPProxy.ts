@@ -44,6 +44,7 @@ export class CordovaCDPProxy {
     private CDPMessageHandler: CDPMessageHandlerBase;
     private communicationPreparationsDone: boolean;
     private browserInspectUri: string;
+    private isChrome: boolean;
 
     constructor(
         hostAddress: string,
@@ -59,6 +60,7 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
+        this.isChrome = args.target === TargetType.Chrome;
         if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = !CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
@@ -111,6 +113,10 @@ export class CordovaCDPProxy {
         this.CDPMessageHandler.configureHandlerAfterAttachment(args);
     }
 
+    public getAppTargetAPI(): any | undefined {
+        return this.applicationTarget?.api;
+    }
+
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
         this.debuggerTarget = debuggerTarget;
 
@@ -120,11 +126,12 @@ export class CordovaCDPProxy {
             if (this.cancellationToken) {
                 this.browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
                     `http://localhost:${this.applicationTargetPort}`,
+                    this.isChrome,
                     20,
                     this.cancellationToken
                 );
             } else {
-                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`, this.isChrome);
             }
         }
 
