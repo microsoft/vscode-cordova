@@ -514,25 +514,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return Q.all([launchSimulate, getEditorsTelemetry]);
     }
 
-    private resetSimulateViewport(): Q.Promise<void> {
-        return this.attachedDeferred.promise
-            .then(() => {
-                if (this.cordovaCdpProxy) {
-                    const appTargetAPI = this.cordovaCdpProxy.getAppTargetAPI();
-                    if (appTargetAPI) {
-                        appTargetAPI.Emulation.clearDeviceMetricsOverride();
-                        appTargetAPI.Emulation.setEmulatedMedia({media: ""});
-                        appTargetAPI.Emulation.resetPageScaleFactor();
-                    }
-                }
-            });
-    }
-
     private changeSimulateViewport(data: simulate.ResizeViewportData): Q.Promise<void> {
         return this.attachedDeferred.promise
             .then(() => {
                 if (this.cordovaCdpProxy) {
-                    this.cordovaCdpProxy.getAppTargetAPI()?.Emulation.setDeviceMetricsOverride({
+                    this.cordovaCdpProxy.getSimPageTargetAPI()?.Emulation.setDeviceMetricsOverride({
                         width: data.width,
                         height: data.height,
                         deviceScaleFactor: 0,
@@ -558,11 +544,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.simulateDebugHost.on("connect", () => {
             this.simulateDebugHost.on("resize-viewport", (data: simulate.ResizeViewportData) => {
                 this.changeSimulateViewport(data).catch(() => {
-                    this.outputLogger(viewportResizeFailMessage, true);
-                }).done();
-            });
-            this.simulateDebugHost.on("reset-viewport", () => {
-                this.resetSimulateViewport().catch(() => {
                     this.outputLogger(viewportResizeFailMessage, true);
                 }).done();
             });

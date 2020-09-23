@@ -29,12 +29,11 @@ export class DebuggerEndpointHelper {
      */
     public async retryGetWSEndpoint(
         browserURL: string,
-        isChrome: boolean,
         attemptNumber: number,
         cancellationToken: CancellationToken
     ): Promise<string> {
         try {
-            return await this.getWSEndpoint(browserURL, isChrome);
+            return await this.getWSEndpoint(browserURL);
         } catch (err) {
             if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
 
@@ -48,7 +47,7 @@ export class DebuggerEndpointHelper {
             }
 
             await delay(1000);
-            return await this.retryGetWSEndpoint(browserURL, isChrome, --attemptNumber, cancellationToken);
+            return await this.retryGetWSEndpoint(browserURL, --attemptNumber, cancellationToken);
         }
     }
 
@@ -56,8 +55,8 @@ export class DebuggerEndpointHelper {
      * Returns the debugger websocket URL a process listening at the given address.
      * @param browserURL -- Address like `http://localhost:1234`
      */
-    public async getWSEndpoint(browserURL: string, isChrome: boolean): Promise<string> {
-        if (!isChrome) {
+    public async getWSEndpoint(browserURL: string, isSimulate: boolean = false): Promise<string> {
+        if (!isSimulate) {
             const jsonVersion = await this.fetchJson<{ webSocketDebuggerUrl?: string }>(
                 URL.resolve(browserURL, "/json/version")
             );

@@ -36,6 +36,7 @@ export class CordovaCDPProxy {
     private port: number;
     private debuggerTarget: Connection | null;
     private applicationTarget: Connection | null;
+    private simPageTarget: Connection | null;
     private logger: OutputChannelLogger;
     private debuggerEndpointHelper: DebuggerEndpointHelper;
     private applicationTargetPort: number;
@@ -44,7 +45,7 @@ export class CordovaCDPProxy {
     private CDPMessageHandler: CDPMessageHandlerBase;
     private communicationPreparationsDone: boolean;
     private browserInspectUri: string;
-    private isChrome: boolean;
+    private isSimulate: boolean;
 
     constructor(
         hostAddress: string,
@@ -60,7 +61,7 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
-        this.isChrome = args.target === TargetType.Chrome;
+        this.isSimulate = !!(args.target === TargetType.Chrome && args.simulatePort);
         if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = !CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
@@ -81,6 +82,10 @@ export class CordovaCDPProxy {
     }
 
     public async stopServer(): Promise<void> {
+        if (this.simPageTarget) {
+            await this.simPageTarget.close();
+            this.simPageTarget = null;
+        }
         if (this.applicationTarget) {
             await this.applicationTarget.close();
             this.applicationTarget = null;
@@ -113,8 +118,8 @@ export class CordovaCDPProxy {
         this.CDPMessageHandler.configureHandlerAfterAttachment(args);
     }
 
-    public getAppTargetAPI(): any | undefined {
-        return this.applicationTarget?.api;
+    public getSimPageTargetAPI(): any | undefined {
+        return this.simPageTarget?.api;
     }
 
     private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
@@ -126,13 +131,20 @@ export class CordovaCDPProxy {
             if (this.cancellationToken) {
                 this.browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
                     `http://localhost:${this.applicationTargetPort}`,
-                    this.isChrome,
                     20,
                     this.cancellationToken
                 );
             } else {
-                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`, this.isChrome);
+                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
             }
+        }
+        if (this.isSimulate) {
+            // There is a problem that the browser endpoint cannot handle "Emulation" domain requests, so we attach to
+            // the application page endpoint, since each page is processed in a separate process.
+            // But the application page endpoint does not handle "Target" domain requests, that's why we store both browser
+            // and app page connections.
+            const simPageInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`, this.isSimulate);
+            this.simPageTarget = new Connection(await WebSocketTransport.create(simPageInspectUri));
         }
 
         this.applicationTarget = new Connection(await WebSocketTransport.create(this.browserInspectUri));
