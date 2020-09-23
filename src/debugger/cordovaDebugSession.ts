@@ -34,22 +34,8 @@ import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
-// enum DebugSessionStatus {
-//     FirstConnection,
-//     FirstConnectionPending,
-//     ConnectionAllowed,
-//     ConnectionPending,
-//     ConnectionDone,
-//     ConnectionFailed,
-// }
-
 const ANDROID_MANIFEST_PATH = path.join("platforms", "android", "AndroidManifest.xml");
 const ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", "main", "AndroidManifest.xml");
-
-// interface DebuggingProperties {
-//     platform: string;
-//     target?: string;
-// }
 
 // `RSIDZTW<NL` are process status codes (as per `man ps`), skip them
 const PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
@@ -99,37 +85,27 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private static NO_LIVERELOAD_WARNING = localize("IonicLiveReloadIsOnlySupportedForIonic1", "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...");
     private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
     private static pidofNotFoundError = localize("pidofNotFound", "/system/bin/sh: pidof: not found");
-    // Workaround to handle breakpoint location requests correctly on some platforms
-    // private static debuggingProperties: DebuggingProperties;
 
     private readonly cdpProxyPort: number;
     private readonly cdpProxyHostAddress: string;
+    private readonly stopCommand: string;
+    private readonly pwaSessionName: PwaDebugType;
+
     private workspaceManager: CordovaWorkspaceManager;
     private outputLogger: (message: string, error?: boolean | string) => void;
     private adbPortForwardingInfo: { targetDevice: string, port: number };
     private ionicLivereloadProcess: child_process.ChildProcess;
     private ionicDevServerUrls: string[];
-    // private previousLaunchArgs: ICordovaLaunchRequestArgs;
-    // private previousAttachArgs: ICordovaAttachRequestArgs;
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
     private attachedDeferred: Q.Deferred<void>;
-    // private debugSessionStatus: DebugSessionStatus;
     private cdpProxyLogLevel: LogLevel;
     private jsDebugConfigAdapter: JsDebugConfigAdapter;
-
-    // private readonly terminateCommand: string;
-    private readonly pwaSessionName: PwaDebugType;
-
-    // private projectRootPath: string;
     private isSettingsInitialized: boolean; // used to prevent parameters reinitialization when attach is called from launch function
     private cordovaCdpProxy: CordovaCDPProxy | null;
     private chromeProc: child_process.ChildProcess;
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
     private cancellationTokenSource: vscode.CancellationTokenSource;
-    // private nodeSession: vscode.DebugSession | null;
-    // private debugSessionStatus: DebugSessionStatus;
-
 
     constructor(private session: vscode.DebugSession, private sessionManager: CordovaSessionManager) {
         super();
@@ -138,7 +114,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cdpProxyPort = generateRandomPortNumber();
         this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
-        // this.terminateCommand = "terminate"; // the "terminate" command is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself
+        this.stopCommand = "workbench.action.debug.stop"; // the command which simulates a click on the "Stop" button
+
         if (session.configuration.platform === PlatformType.IOS
             && (session.configuration.target === TargetType.Emulator || session.configuration.target === TargetType.Device)
         ) {
@@ -148,9 +125,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
 
         // variables definition
-        // this.isSettingsInitialized = false;
         this.cordovaCdpProxy = null;
-        // this.debugSessionStatus = DebugSessionStatus.FirstConnection;
         this.telemetryInitialized = false;
         this.jsDebugConfigAdapter = new JsDebugConfigAdapter();
         this.onDidTerminateDebugSessionHandler = vscode.debug.onDidTerminateDebugSession(
@@ -206,12 +181,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected launchRequest(response: DebugProtocol.LaunchResponse, launchArgs: ICordovaLaunchRequestArgs, request?: DebugProtocol.Request): Promise<void> {
-        // this.previousLaunchArgs = launchArgs;
-        // CordovaDebugSession.debuggingProperties = {
-        //     platform: launchArgs.platform,
-        //     target: launchArgs.target,
-        // };
-
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
             .then(() => {
                 this.initializeSettings(launchArgs);
@@ -411,7 +380,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             debugSession.configuration.cordovaDebugSessionId === this.session.id
             && debugSession.type === this.pwaSessionName
         ) {
-            this.session.customRequest("disconnect");
+            vscode.commands.executeCommand(this.stopCommand, this.session);
         }
     }
 
@@ -894,10 +863,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.chromeProc.kill("SIGINT");
             this.chromeProc = null;
         }
-
-        // Clean up this session's attach and launch args
-        // this.previousLaunchArgs = null;
-        // this.previousAttachArgs = null;
 
         // Stop ADB port forwarding if necessary
         let adbPortPromise: Q.Promise<void>;

@@ -23,9 +23,16 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
         return new vscode.DebugAdapterServer((<Net.AddressInfo>debugServer.address()).port);
     }
 
-    public terminate(debugSession: vscode.DebugSession): void {
+    public terminate(debugSession: vscode.DebugSession, forcedStop: boolean = false): void {
         this.destroyServer(debugSession.id, this.servers.get(debugSession.id));
-        this.destroySocketConnection(debugSession.id, this.connections.get(debugSession.id));
+
+        let connection = this.connections.get(debugSession.id);
+        if (connection) {
+            if (forcedStop) {
+                this.destroySocketConnection(connection);
+            }
+            this.connections.delete(debugSession.id);
+        }
     }
 
     public dispose(): void {
@@ -33,7 +40,8 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
             this.destroyServer(key, server);
         });
         this.connections.forEach((conn, key) => {
-            this.destroySocketConnection(key, conn);
+            this.destroySocketConnection(conn);
+            this.connections.delete(key);
         });
     }
 
@@ -44,12 +52,9 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
         }
     }
 
-    private destroySocketConnection(sessionId: string, conn?: Net.Socket) {
-        if (conn) {
-            conn.removeAllListeners();
-            conn.on("error", () => undefined);
-            conn.destroy();
-            this.connections.delete(sessionId);
-        }
+    private destroySocketConnection(conn: Net.Socket) {
+        conn.removeAllListeners();
+        conn.on("error", () => undefined);
+        conn.destroy();
     }
 }
