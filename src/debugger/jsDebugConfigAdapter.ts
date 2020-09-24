@@ -3,6 +3,7 @@
 
 import { ICordovaAttachRequestArgs } from "./requestArgs";
 import { logger } from "vscode-debugadapter";
+import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
@@ -23,7 +24,16 @@ export class JsDebugConfigAdapter {
     };
 
     public createChromeDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
-        return Object.assign({}, this.getExistingExtraArgs(attachArgs), {
+        let extraArgs: any = {};
+        if (!CordovaProjectHelper.isIonicAngularProject(attachArgs.cwd) && !attachArgs.simulatePort) {
+            extraArgs.pathMapping = {
+                "/android_asset/www": `${attachArgs.cwd}/www`,
+            };
+            extraArgs.url = "file:///";
+            extraArgs.urlFilter = "*";
+        }
+
+        return Object.assign({}, this.getExistingExtraArgs(attachArgs), extraArgs, {
             type: pwaSessionName,
             request: "attach",
             name: "Attach",
@@ -57,7 +67,7 @@ export class JsDebugConfigAdapter {
         if (attachArgs.envFile) {
             existingExtraArgs.envFile = attachArgs.envFile;
         }
-        if (attachArgs.sourceMaps) {
+        if (typeof attachArgs.sourceMaps === "boolean") {
             existingExtraArgs.sourceMaps = attachArgs.sourceMaps;
         }
         existingExtraArgs.sourceMapPathOverrides = this.getSourceMapPathOverrides(
