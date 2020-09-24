@@ -55,12 +55,14 @@ export class DebuggerEndpointHelper {
      * Returns the debugger websocket URL a process listening at the given address.
      * @param browserURL -- Address like `http://localhost:1234`
      */
-    public async getWSEndpoint(browserURL: string): Promise<string> {
-        const jsonVersion = await this.fetchJson<{ webSocketDebuggerUrl?: string }>(
-            URL.resolve(browserURL, "/json/version")
-        );
-        if (jsonVersion.webSocketDebuggerUrl) {
-            return jsonVersion.webSocketDebuggerUrl;
+    public async getWSEndpoint(browserURL: string, isSimulate: boolean = false): Promise<string> {
+        if (!isSimulate) {
+            const jsonVersion = await this.fetchJson<{ webSocketDebuggerUrl?: string }>(
+                URL.resolve(browserURL, "/json/version")
+            );
+            if (jsonVersion.webSocketDebuggerUrl) {
+                return jsonVersion.webSocketDebuggerUrl;
+            }
         }
 
         // Chrome its top-level debugg on /json/version, while Node does not.
