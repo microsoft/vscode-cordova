@@ -547,7 +547,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.outputLogger(viewportResizeFailMessage, true);
                 }).done();
             });
-            this.simulateDebugHost.emit("register-debug-host", { handlers: ["reset-viewport", "resize-viewport"] });
+            this.simulateDebugHost.emit("register-debug-host", { handlers: ["resize-viewport"] });
             simulateDeferred.resolve(void 0);
         });
 
