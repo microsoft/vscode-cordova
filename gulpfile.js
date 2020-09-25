@@ -4,7 +4,6 @@
 const child_process = require("child_process");
 const fs = require("fs");
 const gulp = require("gulp");
-const mocha = require("gulp-mocha");
 const sourcemaps = require("gulp-sourcemaps");
 const ts = require("gulp-typescript");
 const log = require("fancy-log");
@@ -12,8 +11,6 @@ const os = require("os");
 const path = require("path");
 const Q = require("q");
 const typescript = require("typescript");
-const libtslint = require("tslint");
-const tslint = require("gulp-tslint");
 const del = require("del");
 const nls = require("vscode-nls-dev");
 const vscodeTest = require("vscode-test");
@@ -96,6 +93,25 @@ function fixSources() {
   });
 }
 
+function runEslint(srcLocationArray, fix, callback) {
+  let commandArgs = [
+    "--color",
+    ...srcLocationArray
+  ];
+
+  if (fix) {
+    commandArgs.push("--fix");
+  }
+
+  const child = child_process.fork(
+    "./node_modules/eslint/bin/eslint.js",
+    commandArgs,
+    { stdio: 'inherit' },
+  );
+
+  child.on('exit', code => (code ? callback(`Eslint finished with code ${code}`) : callback()));
+}
+
 gulp.task("compile-src", function () {
   return gulp
     .src(sources, { base: "." })
@@ -124,36 +140,16 @@ gulp.task("compile-test", function () {
     .pipe(gulp.dest("out"));
 });
 
-gulp.task("tslint-src", function () {
-  var program = libtslint.Linter.createProgram("./tsconfig.json");
-  return gulp
-    .src(sources, { base: "." })
-    .pipe(
-      tslint({
-        formatter: "verbose",
-        program: program,
-      })
-    )
-    .pipe(tslint.report());
-});
+gulp.task("eslint-src", callback => runEslint(sources, false, callback));
+gulp.task("eslint-test", callback => runEslint(tests, false, callback));
 
-gulp.task("tslint-test", function () {
-  var program = libtslint.Linter.createProgram("./tsconfig.json");
-  return gulp
-    .src(tests, { base: "." })
-    .pipe(
-      tslint({
-        formatter: "verbose",
-        program: program,
-      })
-    )
-    .pipe(tslint.report());
-});
+gulp.task("eslint-src:format", callback => runEslint(sources, true, callback));
+gulp.task("eslint-test:format", callback => runEslint(tests, true, callback));
 
-gulp.task("build-src", gulp.series("compile-src", "tslint-src"));
-gulp.task("build-test", gulp.series("compile-test", "tslint-test"));
+gulp.task("build-src", gulp.series("compile-src", "eslint-src"));
+gulp.task("build-test", gulp.series("compile-test", "eslint-test"));
 gulp.task("build", gulp.series("build-src", "build-test"));
-gulp.task("tslint", gulp.series("tslint-src", "tslint-test"));
+gulp.task("eslint", gulp.series("eslint-src", "eslint-test"));
 
 async function runWebpack({
   packages = [],

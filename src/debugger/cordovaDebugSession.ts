@@ -534,7 +534,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         let simulateDeferred: Q.Deferred<void> = Q.defer<void>();
 
         let simulateConnectErrorHandler = (err: any): void => {
-            this.outputLogger(`Error connecting to the simulated app.`);
+            this.outputLogger("Error connecting to the simulated app.");
             simulateDeferred.reject(err);
         };
 
@@ -731,7 +731,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }
             };
 
-            const getSimulatorProxyPort = (iOSAppPackagePath): Q.IWhenable<{ iOSAppPackagePath: string; targetPort: number; iOSVersion: string }> => {
+            const getSimulatorProxyPort = (iOSAppPackagePath): Q.IWhenable<{ iOSAppPackagePath: string, targetPort: number, iOSVersion: string }> => {
                 return promiseGet(`http://localhost:${attachArgs.port}/json`, localize("UnableToCommunicateWithiOSWebkitDebugProxy", "Unable to communicate with ios_webkit_debug_proxy")).then((response: string) => {
                     try {
                         // An example of a json response from IWDP
