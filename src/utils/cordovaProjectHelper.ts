@@ -277,17 +277,13 @@ export class CordovaProjectHelper {
      */
     public static isIonicAngularProject(projectRoot: string): boolean {
         const versions = this.checkIonicVersions(projectRoot);
-        return versions.isIonic1
-            || versions.isIonic2
-            || versions.isIonic3
-            || versions.isIonic4
-            || versions.isIonic5;
+        return CordovaProjectHelper.isIonicAngularProjectByProjectType(versions);
     }
 
     /**
      * Helper function to determine whether the project is an project or not by project types
      */
-    public static isIonicAngularProjectByProjectType(projectType: IProjectType): boolean {
+    public static isIonicAngularProjectByProjectType(projectType: IIonicVersion): boolean {
         return projectType.isIonic1
             || projectType.isIonic2
             || projectType.isIonic3
