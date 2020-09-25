@@ -546,7 +546,7 @@
     ]
   },
   "scripts": {
-    "compile": "node ./node_modules/gulp/bin/gulp",
+    "build": "gulp build",
     "test": "node ./out/test/runTest.js",
     "vscode:prepublish": "gulp"
   },
