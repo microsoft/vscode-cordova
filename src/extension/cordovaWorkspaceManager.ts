@@ -11,6 +11,7 @@ import { Telemetry } from "../utils/telemetry";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { ProjectsStorage } from "./projectsStorage";
 import * as nls from "vscode-nls";
+import { createAdditionalWorkspaceFolder, onFolderAdded } from "../cordova";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -24,9 +25,16 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
     }
 
     public static getWorkspaceManagerByProjectRootPath(projectRootPath: string): CordovaWorkspaceManager {
-        const workspaceManager = ProjectsStorage.projectsCache[projectRootPath.toLowerCase()];
+        let workspaceManager = ProjectsStorage.projectsCache[projectRootPath.toLowerCase()];
         if (!workspaceManager) {
-            throw new Error(localize("CouldntFindWorkspaceManager", "Could not find workspace manager by the project root path {0}", projectRootPath));
+            const workspaceFolder = createAdditionalWorkspaceFolder(projectRootPath);
+            if (workspaceFolder) {
+                onFolderAdded(workspaceFolder);
+                workspaceManager = ProjectsStorage.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
+            }
+            if (!workspaceManager) {
+                throw new Error(localize("CouldntFindWorkspaceManager", "Could not find workspace manager by the project root path {0}", projectRootPath));
+            }
         }
         return workspaceManager;
     }
