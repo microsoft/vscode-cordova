@@ -8,3 +8,4 @@ test/testProject/.vscode/
 test/testProject/platforms/
 test/testProject/plugins/
 test/testProject/typings/
+.vscode-test/

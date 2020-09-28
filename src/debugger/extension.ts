@@ -118,7 +118,7 @@ export function cordovaStartCommand(command: string, args: string[], env: any, c
 
 export function killTree(processId: number): void {
     const cmd = process.platform === "win32" ?
-        `taskkill.exe /F /T /PID` :
+        "taskkill.exe /F /T /PID" :
         path.join(findFileInFolderHierarchy(__dirname, "scripts"), "terminateProcess.sh");
 
     try {

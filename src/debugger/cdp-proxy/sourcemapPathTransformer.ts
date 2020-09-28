@@ -27,7 +27,7 @@ export class SourcemapPathTransformer {
     }
 
     public getClientPathFromFileBasedUrl(sourceUrl: string): string {
-        const regExp = new RegExp(`file:\\/\\/\\/.*\\.app(?:\\/www)*(\\/.*\\.(js|html))`, "g");
+        const regExp = new RegExp("file:\\/\\/\\/.*\\.app(?:\\/www)*(\\/.*\\.(js|html))", "g");
         let foundStrings = regExp.exec(sourceUrl);
         if (foundStrings && foundStrings[1]) {
             return this.getClientPath(foundStrings[1]);
