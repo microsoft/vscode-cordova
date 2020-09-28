@@ -241,6 +241,23 @@ export class CordovaProjectHelper {
         return projectRoot;
     }
 
+    public static checkPathBelongsToHierarchy(parentPath: string, childPath: string): boolean {
+        let parentStepPath: string;
+        let childStepPath: string = childPath;
+
+        while (childStepPath !== parentPath) {
+            parentStepPath = path.resolve(childStepPath, "..");
+            if (parentStepPath !== childStepPath) {
+                childStepPath = parentStepPath;
+            } else {
+                // we have reached the filesystem root
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      *  Helper function to get the target path for the type definition files (to be used for Cordova plugin intellisense).
      *  Creates the target path if it does not exist already.

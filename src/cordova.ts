@@ -34,7 +34,7 @@ let JSCONFIG_FILENAME = "jsconfig.json";
 let TSCONFIG_FILENAME = "tsconfig.json";
 
 let EXTENSION_CONTEXT: vscode.ExtensionContext;
-let COUNT_WORKSPACE_FOLDERS = 0;
+let COUNT_WORKSPACE_FOLDERS = 9000;
 
 export function activate(context: vscode.ExtensionContext): void {
     // Asynchronously enable telemetry
@@ -89,9 +89,13 @@ function onChangeWorkspaceFolders(event: vscode.WorkspaceFoldersChangeEvent) {
 
 export function createAdditionalWorkspaceFolder(folderPath: string): vscode.WorkspaceFolder | null {
     if (fs.existsSync(folderPath)) {
-        const folderName = path.basename(folderPath);
+        let projectRoot = folderPath;
+        if (path.isAbsolute(folderPath)) {
+            projectRoot = "/" + folderPath.charAt(0).toLowerCase() + folderPath.substring(1);
+        }
+        const folderName = path.basename(projectRoot);
         return {
-            uri: vscode.Uri.parse(folderPath),
+            uri: vscode.Uri.parse(projectRoot),
             name: folderName,
             index: COUNT_WORKSPACE_FOLDERS + 1,
         };
@@ -215,7 +219,11 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
 }
 
 function onFolderRemoved(folder: vscode.WorkspaceFolder): void {
-    ProjectsStorage.delFolder(folder);
+    Object.keys(ProjectsStorage.projectsCache).forEach(path => {
+        if (CordovaProjectHelper.checkPathBelongsToHierarchy(folder.uri.fsPath.toLowerCase(), path)) {
+            delete ProjectsStorage.projectsCache[path];
+        }
+    });
 }
 
 function getPluginTypingsJson(): any {
