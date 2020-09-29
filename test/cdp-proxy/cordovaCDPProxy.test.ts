@@ -9,6 +9,7 @@ import {
     Server,
     WebSocketTransport
 } from "vscode-cdp-proxy";
+import { convertWindowsPathToUnixOne } from "../testUtils";
 import { generateRandomPortNumber, delay } from "../../src/utils/extensionHelper";
 import { CordovaCDPProxy } from "../../src/debugger/cdp-proxy/cordovaCDPProxy";
 import { IProjectType } from "../../src/utils/cordovaProjectHelper";
@@ -32,7 +33,9 @@ suite("cordovaCDPProxy", function () {
     const cdpProxyHostAddress = "127.0.0.1"; // localhost
     const cdpProxyPort = generateRandomPortNumber();
     const cdpProxyLogLevel = LogLevel.Custom;
-    const testProjectPath = path.resolve(__dirname, "..", "testProject");
+    const testProjectPath = process.platform === "win32" ?
+        convertWindowsPathToUnixOne(path.join(__dirname, "..", "testProject")) :
+        path.join(__dirname, "..", "testProject");
 
     let proxy: CordovaCDPProxy;
     let cancellationTokenSource: vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
@@ -214,7 +217,7 @@ suite("cordovaCDPProxy", function () {
                         const processedMessageRef = {
                             method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
                             params: {
-                                url: `file://${testProjectPath}/www/js/index.js`,
+                                url: `file://${process.platform === "win32" ? "/" + testProjectPath : testProjectPath}/www/js/index.js`,
                             },
                         };
 
@@ -251,7 +254,7 @@ suite("cordovaCDPProxy", function () {
                     const processedMessageRef = {
                         method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
                         params: {
-                            url: `file://${testProjectPath}/www/main.js`,
+                            url: `file://${process.platform === "win32" ? "/" + testProjectPath : testProjectPath}/www/main.js`,
                         },
                     };
 
@@ -280,15 +283,23 @@ suite("cordovaCDPProxy", function () {
                     const processedMessageRef = {
                         method: CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL,
                         params: {
-                            urlRegex: "http:\\/\\/localhost\\/main\\.js",
+                            urlRegex: `http:\\/\\/localhost\\/${process.platform === "win32" ? "[mM][aA][iI][nN]\\.[jJ][sS]" : "main\\.js"}`,
                         },
                     };
 
-                    const testPathRegex = `${testProjectPath}/www/main.js`.replace(/([\/\.])/g, "\\$1");
+                    let testUrlRegex;
+                    if (process.platform === "win32") {
+                        const testPathRegex = `${testProjectPath.replace(/([\/\.])/g, "\\$1")}\\\\[wW][wW][wW]\\\\[mM][aA][iI][nN]\\.[jJ][sS]`;
+                        testUrlRegex = `[fF][iI][lL][eE]:\\/\\/${testPathRegex}|${testPathRegex}`;
+                    } else {
+                        const testPathRegex = `${testProjectPath}/www/main.js`.replace(/([\/\.])/g, "\\$1");
+                        testUrlRegex = `file:\\/\\/${testPathRegex}|${testPathRegex}`;
+                    }
+
                     const debuggerMessageTest = {
                         method: CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL,
                         params: {
-                            urlRegex: `file:\\/\\/${testPathRegex}|${testPathRegex}`,
+                            urlRegex: testUrlRegex,
                         },
                     };
 
