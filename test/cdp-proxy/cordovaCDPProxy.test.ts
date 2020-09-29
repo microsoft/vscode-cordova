@@ -16,7 +16,7 @@ import { ICordovaAttachRequestArgs } from "../../src/debugger/requestArgs";
 import { ChromeCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/chromeCDPMessageHandler";
 import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPAPINames";
-// import { SafariCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/safariCDPMessageHandler";
+import { SafariCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/safariCDPMessageHandler";
 import { SourcemapPathTransformer } from "../../src/debugger/cdp-proxy/sourcemapPathTransformer";
 import { LogLevel } from "../../src/utils/log/logHelper";
 import { DebuggerEndpointHelper } from "../../src/debugger/cdp-proxy/debuggerEndpointHelper";
@@ -28,7 +28,7 @@ interface ICDPProxyInternalEntities {
     cdpMessageHandler: CDPMessageHandlerBase;
 }
 
-suite("reactNativeCDPProxy", function () {
+suite("cordovaCDPProxy", function () {
     const cdpProxyHostAddress = "127.0.0.1"; // localhost
     const cdpProxyPort = generateRandomPortNumber();
     const cdpProxyLogLevel = LogLevel.Custom;
@@ -69,58 +69,58 @@ suite("reactNativeCDPProxy", function () {
         let sourcemapPathTransformer: SourcemapPathTransformer;
         let cdpMessageHandler: CDPMessageHandlerBase;
 
-        switch(debugType) {
-            case "ionic":
+        projectType = {
+            isMeteor: false,
+            isMobilefirst: false,
+            isPhonegap: false,
+            isCordova: true,
+            isIonic1: false,
+            isIonic2: false,
+            isIonic3: false,
+            isIonic4: false,
+            isIonic5: false,
+        };
 
-            break;
-            case "cordova":
-                attachArgs = {
-                    cwd: path.resolve(__dirname, "..", "testProject"),
-                    platform: "android",
-                    ionicLiveReload: false,
-                    request: "attach",
-                    port: 9222,
-                };
-                projectType = {
-                    isMeteor: false,
-                    isMobilefirst: false,
-                    isPhonegap: false,
-                    isCordova: true,
-                    isIonic1: false,
-                    isIonic2: false,
-                    isIonic3: false,
-                    isIonic4: false,
-                    isIonic5: false,
-                };
-                break;
-            case "simulate":
-                attachArgs = {
-                    cwd: path.resolve(__dirname, "..", "testProject"),
-                    platform: "android",
-                    ionicLiveReload: false,
-                    request: "attach",
-                    port: 9222,
-                    simulatePort: 8000,
-                };
-                projectType = {
-                    isMeteor: false,
-                    isMobilefirst: false,
-                    isPhonegap: false,
-                    isCordova: true,
-                    isIonic1: false,
-                    isIonic2: false,
-                    isIonic3: false,
-                    isIonic4: false,
-                    isIonic5: false,
-                };
-            break;
-        }
-
-        sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
         if (cdpHandlerType === "chrome") {
+            attachArgs = {
+                cwd: path.resolve(__dirname, "..", "testProject"),
+                platform: "android",
+                ionicLiveReload: false,
+                request: "attach",
+                port: 9222,
+            };
+
+            switch(debugType) {
+                case "ionic":
+                    projectType.isIonic5 = true;
+                    break;
+                case "cordova":
+                    break;
+                case "simulate":
+                    attachArgs.simulatePort = 8000;
+                    break;
+            }
+
+            sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
             cdpMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, attachArgs);
         } else {
+            attachArgs = {
+                cwd: path.resolve(__dirname, "..", "testProject"),
+                platform: "ios",
+                ionicLiveReload: false,
+                request: "attach",
+                port: 9222,
+            };
 
+            switch(debugType) {
+                case "ionic":
+                    break;
+                case "cordova":
+                    break;
+            }
+
+            sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+            cdpMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, attachArgs);
         }
 
         return {
@@ -210,15 +210,15 @@ suite("reactNativeCDPProxy", function () {
                         Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
                     });
 
-                    test(`Message from target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
-                        const targetMessageRef = {
+                    test(`Message from the target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
+                        const processedMessageRef = {
                             method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
                             params: {
                                 url: `file://${testProjectPath}/www/js/index.js`,
                             },
                         };
 
-                        const debuggerMessageTest = {
+                        const targetMessageTest = {
                             method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
                             params: {
                                 url: "http://localhost:8000/js/index.js",
@@ -226,7 +226,7 @@ suite("reactNativeCDPProxy", function () {
                         };
 
                         const processedMessage = await new Promise((resolve) => {
-                            targetConnection?.send(debuggerMessageTest);
+                            targetConnection?.send(targetMessageTest);
 
                             debugConnection?.onCommand((evt: any) => {
                                 resolve(evt);
@@ -236,8 +236,74 @@ suite("reactNativeCDPProxy", function () {
                             return evt;
                         });
 
-                        assert.deepStrictEqual(targetMessageRef, processedMessage);
+                        assert.deepStrictEqual(processedMessageRef, processedMessage);
                     });
+                });
+            });
+
+            suite("Ionic", () => {
+                suiteSetup(() => {
+                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "chrome");
+                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                });
+
+                test(`Message from the target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
+                    const processedMessageRef = {
+                        method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
+                        params: {
+                            url: `file://${testProjectPath}/www/main.js`,
+                        },
+                    };
+
+                    const targetMessageTest = {
+                        method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
+                        params: {
+                            url: "http://localhost/main.js",
+                        },
+                    };
+
+                    const processedMessage = await new Promise((resolve) => {
+                        targetConnection?.send(targetMessageTest);
+
+                        debugConnection?.onCommand((evt: any) => {
+                            resolve(evt);
+                        });
+                    })
+                    .then((evt) => {
+                        return evt;
+                    });
+
+                    assert.deepStrictEqual(processedMessageRef, processedMessage);
+                });
+
+                test(`Message from the debugger with ${CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL} should replace the "urlRegex" prop with the correct one`, async () => {
+                    const processedMessageRef = {
+                        method: CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL,
+                        params: {
+                            urlRegex: "http:\\/\\/localhost\\/main\\.js",
+                        },
+                    };
+
+                    const testPathRegex = `${testProjectPath}/www/main.js`.replace(/([\/\.])/g, "\\$1");
+                    const debuggerMessageTest = {
+                        method: CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL,
+                        params: {
+                            urlRegex: `file:\\/\\/${testPathRegex}|${testPathRegex}`,
+                        },
+                    };
+
+                    const processedMessage = await new Promise((resolve) => {
+                        debugConnection?.send(debuggerMessageTest);
+
+                        targetConnection?.onCommand((evt: any) => {
+                            resolve(evt);
+                        });
+                    })
+                    .then((evt) => {
+                        return evt;
+                    });
+
+                    assert.deepStrictEqual(processedMessageRef, processedMessage);
                 });
             });
         });
