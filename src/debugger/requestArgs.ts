@@ -11,7 +11,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     url?: string;
     address?: string;
     trace?: string;
-    timeout: number;
+    timeout?: number;
     platform: string;
     target?: string;
     envFile?: string;

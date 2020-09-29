@@ -46,7 +46,7 @@
   "extensionKind": [
     "workspace"
   ],
-  "main": "./out/src/cordova",
+  "main": "./src/cordova",
   "contributes": {
     "commands": [
       {
@@ -547,7 +547,7 @@
   },
   "scripts": {
     "build": "gulp build",
-    "test": "node ./out/test/runTest.js",
+    "test": "node ./test/runTest.js",
     "vscode:prepublish": "gulp"
   },
   "dependencies": {
