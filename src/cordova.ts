@@ -89,14 +89,9 @@ function onChangeWorkspaceFolders(event: vscode.WorkspaceFoldersChangeEvent) {
 
 export function createAdditionalWorkspaceFolder(folderPath: string): vscode.WorkspaceFolder | null {
     if (fs.existsSync(folderPath)) {
-        let projectRoot = folderPath;
-        if (path.isAbsolute(folderPath)) {
-            projectRoot = "/" + folderPath.charAt(0).toLowerCase() + folderPath.substring(1);
-        }
-        const folderName = path.basename(projectRoot);
         return {
-            uri: vscode.Uri.parse(projectRoot),
-            name: folderName,
+            uri: vscode.Uri.file(folderPath),
+            name: path.basename(folderPath),
             index: COUNT_WORKSPACE_FOLDERS + 1,
         };
     } else return null;
