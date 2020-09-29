@@ -307,5 +307,24 @@ suite("cordovaCDPProxy", function () {
                 });
             });
         });
+        suite("SafariCDPMessageHandler", () => {
+            suite("Pure Cordova", () => {
+                suiteSetup(() => {
+                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("cordova", "safari");
+                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                });
+
+                test("Targeted messages should be delivered correctly with SafariCDPMessageHandler", async () => {
+
+                });
+            });
+
+            suite("Ionic", () => {
+                suiteSetup(() => {
+                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "safari");
+                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                });
+            });
+        });
     });
 });
