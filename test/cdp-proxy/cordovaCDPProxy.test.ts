@@ -84,43 +84,30 @@ suite("cordovaCDPProxy", function () {
             isIonic5: false,
         };
 
+        attachArgs = {
+            cwd: path.resolve(__dirname, "..", "testProject"),
+            platform: "android",
+            ionicLiveReload: false,
+            request: "attach",
+            port: 9222,
+        };
+
+        switch(debugType) {
+            case "ionic":
+                projectType.isIonic5 = true;
+                break;
+            case "cordova":
+                break;
+            case "simulate":
+                attachArgs.simulatePort = 8000;
+                break;
+        }
+
         if (cdpHandlerType === "chrome") {
-            attachArgs = {
-                cwd: path.resolve(__dirname, "..", "testProject"),
-                platform: "android",
-                ionicLiveReload: false,
-                request: "attach",
-                port: 9222,
-            };
-
-            switch(debugType) {
-                case "ionic":
-                    projectType.isIonic5 = true;
-                    break;
-                case "cordova":
-                    break;
-                case "simulate":
-                    attachArgs.simulatePort = 8000;
-                    break;
-            }
-
             sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
             cdpMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, attachArgs);
         } else {
-            attachArgs = {
-                cwd: path.resolve(__dirname, "..", "testProject"),
-                platform: "ios",
-                ionicLiveReload: false,
-                request: "attach",
-                port: 9222,
-            };
-
-            switch(debugType) {
-                case "ionic":
-                    break;
-                case "cordova":
-                    break;
-            }
+            attachArgs.platform = "ios";
 
             sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
             cdpMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, attachArgs);
@@ -187,9 +174,6 @@ suite("cordovaCDPProxy", function () {
                         debugConnection?.onCommand((evt: any) => {
                             resolve(evt);
                         });
-                    })
-                    .then((evt) => {
-                        return evt;
                     });
 
                     const messageFromDebugger = await new Promise((resolve) => {
@@ -198,9 +182,6 @@ suite("cordovaCDPProxy", function () {
                         targetConnection?.onCommand((evt: any) => {
                             resolve(evt);
                         });
-                    })
-                    .then((evt) => {
-                        return evt;
                     });
 
                     assert.deepStrictEqual(messageFromTarget, targetMessageStart);
@@ -234,9 +215,6 @@ suite("cordovaCDPProxy", function () {
                             debugConnection?.onCommand((evt: any) => {
                                 resolve(evt);
                             });
-                        })
-                        .then((evt) => {
-                            return evt;
                         });
 
                         assert.deepStrictEqual(processedMessageRef, processedMessage);
@@ -271,9 +249,6 @@ suite("cordovaCDPProxy", function () {
                         debugConnection?.onCommand((evt: any) => {
                             resolve(evt);
                         });
-                    })
-                    .then((evt) => {
-                        return evt;
                     });
 
                     assert.deepStrictEqual(processedMessageRef, processedMessage);
@@ -309,9 +284,6 @@ suite("cordovaCDPProxy", function () {
                         targetConnection?.onCommand((evt: any) => {
                             resolve(evt);
                         });
-                    })
-                    .then((evt) => {
-                        return evt;
                     });
 
                     assert.deepStrictEqual(processedMessageRef, processedMessage);
@@ -319,21 +291,39 @@ suite("cordovaCDPProxy", function () {
             });
         });
         suite("SafariCDPMessageHandler", () => {
-            suite("Pure Cordova", () => {
-                suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("cordova", "safari");
-                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
-                });
-
-                test("Targeted messages should be delivered correctly with SafariCDPMessageHandler", async () => {
-
-                });
-            });
-
             suite("Ionic", () => {
                 suiteSetup(() => {
                     let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "safari");
+                    (cdpProxyInternalEntities.cdpMessageHandler as any).targetId = "page-7";
                     Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                });
+
+                test("Messages should be wrapped in the Target form", async () => {
+                    const debuggerMessageTest = {
+                        id: 1002,
+                        method: "Debugger.enable",
+                        params: {},
+                    };
+
+                    const processedMessageRef = {
+                        id: debuggerMessageTest.id,
+                        method: CDP_API_NAMES.TARGET_SEND_MESSAGE_TO_TARGET,
+                        params: {
+                            id: debuggerMessageTest.id,
+                            message: JSON.stringify(debuggerMessageTest),
+                            targetId: "page-7",
+                        },
+                    };
+
+                    const processedMessage = await new Promise((resolve) => {
+                        debugConnection?.send(debuggerMessageTest);
+
+                        targetConnection?.onReply((evt: any) => {
+                            resolve(evt);
+                        });
+                    });
+
+                    assert.deepStrictEqual(processedMessageRef, processedMessage);
                 });
             });
         });

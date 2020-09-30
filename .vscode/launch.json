@@ -27,12 +27,6 @@
             ],
             "preLaunchTask": "gulp: prepare-integration-tests"
         }
-    ],
-    "compounds": [
-        {
-            "name": "Launch Extension + Debugger",
-            "configurations": ["Launch debugger as server", "Launch Extension"]
-        }
     ]
 }
 
