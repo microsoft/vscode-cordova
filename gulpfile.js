@@ -91,12 +91,6 @@ var tsConfig = require("./tsconfig.json");
 var projectConfig = tsConfig.compilerOptions;
 projectConfig.typescript = typescript;
 
-function fixSources() {
-  return sourcemaps.mapSources(function (sourcePath) {
-    return sourcePath.replace("..", ".");
-  });
-}
-
 function runEslint(srcLocationArray, fix, callback) {
   let commandArgs = [
     "--color",
@@ -121,7 +115,6 @@ gulp.task("compile-src", function () {
     .src(sources, { base: "." })
     .pipe(sourcemaps.init())
     .pipe(ts(projectConfig))
-    // .pipe(fixSources())
     .pipe(nls.createMetaDataFiles())
     .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
     .pipe(nls.bundleMetaDataFiles(ExtensionName, "."))
@@ -137,7 +130,6 @@ gulp.task("compile-test", function () {
     .src(tests, { base: "." })
     .pipe(sourcemaps.init())
     .pipe(ts(projectConfig))
-    .pipe(fixSources())
     .pipe(
       sourcemaps.write(".", { includeContent: false, sourceRoot: __dirname })
     )
@@ -262,9 +254,9 @@ const generateSrcLocBundle = () => {
     .pipe(nls.bundleLanguageFiles())
     .pipe(
       filter([
-        "out/nls.bundle.*.json",
-        "out/nls.metadata.header.json",
-        "out/nls.metadata.json",
+        "nls.bundle.*.json",
+        "nls.metadata.header.json",
+        "nls.metadata.json",
       ])
     )
     .pipe(gulp.dest("dist"));
@@ -296,7 +288,7 @@ gulp.task("run-test", async function () {
     const extensionDevelopmentPath = __dirname;
     // The path to the extension test runner script
     // Passed to --extensionTestsPath
-    const extensionTestsPath = path.resolve(__dirname, "out", "test", "index");
+    const extensionTestsPath = path.resolve(__dirname, "test", "index");
     console.log(extensionTestsPath);
     // Download VS Code, unzip it and run the integration test
     await vscodeTest.runTests({
@@ -430,8 +422,8 @@ gulp.task(
     return gulp
       .src([
         "package.nls.json",
-        "./out/nls.metadata.header.json",
-        "./out/nls.metadata.json",
+        "nls.metadata.header.json",
+        "nls.metadata.json",
       ])
       .pipe(nls.createXlfFiles(translationProjectName, ExtensionName))
       .pipe(

@@ -292,9 +292,10 @@ suite("cordovaCDPProxy", function () {
         });
         suite("SafariCDPMessageHandler", () => {
             suite("Ionic", () => {
+                const targetPageId = "page-7";
                 suiteSetup(() => {
                     let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "safari");
-                    (cdpProxyInternalEntities.cdpMessageHandler as any).targetId = "page-7";
+                    (cdpProxyInternalEntities.cdpMessageHandler as any).targetId = targetPageId;
                     Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
                 });
 
@@ -311,7 +312,7 @@ suite("cordovaCDPProxy", function () {
                         params: {
                             id: debuggerMessageTest.id,
                             message: JSON.stringify(debuggerMessageTest),
-                            targetId: "page-7",
+                            targetId: targetPageId,
                         },
                     };
 

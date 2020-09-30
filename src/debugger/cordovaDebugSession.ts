@@ -308,7 +308,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     })
                     .then(() => {
                         if (target === TargetType.Device || target === TargetType.Emulator) {
-                            this.outputLogger(`Attaching to ${platform}`);
+                            this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", platform));
                             switch (platform) {
                                 case PlatformType.Android:
                                     generator.add("platform", platform, false);
