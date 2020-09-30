@@ -15,7 +15,14 @@ export class ProjectsStorage {
         return this.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
     }
 
-    public static delFolder(workspaceFolder: vscode.WorkspaceFolder): void {
-        delete this.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
+    public static delFolder(workspaceFolder: vscode.WorkspaceFolder | string): void {
+        let key = "";
+        if (typeof workspaceFolder === "string") {
+            key = workspaceFolder.toLowerCase();
+        }
+        else {
+            key = workspaceFolder.uri.fsPath.toLowerCase();
+        }
+        delete this.projectsCache[key];
     }
 }

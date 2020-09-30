@@ -221,7 +221,7 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
 function onFolderRemoved(folder: vscode.WorkspaceFolder): void {
     Object.keys(ProjectsStorage.projectsCache).forEach(path => {
         if (CordovaProjectHelper.checkPathBelongsToHierarchy(folder.uri.fsPath.toLowerCase(), path)) {
-            delete ProjectsStorage.projectsCache[path];
+            ProjectsStorage.delFolder(path);
         }
     });
 }
