@@ -67,3 +67,7 @@ export function isUrlReachable(url: string): Q.Promise<boolean> {
 
     return deferred.promise;
 }
+
+export function convertWindowsPathToUnixOne(path: string) {
+    return path.replace(/\\/g, "/");
+}

@@ -9,3 +9,9 @@ test/testProject/platforms/
 test/testProject/plugins/
 test/testProject/typings/
 .vscode-test/
+nls.*.json
+
+# Compiled files
+src/**/*.js
+test/**/*.js
+**/*.js.map

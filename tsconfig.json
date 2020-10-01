@@ -9,7 +9,8 @@
         "noImplicitAny": false,
         "removeComments": false,
         "sourceMap": true,
-        "outDir": "out",
+        "outDir": "./",
+        "rootDir": "./",
         "noUnusedLocals": true,
         "skipLibCheck": true
     },

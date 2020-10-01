@@ -60,7 +60,11 @@ const buildDir = "src";
 const distDir = "dist";
 const distSrcDir = `${distDir}/src`;
 
-var tests = ["test/debugger/**/*.ts", "test/*.ts"];
+var tests = [
+  "test/debugger/**/*.ts",
+  "test/cdp-proxy/**/*.ts",
+  "test/*.ts"
+];
 
 const tsProject = ts.createProject("tsconfig.json");
 const ExtensionName = "msjsdiag.vscode-cordova";
@@ -87,12 +91,6 @@ var tsConfig = require("./tsconfig.json");
 var projectConfig = tsConfig.compilerOptions;
 projectConfig.typescript = typescript;
 
-function fixSources() {
-  return sourcemaps.mapSources(function (sourcePath) {
-    return sourcePath.replace("..", ".");
-  });
-}
-
 function runEslint(srcLocationArray, fix, callback) {
   let commandArgs = [
     "--color",
@@ -117,7 +115,6 @@ gulp.task("compile-src", function () {
     .src(sources, { base: "." })
     .pipe(sourcemaps.init())
     .pipe(ts(projectConfig))
-    .pipe(fixSources())
     .pipe(nls.createMetaDataFiles())
     .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
     .pipe(nls.bundleMetaDataFiles(ExtensionName, "."))
@@ -125,7 +122,7 @@ gulp.task("compile-src", function () {
     .pipe(
       sourcemaps.write(".", { includeContent: false, sourceRoot: __dirname })
     )
-    .pipe(gulp.dest("out"));
+    .pipe(gulp.dest(file => file.cwd));
 });
 
 gulp.task("compile-test", function () {
@@ -133,11 +130,10 @@ gulp.task("compile-test", function () {
     .src(tests, { base: "." })
     .pipe(sourcemaps.init())
     .pipe(ts(projectConfig))
-    .pipe(fixSources())
     .pipe(
       sourcemaps.write(".", { includeContent: false, sourceRoot: __dirname })
     )
-    .pipe(gulp.dest("out"));
+    .pipe(gulp.dest(file => file.cwd));
 });
 
 gulp.task("eslint-src", callback => runEslint(sources, false, callback));
@@ -258,9 +254,9 @@ const generateSrcLocBundle = () => {
     .pipe(nls.bundleLanguageFiles())
     .pipe(
       filter([
-        "out/nls.bundle.*.json",
-        "out/nls.metadata.header.json",
-        "out/nls.metadata.json",
+        "nls.bundle.*.json",
+        "nls.metadata.header.json",
+        "nls.metadata.json",
       ])
     )
     .pipe(gulp.dest("dist"));
@@ -292,7 +288,7 @@ gulp.task("run-test", async function () {
     const extensionDevelopmentPath = __dirname;
     // The path to the extension test runner script
     // Passed to --extensionTestsPath
-    const extensionTestsPath = path.resolve(__dirname, "out", "test", "index");
+    const extensionTestsPath = path.resolve(__dirname, "test", "index");
     console.log(extensionTestsPath);
     // Download VS Code, unzip it and run the integration test
     await vscodeTest.runTests({
@@ -384,12 +380,21 @@ gulp.task("release", function () {
 });
 
 gulp.task("clean-src", function () {
-  var pathsToDelete = ["out/src/"];
+  var pathsToDelete = [
+    "src/**/*.js",
+    "src/**/*.js.map",
+    "out/src/"
+  ];
   return del(pathsToDelete, { force: true });
 });
 
 gulp.task("clean-test", function () {
-  var pathsToDelete = ["out/test/"];
+  var pathsToDelete = [
+    "test/**/*.js",
+    "test/**/*.js.map",
+    "!test/testProject/**/*.js",
+    "!test/testProject/**/*.js.map",
+  ];
   return del(pathsToDelete, { force: true });
 });
 
@@ -417,8 +422,8 @@ gulp.task(
     return gulp
       .src([
         "package.nls.json",
-        "./out/nls.metadata.header.json",
-        "./out/nls.metadata.json",
+        "nls.metadata.header.json",
+        "nls.metadata.json",
       ])
       .pipe(nls.createXlfFiles(translationProjectName, ExtensionName))
       .pipe(
