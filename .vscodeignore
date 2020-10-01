@@ -2,11 +2,12 @@
 **/*.ts
 **/*.map
 .vscode/**
+.vscode-test/**
 typings/**
 *.vsix
 gulpfile.js
 tsconfig.json
-tslint.json
+.eslintrc.js
 
 i18n/**
 out/**
