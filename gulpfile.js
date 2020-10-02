@@ -62,6 +62,7 @@ const distSrcDir = `${distDir}/src`;
 
 var tests = [
   "test/debugger/**/*.ts",
+  "test/extension/**/*.ts",
   "test/cdp-proxy/**/*.ts",
   "test/*.ts"
 ];

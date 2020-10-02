@@ -212,33 +212,12 @@ export class CordovaProjectHelper {
     }
 
     /**
-     *  Helper to find the root of the Cordova project. Returns null in the case of directories which are
-     *  not cordova-based projects. Otherwise, returns the project root path as a string.
+     *  Helper to check whether a workspace root equals to a Cordova project root
      */
-    public static getCordovaProjectRoot(workspaceRoot: string): string {
-        let parentPath: string;
-        let projectRoot: string = workspaceRoot;
-        let atFsRoot: boolean = false;
-
-        while (!CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_XML_FILENAME))
-            && !CordovaProjectHelper.existsSync(path.join(projectRoot, CordovaProjectHelper.CONFIG_IONIC_FILENAME))) {
-            // Navigate up one level until either config.xml is found
-            parentPath = path.resolve(projectRoot, "..");
-            if (parentPath !== projectRoot) {
-                projectRoot = parentPath;
-            } else {
-                // we have reached the filesystem root
-                atFsRoot = true;
-                break;
-            }
-        }
-
-        if (atFsRoot) {
-            // We reached the fs root, so the project path passed was not a Cordova-based project directory
-            return null;
-        }
-
-        return projectRoot;
+    public static isCordovaProject(workspaceRoot: string): boolean {
+        return !!(CordovaProjectHelper.existsSync(path.join(workspaceRoot, CordovaProjectHelper.CONFIG_XML_FILENAME))
+            || CordovaProjectHelper.existsSync(path.join(workspaceRoot, CordovaProjectHelper.CONFIG_IONIC_FILENAME))
+        );
     }
 
     public static checkPathBelongsToHierarchy(parentPath: string, childPath: string): boolean {
