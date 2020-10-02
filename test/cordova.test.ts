@@ -12,7 +12,7 @@ import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 
 suite("extensionContext", () => {
     suite("VSCode Cordova extension - intellisense and command palette tests", () => {
-        let testProjectPath: string = path.resolve(__dirname, "..", "..", "test", "testProject");
+        let testProjectPath: string = path.resolve(__dirname, "..", "..", "test", "resources", "testCordovaProject");
         let cordovaTypeDefDir: string = CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
 
         suiteTeardown(() => {

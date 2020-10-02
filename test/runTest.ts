@@ -15,7 +15,7 @@ async function launchTests() {
     // Passed to --extensionTestsPath
     const extensionTestsPath = path.resolve(__dirname, "index");
 
-    const testWorkspace = path.resolve(__dirname, "testProject");
+    const testWorkspace = path.resolve(__dirname, "resources", "testCordovaProject");
 
     // Download VS Code, unzip it and run the integration test
     await runTests({ extensionDevelopmentPath, extensionTestsPath , launchArgs: [testWorkspace] });

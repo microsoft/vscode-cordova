@@ -26,6 +26,6 @@
         "debugger/testapp/node_modules",
         "CordovaTypings",
         "out",
-        "test/testProject"
+        "test/resources/testCordovaProject"
     ]
 }

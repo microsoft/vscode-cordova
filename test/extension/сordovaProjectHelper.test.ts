@@ -6,7 +6,7 @@ import { CordovaProjectHelper } from "../../src/utils/cordovaProjectHelper";
 import * as assert from "assert";
 
 suite("сordovaProjectHelper", function () {
-    const testProjectPath = path.join(__dirname, "..", "testProject");
+    const testProjectPath = path.join(__dirname, "..", "resources", "testCordovaProject");
 
     suite("isCordovaProject", function () {
         test("should return 'true' in case 'config.xml' is in a workspace root folder", () => {

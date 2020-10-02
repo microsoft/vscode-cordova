@@ -19,7 +19,7 @@
             "type": "extensionHost",
             "request": "launch",
             "runtimeExecutable": "${execPath}",
-            "args": ["${workspaceFolder}/test/testProject", "--extensionDevelopmentPath=${workspaceFolder}", "--extensionTestsPath=${workspaceFolder}/test" ],
+            "args": ["${workspaceFolder}/test/resources/testCordovaProject", "--extensionDevelopmentPath=${workspaceFolder}", "--extensionTestsPath=${workspaceFolder}/test" ],
             "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [

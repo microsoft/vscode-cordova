@@ -34,8 +34,8 @@ suite("cordovaCDPProxy", function () {
     const cdpProxyPort = generateRandomPortNumber();
     const cdpProxyLogLevel = LogLevel.Custom;
     const testProjectPath = process.platform === "win32" ?
-        convertWindowsPathToUnixOne(path.join(__dirname, "..", "testProject")) :
-        path.join(__dirname, "..", "testProject");
+        convertWindowsPathToUnixOne(path.join(__dirname, "..", "resources", "testCordovaProject")) :
+        path.join(__dirname, "..", "resources", "testCordovaProject");
 
     let proxy: CordovaCDPProxy;
     let cancellationTokenSource: vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
@@ -85,14 +85,14 @@ suite("cordovaCDPProxy", function () {
         };
 
         attachArgs = {
-            cwd: path.resolve(__dirname, "..", "testProject"),
+            cwd: path.resolve(__dirname, "..", "resources", "testCordovaProject"),
             platform: "android",
             ionicLiveReload: false,
             request: "attach",
             port: 9222,
         };
 
-        switch(debugType) {
+        switch (debugType) {
             case "ionic":
                 projectType.isIonic5 = true;
                 break;
@@ -161,12 +161,12 @@ suite("cordovaCDPProxy", function () {
             suite("Pure Cordova", () => {
                 suiteSetup(() => {
                     let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("cordova", "chrome");
-                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                    Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
                 });
 
                 test("Messages should be delivered correctly with ChromeCDPMessageHandler", async () => {
-                    const targetMessageStart = {method: "Target.start", params: {reason: "test"}};
-                    const debuggerMessageStart = {method: "Debugger.start", params: {reason: "test"}};
+                    const targetMessageStart = { method: "Target.start", params: { reason: "test" } };
+                    const debuggerMessageStart = { method: "Debugger.start", params: { reason: "test" } };
 
                     const messageFromTarget = await new Promise((resolve) => {
                         targetConnection?.send(targetMessageStart);
@@ -191,7 +191,7 @@ suite("cordovaCDPProxy", function () {
                 suite("Simulate", () => {
                     suiteSetup(() => {
                         let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("simulate", "chrome");
-                        Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                        Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
                     });
 
                     test(`Message from the target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
@@ -225,7 +225,7 @@ suite("cordovaCDPProxy", function () {
             suite("Ionic", () => {
                 suiteSetup(() => {
                     let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "chrome");
-                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                    Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
                 });
 
                 test(`Message from the target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
@@ -296,7 +296,7 @@ suite("cordovaCDPProxy", function () {
                 suiteSetup(() => {
                     let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "safari");
                     (cdpProxyInternalEntities.cdpMessageHandler as any).targetId = targetPageId;
-                    Object.assign(proxy, {CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler});
+                    Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
                 });
 
                 test("Messages should be wrapped in the Target form", async () => {
