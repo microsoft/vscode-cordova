@@ -381,18 +381,18 @@ function registerCordovaCommands(): void {
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.simulate.android", () => {
         return selectProject()
             .then((project) => {
-                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "android", lang: vscode.env.language });
+                return launchSimulateCommand(project.workspaceRoot.uri.fsPath, { dir: project.workspaceRoot.uri.fsPath, target: "chrome", platform: "android", lang: vscode.env.language });
             });
     }));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.simulate.ios", () => {
         return selectProject()
             .then((project) => {
-                return launchSimulateCommand(project.cordovaProjectRoot, { dir: project.folder.uri.fsPath, target: "chrome", platform: "ios", lang: vscode.env.language });
+                return launchSimulateCommand(project.workspaceRoot.uri.fsPath, { dir: project.workspaceRoot.uri.fsPath, target: "chrome", platform: "ios", lang: vscode.env.language });
             });
     }));
 }
 
-function selectProject(): Q.Promise<any> {
+function selectProject(): Q.Promise<CordovaWorkspaceManager> {
     let keys = Object.keys(ProjectsStorage.projectsCache);
     if (keys.length > 1) {
         return Q.Promise((resolve, reject) => {
@@ -413,6 +413,6 @@ function selectProject(): Q.Promise<any> {
 function commandWrapper(fn, args) {
     return selectProject()
         .then((project) => {
-            return fn(project.cordovaProjectRoot, ...args);
+            return fn(project.workspaceRoot.uri.fsPath, ...args);
         });
 }
