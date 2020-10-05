@@ -39,7 +39,7 @@ suite("telemetryHelper", function () {
 
             test("should detect Cordova and Meteor project", () => {
                 sinon.stub(fs, "exists").callsFake((path: fs.PathLike, callback: (exists: boolean) => void) => {
-                    return (path.toString().includes(".meteor") || path.toString().includes("config.xml"));
+                    return callback(path.toString().includes(".meteor") || path.toString().includes("config.xml"));
                 });
 
                 return TelemetryHelper.determineProjectTypes(testProjectPath)
