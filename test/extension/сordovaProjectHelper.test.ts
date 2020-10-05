@@ -109,4 +109,91 @@ suite("сordovaProjectHelper", function () {
             );
         });
     });
+
+    suite("getEnvArgument", function () {
+        function checkEnvData(envData: any, envFileData: any = {}) {
+            let launchArgs: any = {
+                    cwd: testProjectPath,
+                    platform: "android",
+                    ionicLiveReload: false,
+                    request: "attach",
+                    port: 9222,
+                    env: envData,
+            };
+
+            let envRef = Object.assign({}, process.env);
+            if (Object.keys(envFileData).length > 0) {
+                launchArgs.envFile = path.join(testProjectPath, ".env");
+                Object.assign(envRef, envFileData);
+            }
+            Object.assign(envRef, envData);
+
+            try {
+                const envProcessed = Object.assign({}, CordovaProjectHelper.getEnvArgument(launchArgs));
+                assert.deepStrictEqual(envProcessed, envRef);
+            } finally {
+                Object.keys(envData).forEach(key => {
+                    delete process.env[key];
+                });
+
+                Object.keys(envFileData).forEach(key => {
+                    delete process.env[key];
+                });
+            }
+        }
+
+        function checkEnvDataFromFile(env: any, envFile: any, envStrRepres: string) {
+            sinon.stub(fs, "readFileSync").callsFake((path: string, options?: string | { encoding?: string, flag?: string }) => {
+                return envStrRepres;
+            });
+
+            checkEnvData(env, envFile);
+
+            (fs.readFileSync as any).restore();
+        }
+
+        test("should return default process.env", () => {
+            checkEnvData({});
+        });
+        test("should return env data from launchArgs.env parameter", () => {
+            checkEnvData({
+                "TEST1": "test1",
+                "TEST2": "123",
+            });
+        });
+        test("should return env data from a .env file", () => {
+            checkEnvDataFromFile(
+                {},
+                {
+                    "TEST1": "test1",
+                    "TEST2": "123",
+                },
+                "TEST1=test1\nTEST2=123"
+            );
+        });
+        test("should return env data: env variables from a .env file are overwritten with ones from launchArgs.env parameter", () => {
+            checkEnvDataFromFile(
+                {
+                    "TEST1": "test_test",
+                    "TEST2": "1234",
+                },
+                {
+                    "TEST1": "test1",
+                    "TEST2": "123",
+                    "TEST3": "test3",
+                },
+                "TEST1=test1\nTEST2=123\nTEST3=test3"
+            );
+        });
+        test("should skip incorrectly formatted env data", () => {
+            checkEnvDataFromFile(
+                {},
+                {
+                    "TEST1": "test1",
+                    "TEST2": "123",
+                },
+                "TEST1=test1\nTEST2=123\nTEST3test3"
+            );
+        });
+    });
 });
