@@ -30,7 +30,7 @@ export function executeCordovaCommand(cwd: string, command: string): Q.Promise<a
         }
         deferred.resolve({});
     });
-    
+
     return deferred.promise;
 }
 
