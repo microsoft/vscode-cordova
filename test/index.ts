@@ -8,12 +8,9 @@ import * as glob from "glob";
 export function run(): Promise<void> {
     const mocha = new Mocha ({
         ui: "tdd",
-        grep: "extensionContext",
         color: true,
         timeout: 150000,
     });
-
-    mocha.invert();
 
     const testsRoot = __dirname;
     // Register Mocha options

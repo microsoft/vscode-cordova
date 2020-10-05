@@ -3,7 +3,7 @@
 
 import * as assert from "assert";
 import * as path from "path";
-import * as Q from "q";
+// import * as Q from "q";
 import * as rimraf from "rimraf";
 import * as vscode from "vscode";
 
@@ -12,7 +12,7 @@ import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 
 suite("extensionContext", () => {
     suite("VSCode Cordova extension - intellisense and command palette tests", () => {
-        let testProjectPath: string = path.resolve(__dirname, "..", "..", "test", "resources", "testCordovaProject");
+        let testProjectPath: string = path.resolve(__dirname, "resources", "testCordovaProject");
         let cordovaTypeDefDir: string = CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
 
         suiteTeardown(() => {
@@ -20,38 +20,6 @@ suite("extensionContext", () => {
             if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
                 rimraf.sync(cordovaTypeDefDir);
             }
-
-            // Remove the FileSystem and whitelist plugins from the testProject
-            return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-file", "cordova-plugin-whitelist"]);
-        });
-
-        function checkTypeDefinitions(expectedTypedDefs: string[]) {
-            let actualTypeDefs = testUtils.enumerateListOfTypeDefinitions(testProjectPath);
-            assert.deepEqual(actualTypeDefs, expectedTypedDefs);
-        }
-
-        test("#Plugin type definitions are installed on activation", () => {
-            return Q.delay(10000).then(() => {
-                checkTypeDefinitions(["FileSystem.d.ts"]);
-            });
-        });
-
-        test("#Plugin type defintion for a plugin is added upon adding that plugin", () => {
-            return testUtils.addCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
-                .then(() => {
-                    return Q.delay(10000);
-                }).then(() => {
-                    checkTypeDefinitions(["Device.d.ts", "FileSystem.d.ts"]);
-                });
-        });
-
-        test("#Plugin type definition for a plugin is removed after removal of that plugin", () => {
-            return testUtils.removeCordovaComponents("plugin", testProjectPath, ["cordova-plugin-device"])
-                .then(() => {
-                    return Q.delay(10000);
-                }).then(() => {
-                    checkTypeDefinitions(["FileSystem.d.ts"]);
-                });
         });
 
         test("#Verify that the commands registered by Cordova extension are loaded", () => {
@@ -60,22 +28,22 @@ suite("extensionContext", () => {
                     let cordovaCmdsAvailable = results.filter((commandName: string) => {
                         return commandName.indexOf("cordova.") > -1;
                     });
-                    assert.deepEqual(cordovaCmdsAvailable, ["cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
+                    assert.deepStrictEqual(cordovaCmdsAvailable, ["cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
                 });
         });
 
-        test("#Execute Commands from the command palette", () => {
+        /*test("#Execute Commands from the command palette", () => {
             return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
                 .then(() => {
                     return vscode.commands.executeCommand("cordova.build");
                 }).then(() => {
                     return Q.delay(10000);
                 }).then(_res => {
-                    let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "build");
+                    let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "app", "build");
                     assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
                     return testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]);
                 });
-        });
+        });*/
 
         test("#Verify that the simulate command launches the simulate server", () => {
             return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
