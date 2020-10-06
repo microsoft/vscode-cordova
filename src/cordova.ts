@@ -104,7 +104,7 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     let workspaceRoot = folder.uri.fsPath;
 
     if (!CordovaProjectHelper.isCordovaProject(workspaceRoot)) {
-        vscode.window.showWarningMessage(localize("ExtensionRequiresWorkspaceRootToBeCordovaProjectRoot", "VS Code Cordova Tools extension requires the workspace root to be your Cordova project's root. The extension hasn't been activated."));
+        vscode.window.showWarningMessage(localize("ExtensionRequiresWorkspaceRootToBeCordovaProjectRoot", "VS Code Cordova Tools extension requires the workspace root to be your Cordova project's root. The project '{0}' won't be available for debugging.", workspaceRoot));
         return;
     }
 
