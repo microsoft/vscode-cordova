@@ -196,7 +196,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.outputLogger(`Parameter target is not set - ${launchArgs.target} will be used`);
                 }
                 generator.add("target", CordovaDebugSession.getTargetType(launchArgs.target), false);
-                launchArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(launchArgs.cwd);
                 if (launchArgs.cwd === null) {
                     throw new Error(localize("CurrentCWDDoesntContainACordovaProject", "Current working directory doesn't contain a Cordova project. Please open a Cordova project as a workspace root and try again."));
                 }
@@ -285,7 +284,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 attachArgs.target = attachArgs.target || TargetType.Emulator;
 
                 generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
-                attachArgs.cwd = CordovaProjectHelper.getCordovaProjectRoot(attachArgs.cwd);
                 attachArgs.timeout = attachArgs.attachTimeout;
 
                 let platform = attachArgs.platform && attachArgs.platform.toLowerCase();

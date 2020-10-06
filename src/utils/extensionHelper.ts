@@ -65,7 +65,6 @@ export function findFileInFolderHierarchy(dir: string, filename: string): string
     let atFsRoot: boolean = false;
 
     while (!fs.existsSync(path.join(projectRoot, filename))) {
-        // Navigate up one level until either config.xml is found
         parentPath = path.resolve(projectRoot, "..");
         if (parentPath !== projectRoot) {
             projectRoot = parentPath;

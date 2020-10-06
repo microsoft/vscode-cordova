@@ -62,6 +62,7 @@ const distSrcDir = `${distDir}/src`;
 
 var tests = [
   "test/debugger/**/*.ts",
+  "test/extension/**/*.ts",
   "test/cdp-proxy/**/*.ts",
   "test/*.ts"
 ];
@@ -308,7 +309,7 @@ gulp.task(
   "prepare-integration-tests",
   gulp.series("build", function () {
     return executeCordovaCommand(
-      path.resolve(__dirname, "test", "testProject"),
+      path.resolve(__dirname, "test", "resources", "testCordovaProject"),
       "plugin add cordova-plugin-file"
     );
   })
@@ -392,8 +393,8 @@ gulp.task("clean-test", function () {
   var pathsToDelete = [
     "test/**/*.js",
     "test/**/*.js.map",
-    "!test/testProject/**/*.js",
-    "!test/testProject/**/*.js.map",
+    "!test/resources/testCordovaProject/**/*.js",
+    "!test/resources/testCordovaProject/**/*.js.map",
   ];
   return del(pathsToDelete, { force: true });
 });
