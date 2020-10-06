@@ -3,36 +3,35 @@
 
 import * as assert from "assert";
 import * as path from "path";
-// import * as Q from "q";
+import * as Q from "q";
 import * as rimraf from "rimraf";
 import * as vscode from "vscode";
-
 import * as testUtils from "./testUtils";
-import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
+import { CordovaProjectHelper } from "../src/utils/cordovaProjectHelper";
 
 suite("extensionContext", () => {
-    suite("VSCode Cordova extension - intellisense and command palette tests", () => {
-        let testProjectPath: string = path.resolve(__dirname, "resources", "testCordovaProject");
-        let cordovaTypeDefDir: string = CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
+    let testProjectPath: string = path.resolve(__dirname, "resources", "testCordovaProject");
+    let cordovaTypeDefDir: string = CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
 
-        suiteTeardown(() => {
-            // Cleanup the target folder for type definitions
-            if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
-                rimraf.sync(cordovaTypeDefDir);
-            }
-        });
+    suiteTeardown(() => {
+        // Cleanup the target folder for type definitions
+        if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
+            rimraf.sync(cordovaTypeDefDir);
+        }
+    });
 
-        test("#Verify that the commands registered by Cordova extension are loaded", () => {
-            return vscode.commands.getCommands(true)
-                .then((results) => {
-                    let cordovaCmdsAvailable = results.filter((commandName: string) => {
-                        return commandName.indexOf("cordova.") > -1;
-                    });
-                    assert.deepStrictEqual(cordovaCmdsAvailable, ["cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
+    test("Verify that the commands registered by Cordova extension are loaded", () => {
+        return vscode.commands.getCommands(true)
+            .then((results) => {
+                let cordovaCmdsAvailable = results.filter((commandName: string) => {
+                    return commandName.indexOf("cordova.") > -1;
                 });
-        });
+                assert.deepStrictEqual(cordovaCmdsAvailable, ["cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
+            });
+    });
 
-        /*test("#Execute Commands from the command palette", () => {
+    suite("smokeTestsContext", () => {
+        test("Execute Commands from the command palette", () => {
             return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
                 .then(() => {
                     return vscode.commands.executeCommand("cordova.build");
@@ -43,9 +42,11 @@ suite("extensionContext", () => {
                     assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
                     return testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]);
                 });
-        });*/
+        });
+    });
 
-        test("#Verify that the simulate command launches the simulate server", () => {
+    suite("CordovaSimulateContext", () => {
+        test("Verify that the simulate command launches the simulate server", () => {
             return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
                 .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
                 .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
