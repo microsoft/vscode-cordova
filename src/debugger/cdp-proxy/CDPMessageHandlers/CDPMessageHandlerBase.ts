@@ -54,7 +54,7 @@ export abstract class CDPMessageHandlerBase {
 
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
     public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
-    public abstract configureHandlerAfterAttachment(args: ICordovaAttachRequestArgs): void;
+    public abstract configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void;
 
     public setDebuggerTarget(debuggerTarget: Connection | null): void {
         this.debuggerTarget = debuggerTarget;
