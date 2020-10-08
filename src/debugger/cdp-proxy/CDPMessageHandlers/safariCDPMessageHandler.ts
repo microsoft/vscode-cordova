@@ -16,6 +16,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     private isTargeted: boolean;
     private iOSAppPackagePath: string;
     private isBackcompatConfigured: boolean;
+    private customMessageLastId: number;
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
@@ -24,6 +25,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     ) {
         super(sourcemapPathTransformer, projectType, args);
         this.targetId = "";
+        this.customMessageLastId = 0;
         this.isTargeted = true;
         this.isBackcompatConfigured = false;
         this.isIonicProject = CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
@@ -33,8 +35,8 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         }
     }
 
-    public configureHandlerAfterAttachment(args: ICordovaAttachRequestArgs) {
-        this.isTargeted = !!(this.isIonicProject && semver.gte(args.iOSVersion, "12.2.0"));
+    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) {
+        this.isTargeted = semver.gte(args.iOSVersion, "12.2.0");
         if (!this.isIonicProject) {
             if (args.iOSAppPackagePath) {
                 this.iOSAppPackagePath = args.iOSAppPackagePath;
@@ -53,20 +55,12 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             event.params = this.fixSourcemapRegexp(event.params);
         }
 
-        if (this.isTargeted && !event.method.match(/^Target/)) {
-            event = {
-                id: event.id,
-                method: CDP_API_NAMES.TARGET_SEND_MESSAGE_TO_TARGET,
-                params: {
-                    id: event.id,
-                    message: JSON.stringify(event),
-                    targetId: this.targetId,
-                },
-            };
-        }
-
         if (!this.isBackcompatConfigured && event.method === CDP_API_NAMES.RUNTIME_ENABLE) {
             this.configureTargetForIWDPCommunication();
+        }
+
+        if (this.isTargeted && !event.method.match(/^Target/)) {
+            event = this.wrapRequestInTargetedForm(event);
         }
 
         return {
@@ -181,13 +175,39 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         };
     }
 
+    private wrapRequestInTargetedForm(request: any) {
+        return {
+            id: request.id,
+            method: CDP_API_NAMES.TARGET_SEND_MESSAGE_TO_TARGET,
+            params: {
+                id: request.id,
+                message: JSON.stringify(request),
+                targetId: this.targetId,
+            },
+        };
+    }
+
     private configureTargetForIWDPCommunication(): void {
         this.isBackcompatConfigured = true;
         try {
-            this.applicationTarget?.api.Console.enable({});
-            this.applicationTarget?.api.Debugger.setBreakpointsActive({ active: true });
+            this.sendCustomRequestToAppTarget(CDP_API_NAMES.CONSOLE_ENABLE, {});
+            this.sendCustomRequestToAppTarget(CDP_API_NAMES.DEBUGGER_SET_BREAKPOINTS_ACTIVE, { active: true });
         } catch (err) {
             // Specifically ignore a fail here since it's only for backcompat
         }
+    }
+
+    private sendCustomRequestToAppTarget(method: string, params: any = {}): void {
+        let request = {
+            id: this.customMessageLastId++,
+            method,
+            params,
+        };
+
+        if (this.isTargeted) {
+            request = this.wrapRequestInTargetedForm(request);
+        }
+
+        this.applicationTarget?.send(request);
     }
 }

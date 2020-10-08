@@ -329,7 +329,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             if (processedAttachArgs.webSocketDebuggerUrl) {
                                 this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
                             }
-                            this.cordovaCdpProxy.configureCDPMessageHandlerAfterAttachment(processedAttachArgs);
+                            this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
                         }
                         this.establishDebugSession(processedAttachArgs, resolve);
                     });

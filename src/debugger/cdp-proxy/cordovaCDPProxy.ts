@@ -18,7 +18,6 @@ import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
 import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
-import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { TargetType } from "../cordovaDebugSession";
 
@@ -64,7 +63,7 @@ export class CordovaCDPProxy {
         this.isSimulate = !!(args.target === TargetType.Chrome && args.simulatePort);
         if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
-            this.communicationPreparationsDone = !CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
+            this.communicationPreparationsDone = false;
         } else {
             this.CDPMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = true;
@@ -107,7 +106,7 @@ export class CordovaCDPProxy {
         this.browserInspectUri = browserInspectUri;
     }
 
-    public configureCDPMessageHandlerAfterAttachment(args: ICordovaAttachRequestArgs) {
+    public configureCDPMessageHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) {
         if (
             args.iOSVersion
             && !this.communicationPreparationsDone
@@ -115,7 +114,7 @@ export class CordovaCDPProxy {
         ) {
             this.communicationPreparationsDone = true;
         }
-        this.CDPMessageHandler.configureHandlerAfterAttachment(args);
+        this.CDPMessageHandler.configureHandlerAccordingToProcessedAttachArgs(args);
     }
 
     public getSimPageTargetAPI(): any | undefined {

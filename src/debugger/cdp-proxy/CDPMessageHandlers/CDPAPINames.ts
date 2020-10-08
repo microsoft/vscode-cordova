@@ -10,4 +10,6 @@ export const CDP_API_NAMES = {
     RUNTIME_ENABLE: "Runtime.enable",
     CONSOLE_MESSAGE_ADDED: "Console.messageAdded",
     RUNTIME_CONSOLE_API_CALLED: "Runtime.consoleAPICalled",
+    CONSOLE_ENABLE: "Console.enable",
+    DEBUGGER_SET_BREAKPOINTS_ACTIVE: "Debugger.setBreakpointsActive",
 };
