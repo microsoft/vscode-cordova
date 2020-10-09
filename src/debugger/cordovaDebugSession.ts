@@ -472,8 +472,12 @@ export class CordovaDebugSession extends LoggingDebugSession {
             simulateTelemetryPropts.livereload = launchArgs.livereload;
         }
 
-        if (launchArgs.hasOwnProperty("forceprepare")) {
-            simulateTelemetryPropts.forceprepare = launchArgs.forceprepare;
+        if (launchArgs.hasOwnProperty("livereloadDelay")) {
+            simulateTelemetryPropts.livereloadDelay = launchArgs.livereloadDelay;
+        }
+
+        if (launchArgs.hasOwnProperty("forcePrepare")) {
+            simulateTelemetryPropts.forcePrepare = launchArgs.forcePrepare;
         }
 
         generator.add("simulateOptions", simulateTelemetryPropts, false);
@@ -559,9 +563,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
         result.target = launchArgs.target;
         result.port = launchArgs.simulatePort;
         result.livereload = launchArgs.livereload;
-        result.forceprepare = launchArgs.forceprepare;
+        result.forceprepare = launchArgs.forcePrepare;
         result.simulationpath = launchArgs.simulateTempDir;
-        result.corsproxy = launchArgs.corsproxy;
+        result.corsproxy = launchArgs.corsProxy;
+        result.livereloaddelay = launchArgs.livereloadDelay;
         result.lang = vscode.env.language;
 
         return result;

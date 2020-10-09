@@ -55,9 +55,10 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     runtimeArgs?: string[];
 
     // Cordova-simulate properties
-    forceprepare?: boolean;
+    forcePrepare?: boolean;
     simulateTempDir?: string;
-    corsproxy?: boolean;
+    corsProxy?: boolean;
+    livereloadDelay?: number;
     runArguments?: string[];
     cordovaExecutable?: string;
 }

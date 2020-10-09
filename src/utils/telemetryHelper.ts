@@ -291,6 +291,7 @@ export interface ISimulateTelemetryProperties {
     port: number;
     simulatePort?: number;
     livereload?: boolean;
-    forceprepare?: boolean;
+    livereloadDelay?: number;
+    forcePrepare?: boolean;
 }
 /* tslint:enable */
