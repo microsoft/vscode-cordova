@@ -7,7 +7,7 @@
     "ionic",
     "multi-root ready"
   ],
-  "version": "1.9.3",
+  "version": "1.9.5",
   "private": true,
   "publisher": "msjsdiag",
   "icon": "images/icon.png",
@@ -559,7 +559,7 @@
     "elementtree": "^0.1.6",
     "execa": "^4.0.0",
     "ip": "^1.1.5",
-    "plist": "^2.0.1",
+    "plist": "^3.0.1",
     "q": "^1.4.1",
     "semver": "5.1.0",
     "socket.io-client": "^2.3.0",
@@ -570,7 +570,7 @@
     "vscode-js-debug-browsers": "^1.0.0",
     "vscode-nls": "^4.1.2",
     "winreg": "0.0.13",
-    "xcode": "^2.1.0"
+    "xcode": "^3.0.1"
   },
   "devDependencies": {
     "@types/elementtree": "^0.1.0",

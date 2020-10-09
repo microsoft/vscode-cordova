@@ -1,3 +1,14 @@
+## 1.9.5
+* Improved extension security [#639](https://github.com/microsoft/vscode-cordova/pull/639), [#642](https://github.com/microsoft/vscode-cordova/pull/642), [#621](https://github.com/microsoft/vscode-cordova/pull/621)
+* Internal changes:
+    * Migrated unit tests to vscode-test [#645](https://github.com/microsoft/vscode-cordova/pull/645)
+
+## 1.9.4
+* Improved extension security [#620](https://github.com/microsoft/vscode-cordova/pull/620)
+* Internal changes:
+    * Added YAML Azure Pipelines support for the extension repository [#607](https://github.com/microsoft/vscode-cordova/pull/607)
+    * Enhanced extension telemetry [#619](https://github.com/microsoft/vscode-cordova/pull/619), [#611](https://github.com/microsoft/vscode-cordova/pull/611)
+
 ## 1.9.3
 * Improved extension security [#603](https://github.com/microsoft/vscode-cordova/pull/603), [#604](https://github.com/microsoft/vscode-cordova/pull/604)
 * Updated extension dependencies [#604](https://github.com/microsoft/vscode-cordova/pull/604)
