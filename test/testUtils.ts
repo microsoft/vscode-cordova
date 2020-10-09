@@ -11,19 +11,28 @@ import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
 
 export function executeCordovaCommand(cwd: string, command: string): Q.Promise<any> {
     let deferred = Q.defer<any>();
-    let cordovaCmd = os.platform() === "darwin" ? "cordova" : "cordova.cmd";
+    let cordovaCmd = os.platform() === "win32" ? "cordova.cmd" : "cordova";
     let commandToExecute = cordovaCmd + " " + command;
     let process = child_process.exec(commandToExecute, { cwd: cwd });
+
+    let stderr = "";
+    process.stderr.on("data", (data: Buffer) => {
+        stderr += data.toString();
+    });
+
+    process.stdout.on("data", (data: Buffer) => {
+        console.log(data.toString());
+    });
 
     process.on("error", function (err: any): void {
         deferred.reject(err);
     });
-    process.stdout.on("close", exitCode => {
-        if (exitCode) {
-            deferred.reject("Cordova command failed with exit code " + exitCode);
-        } else {
-            deferred.resolve({});
+
+    process.on("close" , exitCode => {
+        if (exitCode !== 0) {
+            return deferred.reject(`Cordova command failed with exit code ${exitCode}. Error: ${stderr}`);
         }
+        deferred.resolve({});
     });
 
     return deferred.promise;
@@ -66,4 +75,8 @@ export function isUrlReachable(url: string): Q.Promise<boolean> {
     });
 
     return deferred.promise;
+}
+
+export function convertWindowsPathToUnixOne(path: string) {
+    return path.replace(/\\/g, "/");
 }

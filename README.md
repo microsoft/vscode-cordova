@@ -43,6 +43,7 @@ Name                               | Description                                
 `port`                             | The port number that the debugger uses to connect to a device or emulator.                                                                    | 9222
 `platform`                         | The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported).                                      | n/a
 `target`                           | Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome', 'chromium'. | n/a
+`trace`|Trace may be set to `true` to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk|true
 `sourceMaps`                       | Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist).                                               | false
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
 `attachAttempts`                   | The maximum number of times that you want the debugger to attempt to attach to a running iOS app.                                             | 5
@@ -56,7 +57,9 @@ Name                               | Description                                
 `devServerTimeout`                 | Timeout in milliseconds for starting the Ionic dev server when serving to the browser or running with Ionic live reload enabled.              | 20000
 `simulatePort`                     | Port to use for connecting to the local Cordova Simulate server.                                                                              | 8000
 `livereload`                       | When simulating in the browser, determines whether live reload is enabled.                                                                    | true
-`forceprepare`                     | When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading.                            | false
+`forcePrepare`                     | When simulating in the browser, determines whether a file change triggers a cordova prepare before live reloading.                            | false
+`corsProxy`|When simulating in the browser, determines whether XHR requests are proxied to appear as though they originate from the same domain as the target|true
+`livereloadDelay`|When simulating in the browser, set the delay in milliseconds between saving of a modified file and the application page reloading|200
 `simulateTempDir`                  | The directory where temporary browser simulation files are hosted.                                                                            | `${workspaceRoot}`/.vscode/simulation
 `runArguments`                     | Run arguments (array) to be passed to 'cordova run/build <platform>' or 'ionic serve' command (Override all other configuration params).      | n/a
 

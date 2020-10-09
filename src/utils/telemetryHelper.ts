@@ -2,12 +2,15 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 /* tslint:disable:no-use-before-declare */
-import {CordovaProjectHelper, IPluginDetails} from "./cordovaProjectHelper";
+import { CordovaProjectHelper, IPluginDetails } from "./cordovaProjectHelper";
 import * as fs from "fs";
 import * as path from "path";
 import * as Q from "q";
-import {Telemetry} from "./telemetry";
-import {IProjectType} from "./cordovaProjectHelper";
+import { Telemetry } from "./telemetry";
+import { IProjectType } from "./cordovaProjectHelper";
+import * as nls from "vscode-nls";
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize = nls.loadMessageBundle();
 
 export interface ITelemetryPropertyInfo {
     value: any;
@@ -70,7 +73,7 @@ export abstract class TelemetryGeneratorBase {
 
     public addError(error: Error): TelemetryGeneratorBase {
         this.add("error.message" + ++this.errorIndex, error.message, /*isPii*/ true);
-        let errorWithErrorCode: IHasErrorCode = <IHasErrorCode><Object>error;
+        let errorWithErrorCode: IHasErrorCode = <IHasErrorCode><Record<string, any>>error;
         if (errorWithErrorCode.errorCode) {
             this.add("error.code" + this.errorIndex, errorWithErrorCode.errorCode, /*isPii*/ false);
         }
@@ -174,15 +177,17 @@ export class TelemetryHelper {
         let cordova = promiseExists(path.join(projectRoot, "config.xml"));
         return Q.all([meteor, mobilefirst, phonegap, cordova])
             .spread((isMeteor: boolean, isMobilefirst: boolean, isPhonegap: boolean, isCordova: boolean) => {
-                return { isIonic1: ionicVersions.isIonic1,
-                         isIonic2: ionicVersions.isIonic2,
-                         isIonic3: ionicVersions.isIonic3,
-                         isIonic4: ionicVersions.isIonic4,
-                         isIonic5: ionicVersions.isIonic5,
-                         isMeteor: isMeteor,
-                         isMobilefirst: isMobilefirst,
-                         isPhonegap: isPhonegap,
-                         isCordova: isCordova };
+                return {
+                    isIonic1: ionicVersions.isIonic1,
+                    isIonic2: ionicVersions.isIonic2,
+                    isIonic3: ionicVersions.isIonic3,
+                    isIonic4: ionicVersions.isIonic4,
+                    isIonic5: ionicVersions.isIonic5,
+                    isMeteor: isMeteor,
+                    isMobilefirst: isMobilefirst,
+                    isPhonegap: isPhonegap,
+                    isCordova: isCordova,
+                };
             });
     }
 
@@ -251,7 +256,7 @@ export class TelemetryHelper {
         // Send telemetry event with list of new plugins
         let pluginDetails: IPluginDetails[] =
             newPlugins.map(pluginName => CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName))
-            .filter(detail => !!detail);
+                .filter(detail => !!detail);
 
         let pluginEvent = new Telemetry.TelemetryEvent("plugins", { plugins: JSON.stringify(pluginDetails) });
         Telemetry.send(pluginEvent);
@@ -261,8 +266,7 @@ export class TelemetryHelper {
         try {
             fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson), "utf8");
         } catch (err) {
-            throw new Error(err.message + " It seems that 'cwd' parameter doesn't refer to the workspace root directory. " +
-                "Please make sure that 'cwd' contains the path to the workspace root directory.");
+            throw new Error(err.message + localize("CWDDoesntReferToTheWorkspaceRootDirectory", " It seems that 'cwd' parameter doesn't refer to the workspace root directory. Please make sure that 'cwd' contains the path to the workspace root directory."));
         }
     }
 
@@ -287,6 +291,7 @@ export interface ISimulateTelemetryProperties {
     port: number;
     simulatePort?: number;
     livereload?: boolean;
-    forceprepare?: boolean;
+    livereloadDelay?: number;
+    forcePrepare?: boolean;
 }
 /* tslint:enable */

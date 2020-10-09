@@ -1,10 +1,16 @@
 {
     "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
     "files.trimTrailingWhitespace": true,
     "files.exclude": {
         ".git": true,
         "bin": true,
-        "node_modules": false
+        "node_modules": false,
+        "nls.*.json": true,
+        "**/*.js": {
+          "when": "$(basename).ts"
+        },
+        "**/*.js.map": true
     },
     "search.exclude": {
         ".git": true,

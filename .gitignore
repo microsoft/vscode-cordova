@@ -3,7 +3,15 @@
 *.vsix
 node_modules/
 out/
-test/testProject/.vscode/
-test/testProject/platforms/
-test/testProject/plugins/
-test/testProject/typings/
+dist/
+test/resources/testCordovaProject/.vscode/
+test/resources/testCordovaProject/platforms/
+test/resources/testCordovaProject/plugins/
+test/resources/testCordovaProject/typings/
+.vscode-test/
+nls.*.json
+
+# Compiled files
+src/**/*.js
+test/**/*.js
+**/*.js.map

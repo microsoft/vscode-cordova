@@ -2,27 +2,21 @@
 **/*.ts
 **/*.map
 .vscode/**
+.vscode-test/**
 typings/**
 *.vsix
 gulpfile.js
 tsconfig.json
-tslint.json
+.eslintrc.js
 
-out/test/**
+i18n/**
+out/**
+dist/src
 
-node_modules/ws/node_modules/bufferutil/**
-node_modules/ws/node_modules/utf-8-validate/**
-node_modules/.bin/**
-node_modules/gulp*/**
-node_modules/vsce/**
-node_modules/mocha/**
-node_modules/mockery/**
-node_modules/should/**
-node_modules/sinon/**
-node_modules/tslint/**
-node_modules/typescript/**
-node_modules/vscode/**
-
+node_modules/**
+.github/**
+.ci/**
+release/**
 test/**
 src/**
 debugger/**

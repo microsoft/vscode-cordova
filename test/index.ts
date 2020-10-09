@@ -8,8 +8,8 @@ import * as glob from "glob";
 export function run(): Promise<void> {
     const mocha = new Mocha ({
         ui: "tdd",
-        grep: "extensionContext",
-        useColors: true,
+        grep: "smokeTestsContext",
+        color: true,
         timeout: 150000,
     });
 

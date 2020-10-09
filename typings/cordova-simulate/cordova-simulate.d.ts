@@ -17,10 +17,12 @@ declare module "cordova-simulate" {
             dir?: string;
             simhostui?: string;
             livereload?: boolean;
+            livereloaddelay?: number;
             forceprepare?: boolean;
             telemetry?: TelemetryModule;
             simulationpath?: string;
             corsproxy?: boolean;
+            lang?: string;
         }
 
         export interface TelemetryModule {
