@@ -50,7 +50,6 @@ Name                               | Description                                
 `attachDelay`                      | The time in milliseconds between each attempt to attach to a running iOS application.                                                         | 1000
 `attachTimeout`                    | Time in milliseconds to wait before the debugger is attached to the debug session                                                             | 10000
 `iosDebugProxyPort`                | The port number that you want the debugger to use when it launches iOS applications on a device.                                              | 9221
-`appStepLaunchTimeout`             | The maximum time in milliseconds allowed for each individual step the debugger takes to launch an iOS app on a device.                        | 5000
 `ionicLiveReload`                  | Set to true to enable Ionic live reload.                                                                                                      | false
 `devServerAddress`                 | For Ionic live reload scenario specify the IP address the device can use to contact the Ionic server.                                         | n/a
 `devServerPort`                    | For Ionic live reload scenario specify the port the device can use to contact the Ionic server.                                               | n/a
