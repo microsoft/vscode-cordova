@@ -17,7 +17,7 @@ import { DebugProtocol } from "vscode-debugprotocol";
 import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import * as elementtree from "elementtree";
-import { generateRandomPortNumber, retryAsync, promiseGet, findFileInFolderHierarchy } from "../utils/extensionHelper";
+import { generateRandomPortNumber, retryAsync, promiseGet, findFileInFolderHierarchy, isNullOrUndefined } from "../utils/extensionHelper";
 import { TelemetryHelper, ISimulateTelemetryProperties, TelemetryGenerator } from "../utils/telemetryHelper";
 import { CordovaProjectHelper, IProjectType } from "../utils/cordovaProjectHelper";
 import { Telemetry } from "../utils/telemetry";
@@ -181,7 +181,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected launchRequest(response: DebugProtocol.LaunchResponse, launchArgs: ICordovaLaunchRequestArgs, request?: DebugProtocol.Request): Promise<void> {
-        return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
+        return new Promise<void>((resolve, reject) => {
+            if (isNullOrUndefined(launchArgs.cwd)) {
+                reject(new Error(localize("CwdUndefined", "Launch argument cwd is undefined, please add it to your launch.json. Example: 'cwd': '${workspaceFolder}' to point to your current working directory.")));
+            }
+            return this.initializeTelemetry(launchArgs.cwd)
             .then(() => {
                 this.initializeSettings(launchArgs);
             })
@@ -269,8 +273,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     });
                 }).done(resolve, reject)
             )
-            .catch(err => reject(err))
-        )
+            .catch(err => reject(err));
+        })
         .catch(err => this.showError(err, response));
     }
 
