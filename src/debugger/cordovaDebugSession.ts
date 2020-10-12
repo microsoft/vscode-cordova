@@ -331,7 +331,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             }
                             this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
                         }
-                        this.establishDebugSession(processedAttachArgs, resolve);
+                        this.establishDebugSession(processedAttachArgs, resolve, reject);
                     });
                 })
                 .catch((err) => {
@@ -382,7 +382,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private establishDebugSession(attachArgs: ICordovaAttachRequestArgs, resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
+    private establishDebugSession(
+        attachArgs: ICordovaAttachRequestArgs,
+        resolve?: (value?: void | PromiseLike<void> | undefined) => void,
+        reject?: (reason?: any) => void
+    ): void {
         if (this.cordovaCdpProxy) {
             const attachArguments = this.pwaSessionName === PwaDebugType.Chrome ?
                 this.jsDebugConfigAdapter.createChromeDebuggingConfig(
@@ -412,11 +416,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         resolve();
                     }
                 } else {
-                    throw new Error(localize("CannotStartChildDebugSession", "Cannot start child debug session"));
+                    reject(new Error(localize("CannotStartChildDebugSession", "Cannot start child debug session")));
                 }
             },
                 err => {
-                    throw err;
+                    reject(err);
                 }
             );
         } else {

@@ -80,6 +80,9 @@ export class JsDebugConfigAdapter {
         if (attachArgs.trace) {
             existingExtraArgs.trace = attachArgs.trace;
         }
+        if (attachArgs.attachTimeout) {
+            existingExtraArgs.timeout = attachArgs.attachTimeout;
+        }
 
         return existingExtraArgs;
     }
