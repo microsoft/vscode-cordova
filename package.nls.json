@@ -31,7 +31,6 @@
   "cordova.properties.launch.attachDelay": "Time in milliseconds to wait between attempts to attach to an iOS app",
   "cordova.properties.launch.attachTimeout": "Time in milliseconds to wait before the debugger is attached to the debug session",
   "cordova.properties.launch.iosDebugProxyPort": "Port to use for connecting to iOS native debugger when launching app",
-  "cordova.properties.launch.appStepLaunchTimeout": "Timeout in milliseconds for individual steps when launching iOS app",
   "cordova.properties.launch.ionicLiveReload": "Whether or not to start an Ionic live reload session",
   "cordova.properties.launch.devServerPort": "The port on which Ionic's live reload server should listen",
   "cordova.properties.launch.devServerAddress": "The IP address that Ionic should use for the live reload server",
