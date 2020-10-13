@@ -17,7 +17,7 @@ import { DebugProtocol } from "vscode-debugprotocol";
 import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import * as elementtree from "elementtree";
-import { generateRandomPortNumber, retryAsync, promiseGet, findFileInFolderHierarchy } from "../utils/extensionHelper";
+import { generateRandomPortNumber, retryAsync, promiseGet, findFileInFolderHierarchy, isNullOrUndefined } from "../utils/extensionHelper";
 import { TelemetryHelper, ISimulateTelemetryProperties, TelemetryGenerator } from "../utils/telemetryHelper";
 import { CordovaProjectHelper, IProjectType } from "../utils/cordovaProjectHelper";
 import { Telemetry } from "../utils/telemetry";
@@ -181,7 +181,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected launchRequest(response: DebugProtocol.LaunchResponse, launchArgs: ICordovaLaunchRequestArgs, request?: DebugProtocol.Request): Promise<void> {
-        return new Promise<void>((resolve, reject) => this.initializeTelemetry(launchArgs.cwd)
+        return new Promise<void>((resolve, reject) => {
+            if (isNullOrUndefined(launchArgs.cwd)) {
+                reject(new Error(localize("CwdUndefined", "Launch argument 'cwd' is undefined, please add it to your launch.json. Example: 'cwd': '${workspaceFolder}' to point to your current working directory.")));
+            }
+            return this.initializeTelemetry(launchArgs.cwd)
             .then(() => {
                 this.initializeSettings(launchArgs);
             })
@@ -269,8 +273,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     });
                 }).done(resolve, reject)
             )
-            .catch(err => reject(err))
-        )
+            .catch(err => reject(err));
+        })
         .catch(err => this.showError(err, response));
     }
 
@@ -331,7 +335,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             }
                             this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
                         }
-                        this.establishDebugSession(processedAttachArgs, resolve);
+                        this.establishDebugSession(processedAttachArgs, resolve, reject);
                     });
                 })
                 .catch((err) => {
@@ -382,7 +386,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private establishDebugSession(attachArgs: ICordovaAttachRequestArgs, resolve?: (value?: void | PromiseLike<void> | undefined) => void): void {
+    private establishDebugSession(
+        attachArgs: ICordovaAttachRequestArgs,
+        resolve?: (value?: void | PromiseLike<void> | undefined) => void,
+        reject?: (reason?: any) => void
+    ): void {
         if (this.cordovaCdpProxy) {
             const attachArguments = this.pwaSessionName === PwaDebugType.Chrome ?
                 this.jsDebugConfigAdapter.createChromeDebuggingConfig(
@@ -412,11 +420,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         resolve();
                     }
                 } else {
-                    throw new Error(localize("CannotStartChildDebugSession", "Cannot start child debug session"));
+                    reject(new Error(localize("CannotStartChildDebugSession", "Cannot start child debug session")));
                 }
             },
                 err => {
-                    throw err;
+                    reject(err);
                 }
             );
         } else {
