@@ -1,7 +1,7 @@
 ## 2.0.0
 * Fixed iOS debugging on iOS devices version 12.2 and above [#641](https://github.com/microsoft/vscode-cordova/pull/641), [#649](https://github.com/microsoft/vscode-cordova/pull/649), [#671](https://github.com/microsoft/vscode-cordova/pull/671)
 * Implmented debug configuration provider using the [`DebugConfigurationProvider`](https://code.visualstudio.com/api/extension-guides/debugger-extension#using-a-debugconfigurationprovider) VS Code approach [#648](https://github.com/microsoft/vscode-cordova/pull/648)
-* Cordova Simulate is no more the part of the extension and is installed to the extension dynamically on Simulate debug scenarios [#653](https://github.com/microsoft/vscode-cordova/pull/653)
+* Cordova Simulate is no longer part of the extension and is installed dynamically in the extension on Simulate debug scenarios [#653](https://github.com/microsoft/vscode-cordova/pull/653)
 * Added localization for next languages:
   * Chinese Simplified
   * Chinese Traditional
@@ -16,7 +16,7 @@
   * Turkish
   * Portuguese
   * Polish
-* Added `liveReloadDelay` debug scenario argument for Simulate scenarios which allows to set the delay in milliseconds between saving of a modified file and the application page reloading [#672](https://github.com/microsoft/vscode-cordova/pull/672)
+* Added `liveReloadDelay` debug scenario argument for Simulate scenarios. It allows to set the delay in milliseconds between saving of a modified file and the application page reloading [#672](https://github.com/microsoft/vscode-cordova/pull/672)
 * Changed spellings of some debug configurations properties in order to suit camel case: `corsproxy` to `corsProxy`, `forceprepare` to `forcePrepare`
 * The minimum supported version of VS Code has been increased from `1.26.0` to `1.40.0`
 * Internal changes:
