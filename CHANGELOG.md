@@ -1,3 +1,30 @@
+## 2.0.0
+* Fixed iOS debugging on iOS devices version 12.2 and above [#641](https://github.com/microsoft/vscode-cordova/pull/641), [#649](https://github.com/microsoft/vscode-cordova/pull/649), [#671](https://github.com/microsoft/vscode-cordova/pull/671)
+* Implmented debug configuration provider using the [`DebugConfigurationProvider`](https://code.visualstudio.com/api/extension-guides/debugger-extension#using-a-debugconfigurationprovider) VS Code approach [#648](https://github.com/microsoft/vscode-cordova/pull/648)
+* Cordova Simulate is no longer part of the extension and is installed dynamically in the extension on Simulate debug scenarios [#653](https://github.com/microsoft/vscode-cordova/pull/653)
+* Added localization for next languages:
+  * Chinese Simplified
+  * Chinese Traditional
+  * Japanese
+  * Korean
+  * German
+  * French
+  * Spanish
+  * Russian
+  * Italian
+  * Czech
+  * Turkish
+  * Portuguese
+  * Polish
+* Added `liveReloadDelay` debug scenario argument for Simulate scenarios. It allows to set the delay in milliseconds between saving of a modified file and the application page reloading [#672](https://github.com/microsoft/vscode-cordova/pull/672)
+* Changed spellings of some debug configurations properties in order to suit camel case: `corsproxy` to `corsProxy`, `forceprepare` to `forcePrepare`
+* The minimum supported version of VS Code has been increased from `1.26.0` to `1.40.0`
+* Internal changes:
+    * Migrated from the [`vscode-node-debug2`](https://github.com/microsoft/vscode-node-debug2) debugger to [`js-debug`](https://github.com/microsoft/vscode-js-debug) one
+    * Integrated the debug adapter directly inside the extension, which allows VS Code to connect to it instead of launching a new external debug adapter per extension's debugging session. See [`DebugAdapterDescriptorFactory`](https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension) approach for more details
+    * Added Webpack bundling for the extension [#653](https://github.com/microsoft/vscode-cordova/pull/653)
+    * Overall code improvements and optimizations [#647](https://github.com/microsoft/vscode-cordova/pull/647), [#649](https://github.com/microsoft/vscode-cordova/pull/649), [#669](https://github.com/microsoft/vscode-cordova/pull/669), [#636](https://github.com/microsoft/vscode-cordova/pull/636), [#666](https://github.com/microsoft/vscode-cordova/pull/666)
+
 ## 1.9.5
 * Improved extension security [#639](https://github.com/microsoft/vscode-cordova/pull/639), [#642](https://github.com/microsoft/vscode-cordova/pull/642), [#621](https://github.com/microsoft/vscode-cordova/pull/621)
 * Internal changes:
