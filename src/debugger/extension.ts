@@ -31,7 +31,7 @@ export function execCommand(command: string, args: string[], errorLogger: (messa
         if (code !== 0) {
             errorLogger(stderr);
             errorLogger(stdout);
-            deferred.reject(localize("ErrorRunningCommand", "Error running {0} {1}", command, args.join(" ")));
+            deferred.reject(new Error(localize("ErrorRunningCommand", "Error running {0} {1}", command, args.join(" "))));
         }
         deferred.resolve(stdout);
     });

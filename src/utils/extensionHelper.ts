@@ -82,3 +82,7 @@ export function findFileInFolderHierarchy(dir: string, filename: string): string
 
     return path.join(projectRoot, filename);
 }
+
+export function isNullOrUndefined(value: any): boolean {
+    return typeof value === "undefined" || value === null;
+}

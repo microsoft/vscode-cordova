@@ -327,11 +327,6 @@
                 "description": "%cordova.properties.launch.iosDebugProxyPort%",
                 "default": 9221
               },
-              "appStepLaunchTimeout": {
-                "type": "number",
-                "description": "%cordova.properties.launch.appStepLaunchTimeout%",
-                "default": 5000
-              },
               "ionicLiveReload": {
                 "type": "boolean",
                 "description": "%cordova.properties.launch.ionicLiveReload%",

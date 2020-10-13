@@ -44,7 +44,6 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
 
 export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestArguments, ICordovaAttachRequestArgs {
     iosDebugProxyPort?: number;
-    appStepLaunchTimeout?: number;
 
     // Ionic livereload properties
     devServerTimeout?: number;

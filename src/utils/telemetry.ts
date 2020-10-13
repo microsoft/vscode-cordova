@@ -292,6 +292,7 @@ export module Telemetry {
             return TelemetryUtils.init(appVersion, initOptions);
         } catch (err) {
             console.error(err);
+            return Q.reject(err);
         }
     }
 
