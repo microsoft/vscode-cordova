@@ -183,7 +183,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     protected launchRequest(response: DebugProtocol.LaunchResponse, launchArgs: ICordovaLaunchRequestArgs, request?: DebugProtocol.Request): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             if (isNullOrUndefined(launchArgs.cwd)) {
-                reject(new Error(localize("CwdUndefined", "Launch argument cwd is undefined, please add it to your launch.json. Example: 'cwd': '${workspaceFolder}' to point to your current working directory.")));
+                reject(new Error(localize("CwdUndefined", "Launch argument 'cwd' is undefined, please add it to your launch.json. Example: 'cwd': '${workspaceFolder}' to point to your current working directory.")));
             }
             return this.initializeTelemetry(launchArgs.cwd)
             .then(() => {
