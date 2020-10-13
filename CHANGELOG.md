@@ -17,6 +17,8 @@
   * Portuguese
   * Polish
 * Added `liveReloadDelay` debug scenario argument for Simulate scenarios which allows to set the delay in milliseconds between saving of a modified file and the application page reloading [#672](https://github.com/microsoft/vscode-cordova/pull/672)
+* Changed spellings of some debug configurations properties in order to suit camel case: `corsproxy` to `corsProxy`, `forceprepare` to `forcePrepare`
+* The minimum supported version of VS Code has been increased from `1.26.0` to `1.40.0`
 * Internal changes:
     * Migrated from the [`vscode-node-debug2`](https://github.com/microsoft/vscode-node-debug2) debugger to [`js-debug`](https://github.com/microsoft/vscode-js-debug) one
     * Integrated the debug adapter directly inside the extension, which allows VS Code to connect to it instead of launching a new external debug adapter per extension's debugging session. See [`DebugAdapterDescriptorFactory`](https://code.visualstudio.com/api/extension-guides/debugger-extension#alternative-approach-to-develop-a-debugger-extension) approach for more details
