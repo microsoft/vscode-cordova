@@ -47,7 +47,15 @@ export class JsDebugConfigAdapter {
     }
 
     public createSafariDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
-        return Object.assign({}, this.getExistingExtraArgs(attachArgs), {
+        let extraArgs: any = {};
+        if (attachArgs.ionicLiveReload) {
+            extraArgs.resolveSourceMapLocations = [
+                "**",
+                "!**/node_modules/**",
+            ];
+        }
+
+        return Object.assign({}, this.getExistingExtraArgs(attachArgs), extraArgs, {
             type: pwaSessionName,
             request: "attach",
             name: "Attach",

@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as url from "url";
 import * as semver from "semver";
 import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "./CDPAPINames";
@@ -51,7 +50,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL) {
+        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL && !this.ionicLiveReload) {
             event.params = this.fixSourcemapRegexp(event.params);
         }
 
@@ -90,15 +89,14 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
         }
 
-        if (event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url) {
-            this.tryToGetIonicDevServerConnectionDataFromURL(event.params.url);
-            if (
+        if (
+            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url
+            && (
                 event.params.url.startsWith(`ionic://${this.applicationServerAddress}`)
-                || event.params.url.startsWith(`http://${this.applicationServerAddress}`)
                 || event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
-            ) {
-                event.params = this.fixSourcemapLocation(event.params);
-            }
+            )
+        ) {
+            event.params = this.fixSourcemapLocation(event.params);
         }
 
         if (event.method === CDP_API_NAMES.CONSOLE_MESSAGE_ADDED) {
@@ -138,28 +136,13 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
             if (this.isIonicProject) {
-                reqParams.urlRegex = (this.ionicLiveReload ? "http"  : "ionic") +
-                `:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
+                reqParams.urlRegex = `ionic:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
             } else {
                 const fixedRemotePath = (this.iOSAppPackagePath.split("\/").join("\\/")).split(".").join("\\.");
                 reqParams.urlRegex = `file:\\/\\/${fixedRemotePath}\\/www\\/${uriPart}`;
             }
         }
         return reqParams;
-    }
-
-    private tryToGetIonicDevServerConnectionDataFromURL(sourceURL: string) {
-        if (this.ionicLiveReload && !this.applicationPortPart) {
-            try {
-                const parsedURL = url.parse(sourceURL);
-                this.applicationPortPart = parsedURL.port ? `:${parsedURL.port}` : "";
-                if (parsedURL.hostname) {
-                    this.applicationServerAddress = parsedURL.hostname;
-                }
-            } catch (err) {
-                // do nothing, try to check another URL
-            }
-        }
     }
 
     private processDeprecatedConsoleMessage(event: any) {
