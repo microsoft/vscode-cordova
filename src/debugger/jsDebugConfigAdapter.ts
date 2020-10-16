@@ -23,6 +23,13 @@ export class JsDebugConfigAdapter {
         "./*": "${cwd}/*",
     };
 
+    // A special pattern for Ionic v3 Angular projects. In Ionic v3 projects compiled .js and .js.map files are usually
+    // located by `workspaceFolder/www/build` path. Js-debug processed source files locations incorrectly, that's why
+    // we pointing the correct mapping regex.
+    private readonly Ionic3LiveReloadSourceMapPathOverrides: ISourceMapPathOverrides = {
+        "../../*": "${cwd}/*",
+    };
+
     public createChromeDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
         let extraArgs: any = {};
         if (!CordovaProjectHelper.isIonicAngularProject(attachArgs.cwd) && !attachArgs.simulatePort) {
@@ -49,10 +56,22 @@ export class JsDebugConfigAdapter {
     public createSafariDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
         let extraArgs: any = {};
         if (attachArgs.ionicLiveReload) {
+            // Pointing js-debug to use all the sourcemaps urls sent with sources data
             extraArgs.resolveSourceMapLocations = [
                 "**",
                 "!**/node_modules/**",
             ];
+            if (CordovaProjectHelper.checkIonicVersions(attachArgs.cwd).isIonic3) {
+                if (attachArgs.sourceMapPathOverrides) {
+                    attachArgs.sourceMapPathOverrides = Object.assign(attachArgs.sourceMapPathOverrides, this.Ionic3LiveReloadSourceMapPathOverrides);
+                } else {
+                    attachArgs.sourceMapPathOverrides = Object.assign(
+                        {},
+                        this.DefaultWebSourceMapPathOverrides,
+                        this.Ionic3LiveReloadSourceMapPathOverrides,
+                    );
+                }
+            }
         }
 
         return Object.assign({}, this.getExistingExtraArgs(attachArgs), extraArgs, {

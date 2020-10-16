@@ -10,6 +10,8 @@ import { ICordovaAttachRequestArgs } from "../../requestArgs";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
 
 export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
+    private readonly Ionic3EvaluateErrorMessage;
+
     private targetId: string;
     private isIonicProject: boolean;
     private isTargeted: boolean;
@@ -23,6 +25,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         args: ICordovaAttachRequestArgs
     ) {
         super(sourcemapPathTransformer, projectType, args);
+        this.Ionic3EvaluateErrorMessage = "process not defined";
         this.targetId = "";
         this.customMessageLastId = 0;
         this.isTargeted = true;
@@ -103,8 +106,11 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             event = this.processDeprecatedConsoleMessage(event);
         }
 
-        if (event.result && event.result.properties) {
-            event.result = { result: event.result.properties};
+        if (event.result) {
+            if (event.result.properties) {
+                event.result = { result: event.result.properties};
+            }
+            this.fixIonic3RuntimeEvaluateErrorResponse(event);
         }
 
         return {
@@ -143,6 +149,14 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
         }
         return reqParams;
+    }
+
+    // Js-debug expected empty value or an object, but the target returns a string. This leads to infinite sending of
+    // Runtime.Evaluate requests from the debugger to the target.
+    private fixIonic3RuntimeEvaluateErrorResponse(event: any) {
+        if (event.result.result && event.result.result.value === this.Ionic3EvaluateErrorMessage) {
+            delete event.result.result.value;
+        }
     }
 
     private processDeprecatedConsoleMessage(event: any) {
