@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as url from "url";
 import * as semver from "semver";
 import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "./CDPAPINames";
@@ -11,6 +10,8 @@ import { ICordovaAttachRequestArgs } from "../../requestArgs";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
 
 export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
+    private readonly Ionic3EvaluateErrorMessage;
+
     private targetId: string;
     private isIonicProject: boolean;
     private isTargeted: boolean;
@@ -24,6 +25,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         args: ICordovaAttachRequestArgs
     ) {
         super(sourcemapPathTransformer, projectType, args);
+        this.Ionic3EvaluateErrorMessage = "process not defined";
         this.targetId = "";
         this.customMessageLastId = 0;
         this.isTargeted = true;
@@ -51,7 +53,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL) {
+        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL && !this.ionicLiveReload) {
             event.params = this.fixSourcemapRegexp(event.params);
         }
 
@@ -90,23 +92,25 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
         }
 
-        if (event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url) {
-            this.tryToGetIonicDevServerConnectionDataFromURL(event.params.url);
-            if (
+        if (
+            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url
+            && (
                 event.params.url.startsWith(`ionic://${this.applicationServerAddress}`)
-                || event.params.url.startsWith(`http://${this.applicationServerAddress}`)
                 || event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
-            ) {
-                event.params = this.fixSourcemapLocation(event.params);
-            }
+            )
+        ) {
+            event.params = this.fixSourcemapLocation(event.params);
         }
 
         if (event.method === CDP_API_NAMES.CONSOLE_MESSAGE_ADDED) {
             event = this.processDeprecatedConsoleMessage(event);
         }
 
-        if (event.result && event.result.properties) {
-            event.result = { result: event.result.properties};
+        if (event.result) {
+            if (event.result.properties) {
+                event.result = { result: event.result.properties};
+            }
+            this.fixIonic3RuntimeEvaluateErrorResponse(event);
         }
 
         return {
@@ -138,8 +142,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
             if (this.isIonicProject) {
-                reqParams.urlRegex = (this.ionicLiveReload ? "http"  : "ionic") +
-                `:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
+                reqParams.urlRegex = `ionic:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
             } else {
                 const fixedRemotePath = (this.iOSAppPackagePath.split("\/").join("\\/")).split(".").join("\\.");
                 reqParams.urlRegex = `file:\\/\\/${fixedRemotePath}\\/www\\/${uriPart}`;
@@ -148,17 +151,11 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
         return reqParams;
     }
 
-    private tryToGetIonicDevServerConnectionDataFromURL(sourceURL: string) {
-        if (this.ionicLiveReload && !this.applicationPortPart) {
-            try {
-                const parsedURL = url.parse(sourceURL);
-                this.applicationPortPart = parsedURL.port ? `:${parsedURL.port}` : "";
-                if (parsedURL.hostname) {
-                    this.applicationServerAddress = parsedURL.hostname;
-                }
-            } catch (err) {
-                // do nothing, try to check another URL
-            }
+    // Js-debug expected empty value or an object, but the target returns a string. This leads to infinite sending of
+    // Runtime.Evaluate requests from the debugger to the target.
+    private fixIonic3RuntimeEvaluateErrorResponse(event: any) {
+        if (event.result.result && event.result.result.value === this.Ionic3EvaluateErrorMessage) {
+            delete event.result.result.value;
         }
     }
 
