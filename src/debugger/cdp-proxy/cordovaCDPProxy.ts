@@ -15,6 +15,7 @@ import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { PlatformType } from "../cordovaDebugSession";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
+import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
 import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
@@ -60,7 +61,7 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
-        this.isSimulate = !!(args.target === TargetType.Chrome && args.simulatePort);
+        this.isSimulate = !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
         if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
             this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
             this.communicationPreparationsDone = false;

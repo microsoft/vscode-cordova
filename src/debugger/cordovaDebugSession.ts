@@ -25,6 +25,7 @@ import { execCommand, cordovaRunCommand, killChildProcess, cordovaStartCommand }
 import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
+import { SimulateHelper } from "../utils/simulateHelper";
 import { LogLevel } from "../utils/log/logHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
@@ -84,7 +85,6 @@ interface WebviewData {
 export class CordovaDebugSession extends LoggingDebugSession {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = localize("IonicLiveReloadIsOnlySupportedForIonic1", "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...");
-    private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
     private static pidofNotFoundError = localize("pidofNotFound", "/system/bin/sh: pidof: not found");
 
     private readonly cdpProxyPort: number;
@@ -173,10 +173,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return Q.resolve({});
     }
 
-    public isSimulateTarget(target: string) {
-        return CordovaDebugSession.SIMULATE_TARGETS.indexOf(target) > -1;
-    }
-
     protected initializeRequest(response: DebugProtocol.InitializeResponse, args: DebugProtocol.InitializeRequestArguments): void {
         super.initializeRequest(response, args);
     }
@@ -224,21 +220,21 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         switch (platform) {
                             case PlatformType.Android:
                                 generator.add("platform", platform, false);
-                                if (this.isSimulateTarget(launchArgs.target)) {
+                                if (SimulateHelper.isSimulateTarget(launchArgs.target)) {
                                     return this.launchSimulate(launchArgs, projectType, generator);
                                 } else {
                                     return this.launchAndroid(launchArgs, projectType, runArguments);
                                 }
                             case PlatformType.IOS:
                                 generator.add("platform", platform, false);
-                                if (this.isSimulateTarget(launchArgs.target)) {
+                                if (SimulateHelper.isSimulateTarget(launchArgs.target)) {
                                     return this.launchSimulate(launchArgs, projectType, generator);
                                 } else {
                                     return this.launchIos(launchArgs, projectType, runArguments);
                                 }
                             case PlatformType.Windows:
                                 generator.add("platform", platform, false);
-                                if (this.isSimulateTarget(launchArgs.target)) {
+                                if (SimulateHelper.isSimulateTarget(launchArgs.target)) {
                                     return this.launchSimulate(launchArgs, projectType, generator);
                                 } else {
                                     throw new Error(`Debugging ${platform} platform is not supported.`);
@@ -268,7 +264,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     })
                     .then(() => {
                         // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
-                        if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !this.isSimulateTarget(launchArgs.target)) {
+                        if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !SimulateHelper.isSimulateTarget(launchArgs.target)) {
                             return this.session.customRequest("attach", launchArgs);
                         }
                     });
