@@ -15,7 +15,7 @@ const errorsToSuppress = ["Run an Ionic project on a connected device"];
 
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Q.Promise<string> {
     let deferred = Q.defer<string>();
-    let proc = child_process.spawn(command, args, { stdio: "pipe", env: process.env });
+    let proc = child_process.spawn(command, args, { stdio: "pipe"});
     let stderr = "";
     let stdout = "";
     proc.stderr.on("data", (data: Buffer) => {

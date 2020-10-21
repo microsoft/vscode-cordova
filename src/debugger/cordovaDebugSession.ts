@@ -190,7 +190,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 this.initializeSettings(launchArgs);
             })
             .then(() => TelemetryHelper.generate("launch", (generator) => {
-                console.log(String(child_process.spawnSync("node", ["--version"]).stdout));
                 launchArgs.port = launchArgs.port || 9222;
                 if (!launchArgs.target) {
                     if (launchArgs.platform === PlatformType.Browser) {
@@ -1195,8 +1194,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         if (chromePath[0]) {
             this.chromeProc = child_process.spawn(chromePath[0].path, chromeArgs, {
                 detached: true,
-                stdio: ["ignore"],
-                env: process.env
+                stdio: ["ignore"]
             });
             this.chromeProc.unref();
             this.chromeProc.on("error", (err) => {
