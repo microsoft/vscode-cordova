@@ -190,6 +190,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 this.initializeSettings(launchArgs);
             })
             .then(() => TelemetryHelper.generate("launch", (generator) => {
+                console.log(String(child_process.spawnSync("node", ["--version"]).stdout));
                 launchArgs.port = launchArgs.port || 9222;
                 if (!launchArgs.target) {
                     if (launchArgs.platform === PlatformType.Browser) {
@@ -438,6 +439,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.isSettingsInitialized = true;
             logger.setup(args.trace ? Logger.LogLevel.Verbose : Logger.LogLevel.Log);
             this.cdpProxyLogLevel = args.trace ? LogLevel.Custom : LogLevel.None;
+
+            if (args.runtimeVersion) {
+                CordovaProjectHelper.nvmSupport(args);
+            }
         }
     }
 
@@ -1191,6 +1196,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             this.chromeProc = child_process.spawn(chromePath[0].path, chromeArgs, {
                 detached: true,
                 stdio: ["ignore"],
+                env: process.env
             });
             this.chromeProc.unref();
             this.chromeProc.on("error", (err) => {
