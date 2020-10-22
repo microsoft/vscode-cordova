@@ -11,7 +11,7 @@ import * as simulate from "cordova-simulate";
 import * as os from "os";
 import * as io from "socket.io-client";
 import * as execa from "execa";
-import * as chromeBrowserHelper from "vscode-js-debug-browsers";
+import * as browserHelper from "vscode-js-debug-browsers";
 import { LoggingDebugSession, OutputEvent, logger, Logger, ErrorDestination } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
@@ -25,6 +25,7 @@ import { execCommand, cordovaRunCommand, killChildProcess, cordovaStartCommand }
 import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
+import { SimulateHelper } from "../utils/simulateHelper";
 import { LogLevel } from "../utils/log/logHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
@@ -47,6 +48,7 @@ export enum TargetType {
     Emulator = "emulator",
     Device = "device",
     Chrome = "chrome",
+    Edge = "edge",
 }
 
 export enum PwaDebugType {
@@ -84,7 +86,6 @@ interface WebviewData {
 export class CordovaDebugSession extends LoggingDebugSession {
     private static CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
     private static NO_LIVERELOAD_WARNING = localize("IonicLiveReloadIsOnlySupportedForIonic1", "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...");
-    private static SIMULATE_TARGETS: string[] = ["default", "chrome", "chromium", "edge", "firefox", "ie", "opera", "safari"];
     private static pidofNotFoundError = localize("pidofNotFound", "/system/bin/sh: pidof: not found");
 
     private readonly cdpProxyPort: number;
@@ -104,7 +105,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private jsDebugConfigAdapter: JsDebugConfigAdapter;
     private isSettingsInitialized: boolean; // used to prevent parameters reinitialization when attach is called from launch function
     private cordovaCdpProxy: CordovaCDPProxy | null;
-    private chromeProc: child_process.ChildProcess;
+    private browserProc: child_process.ChildProcess;
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
     private cancellationTokenSource: vscode.CancellationTokenSource;
 
@@ -173,10 +174,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return Q.resolve({});
     }
 
-    public isSimulateTarget(target: string) {
-        return CordovaDebugSession.SIMULATE_TARGETS.indexOf(target) > -1;
-    }
-
     protected initializeRequest(response: DebugProtocol.InitializeResponse, args: DebugProtocol.InitializeRequestArguments): void {
         super.initializeRequest(response, args);
     }
@@ -224,21 +221,21 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         switch (platform) {
                             case PlatformType.Android:
                                 generator.add("platform", platform, false);
-                                if (this.isSimulateTarget(launchArgs.target)) {
+                                if (SimulateHelper.isSimulateTarget(launchArgs.target)) {
                                     return this.launchSimulate(launchArgs, projectType, generator);
                                 } else {
                                     return this.launchAndroid(launchArgs, projectType, runArguments);
                                 }
                             case PlatformType.IOS:
                                 generator.add("platform", platform, false);
-                                if (this.isSimulateTarget(launchArgs.target)) {
+                                if (SimulateHelper.isSimulateTarget(launchArgs.target)) {
                                     return this.launchSimulate(launchArgs, projectType, generator);
                                 } else {
                                     return this.launchIos(launchArgs, projectType, runArguments);
                                 }
                             case PlatformType.Windows:
                                 generator.add("platform", platform, false);
-                                if (this.isSimulateTarget(launchArgs.target)) {
+                                if (SimulateHelper.isSimulateTarget(launchArgs.target)) {
                                     return this.launchSimulate(launchArgs, projectType, generator);
                                 } else {
                                     throw new Error(`Debugging ${platform} platform is not supported.`);
@@ -268,7 +265,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     })
                     .then(() => {
                         // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
-                        if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !this.isSimulateTarget(launchArgs.target)) {
+                        if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !SimulateHelper.isSimulateTarget(launchArgs.target)) {
                             return this.session.customRequest("attach", launchArgs);
                         }
                     });
@@ -520,7 +517,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 launchArgs.url = simulateInfo.appHostUrl;
                 this.outputLogger(localize("AttachingToApp", "Attaching to app"));
 
-                return this.launchChrome(launchArgs);
+                return this.launchChromiumBasedBrowser(launchArgs);
             }).catch((e) => {
                 this.outputLogger(localize("AnErrorOccuredWhileAttachingToTheDebugger", "An error occurred while attaching to the debugger. {0}", this.getErrorMessage(e)));
                 throw e;
@@ -856,9 +853,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private async cleanUp(): Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
-        if (this.chromeProc) {
-            this.chromeProc.kill("SIGINT");
-            this.chromeProc = null;
+        if (this.browserProc) {
+            this.browserProc.kill("SIGINT");
+            this.browserProc = null;
         }
 
         // Stop ADB port forwarding if necessary
@@ -1173,7 +1170,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         });
     }
 
-    private async launchChrome(args: ICordovaLaunchRequestArgs): Promise<void> {
+    private async launchChromiumBasedBrowser(args: ICordovaLaunchRequestArgs): Promise<void> {
         const port = args.port || 9222;
         const chromeArgs: string[] = ["--remote-debugging-port=" + port];
 
@@ -1189,16 +1186,24 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         const launchUrl = args.url;
         chromeArgs.push(launchUrl);
 
+        let browserFinder;
+        switch(args.target) {
+            case TargetType.Edge:
+                browserFinder = new browserHelper.EdgeBrowserFinder(process.env, fs.promises, execa);
+                break;
+            case TargetType.Chrome:
+            default:
+                browserFinder = new browserHelper.ChromeBrowserFinder(process.env, fs.promises, execa);
+        }
 
-        const chromeFinder = new chromeBrowserHelper.ChromeBrowserFinder(process.env, fs.promises, execa);
-        const chromePath = await chromeFinder.findAll();
-        if (chromePath[0]) {
-            this.chromeProc = child_process.spawn(chromePath[0].path, chromeArgs, {
+        const browserPath = await browserFinder.findAll();
+        if (browserPath[0]) {
+            this.browserProc = child_process.spawn(browserPath[0].path, chromeArgs, {
                 detached: true,
                 stdio: ["ignore"]
             });
-            this.chromeProc.unref();
-            this.chromeProc.on("error", (err) => {
+            this.browserProc.unref();
+            this.browserProc.on("error", (err) => {
                 const errMsg = localize("ChromeError", "Chrome error: {0}", err.message);
                 this.outputLogger(errMsg, true);
                 this.stop();
@@ -1246,7 +1251,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             launchArgs.userDataDir = path.join(settingsHome(), CordovaDebugSession.CHROME_DATA_DIR);
 
             // Launch Chrome and attach
-            return this.launchChrome(launchArgs);
+            return this.launchChromiumBasedBrowser(launchArgs);
         });
     }
 
