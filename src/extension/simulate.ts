@@ -17,6 +17,17 @@ import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
+export enum SimulateTargets {
+    Default = "default",
+    Сhrome = "chrome",
+    Chromium = "chromium",
+    Edge = "edge",
+    Firefox = "firefox",
+    Ie = "ie",
+    Opera = "opera",
+    Safari = "safari",
+}
+
 /**
  * Plugin simulation entry point.
  */
