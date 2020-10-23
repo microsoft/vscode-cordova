@@ -108,7 +108,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
     private cancellationTokenSource: vscode.CancellationTokenSource;
 
-    constructor(private session: vscode.DebugSession, private sessionManager: CordovaSessionManager) {
+    constructor(
+        private session: vscode.DebugSession,
+        private cordovaDebugSessionId: string,
+        private sessionManager: CordovaSessionManager
+    ) {
         super();
 
         // constants definition
@@ -268,8 +272,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             return this.session.customRequest("attach", launchArgs);
                         }
                     });
-                }).done(resolve, reject)
-            )
+            })
+            .then(() => {
+                this.sendResponse(response);
+                resolve();
+            }))
             .catch(err => reject(err));
         })
         .catch(err => this.showError(err, response));
@@ -376,7 +383,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private handleTerminateDebugSession(debugSession: vscode.DebugSession) {
         if (
-            debugSession.configuration.cordovaDebugSessionId === this.session.id
+            debugSession.configuration.cordovaDebugSessionId === this.cordovaDebugSessionId
             && debugSession.type === this.pwaSessionName
         ) {
             vscode.commands.executeCommand(this.stopCommand, this.session);
@@ -394,13 +401,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     attachArgs,
                     this.cdpProxyPort,
                     this.pwaSessionName,
-                    this.session.id
+                    this.cordovaDebugSessionId
                 ) :
                 this.jsDebugConfigAdapter.createSafariDebuggingConfig(
                     attachArgs,
                     this.cdpProxyPort,
                     this.pwaSessionName,
-                    this.session.id
+                    this.cordovaDebugSessionId
                 );
 
             vscode.debug.startDebugging(
@@ -901,7 +908,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         CordovaIosDeviceLauncher.cleanup();
 
         this.onDidTerminateDebugSessionHandler.dispose();
-        this.sessionManager.terminate(this.session);
+        this.sessionManager.terminate(this.cordovaDebugSessionId);
 
         await logger.dispose();
 
