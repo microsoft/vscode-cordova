@@ -42,7 +42,7 @@ Name                               | Description                                
 ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------| ---------
 `port`                             | The port number that the debugger uses to connect to a device or emulator.                                                                    | 9222
 `platform`                         | The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported).                                      | n/a
-`target`                           | Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome', 'chromium'. | n/a
+`target`                           | Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome', 'edge'. | n/a
 `trace`|Trace may be set to `true` to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk|true
 `sourceMaps`                       | Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist).                                               | false
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
