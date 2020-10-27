@@ -88,6 +88,15 @@
         "command": "ionic.prepare",
         "title": "%cordova.ionic.prepare%",
         "category": "Cordova"
+      },
+      {
+        "command": "cordova.rebuild",
+        "title": "%cordova.rebuild%",
+        "category": "Cordova",
+        "icon": {
+          "dark": "./images/sync.svg",
+          "light": "./images/sync-light.svg"
+        }
       }
     ],
     "keybindings": [
@@ -104,6 +113,20 @@
         "when": "!inDebugMode"
       }
     ],
+    "menus": {
+      "debug/toolBar": [
+        {
+          "command": "cordova.rebuild",
+          "when": "isCordovaDebugging"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "cordova.rebuild",
+          "when": "false"
+        }
+      ]
+    },
     "debuggers": [
       {
         "type": "cordova",
