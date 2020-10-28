@@ -373,7 +373,7 @@ function launchSimulateCommand(cordovaProjectRoot: string, options: SimulateOpti
 }
 
 function registerCordovaCommands(cordovaSessionManager: CordovaSessionManager): void {
-    EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.rebuild", () => commandWrapper(CordovaCommandHelper.restartCordovaDebugging, [cordovaSessionManager])));
+    EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.restart", () => commandWrapper(CordovaCommandHelper.restartCordovaDebugging, [cordovaSessionManager])));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.prepare", () => commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["prepare"])));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.build", () => commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["build"])));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.run", () => commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["run"])));

@@ -90,8 +90,8 @@
         "category": "Cordova"
       },
       {
-        "command": "cordova.rebuild",
-        "title": "%cordova.rebuild%",
+        "command": "cordova.restart",
+        "title": "%cordova.restart%",
         "category": "Cordova",
         "icon": {
           "dark": "./images/sync.svg",
@@ -116,13 +116,13 @@
     "menus": {
       "debug/toolBar": [
         {
-          "command": "cordova.rebuild",
-          "when": "isCordovaDebugging"
+          "command": "cordova.restart",
+          "when": "isCordovaDebugging && debugType == 'pwa-chrome' || isCordovaDebugging && debugType == 'pwa-node' || isCordovaDebugging && debugType == 'cordova'"
         }
       ],
       "commandPalette": [
         {
-          "command": "cordova.rebuild",
+          "command": "cordova.restart",
           "when": "false"
         }
       ]
