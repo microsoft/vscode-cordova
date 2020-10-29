@@ -76,7 +76,7 @@ export class NodeVersionHelper {
 				}
 				versionManagerName = "nvs";
 			} else {
-				throw new Error(localize("NVS_HOME.not.found.message", "Attribute 'runtimeVersion' requires Node.js version manager 'nvs'."));
+				throw new Error(localize("nvsHomeNotFoundMessage", "Attribute 'runtimeVersion' requires Node.js version manager 'nvs'."));
 			}
 		}
 
@@ -86,7 +86,7 @@ export class NodeVersionHelper {
 			if (process.platform === "win32") {
 				const nvmHome = process.env["NVM_HOME"];
 				if (!nvmHome) {
-					throw new Error(localize("NVM_HOME.not.found.message", "Attribute 'runtimeVersion' requires Node.js version manager 'nvm-windows' or 'nvs'."));
+					throw new Error(localize("nvmWindowsNotFoundMessage", "Attribute 'runtimeVersion' requires Node.js version manager 'nvm-windows' or 'nvs'."));
 				}
 				bin = path.join(nvmHome, `v${config.runtimeVersion}`);
 				versionManagerName = "nvm-windows";
@@ -100,7 +100,7 @@ export class NodeVersionHelper {
 					}
 				}
 				if (!nvmHome) {
-					throw new Error(localize("NVM_DIR.not.found.message", "Attribute 'runtimeVersion' requires Node.js version manager 'nvm' or 'nvs'."));
+					throw new Error(localize("nvmHomeNotFoundMessage", "Attribute 'runtimeVersion' requires Node.js version manager 'nvm' or 'nvs'."));
 				}
 				bin = path.join(nvmHome, "versions", "node", `v${config.runtimeVersion}`, "bin");
 				versionManagerName = "nvm";
@@ -117,7 +117,7 @@ export class NodeVersionHelper {
 				process.env["PATH"] = `${bin}:${process.env["PATH"]}`;
 			}
 		} else {
-			throw new Error(localize("runtime.version.not.found.message", "Node.js version '{0}' not installed for '{1}'.", config.runtimeVersion, versionManagerName));
+			throw new Error(localize("runtimeVersionNotFoundMessage", "Node.js version '{0}' not installed for '{1}'.", config.runtimeVersion, versionManagerName));
 		}
 	}
 }

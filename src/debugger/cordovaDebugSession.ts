@@ -1200,7 +1200,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         if (browserPath[0]) {
             this.browserProc = child_process.spawn(browserPath[0].path, chromeArgs, {
                 detached: true,
-                stdio: ["ignore"]
+                stdio: ["ignore"],
             });
             this.browserProc.unref();
             this.browserProc.on("error", (err) => {
