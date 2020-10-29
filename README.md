@@ -71,6 +71,8 @@ To start the debugger, choose a target from the target drop-down list, and then 
 
 To restart a Cordova application debugging correctly click on the `Restart Cordova debugging` button. In case of a `launch` debug scenario the application will be rebuild otherwise the debugger will reattach to the application.
 
+![Restart Cordova debugging button](images/restart-cordova-debugging-button.png)
+
 You can debug your app on an Android emulator or an Android/iOS device. If you have your app running in one already, you can attach the debugger to it. The debugger uses the application ID of your project to locate the running instance.
 
 > **Visual Studio Emulator for Android:**
