@@ -32,6 +32,7 @@ import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
 import { CordovaSessionManager } from "../extension/cordovaSessionManager";
 import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 import * as nls from "vscode-nls";
+import { NodeVersionHelper } from "../utils/nodeVersionHelper";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -442,6 +443,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.isSettingsInitialized = true;
             logger.setup(args.trace ? Logger.LogLevel.Verbose : Logger.LogLevel.Log);
             this.cdpProxyLogLevel = args.trace ? LogLevel.Custom : LogLevel.None;
+
+            if (args.runtimeVersion) {
+                NodeVersionHelper.nvmSupport(args);
+            }
         }
     }
 

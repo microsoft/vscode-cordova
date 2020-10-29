@@ -429,6 +429,10 @@
                   "/": "${workspaceFolder}"
                 }
               },
+              "runtimeVersion": {
+                "type": "string",
+                "description": "%cordova.properties.launch.runtimeVersion%"
+              },
               "sourceMapPathOverrides": {
                 "type": "object",
                 "description": "%cordova.properties.launch.sourceMapPathOverrides%",
