@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const workspaceFolders: ReadonlyArray<vscode.WorkspaceFolder> | undefined = vscode.workspace.workspaceFolders;
 
         if (workspaceFolders) {
-            registerCordovaCommands();
+            registerCordovaCommands(cordovaFactory);
             workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
                 onFolderAdded(folder);
             });
@@ -372,7 +372,8 @@ function launchSimulateCommand(cordovaProjectRoot: string, options: SimulateOpti
     });
 }
 
-function registerCordovaCommands(): void {
+function registerCordovaCommands(cordovaSessionManager: CordovaSessionManager): void {
+    EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.restart", () => commandWrapper(CordovaCommandHelper.restartCordovaDebugging, [cordovaSessionManager])));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.prepare", () => commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["prepare"])));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.build", () => commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["build"])));
     EXTENSION_CONTEXT.subscriptions.push(vscode.commands.registerCommand("cordova.run", () => commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["run"])));

@@ -2,6 +2,7 @@
   "cordova.description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework.",
   "cordova.license": "SEE LICENSE IN LICENSE.txt",
   "cordova.build": "Cordova: Build",
+  "cordova.restart": "Restart Cordova debugging",
   "cordova.run": "Cordova: Run",
   "cordova.prepare": "Cordova: Prepare",
   "cordova.simulate.android": "Cordova: Simulate Android in browser",

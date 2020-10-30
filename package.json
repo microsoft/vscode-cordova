@@ -88,6 +88,15 @@
         "command": "ionic.prepare",
         "title": "%cordova.ionic.prepare%",
         "category": "Cordova"
+      },
+      {
+        "command": "cordova.restart",
+        "title": "%cordova.restart%",
+        "category": "Cordova",
+        "icon": {
+          "dark": "./images/sync.svg",
+          "light": "./images/sync-light.svg"
+        }
       }
     ],
     "keybindings": [
@@ -104,6 +113,20 @@
         "when": "!inDebugMode"
       }
     ],
+    "menus": {
+      "debug/toolBar": [
+        {
+          "command": "cordova.restart",
+          "when": "isCordovaDebugging && debugType == 'pwa-chrome' || isCordovaDebugging && debugType == 'pwa-node' || isCordovaDebugging && debugType == 'cordova'"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "cordova.restart",
+          "when": "false"
+        }
+      ]
+    },
     "debuggers": [
       {
         "type": "cordova",
@@ -562,6 +585,7 @@
     "q": "^1.4.1",
     "semver": "5.1.0",
     "socket.io-client": "^2.3.0",
+    "uuid": "^8.3.1",
     "vscode-cdp-proxy": "^0.2.0",
     "vscode-debugadapter": "^1.39.1",
     "vscode-debugprotocol": "^1.40.0",
@@ -581,6 +605,7 @@
     "@types/semver": "^5.5.0",
     "@types/sinon": "^9.0.7",
     "@types/socket.io-client": "^1.4.29",
+    "@types/uuid": "^8.3.0",
     "@types/vscode": "1.40.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",

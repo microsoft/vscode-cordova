@@ -26,7 +26,7 @@ suite("extensionContext", () => {
                 let cordovaCmdsAvailable = results.filter((commandName: string) => {
                     return commandName.indexOf("cordova.") > -1;
                 });
-                assert.deepStrictEqual(cordovaCmdsAvailable, ["cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
+                assert.deepStrictEqual(cordovaCmdsAvailable, ["cordova.restart", "cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
             });
     });
 

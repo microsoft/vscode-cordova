@@ -4,7 +4,8 @@
 import * as child_process from "child_process";
 import * as Q from "q";
 import * as os from "os";
-import { window, WorkspaceConfiguration, workspace, Uri } from "vscode";
+import { window, WorkspaceConfiguration, workspace, Uri, commands } from "vscode";
+import { CordovaSessionManager } from "../extension/cordovaSessionManager";
 import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
@@ -20,6 +21,7 @@ export class CordovaCommandHelper {
     private static IONIC_TELEMETRY_EVENT_NAME: string = "ionicCommand";
     private static CORDOVA_DISPLAY_NAME: string = "Cordova";
     private static IONIC_DISPLAY_NAME: string = "Ionic";
+    private static readonly RESTART_SESSION_COMMAND: string = "workbench.action.debug.restart";
 
     public static executeCordovaCommand(projectRoot: string, command: string, useIonic: boolean = false) {
         let telemetryEventName: string = CordovaCommandHelper.CORDOVA_TELEMETRY_EVENT_NAME;
@@ -92,6 +94,13 @@ export class CordovaCommandHelper {
                         .then(() => deferred.promise);
                 });
             });
+    }
+
+    public static restartCordovaDebugging(projectRoot: string, cordovaSessionManager: CordovaSessionManager) {
+        const cordovaDebugSession = cordovaSessionManager.getCordovaDebugSessionByProjectRoot(projectRoot);
+        if (cordovaDebugSession) {
+            commands.executeCommand(CordovaCommandHelper.RESTART_SESSION_COMMAND, undefined, { sessionId: cordovaDebugSession.id });
+        }
     }
 
     /**
