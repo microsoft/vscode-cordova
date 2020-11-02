@@ -1,3 +1,10 @@
+## 2.1.0
+* Fixed debugging of Ionic applications with live reload on iOS devices [#679](https://github.com/microsoft/vscode-cordova/pull/679)
+* Fixed debugging in remote containers [#680](https://github.com/microsoft/vscode-cordova/issues/680), [#682](https://github.com/microsoft/vscode-cordova/pull/682)
+* Added support of MS Edge Chromium browser for Ionic Serve debugging scenarios [#684](https://github.com/microsoft/vscode-cordova/pull/684)
+* Added the `runtimeVersion` debug scenario argument which allows to select a specific version of Node.js if `nvm` (or `nvm-windows`) or `nvs` is used for managing Node.js versions [#686](https://github.com/microsoft/vscode-cordova/pull/686)
+* Added the `Restart Cordova debugging` button to the debug toolbar, which allows to restart a Cordova application debugging correctly. In case of a `launch` debug scenario the application will be rebuild otherwise the debugger will reattach to the application. [#685](https://github.com/microsoft/vscode-cordova/issues/685), [#687](https://github.com/microsoft/vscode-cordova/pull/687)
+
 ## 2.0.0
 * Fixed iOS debugging on iOS devices version 12.2 and above [#641](https://github.com/microsoft/vscode-cordova/pull/641), [#649](https://github.com/microsoft/vscode-cordova/pull/649), [#671](https://github.com/microsoft/vscode-cordova/pull/671)
 * Implmented debug configuration provider using the [`DebugConfigurationProvider`](https://code.visualstudio.com/api/extension-guides/debugger-extension#using-a-debugconfigurationprovider) VS Code approach [#648](https://github.com/microsoft/vscode-cordova/pull/648)
