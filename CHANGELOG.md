@@ -1,3 +1,6 @@
+## 2.1.1
+* Updated the extension supported languages for breakpoints in order to work with the latest VS Code API [#689](https://github.com/microsoft/vscode-cordova/pull/689)
+
 ## 2.1.0
 * Fixed debugging of Ionic applications with live reload on iOS devices [#679](https://github.com/microsoft/vscode-cordova/pull/679)
 * Fixed debugging in remote containers [#680](https://github.com/microsoft/vscode-cordova/issues/680), [#682](https://github.com/microsoft/vscode-cordova/pull/682)
