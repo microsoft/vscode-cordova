@@ -127,17 +127,24 @@
         }
       ]
     },
+    "breakpoints": [
+      {
+        "language": "javascript"
+      },
+      {
+        "language": "typescript"
+      },
+      {
+        "language": "javascriptreact"
+      },
+      {
+        "language": "typescriptreact"
+      }
+    ],
     "debuggers": [
       {
         "type": "cordova",
         "label": "Cordova",
-        "enableBreakpointsFor": {
-          "languageIds": [
-            "javascript",
-            "typescript",
-            "typescriptreact"
-          ]
-        },
         "runtime": "node",
         "configurationSnippets": [
           {
