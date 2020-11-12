@@ -113,6 +113,8 @@ export class CordovaCommandHelper {
                     window.showWarningMessage(localize("CordovaSessionPendingWarning", "A Cordova application is building now. Please wait for the build completion to start the build process again."));
                     break;
             }
+        } else {
+            window.showErrorMessage(localize("CannotRestartDebugging", "Cannot restart debugging of a Cordova application by the path \"{0}\". Could not find a debugging session for the application.", projectRoot));
         }
     }
 
