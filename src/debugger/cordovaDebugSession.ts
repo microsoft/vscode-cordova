@@ -31,6 +31,7 @@ import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
 import { CordovaWorkspaceManager } from "../extension/cordovaWorkspaceManager";
 import { CordovaSessionManager } from "../extension/cordovaSessionManager";
 import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
+import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
 import * as nls from "vscode-nls";
 import { NodeVersionHelper } from "../utils/nodeVersionHelper";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
@@ -108,10 +109,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private browserProc: child_process.ChildProcess;
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
     private cancellationTokenSource: vscode.CancellationTokenSource;
+    private vsCodeDebugSession: vscode.DebugSession;
 
     constructor(
-        private session: vscode.DebugSession,
-        private cordovaDebugSessionId: string,
+        private cordovaSession: CordovaSession,
         private sessionManager: CordovaSessionManager
     ) {
         super();
@@ -121,9 +122,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cancellationTokenSource = new vscode.CancellationTokenSource();
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         this.stopCommand = "workbench.action.debug.stop"; // the command which simulates a click on the "Stop" button
+        this.vsCodeDebugSession = cordovaSession.getVSCodeDebugSession();
 
-        if (session.configuration.platform === PlatformType.IOS
-            && (session.configuration.target === TargetType.Emulator || session.configuration.target === TargetType.Device)
+        if (this.vsCodeDebugSession.configuration.platform === PlatformType.IOS
+            && (this.vsCodeDebugSession.configuration.target === TargetType.Emulator || this.vsCodeDebugSession.configuration.target === TargetType.Device)
         ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
         } else {
@@ -270,12 +272,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     .then(() => {
                         // For the browser platforms, we call super.launch(), which already attaches. For other platforms, attach here
                         if (platform !== PlatformType.Serve && platform !== PlatformType.Browser && !SimulateHelper.isSimulateTarget(launchArgs.target)) {
-                            return this.session.customRequest("attach", launchArgs);
+                            return this.vsCodeDebugSession.customRequest("attach", launchArgs);
                         }
                     });
             })
             .then(() => {
                 this.sendResponse(response);
+                this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
                 resolve();
             }))
             .catch(err => reject(err));
@@ -355,6 +358,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         .then(() => {
             this.attachedDeferred.resolve(void 0);
             this.sendResponse(response);
+            this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
         })
         .catch(err => {
             this.showError(err, response);
@@ -378,16 +382,16 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
-        await this.cleanUp();
+        await this.cleanUp(args.restart);
         super.disconnectRequest(response, args, request);
     }
 
     private handleTerminateDebugSession(debugSession: vscode.DebugSession) {
         if (
-            debugSession.configuration.cordovaDebugSessionId === this.cordovaDebugSessionId
+            debugSession.configuration.cordovaDebugSessionId === this.cordovaSession.getSessionId()
             && debugSession.type === this.pwaSessionName
         ) {
-            vscode.commands.executeCommand(this.stopCommand, this.session);
+            vscode.commands.executeCommand(this.stopCommand, this.vsCodeDebugSession);
         }
     }
 
@@ -402,20 +406,20 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     attachArgs,
                     this.cdpProxyPort,
                     this.pwaSessionName,
-                    this.cordovaDebugSessionId
+                    this.cordovaSession.getSessionId()
                 ) :
                 this.jsDebugConfigAdapter.createSafariDebuggingConfig(
                     attachArgs,
                     this.cdpProxyPort,
                     this.pwaSessionName,
-                    this.cordovaDebugSessionId
+                    this.cordovaSession.getSessionId()
                 );
 
             vscode.debug.startDebugging(
                 this.workspaceManager.workspaceRoot,
                 attachArguments,
                 {
-                    parentSession: this.session,
+                    parentSession: this.vsCodeDebugSession,
                     consoleMode: vscode.DebugConsoleMode.MergeWithParent,
                 }
             )
@@ -857,7 +861,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return cordovaWebview || webviewsList[0];
     }
 
-    private async cleanUp(): Promise<void> {
+    private async cleanUp(restart?: boolean): Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
         if (this.browserProc) {
@@ -913,7 +917,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         CordovaIosDeviceLauncher.cleanup();
 
         this.onDidTerminateDebugSessionHandler.dispose();
-        this.sessionManager.terminate(this.cordovaDebugSessionId);
+        this.sessionManager.terminate(this.cordovaSession.getSessionId(), !!restart);
 
         await logger.dispose();
 
@@ -1216,7 +1220,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                 this.stop();
             });
 
-            this.session.customRequest("attach", args);
+            this.vsCodeDebugSession.customRequest("attach", args);
         }
 
     }
