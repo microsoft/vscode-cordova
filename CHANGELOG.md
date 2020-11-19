@@ -1,3 +1,6 @@
+## 2.1.2
+* Fixed incorrect behavior of the `Restart Cordova debugging` button [#685](https://github.com/microsoft/vscode-cordova/issues/685), [691](https://github.com/microsoft/vscode-cordova/pull/691)
+
 ## 2.1.1
 * Updated the extension supported languages for breakpoints in order to work with the latest VS Code API [#689](https://github.com/microsoft/vscode-cordova/pull/689)
 
