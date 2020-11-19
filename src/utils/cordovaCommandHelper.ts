@@ -6,6 +6,7 @@ import * as Q from "q";
 import * as os from "os";
 import { window, WorkspaceConfiguration, workspace, Uri, commands } from "vscode";
 import { CordovaSessionManager } from "../extension/cordovaSessionManager";
+import { CordovaSessionStatus } from "../debugger/debugSessionWrapper";
 import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
@@ -99,7 +100,21 @@ export class CordovaCommandHelper {
     public static restartCordovaDebugging(projectRoot: string, cordovaSessionManager: CordovaSessionManager) {
         const cordovaDebugSession = cordovaSessionManager.getCordovaDebugSessionByProjectRoot(projectRoot);
         if (cordovaDebugSession) {
-            commands.executeCommand(CordovaCommandHelper.RESTART_SESSION_COMMAND, undefined, { sessionId: cordovaDebugSession.id });
+            switch (cordovaDebugSession.getStatus()) {
+                case CordovaSessionStatus.Activated:
+                    cordovaDebugSession.setStatus(CordovaSessionStatus.Pending);
+                    commands.executeCommand(CordovaCommandHelper.RESTART_SESSION_COMMAND, undefined, { sessionId: cordovaDebugSession.getVSCodeDebugSession().id });
+                    break;
+                case CordovaSessionStatus.NotActivated:
+                    cordovaDebugSession.setStatus(CordovaSessionStatus.Pending);
+                    commands.executeCommand(CordovaCommandHelper.RESTART_SESSION_COMMAND);
+                    break;
+                case CordovaSessionStatus.Pending:
+                    window.showWarningMessage(localize("CordovaSessionPendingWarning", "A Cordova application is building now. Please wait for the build completion to start the build process again."));
+                    break;
+            }
+        } else {
+            window.showErrorMessage(localize("CannotRestartDebugging", "Cannot restart debugging of a Cordova application by the path \"{0}\". Could not find a debugging session for the application.", projectRoot));
         }
     }
 
