@@ -22,7 +22,7 @@ To debug the extension process itself and the debug adapter it provides, in VS C
 
 There is a set of mocha tests for the debug adapter which can be run with `npm test`, and a set of mocha tests for the other functionality run as part of the `test` launch config. Also run `gulp eslint` to check your code against our `eslint` rules.
 
-See the project under test/testProjcet/ for a sample project that should build and compile, allow debugging of plugins and merges, and enable Intellisense for plugins.
+See the project under `test/testProject/` for a sample project that should build and compile, allow debugging of plugins and merges, and enable Intellisense for plugins.
 
 ## Legal
 
