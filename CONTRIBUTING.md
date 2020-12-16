@@ -1,30 +1,28 @@
 ## Development setup
+
 We welcome any quality bugfixes or contributions!
 
-To avoid a conflict, delete the installed extension at `~/.vscode/extensions/vsmobile.cordova-tools`.
+To avoid conflicts with your existing installation, it is recommended to delete the installed extension at:
 
-### Windows
-* In `C:/Users/<username>/.vscode/extensions/`, `git clone` this repository
+- **Linux and macOS**: `~/.vscode/extensions/msjsdiag.vscode-cordova-<version>`
+- **Windows**: `C:\Users\<username>\.vscode\extensions\msjsdiag.vscode-cordova-<version>`
 
-### OS X/Linux
-* `git clone` this repository
-* Run `ln -s <path to repo> ~/.vscode/extensions/vscode-cordova`
-* You could clone it to the extensions directory if you want, but working with hidden folders in OS X can be a pain.
+### Clone the repository
 
-### Then...
-* `cd` to the folder you just cloned
-* Run `npm install -g gulp` and `npm install`
-    * You may see an error if `bufferutil` or `utf-8-validate` fail to build. These native modules required by `ws` are optional and the debug adapter should work fine without them.
-* Run `gulp build`
-
+- `git clone https://github.com/microsoft/vscode-cordova.git` to any preferrable folder
+- `cd` to the folder you just cloned
+- Run `npm install -g gulp` and `npm ci`
+- Run `gulp`
 
 ## Debugging
-In VS Code, run the `launch as server` launch config - it will start the adapter as a server listening on port 4712. In your test app launch.json, include this flag at the top level: `"debugServer": "4712"`. Then you'll be able to debug the adapter in the first instance of VS Code, in its original TypeScript, using sourcemaps.
+
+To debug the extension process itself and the debug adapter it provides, in VS Code run the `Launch Extension` debug target which will spawn a new instance of VS Code with the extension installed. You can set breakpoints in the Typescript and debug things such as extension activation and the command palette.
 
 ## Testing
-There is a set of mocha tests for the debug adapter which can be run with `npm test`, and a set of mocha tests for the other functionality run as part of the `test` launch config. Also run `gulp tslint` to check your code against our tslint rules.
 
-See the project under test/testProjcet/ for a sample project that should build and compile, allow debugging of plugins and merges, and enable intellisense for plugins.
+There is a set of mocha tests for the debug adapter which can be run with `npm test`, and a set of mocha tests for the other functionality run as part of the `test` launch config. Also run `gulp eslint` to check your code against our `eslint` rules.
+
+See the project under test/testProjcet/ for a sample project that should build and compile, allow debugging of plugins and merges, and enable Intellisense for plugins.
 
 ## Legal
 
@@ -36,29 +34,23 @@ Please submit a Contributor License Agreement (CLA) before submitting a pull req
 
 Your pull request should:
 
-* Include a clear description of the change
-* Be a child commit of a reasonably recent commit in the **master** branch
-    * Requests need not be a single commit, but should be a linear sequence of commits (i.e. no merge commits in your PR)
-* It is desirable, but not necessary, for the tests to pass at each commit
-* Have clear commit messages
-    * e.g. "Refactor feature", "Fix issue", "Add tests for issue"
-* Include adequate tests
-    * At least one test should fail in the absence of your non-test code changes. If your PR does not match this criteria, please specify why
-    * Tests should include reasonable permutations of the target fix/change
-    * Include baseline changes with your change
-* Ensure there are no linting issues ("gulp tslint")
-* To avoid line ending issues, set `autocrlf = input` and `whitespace = cr-at-eol` in your git configuration
-
-## Troubleshooting
-* VS Code complains about Q promises and mark it as problems almost everywhere
-
-This problems caused by incorrect Intellisense Typescript version choosed for the workspace.
-Change the Typescript version to workspace version in the lower right corner of the VS Code window.
-
-![Typescript Intellisense version](images/typescript-version.png)
+- Include a clear description of the change
+- Be a child commit of a reasonably recent commit in the **master** branch
+  - Requests need not be a single commit, but should be a linear sequence of commits (i.e. no merge commits in your PR)
+- It is desirable, but not necessary, for the tests to pass at each commit
+- Have clear commit messages
+  - e.g. "Refactor feature", "Fix issue", "Add tests for issue"
+- Include adequate tests
+  - At least one test should fail in the absence of your non-test code changes. If your PR does not match this criteria, please specify why
+  - Tests should include reasonable permutations of the target fix/change
+  - Include baseline changes with your change
+- Ensure there are no linting issues (`gulp eslint`)
+- To avoid line ending issues, set `autocrlf = input` and `whitespace = cr-at-eol` in your git configuration
 
 ## Code
-Much of the debug adapter is a fork of [the chrome debugging extension](https://github.com/Microsoft/vscode-chrome-debug)
+
+This extension is based on [JavaScript Debugger](https://github.com/Microsoft/vscode-js-debug).
 
 ## Code of conduct
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
