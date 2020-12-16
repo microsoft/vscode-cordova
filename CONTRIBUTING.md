@@ -49,7 +49,7 @@ Your pull request should:
 
 ## Code
 
-This extension is based on [JavaScript Debugger](https://github.com/Microsoft/vscode-js-debug).
+This extension is based on [JavaScript Debugger extension](https://github.com/Microsoft/vscode-js-debug).
 
 ## Code of conduct
 
