@@ -35,7 +35,7 @@ export class CordovaCommandHelper {
             cliDisplayName = CordovaCommandHelper.IONIC_DISPLAY_NAME;
         }
 
-        return CordovaCommandHelper.selectPlatform(projectRoot, command)
+        return CordovaCommandHelper.selectPlatform(projectRoot, command, useIonic)
             .then((platform) => {
                 TelemetryHelper.generate(telemetryEventName, (generator) => {
                     generator.add("command", command, false);
@@ -145,7 +145,7 @@ export class CordovaCommandHelper {
         }
     }
 
-    private static selectPlatform(projectRoot, command): Q.Promise<string> {
+    private static selectPlatform(projectRoot: string, command: string, useIonic: boolean): Q.Promise<string> {
         let platforms = CordovaProjectHelper.getInstalledPlatforms(projectRoot);
         platforms = CordovaCommandHelper.filterAvailablePlatforms(platforms);
 
@@ -154,6 +154,10 @@ export class CordovaCommandHelper {
                 if (["prepare", "build", "run"].indexOf(command) > -1) {
                     if (platforms.length > 1) {
                         platforms.unshift("all");
+                        // Ionic doesn't support prepare and run command without platform
+                        if (useIonic && (command === "prepare" || command === "run")) {
+                            platforms.shift();
+                        }
                         return window.showQuickPick(platforms)
                             .then((platform) => {
                                 if (!platform) {
