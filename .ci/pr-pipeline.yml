@@ -3,7 +3,9 @@ pr:
     include: ["*"]
 
 trigger:
-  - none
+  branches:
+    include:
+      - "*"
 
 jobs:
   - job: Linux
