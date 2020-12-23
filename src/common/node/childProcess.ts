@@ -3,10 +3,6 @@
 
 import * as nodeChildProcess from "child_process";
 
-// Uncomment the following lines to record all spawned processes executions
-// import {Recorder} from "../../../test/resources/processExecution/recorder";
-// Recorder.installGlobalRecorder();
-
 export interface IExecResult {
     process: nodeChildProcess.ChildProcess;
     outcome: Promise<string>;
