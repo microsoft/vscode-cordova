@@ -83,18 +83,18 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
                         ),
                     );
                 }
-                reject(`Virtual device launch finished with an exception: ${error}`);
+                reject(new Error(`Virtual device launch finished with an exception: ${error}`));
             });
             emulatorProcess.spawnedProcess.unref();
 
             const rejectTimeout = setTimeout(() => {
                 cleanup();
-                reject(`Virtual device launch finished with an exception: ${localize(
+                reject(new Error(`Virtual device launch finished with an exception: ${localize(
                     "EmulatorStartWarning",
                     "Could not start the emulator {0} within {1} seconds.",
                     emulatorName,
                     AndroidEmulatorManager.EMULATOR_START_TIMEOUT,
-                )}`);
+                )}`));
             }, AndroidEmulatorManager.EMULATOR_START_TIMEOUT * 1000);
 
             const bootCheckInterval = setInterval(async () => {
