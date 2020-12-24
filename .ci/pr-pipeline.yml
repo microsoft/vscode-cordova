@@ -1,6 +1,6 @@
 pr:
   branches:
-    include: ["*"]
+    include: ["*", "master"]
 
 trigger:
   - none
