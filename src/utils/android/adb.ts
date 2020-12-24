@@ -31,7 +31,6 @@ export enum DeviceType {
     Other,
 }
 
-
 export interface IDevice {
     id: string;
     isOnline: boolean;
