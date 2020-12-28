@@ -72,6 +72,16 @@ export class AdbHelper {
         });
     }
 
+    public async getAvdNameById(emulatorId: string): Promise<string | null> {
+        return this.childProcess.execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`).then(output => {
+            if (output) {
+                return output.split(/\r?\n|\r/g)[0];
+            } else {
+                return null;
+            }
+        });
+    }
+
     public startLogCat(adbParameters: string[]): ISpawnResult {
         return this.childProcess.spawn(this.adbExecutable.replace(/\"/g, ""), adbParameters);
     }

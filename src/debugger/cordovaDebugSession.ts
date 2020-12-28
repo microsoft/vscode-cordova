@@ -320,7 +320,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
                     })
                     .then(() => {
-                        if (target === TargetType.Device || target === TargetType.Emulator) {
+                        if ((platform === PlatformType.Android || platform === PlatformType.IOS) && (target !== TargetType.Edge && target !== TargetType.Chrome)) {
                             this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", platform));
                             switch (platform) {
                                 case PlatformType.Android:
@@ -1283,7 +1283,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
         const isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
         const isEmulator = launchArgs.target.toLowerCase() === TargetType.Emulator;
-        targetArgs.push(isDevice ? "--device" : "--emulator", "--verbose");
+        targetArgs.push(launchArgs.target.toLowerCase().includes(TargetType.Emulator) ? "--emulator" : "--device", "--verbose");
         if (!isDevice) {
             const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
             if (targetDevice) {
@@ -1291,8 +1291,8 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                 if (isEmulator && targetDevice.name) {
                     launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
                 }
+                launchArgs.target = targetDevice.id;
             }
-            launchArgs.target = TargetType.Emulator;
         }
 
         return targetArgs;
@@ -1310,7 +1310,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             args.push(...runArguments);
         } else {
             const targetArgs = await this.resolveAndroidTarget(launchArgs);
-            args.concat(targetArgs);
+            args.push(...targetArgs);
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
