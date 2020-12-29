@@ -105,7 +105,6 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
                 const connectedDevices = await this.adbHelper.getOnlineDevices();
                 for (let i = 0; i < connectedDevices.length; i++) {
                     const onlineAvdName = await this.adbHelper.getAvdNameById(connectedDevices[i].id);
-                    console.log(onlineAvdName);
                     if (onlineAvdName === emulatorName) {
                         this.logger.log(
                             localize("EmulatorLaunched", "Launched emulator {0}", emulatorName),
