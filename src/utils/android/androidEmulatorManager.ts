@@ -40,24 +40,26 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
     }
 
     public async startEmulator(target: string): Promise<IAndroidEmulator | null> {
-        const onlineDevices = await this.adbHelper.getOnlineDevices();
-        for (let i = 0; i < onlineDevices.length; i++) {
-            if (onlineDevices[i].id === target) {
-                return { id: onlineDevices[i].id };
+        if (target !== TargetType.Emulator) {
+            const onlineDevices = await this.adbHelper.getOnlineDevices();
+            for (let i = 0; i < onlineDevices.length; i++) {
+                if (onlineDevices[i].id === target) {
+                    return { id: onlineDevices[i].id };
+                }
+                if (await this.adbHelper.getAvdNameById(onlineDevices[i].id) === target) {
+                    return { name: target, id: onlineDevices[i].id };
+                }
             }
-            if (await this.adbHelper.getAvdNameById(onlineDevices[i].id) === target) {
-                return { name: target, id: onlineDevices[i].id };
+            if ((await this.getVirtualDevicesNamesList()).includes(target)) {
+                const emulatorId = await this.tryLaunchEmulatorByName(target);
+                return { name: target, id: emulatorId };
             }
-        }
-        if (target === TargetType.Emulator) {
+        } else {
             const newEmulator = await this.startSelection();
             if (newEmulator) {
                 const emulatorId = await this.tryLaunchEmulatorByName(newEmulator);
                 return { name: newEmulator, id: emulatorId };
             }
-        } else if ((await this.getVirtualDevicesNamesList()).includes(target)) {
-            const emulatorId = await this.tryLaunchEmulatorByName(target);
-            return { name: target, id: emulatorId };
         }
         return null;
     }
@@ -103,6 +105,7 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
                 const connectedDevices = await this.adbHelper.getOnlineDevices();
                 for (let i = 0; i < connectedDevices.length; i++) {
                     const onlineAvdName = await this.adbHelper.getAvdNameById(connectedDevices[i].id);
+                    console.log(onlineAvdName);
                     if (onlineAvdName === emulatorName) {
                         this.logger.log(
                             localize("EmulatorLaunched", "Launched emulator {0}", emulatorName),

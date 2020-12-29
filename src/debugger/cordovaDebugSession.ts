@@ -320,7 +320,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
                     })
                     .then(() => {
-                        if ((platform === PlatformType.Android || platform === PlatformType.IOS) && (target !== TargetType.Edge && target !== TargetType.Chrome)) {
+                        if ((platform === PlatformType.Android || platform === PlatformType.IOS) && !SimulateHelper.isSimulateTarget(target)) {
                             this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", platform));
                             switch (platform) {
                                 case PlatformType.Android:
@@ -1283,16 +1283,21 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
         const isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
         const isEmulator = launchArgs.target.toLowerCase() === TargetType.Emulator;
-        targetArgs.push(launchArgs.target.toLowerCase().includes(TargetType.Emulator) ? "--emulator" : "--device", "--verbose");
+        targetArgs.push("--verbose");
         if (!isDevice) {
             const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
             if (targetDevice) {
-                targetArgs.push(`--target=${targetDevice.id}`);
+                targetArgs.push("--emulator", `--target=${targetDevice.id}`);
                 if (isEmulator && targetDevice.name) {
                     launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
                 }
                 launchArgs.target = targetDevice.id;
+            } else if (!launchArgs.target.toLowerCase().includes("emulator")) {
+                targetArgs.push("--device", `--target=${launchArgs.target}`);
             }
+        }
+        else {
+            targetArgs.push("--device");
         }
 
         return targetArgs;
