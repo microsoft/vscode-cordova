@@ -34,6 +34,9 @@ import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
 import * as nls from "vscode-nls";
 import { NodeVersionHelper } from "../utils/nodeVersionHelper";
+import { AdbHelper } from "../utils/android/adb";
+import { AndroidEmulatorManager } from "../utils/android/androidEmulatorManager";
+import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -317,7 +320,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
                     })
                     .then(() => {
-                        if (target === TargetType.Device || target === TargetType.Emulator) {
+                        if ((platform === PlatformType.Android || platform === PlatformType.IOS) && !SimulateHelper.isSimulateTarget(target)) {
                             this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", platform));
                             switch (platform) {
                                 case PlatformType.Android:
@@ -1270,11 +1273,40 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         return e.message || e.error || e.data || e;
     }
 
-    private launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
+    private async resolveAndroidTarget(launchArgs: ICordovaLaunchRequestArgs): Promise<string[]> {
+        let workingDirectory = launchArgs.cwd;
+        const targetArgs: string[] = [];
+
+        const adbHelper = new AdbHelper(workingDirectory);
+        const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
+        const launchScenariousManager = new LaunchScenariosManager(workingDirectory);
+
+        const isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
+        const isEmulator = launchArgs.target.toLowerCase() === TargetType.Emulator;
+        targetArgs.push("--verbose");
+        if (!isDevice) {
+            const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
+            if (targetDevice) {
+                targetArgs.push("--emulator", `--target=${targetDevice.id}`);
+                if (isEmulator && targetDevice.name) {
+                    launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
+                }
+                launchArgs.target = targetDevice.id;
+            } else if (!launchArgs.target.toLowerCase().includes(TargetType.Emulator)) {
+                targetArgs.push("--device", `--target=${launchArgs.target}`);
+            }
+        }
+        else {
+            targetArgs.push("--device");
+        }
+
+        return targetArgs;
+    }
+
+    private async launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Promise<void> {
         let workingDirectory = launchArgs.cwd;
 
         // Prepare the command line args
-        let isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
         let args = ["run", "android"];
 
         if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
@@ -1282,10 +1314,8 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         } else if (runArguments && runArguments.length) {
             args.push(...runArguments);
         } else {
-            args.push(isDevice ? "--device" : "--emulator", "--verbose");
-            if (["device", "emulator"].indexOf(launchArgs.target.toLowerCase()) === -1) {
-                args.push(`--target=${launchArgs.target}`);
-            }
+            const targetArgs = await this.resolveAndroidTarget(launchArgs);
+            args.push(...targetArgs);
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
