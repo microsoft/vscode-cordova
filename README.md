@@ -34,15 +34,15 @@ The launch configuration file appears. It contains some default configurations s
 
 ![Cordova launch configuration file](images/launch-config.png)
 
-You can modify these configurations or add new ones to the list. Just don't add a Windows or a Browser configuration as they are not supported yet.
+You can modify these configurations or add new ones to the list. Just don't add a Windows configuration as it are not supported yet.
 
 You can use other fields in these configurations as well. Here's the complete list:
 
 Name                               | Description                                                                                                                                   | Defaults
 ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------| ---------
 `port`                             | The port number that the debugger uses to connect to a device or emulator.                                                                    | 9222
-`platform`                         | The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported).                                      | n/a
-`target`                           | Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome', 'edge'. | n/a
+`platform`                         | The target platform to run for (either 'ios', 'android', 'browser' or 'serve'; other platforms are not currently supported).                                      | n/a
+`target`                           | Either 'device', 'emulator', identifier for a specific device / emulator or avd name of specific Android emulator. For simulation in the browser, you can use 'chrome', 'edge'. | n/a
 `trace`|Trace may be set to `true` to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk|true
 `sourceMaps`                       | Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist).                                               | false
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
