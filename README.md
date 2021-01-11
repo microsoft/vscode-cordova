@@ -34,7 +34,7 @@ The launch configuration file appears. It contains some default configurations s
 
 ![Cordova launch configuration file](images/launch-config.png)
 
-You can modify these configurations or add new ones to the list. Just don't add a Windows configuration as it are not supported yet.
+You can modify these configurations or add new ones to the list. Just don't add a Windows configuration as it is not supported yet.
 
 You can use other fields in these configurations as well. Here's the complete list:
 
