@@ -34,15 +34,15 @@ The launch configuration file appears. It contains some default configurations s
 
 ![Cordova launch configuration file](images/launch-config.png)
 
-You can modify these configurations or add new ones to the list. Just don't add a Windows or a Browser configuration as they are not supported yet.
+You can modify these configurations or add new ones to the list. Just don't add a Windows configuration as it is not supported yet.
 
 You can use other fields in these configurations as well. Here's the complete list:
 
 Name                               | Description                                                                                                                                   | Defaults
 ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------| ---------
 `port`                             | The port number that the debugger uses to connect to a device or emulator.                                                                    | 9222
-`platform`                         | The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported).                                      | n/a
-`target`                           | Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome', 'edge'. | n/a
+`platform`                         | The target platform to run for (either 'ios', 'android', 'browser' or 'serve'; other platforms are not currently supported).                                      | n/a
+`target`                           | Target to run on. Possible values: `emulator`, `device`, `<Android emulator/device id>`, `<Android emulator name>`. For simulation in the browser, you can use `chrome`, `edge`. If the value is `emulator` and platform is `android` then the quick pick window will be expanded with the names of the available Android virtual devices, then the target value in `launch.json` will be changed to the name of the selected virtual device. If you have only one virtual device available, it will be selected automatically. | n/a
 `trace`|Trace may be set to `true` to print diagnostic logs of the extension to the console and write diagnostic logs of the Javascript debugger to the disk|true
 `sourceMaps`                       | Set this field to `true` if you want the debugger to use javascript sourcemaps (if they exist).                                               | false
 `webkitRangeMin`, `webkitRangeMax` | Combines to specify the port range that you want the debugger to use to find the specific device or simulator described in the configuration. | 9223, 9322
