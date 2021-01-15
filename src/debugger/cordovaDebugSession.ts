@@ -1275,7 +1275,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
     private async resolveAndroidTarget(launchArgs: ICordovaLaunchRequestArgs): Promise<string[]> {
         let workingDirectory = launchArgs.cwd;
-        const targetArgs: string[] = [];
+        let targetArgs: string[] = [];
 
         const adbHelper = new AdbHelper(workingDirectory);
         const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
@@ -1283,21 +1283,44 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
         const isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
         const isEmulator = launchArgs.target.toLowerCase() === TargetType.Emulator;
+
+        const useDefaultCLI = async () => {
+            this.outputLogger("Continue using standard CLI workflow.");
+            targetArgs = ["--verbose"];
+            const debuggableDevices = await adbHelper.getOnlineDevices();
+            if (debuggableDevices.length) {
+                launchArgs.target = debuggableDevices[0].id;
+            } else {
+                launchArgs.target = TargetType.Emulator;
+            }
+        };
+
         targetArgs.push("--verbose");
-        if (!isDevice) {
-            const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
-            if (targetDevice) {
-                targetArgs.push("--emulator", `--target=${targetDevice.id}`);
-                if (isEmulator && targetDevice.name) {
-                    launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
+        try {
+            if (!isDevice) {
+                const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
+                if (targetDevice) {
+                    if (targetDevice.id.toLowerCase().includes(TargetType.Emulator)) {
+                        targetArgs.push("--emulator");
+                    } else {
+                        targetArgs.push("--device");
+                    }
+                    targetArgs.push(`--target=${targetDevice.id}`);
+                    if (isEmulator && targetDevice.name) {
+                        launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
+                    }
+                    launchArgs.target = targetDevice.id;
+                } else {
+                    this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
+                    useDefaultCLI();
                 }
-                launchArgs.target = targetDevice.id;
-            } else if (!launchArgs.target.toLowerCase().includes(TargetType.Emulator)) {
-                targetArgs.push("--device", `--target=${launchArgs.target}`);
+            } else {
+                targetArgs.push("--device");
             }
         }
-        else {
-            targetArgs.push("--device");
+        catch (err) {
+            this.outputLogger(err.message || err, true);
+            useDefaultCLI();
         }
 
         return targetArgs;
