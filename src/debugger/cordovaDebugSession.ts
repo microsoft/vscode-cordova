@@ -1288,11 +1288,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
             const debuggableDevices = await adbHelper.getOnlineDevices();
-            if (debuggableDevices.length) {
-                launchArgs.target = debuggableDevices[0].id;
-            } else {
-                launchArgs.target = TargetType.Emulator;
-            }
+            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator; 
         };
 
         targetArgs.push("--verbose");
