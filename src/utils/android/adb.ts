@@ -72,7 +72,6 @@ export class AdbHelper {
         });
     }
 
-
     public async getAvdNameById(emulatorId: string): Promise<string | null> {
         return this.childProcess.execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`)
         // The command returns the name of avd by id of this running emulator.

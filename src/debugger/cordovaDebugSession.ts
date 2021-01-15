@@ -1275,7 +1275,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
     private async resolveAndroidTarget(launchArgs: ICordovaLaunchRequestArgs): Promise<string[]> {
         let workingDirectory = launchArgs.cwd;
-        let targetArgs: string[] = [];
+        let targetArgs: string[] = ["--verbose"];
 
         const adbHelper = new AdbHelper(workingDirectory);
         const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
@@ -1288,30 +1288,32 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
             const debuggableDevices = await adbHelper.getOnlineDevices();
-            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator; 
+            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
         };
 
-        targetArgs.push("--verbose");
         try {
-            if (!isDevice) {
+            if ((await androidEmulatorManager.isEmulatorTarget(launchArgs.target))) {
                 const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
                 if (targetDevice) {
-                    if (targetDevice.id.toLowerCase().includes(TargetType.Emulator)) {
-                        targetArgs.push("--emulator");
-                    } else {
-                        targetArgs.push("--device");
-                    }
-                    targetArgs.push(`--target=${targetDevice.id}`);
-                    if (isEmulator && targetDevice.name) {
+                    targetArgs.push("--emulator", `--target=${targetDevice.id}`);
+                    if (isEmulator) {
                         launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
                     }
                     launchArgs.target = targetDevice.id;
                 } else {
-                    this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
-                    useDefaultCLI();
+                   this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
+                   useDefaultCLI();
                 }
             } else {
                 targetArgs.push("--device");
+                if (!isDevice) {
+                    if ((await adbHelper.getOnlineDevices()).find((device) => device.id === launchArgs.target)) {
+                        targetArgs.push(`--target=${launchArgs.target}`);
+                    } else {
+                        this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
+                        useDefaultCLI();
+                    }
+                }
             }
         }
         catch (err) {
