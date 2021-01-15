@@ -1307,7 +1307,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             } else {
                 targetArgs.push("--device");
                 if (!isDevice) {
-                    if ((await adbHelper.getOnlineDevices()).find((device) => device.id === launchArgs.target)) {
+                    if (await adbHelper.findOnlineDeviceById(launchArgs.target)) {
                         targetArgs.push(`--target=${launchArgs.target}`);
                     } else {
                         this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);

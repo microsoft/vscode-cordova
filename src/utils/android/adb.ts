@@ -92,6 +92,10 @@ export class AdbHelper {
         .catch(() => null);
     }
 
+    public async findOnlineDeviceById(deviceId: string): Promise<IDevice> {
+        return (await this.getOnlineDevices()).find((device) => device.id === deviceId);
+    }
+
     public startLogCat(adbParameters: string[]): ISpawnResult {
         return this.childProcess.spawn(this.adbExecutable.replace(/\"/g, ""), adbParameters);
     }
