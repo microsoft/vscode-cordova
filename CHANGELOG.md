@@ -1,3 +1,8 @@
+## 2.2.0
+* Fixed security vulnerabilities [#695](https://github.com/microsoft/vscode-cordova/pull/695)
+* Refactored Command Palette commands for Ionic applications (`Ionic: Build`, `Ionic: Run` and `Ionic: Prepare`) to adapt them to the new Ionic commands syntax [#698](https://github.com/microsoft/vscode-cordova/pull/698)
+* Implemented Android emulator selection when starting debug scenarios [#699](https://github.com/microsoft/vscode-cordova/pull/699)
+
 ## 2.1.2
 * Fixed incorrect behavior of the `Restart Cordova debugging` button [#685](https://github.com/microsoft/vscode-cordova/issues/685), [691](https://github.com/microsoft/vscode-cordova/pull/691)
 
