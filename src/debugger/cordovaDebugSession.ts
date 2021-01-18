@@ -1294,7 +1294,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         };
 
         try {
-            if ((await androidEmulatorManager.isEmulatorTarget(launchArgs.target))) {
+            if (await androidEmulatorManager.isEmulatorTarget(launchArgs.target)) {
                 const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
                 if (targetDevice) {
                     targetArgs.push("--emulator", `--target=${targetDevice.id}`);
