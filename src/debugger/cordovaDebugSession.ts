@@ -1288,8 +1288,8 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
             const debuggableDevices = await adbHelper.getOnlineDevices();
-            // By default, if a target is not specified Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
-            // For more information see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
+            // By default, if the target is not specified, Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
+            // For more information, see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
             launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
         };
 
