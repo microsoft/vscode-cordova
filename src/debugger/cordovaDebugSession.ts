@@ -1275,7 +1275,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
     private async resolveAndroidTarget(launchArgs: ICordovaLaunchRequestArgs): Promise<string[]> {
         let workingDirectory = launchArgs.cwd;
-        const targetArgs: string[] = [];
+        let targetArgs: string[] = ["--verbose"];
 
         const adbHelper = new AdbHelper(workingDirectory);
         const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
@@ -1283,21 +1283,44 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
 
         const isDevice = launchArgs.target.toLowerCase() === TargetType.Device;
         const isEmulator = launchArgs.target.toLowerCase() === TargetType.Emulator;
-        targetArgs.push("--verbose");
-        if (!isDevice) {
-            const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
-            if (targetDevice) {
-                targetArgs.push("--emulator", `--target=${targetDevice.id}`);
-                if (isEmulator && targetDevice.name) {
-                    launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
+
+        const useDefaultCLI = async () => {
+            this.outputLogger("Continue using standard CLI workflow.");
+            targetArgs = ["--verbose"];
+            const debuggableDevices = await adbHelper.getOnlineDevices();
+            // By default, if the target is not specified, Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
+            // For more information, see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
+            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
+        };
+
+        try {
+            if (await androidEmulatorManager.isEmulatorTarget(launchArgs.target)) {
+                const targetDevice = await androidEmulatorManager.startEmulator(launchArgs.target);
+                if (targetDevice) {
+                    targetArgs.push("--emulator", `--target=${targetDevice.id}`);
+                    if (isEmulator) {
+                        launchScenariousManager.updateLaunchScenario(launchArgs, {target: targetDevice.name});
+                    }
+                    launchArgs.target = targetDevice.id;
+                } else {
+                   this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
+                   useDefaultCLI();
                 }
-                launchArgs.target = targetDevice.id;
-            } else if (!launchArgs.target.toLowerCase().includes(TargetType.Emulator)) {
-                targetArgs.push("--device", `--target=${launchArgs.target}`);
+            } else {
+                targetArgs.push("--device");
+                if (!isDevice) {
+                    if (await adbHelper.findOnlineDeviceById(launchArgs.target)) {
+                        targetArgs.push(`--target=${launchArgs.target}`);
+                    } else {
+                        this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
+                        useDefaultCLI();
+                    }
+                }
             }
         }
-        else {
-            targetArgs.push("--device");
+        catch (err) {
+            this.outputLogger(err.message || err, true);
+            useDefaultCLI();
         }
 
         return targetArgs;

@@ -4,7 +4,7 @@
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
 import { IVirtualDevice, VirtualDeviceManager } from "../VirtualDeviceManager";
-import { AdbHelper } from "./adb";
+import { AdbHelper, DeviceType } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
 import { TargetType } from "../../debugger/cordovaDebugSession";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
@@ -43,11 +43,13 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
         if (target !== TargetType.Emulator) {
             const onlineDevices = await this.adbHelper.getOnlineDevices();
             for (let i = 0; i < onlineDevices.length; i++) {
-                if (onlineDevices[i].id === target) {
-                    return { id: onlineDevices[i].id };
-                }
-                if (await this.adbHelper.getAvdNameById(onlineDevices[i].id) === target) {
-                    return { name: target, id: onlineDevices[i].id };
+                if (onlineDevices[i].type === DeviceType.AndroidSdkEmulator) {
+                    if (onlineDevices[i].id === target) {
+                        return { name: await this.adbHelper.getAvdNameById(target), id: target };
+                    }
+                    if (await this.adbHelper.getAvdNameById(onlineDevices[i].id) === target) {
+                        return { name: target, id: onlineDevices[i].id };
+                    }
                 }
             }
             if ((await this.getVirtualDevicesNamesList()).includes(target)) {
@@ -153,5 +155,9 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
             }
         }
         return emulatorsList;
+    }
+
+    public async isEmulatorTarget(target: string): Promise<boolean> {
+        return target.toLowerCase().includes(TargetType.Emulator) || (await this.getVirtualDevicesNamesList()).includes(target);
     }
 }
