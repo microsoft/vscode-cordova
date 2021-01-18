@@ -45,7 +45,7 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
             for (let i = 0; i < onlineDevices.length; i++) {
                 if (onlineDevices[i].type === DeviceType.AndroidSdkEmulator) {
                     if (onlineDevices[i].id === target) {
-                        return {name: await this.adbHelper.getAvdNameById(target), id: target };
+                        return { name: await this.adbHelper.getAvdNameById(target), id: target };
                     }
                     if (await this.adbHelper.getAvdNameById(onlineDevices[i].id) === target) {
                         return { name: target, id: onlineDevices[i].id };
