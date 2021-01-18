@@ -158,9 +158,6 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
     }
 
     public async isEmulatorTarget(target: string): Promise<boolean> {
-        if (target.toLowerCase().includes(TargetType.Emulator) || (await this.getVirtualDevicesNamesList()).includes(target)) {
-            return true;
-        }
-        return false;
+        return target.toLowerCase().includes(TargetType.Emulator) || (await this.getVirtualDevicesNamesList()).includes(target);
     }
 }
