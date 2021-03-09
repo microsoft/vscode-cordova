@@ -18,7 +18,7 @@ async function launchTests() {
     const testWorkspace = path.resolve(__dirname, "resources", "testCordovaProject");
 
     // Download VS Code, unzip it and run the integration test
-    await runTests({ extensionDevelopmentPath, extensionTestsPath , launchArgs: [testWorkspace] });
+    await runTests({ extensionDevelopmentPath, extensionTestsPath , launchArgs: [testWorkspace], version: "1.52.1" });
   } catch (err) {
     console.error(err);
     console.error("Failed to run tests");
