@@ -394,7 +394,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             debugSession.configuration.cordovaDebugSessionId === this.cordovaSession.getSessionId()
             && debugSession.type === this.pwaSessionName
         ) {
-            vscode.commands.executeCommand(this.stopCommand, this.vsCodeDebugSession);
+            vscode.commands.executeCommand(this.stopCommand, undefined, { sessionId: this.vsCodeDebugSession.id });
         }
     }
 
