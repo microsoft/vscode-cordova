@@ -596,6 +596,24 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return result;
     }
 
+    private addUseModernBuildSystemFlag(args: Array<string>): Array<string> {
+        let hasUseModernBuildSystemFlag = false;
+        args.forEach((arg) => {
+            if (arg.match(/--buildFlag/) && arg.match(/-UseModernBuildSystem/)) {
+                hasUseModernBuildSystemFlag = true;
+            }
+        });
+
+        if (!hasUseModernBuildSystemFlag) {
+            // Workaround for dealing with new build system in XCode 10
+            // https://github.com/apache/cordova-ios/issues/407
+
+            args.push("--buildFlag=-UseModernBuildSystem=0");
+        }
+
+        return args;
+    }
+
     private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         if (os.platform() !== "darwin") {
             return Q.reject<void>(localize("UnableToLaunchiOSOnNonMacMachnines", "Unable to launch iOS on non-mac machines"));
@@ -610,9 +628,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === TargetType.Device) {
-            // Workaround for dealing with new build system in XCode 10
-            // https://github.com/apache/cordova-ios/issues/407
-            let args = ["run", "ios", "--device", "--buildFlag=-UseModernBuildSystem=0"];
+            let args = ["run", "ios", "--device"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                 args.push(...launchArgs.runArguments);
@@ -627,6 +643,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
                 }
             }
+
+            args = this.addUseModernBuildSystemFlag(args);
 
             if (args.indexOf("--livereload") > -1) {
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
@@ -645,11 +663,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
         } else {
             let target = launchArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : launchArgs.target;
             return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.allEnv, workingDirectory).then(() => {
-                // Workaround for dealing with new build system in XCode 10
-                // https://github.com/apache/cordova-ios/issues/407
-                let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType))
-                    args = ["emulate", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
+                let args = ["emulate", "ios"];
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                    args.push("--");
+                }
 
                 if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
                     args.push(...launchArgs.runArguments);
@@ -669,6 +686,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         }
                     }
                 }
+
+                args = this.addUseModernBuildSystemFlag(args);
 
                 if (args.indexOf("--livereload") > -1) {
                     return this.startIonicDevServer(launchArgs, args).then(() => void 0);
