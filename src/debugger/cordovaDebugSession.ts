@@ -599,7 +599,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private addUseModernBuildSystemFlag(args: Array<string>): Array<string> {
         let hasUseModernBuildSystemFlag = false;
         args.forEach((arg) => {
-            if (arg.match(/--buildFlag/) && arg.match(/-UseModernBuildSystem/)) {
+            if (arg.includes("--buildFlag") && arg.includes("-UseModernBuildSystem")) {
                 hasUseModernBuildSystemFlag = true;
             }
         });
