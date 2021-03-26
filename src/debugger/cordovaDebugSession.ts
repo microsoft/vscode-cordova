@@ -596,6 +596,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return result;
     }
 
+    private addBuildFlagToArgs(runArgs: Array<string> = []): Array<string> {
+        const hasBuildFlag = runArgs.findIndex((arg) => arg.includes("--buildFlag")) > -1;
+
+        if (!hasBuildFlag) {
+            // Workaround for dealing with new build system in XCode 10
+            // https://github.com/apache/cordova-ios/issues/407
+
+            runArgs.unshift("--buildFlag=-UseModernBuildSystem=0");
+        }
+
+        return runArgs;
+    }
+
     private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
         if (os.platform() !== "darwin") {
             return Q.reject<void>(localize("UnableToLaunchiOSOnNonMacMachnines", "Unable to launch iOS on non-mac machines"));
@@ -610,21 +623,26 @@ export class CordovaDebugSession extends LoggingDebugSession {
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
         // Launch the app
         if (launchArgs.target.toLowerCase() === TargetType.Device) {
-            // Workaround for dealing with new build system in XCode 10
-            // https://github.com/apache/cordova-ios/issues/407
-            let args = ["run", "ios", "--device", "--buildFlag=-UseModernBuildSystem=0"];
+            let args = ["run", "ios", "--device"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                args.push(...launchArgs.runArguments);
+                const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
+                args.push(...launchRunArgs);
             } else if (runArguments && runArguments.length) {
-                args.push(...runArguments);
-            } else if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
-                    // Livereload is enabled, let Ionic do the launch
-                    // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
-                    args.push("--livereload", "--external");
-                } else {
-                    this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
+                const runArgs = this.addBuildFlagToArgs(runArguments);
+                args.push(...runArgs);
+            } else {
+                const buildArg = this.addBuildFlagToArgs();
+                args.push(...buildArg);
+
+                if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
+                    if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                        // Livereload is enabled, let Ionic do the launch
+                        // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
+                        args.push("--livereload", "--external");
+                    } else {
+                        this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
+                    }
                 }
             }
 
@@ -645,17 +663,21 @@ export class CordovaDebugSession extends LoggingDebugSession {
         } else {
             let target = launchArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : launchArgs.target;
             return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.allEnv, workingDirectory).then(() => {
-                // Workaround for dealing with new build system in XCode 10
-                // https://github.com/apache/cordova-ios/issues/407
-                let args = ["emulate", "ios", "--buildFlag=-UseModernBuildSystem=0"];
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType))
-                    args = ["emulate", "ios", "--", "--buildFlag=-UseModernBuildSystem=0"];
+                let args = ["emulate", "ios"];
+                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                    args.push("--");
+                }
 
                 if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                    args.push(...launchArgs.runArguments);
+                    const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
+                    args.push(...launchRunArgs);
                 } else if (runArguments && runArguments.length) {
-                    args.push(...runArguments);
+                    const runArgs = this.addBuildFlagToArgs(runArguments);
+                    args.push(...runArgs);
                 } else {
+                    const buildArg = this.addBuildFlagToArgs();
+                    args.push(...buildArg);
+
                     if (target === TargetType.Emulator) {
                         args.push("--target=" + target);
                     }
