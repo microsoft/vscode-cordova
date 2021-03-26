@@ -636,15 +636,18 @@ export class CordovaDebugSession extends LoggingDebugSession {
             } else if (runArguments && runArguments.length) {
                 const runArgs = this.addBuildFlagToArgs(runArguments);
                 args.push(...runArgs);
-            } else if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
+            } else {
                 const buildArg = this.addBuildFlagToArgs();
                 args.push(...buildArg);
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
-                    // Livereload is enabled, let Ionic do the launch
-                    // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
-                    args.push("--livereload", "--external");
-                } else {
-                    this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
+
+                if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
+                    if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                        // Livereload is enabled, let Ionic do the launch
+                        // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
+                        args.push("--livereload", "--external");
+                    } else {
+                        this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
+                    }
                 }
             }
 
