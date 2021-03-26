@@ -596,22 +596,22 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return result;
     }
 
-    private addUseModernBuildSystemFlag(args: Array<string>): Array<string> {
-        let hasUseModernBuildSystemFlag = false;
-        args.forEach((arg) => {
-            if (arg.includes("--buildFlag") && arg.includes("-UseModernBuildSystem")) {
-                hasUseModernBuildSystemFlag = true;
+    private addBuildFlagToArgs(runArgs: Array<string> = []): Array<string> {
+        let hasBuildFlag = false;
+        runArgs.forEach((arg) => {
+            if (arg.includes("--buildFlag")) {
+                hasBuildFlag = true;
             }
         });
 
-        if (!hasUseModernBuildSystemFlag) {
+        if (!hasBuildFlag) {
             // Workaround for dealing with new build system in XCode 10
             // https://github.com/apache/cordova-ios/issues/407
 
-            args.push("--buildFlag=-UseModernBuildSystem=0");
+            runArgs.unshift("--buildFlag=-UseModernBuildSystem=0");
         }
 
-        return args;
+        return runArgs;
     }
 
     private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Q.Promise<void> {
@@ -631,10 +631,14 @@ export class CordovaDebugSession extends LoggingDebugSession {
             let args = ["run", "ios", "--device"];
 
             if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                args.push(...launchArgs.runArguments);
+                const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
+                args.push(...launchRunArgs);
             } else if (runArguments && runArguments.length) {
-                args.push(...runArguments);
+                const runArgs = this.addBuildFlagToArgs(runArguments);
+                args.push(...runArgs);
             } else if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
+                const buildArg = this.addBuildFlagToArgs();
+                args.push(...buildArg);
                 if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
                     // Livereload is enabled, let Ionic do the launch
                     // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
@@ -643,8 +647,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
                 }
             }
-
-            args = this.addUseModernBuildSystemFlag(args);
 
             if (args.indexOf("--livereload") > -1) {
                 return this.startIonicDevServer(launchArgs, args).then(() => void 0);
@@ -669,10 +671,15 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }
 
                 if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                    args.push(...launchArgs.runArguments);
+                    const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
+                    args.push(...launchRunArgs);
                 } else if (runArguments && runArguments.length) {
-                    args.push(...runArguments);
+                    const runArgs = this.addBuildFlagToArgs(runArguments);
+                    args.push(...runArgs);
                 } else {
+                    const buildArg = this.addBuildFlagToArgs();
+                    args.push(...buildArg);
+
                     if (target === TargetType.Emulator) {
                         args.push("--target=" + target);
                     }
@@ -686,8 +693,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         }
                     }
                 }
-
-                args = this.addUseModernBuildSystemFlag(args);
 
                 if (args.indexOf("--livereload") > -1) {
                     return this.startIonicDevServer(launchArgs, args).then(() => void 0);
