@@ -597,12 +597,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private addBuildFlagToArgs(runArgs: Array<string> = []): Array<string> {
-        let hasBuildFlag = false;
-        runArgs.forEach((arg) => {
-            if (arg.includes("--buildFlag")) {
-                hasBuildFlag = true;
-            }
-        });
+        const hasBuildFlag = runArgs.findIndex((arg) => arg.includes("--buildFlag")) > -1;
 
         if (!hasBuildFlag) {
             // Workaround for dealing with new build system in XCode 10
