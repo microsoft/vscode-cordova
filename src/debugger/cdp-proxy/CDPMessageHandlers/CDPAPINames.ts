@@ -12,4 +12,6 @@ export const CDP_API_NAMES = {
     RUNTIME_CONSOLE_API_CALLED: "Runtime.consoleAPICalled",
     CONSOLE_ENABLE: "Console.enable",
     DEBUGGER_SET_BREAKPOINTS_ACTIVE: "Debugger.setBreakpointsActive",
+    EXECUTION_CONTEXT_CREATED: "Runtime.executionContextCreated",
+    TARGET_INFO_CHANGED: "Target.targetInfoChanged",
 };

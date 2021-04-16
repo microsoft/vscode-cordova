@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as semver from "semver";
-import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
+import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection, ExecutionContext, } from "./CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "./CDPAPINames";
 import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
@@ -13,11 +13,13 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     private readonly Ionic3EvaluateErrorMessage;
 
     private targetId: string;
+    private targetUrl?: string;
     private isIonicProject: boolean;
     private isTargeted: boolean;
     private iOSAppPackagePath: string;
     private isBackcompatConfigured: boolean;
     private customMessageLastId: number;
+    private executionContext: ExecutionContext;
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
@@ -59,6 +61,11 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
         if (!this.isBackcompatConfigured && event.method === CDP_API_NAMES.RUNTIME_ENABLE) {
             this.configureTargetForIWDPCommunication();
+            this.isBackcompatConfigured = true;
+        }
+
+        if (!this.executionContext && this.isBackcompatConfigured) {
+            this.configureDebuggerForIWDPCommunication();
         }
 
         if (this.isTargeted && !event.method.match(/^Target/)) {
@@ -85,7 +92,12 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
             if (event.method === CDP_API_NAMES.TARGET_TARGET_CREATED) {
                 this.targetId = event.params.targetInfo.targetId;
+                this.targetUrl = event.params.targetInfo.url;
                 communicationPreparationsDone = true;
+            }
+            if (event.method === CDP_API_NAMES.TARGET_INFO_CHANGED) {
+                this.targetId = event.params.targetInfo.targetId;
+                this.targetUrl = event.params.targetInfo.url;
             }
             if (event.method === CDP_API_NAMES.TARGET_DISPATCH_MESSAGE_FROM_TARGET) {
                 event = JSON.parse(event.params.message);
@@ -185,13 +197,42 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     }
 
     private configureTargetForIWDPCommunication(): void {
-        this.isBackcompatConfigured = true;
         try {
             this.sendCustomRequestToAppTarget(CDP_API_NAMES.CONSOLE_ENABLE, {});
             this.sendCustomRequestToAppTarget(CDP_API_NAMES.DEBUGGER_SET_BREAKPOINTS_ACTIVE, { active: true });
         } catch (err) {
             // Specifically ignore a fail here since it's only for backcompat
         }
+    }
+
+    private configureDebuggerForIWDPCommunication(): void {
+        if (!this.executionContext) {
+            this.executionContext = {
+                id: Math.round((Math.random() + 1) * 1000),
+                origin: this.targetUrl ? this.targetUrl : "",
+                name: "Custom Execution Context",
+                auxData: {
+                    isDefault: true,
+                    type: "page",
+                    frameId: this.targetId
+                }
+            };
+        }
+        try {
+            this.sendCustomRequestToDebuggerTarget(CDP_API_NAMES.EXECUTION_CONTEXT_CREATED, {context: this.executionContext}, false);
+        } catch (err) {
+            throw Error("Could not create Execution context");
+        }
+    }
+
+    private sendCustomRequestToDebuggerTarget(method: string, params: any = {}, addMessageId: boolean = true): void {
+        let request = {
+            id: addMessageId ? this.customMessageLastId++ : undefined,
+            method,
+            params,
+        };
+
+        this.debuggerTarget?.send(request);
     }
 
     private sendCustomRequestToAppTarget(method: string, params: any = {}): void {
