@@ -197,7 +197,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
 
     private configureDebuggerForIWDPCommunication(): void {
         const context: ExecutionContext = {
-            id: Math.round((Math.random() + 1) * 1000),
+            id: this.customMessageLastId++,
             origin: "",
             name: "IOS Execution Context",
             auxData: {
