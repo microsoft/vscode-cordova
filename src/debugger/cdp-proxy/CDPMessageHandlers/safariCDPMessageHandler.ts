@@ -210,7 +210,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             this.executionContext = {
                 id: Math.round((Math.random() + 1) * 1000),
                 origin: this.targetUrl ? this.targetUrl : "",
-                name: "Custom Execution Context",
+                name: "IOS Execution Context",
                 auxData: {
                     isDefault: true,
                     type: "page",
