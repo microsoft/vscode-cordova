@@ -207,7 +207,7 @@ export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
             }
         };
         try {
-            this.sendCustomRequestToDebuggerTarget(CDP_API_NAMES.EXECUTION_CONTEXT_CREATED, {context}, false);
+            this.sendCustomRequestToDebuggerTarget(CDP_API_NAMES.EXECUTION_CONTEXT_CREATED, { context }, false);
         } catch (err) {
             throw Error("Could not create Execution context");
         }
