@@ -347,7 +347,7 @@ export class CordovaProjectHelper {
         const highestNotSupportedIonic4BetaVersion = "4.0.0-beta.19";
         const highestNotSupportedIonic5BetaVersion = "5.0.0-beta.6";
 
-        if ((dependencies["@ionic/angular"]) && (devDependencies["@ionic-native/core"] || dependencies["@ionic-native/core"])) {
+        if (dependencies["@ionic/angular"]) {
             const ionicVersion = dependencies["@ionic/angular"];
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta

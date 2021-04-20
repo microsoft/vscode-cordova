@@ -25,6 +25,17 @@ export interface ProcessedCDPMessage {
     communicationPreparationsDone?: boolean;
 }
 
+export interface ExecutionContext {
+    id: number;
+    origin: string;
+    name: string;
+    auxData?: {
+      isDefault: boolean,
+      type?: "default" | "page",
+      frameId?: string,
+    };
+}
+
 export abstract class CDPMessageHandlerBase {
     protected sourcemapPathTransformer: SourcemapPathTransformer;
     protected projectType: IProjectType;
