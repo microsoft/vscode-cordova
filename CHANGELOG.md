@@ -1,3 +1,8 @@
+## 2.2.1
+* Fixed security vulnerabilities [#704](https://github.com/microsoft/vscode-cordova/pull/704), [#707](https://github.com/microsoft/vscode-cordova/pull/707), [#711](https://github.com/microsoft/vscode-cordova/pull/711), [#712](https://github.com/microsoft/vscode-cordova/pull/712)
+* Added support of the `--buildFlag` flag in run arguments [#710](https://github.com/microsoft/vscode-cordova/pull/710)
+* Fixed the order of termination of debugging sessions [#709](https://github.com/microsoft/vscode-cordova/pull/709)
+
 ## 2.2.0
 * Fixed security vulnerabilities [#695](https://github.com/microsoft/vscode-cordova/pull/695)
 * Refactored Command Palette commands for Ionic applications (`Ionic: Build`, `Ionic: Run` and `Ionic: Prepare`) to adapt them to the new Ionic commands syntax [#698](https://github.com/microsoft/vscode-cordova/pull/698)
