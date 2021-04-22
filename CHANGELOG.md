@@ -1,6 +1,6 @@
 ## 2.2.1
 * Fixed security vulnerabilities [#704](https://github.com/microsoft/vscode-cordova/pull/704), [#707](https://github.com/microsoft/vscode-cordova/pull/707), [#711](https://github.com/microsoft/vscode-cordova/pull/711), [#712](https://github.com/microsoft/vscode-cordova/pull/712)
-* Add possibility to pass the build flag `UseModernBuildSystem` into process [#710](https://github.com/microsoft/vscode-cordova/pull/710)
+* Added support of the `--buildFlag` flag in run arguments [#710](https://github.com/microsoft/vscode-cordova/pull/710)
 * Fix the order of closing debugging sessions [#709](https://github.com/microsoft/vscode-cordova/pull/709)
 
 ## 2.2.0
