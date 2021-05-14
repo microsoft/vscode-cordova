@@ -52,42 +52,50 @@
       {
         "command": "cordova.build",
         "title": "%cordova.build%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "cordova.run",
         "title": "%cordova.run%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "cordova.prepare",
         "title": "%cordova.prepare%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "cordova.simulate.android",
         "title": "%cordova.simulate.android%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "cordova.simulate.ios",
         "title": "%cordova.simulate.ios%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "ionic.build",
         "title": "%cordova.ionic.build%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "ionic.run",
         "title": "%cordova.ionic.run%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "ionic.prepare",
         "title": "%cordova.ionic.prepare%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "cordova.restart",
@@ -578,6 +586,13 @@
         }
       }
     ]
+  },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "%cordova.workspaceTrust.description%"
+    }
   },
   "scripts": {
     "build": "gulp build",
