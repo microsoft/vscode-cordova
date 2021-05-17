@@ -1,3 +1,8 @@
+## 2.2.2
+* Fixed security vulnerabilities [#718](https://github.com/microsoft/vscode-cordova/pull/718), [#717](https://github.com/microsoft/vscode-cordova/pull/717), [#719](https://github.com/microsoft/vscode-cordova/pull/719)
+* Configured [support of virtual workspaces](https://github.com/microsoft/vscode-cordova/issues/716) [#719](https://github.com/microsoft/vscode-cordova/pull/719)
+* Configured [support of Workspace Trust feature](https://github.com/microsoft/vscode-cordova/issues/715): the extension requires a workspace to be trusted to debug code and run Command Palette commands [#719](https://github.com/microsoft/vscode-cordova/pull/719)
+
 ## 2.2.1
 * Fixed security vulnerabilities [#704](https://github.com/microsoft/vscode-cordova/pull/704), [#707](https://github.com/microsoft/vscode-cordova/pull/707), [#711](https://github.com/microsoft/vscode-cordova/pull/711), [#712](https://github.com/microsoft/vscode-cordova/pull/712)
 * Added support of the `--buildFlag` flag in run arguments [#710](https://github.com/microsoft/vscode-cordova/pull/710)
