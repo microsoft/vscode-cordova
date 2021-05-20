@@ -53,49 +53,49 @@
         "command": "cordova.build",
         "title": "%cordova.build%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.run",
         "title": "%cordova.run%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.prepare",
         "title": "%cordova.prepare%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.simulate.android",
         "title": "%cordova.simulate.android%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.simulate.ios",
         "title": "%cordova.simulate.ios%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "ionic.build",
         "title": "%cordova.ionic.build%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "ionic.run",
         "title": "%cordova.ionic.run%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "ionic.prepare",
         "title": "%cordova.ionic.prepare%",
         "category": "Cordova",
-        "enablement": "isWorkspaceTrusted"
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.restart",
