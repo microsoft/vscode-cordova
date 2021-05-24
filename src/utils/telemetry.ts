@@ -7,7 +7,6 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import * as Q from "q";
 import * as winreg from "winreg";
 
 import {
@@ -49,8 +48,7 @@ export module Telemetry {
 
         public sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {
             this.extensionMessageSender.sendMessage(ExtensionMessage.SEND_TELEMETRY, [this.extensionId, this.extensionVersion, this.appInsightsKey, eventName, properties, measures])
-                .catch(function () { })
-                .done();
+                .catch(function () { });
         }
     }
 
@@ -60,7 +58,11 @@ export module Telemetry {
         public static userType: string;
         public static sessionId: string;
         public static optInCollectedForCurrentSession: boolean;
-        public static initDeferred: Q.Deferred<any> = Q.defer<any>();
+
+        private static initDeferredResolve: (value: void | PromiseLike<void>) => void;
+        private static initDeferred: Promise<void> = new Promise((resolve, reject) => {
+            TelemetryUtils.initDeferredResolve = resolve;
+        });
 
         private static userId: string;
         private static telemetrySettings: ITelemetrySettings = null;
@@ -75,7 +77,11 @@ export module Telemetry {
             return path.join(settingsHome(), TelemetryUtils.TELEMETRY_SETTINGS_FILENAME);
         }
 
-        public static init(appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
+        public static get initDeferredPromise(): Promise<void> {
+            return TelemetryUtils.initDeferred;
+        }
+
+        public static init(appVersion: string, initOptions: ITelemetryInitOptions): Promise<any> {
             TelemetryUtils.loadSettings();
 
             if (initOptions.isExtensionProcess) {
@@ -92,9 +98,9 @@ export module Telemetry {
 
                     Telemetry.isOptedIn = TelemetryUtils.getTelemetryOptInSetting();
                     TelemetryUtils.saveSettings();
-                    TelemetryUtils.initDeferred.resolve(void 0);
+                    TelemetryUtils.initDeferredResolve(void 0);
                 });
-            return TelemetryUtils.initDeferred.promise;
+            return TelemetryUtils.initDeferred;
         }
 
         public static addCommonProperties(event: any): void {
@@ -151,22 +157,19 @@ export module Telemetry {
             return userType;
         }
 
-        private static getRegistryValue(key: string, value: string, hive: string): Q.Promise<string> {
-            let deferred: Q.Deferred<string> = Q.defer<string>();
-            let regKey = new winreg({
-                hive: hive,
-                key: key,
-            });
-            regKey.get(value, function (err: any, itemValue: winreg.RegistryItem) {
-                if (err) {
-                    // Fail gracefully by returning null if there was an error.
-                    deferred.resolve(null);
-                } else {
-                    deferred.resolve(itemValue.value);
-                }
-            });
+        private static getRegistryValue(key: string, value: string, hive: string): Promise<string> {
+            return new Promise((resolve, reject) => {
+                let regKey = new winreg({ hive, key });
 
-            return deferred.promise;
+                regKey.get(value, function (err: any, itemValue: winreg.RegistryItem) {
+                    if (err) {
+                        // Fail gracefully by returning null if there was an error.
+                        resolve(null);
+                    } else {
+                        resolve(itemValue.value);
+                    }
+                });
+            });
         }
 
         /*
@@ -194,34 +197,34 @@ export module Telemetry {
             fs.writeFileSync(TelemetryUtils.telemetrySettingsFile, JSON.stringify(TelemetryUtils.telemetrySettings));
         }
 
-        private static getUniqueId(regValue: string, regHive: string, fallback: () => string): Q.Promise<any> {
+        private static getUniqueId(regValue: string, regHive: string, fallback: () => string): Promise<any> {
             let uniqueId: string;
             if (os.platform() === "win32") {
                 return TelemetryUtils.getRegistryValue(TelemetryUtils.REGISTRY_SQMCLIENT_NODE, regValue, regHive)
-                    .then(function (id: string): Q.Promise<string> {
+                    .then((id: string) => {
                         if (id) {
                             uniqueId = id.replace(/[{}]/g, "");
-                            return Q.resolve(uniqueId);
+                            return uniqueId;
                         } else {
-                            return Q.resolve(fallback());
+                            return fallback();
                         }
                     });
             } else {
-                return Q.resolve(fallback());
+                return Promise.resolve(fallback());
             }
         }
 
-        private static getUserId(): Q.Promise<string> {
+        private static getUserId(): Promise<string> {
             let userId: string = TelemetryUtils.telemetrySettings.userId;
             if (!userId) {
                 return TelemetryUtils.getUniqueId(TelemetryUtils.REGISTRY_USERID_VALUE, winreg.HKCU, TelemetryUtils.generateGuid)
-                    .then(function (id: string): Q.Promise<string> {
+                    .then((id: string) => {
                         TelemetryUtils.telemetrySettings.userId = id;
-                        return Q.resolve(id);
+                        return id;
                     });
             } else {
                 TelemetryUtils.telemetrySettings.userId = userId;
-                return Q.resolve(userId);
+                return Promise.resolve(userId);
             }
         }
     }
@@ -286,18 +289,18 @@ export module Telemetry {
         projectRoot: string;
     }
 
-    export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Q.Promise<any> {
+    export function init(appNameValue: string, appVersion: string, initOptions: ITelemetryInitOptions): Promise<void> {
         try {
             Telemetry.appName = appNameValue;
             return TelemetryUtils.init(appVersion, initOptions);
         } catch (err) {
             console.error(err);
-            return Q.reject(err);
+            return Promise.reject(err);
         }
     }
 
-    export function send(event: TelemetryEvent, ignoreOptIn: boolean = false): Q.Promise<void> {
-        return TelemetryUtils.initDeferred.promise.then(function () {
+    export function send(event: TelemetryEvent, ignoreOptIn: boolean = false): Promise<void> {
+        return TelemetryUtils.initDeferredPromise.then(function () {
             if (Telemetry.isOptedIn || ignoreOptIn) {
                 if (event instanceof TelemetryActivity) {
                     (<TelemetryActivity>event).end();

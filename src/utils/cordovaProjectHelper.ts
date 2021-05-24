@@ -4,7 +4,6 @@
 import * as child_process from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import * as Q from "q";
 import { URL } from "url";
 import * as semver from "semver";
 import * as os from "os";
@@ -93,6 +92,18 @@ export class CordovaProjectHelper {
         }
     }
 
+    /**
+     *  Helper (asynchronous) function to check if a file or directory exists
+     */
+    public static exists(filename: string): Promise<boolean> {
+        return fs.promises.stat(filename)
+            .then(() => {
+                return true;
+            })
+            .catch(() => {
+                return false;
+            });
+    }
 
     /**
      *  Helper (synchronous) function to create a directory recursively
@@ -127,24 +138,8 @@ export class CordovaProjectHelper {
     /**
      *  Helper function to asynchronously copy a file
      */
-    public static copyFile(from: string, to: string, encoding?: string): Q.Promise<any> {
-        let deferred: Q.Deferred<any> = Q.defer();
-        let destFile: fs.WriteStream = fs.createWriteStream(to, { encoding: encoding });
-        let srcFile: fs.ReadStream = fs.createReadStream(from, { encoding: encoding });
-        destFile.on("finish", function (): void {
-            deferred.resolve({});
-        });
-
-        destFile.on("error", function (e: Error): void {
-            deferred.reject(e);
-        });
-
-        srcFile.on("error", function (e: Error): void {
-            deferred.reject(e);
-        });
-
-        srcFile.pipe(destFile);
-        return deferred.promise;
+    public static copyFile(from: string, to: string): Promise<void> {
+        return fs.promises.copyFile(from, to);
     }
 
     /**

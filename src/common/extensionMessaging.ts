@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import { Hash } from "../utils/hash";
-import * as Q from "q";
 import * as net from "net";
 import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
@@ -48,40 +47,39 @@ export class ExtensionMessageSender {
         }
     }
 
-    public sendMessage(message: ExtensionMessage, args?: any[]): Q.Promise<any> {
-        let deferred = Q.defer<any>();
-        let messageWithArguments: MessageWithArguments = { message: message, args: args };
-        let body = "";
+    public sendMessage(message: ExtensionMessage, args?: any[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let messageWithArguments: MessageWithArguments = { message: message, args: args };
+            let body = "";
 
-        let pipePath = this.getExtensionPipePath();
-        let socket = net.connect(pipePath, function () {
-            let messageJson = JSON.stringify(messageWithArguments);
-            socket.write(messageJson);
-        });
+            let pipePath = this.getExtensionPipePath();
+            let socket = net.connect(pipePath, function () {
+                let messageJson = JSON.stringify(messageWithArguments);
+                socket.write(messageJson);
+            });
 
-        socket.on("data", function (data: any) {
-            body += data;
-        });
+            socket.on("data", function (data: any) {
+                body += data;
+            });
 
-        socket.on("error", function (data: any) {
-            deferred.reject(new Error(localize("HandlingMessageError", "An error occurred while handling message: {0}", `${ExtensionMessage[message]} ${data}`)));
-        });
+            socket.on("error", function (data: any) {
+                reject(new Error(localize("HandlingMessageError", "An error occurred while handling message: {0}", `${ExtensionMessage[message]} ${data}`)));
+            });
 
-        socket.on("end", function () {
-            try {
-                if (body.startsWith(ErrorMarker)) {
-                    let errorString = body.replace(ErrorMarker, "");
-                    let error = new Error(errorString ? errorString : localize("HandlingMessageError", "An error occurred while handling message: {0}", ExtensionMessage[message]));
-                    deferred.reject(error);
-                } else {
-                    let responseBody: any = body ? JSON.parse(body) : null;
-                    deferred.resolve(responseBody);
+            socket.on("end", function () {
+                try {
+                    if (body.startsWith(ErrorMarker)) {
+                        let errorString = body.replace(ErrorMarker, "");
+                        let error = new Error(errorString ? errorString : localize("HandlingMessageError", "An error occurred while handling message: {0}", ExtensionMessage[message]));
+                        reject(error);
+                    } else {
+                        let responseBody: any = body ? JSON.parse(body) : null;
+                        resolve(responseBody);
+                    }
+                } catch (e) {
+                    reject(e);
                 }
-            } catch (e) {
-                deferred.reject(e);
-            }
+            });
         });
-
-        return deferred.promise;
     }
 }
