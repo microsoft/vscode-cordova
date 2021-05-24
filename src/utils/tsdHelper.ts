@@ -71,7 +71,7 @@ export class TsdHelper {
 
             if (referencesToAdd.length === 0) return;
 
-            fs.writeFileSync(indexFile, [references].concat(referencesToAdd).join("\n"), "utf8");
+            fs.writeFileSync(indexFile, [references].concat(referencesToAdd).join("\n"));
         });
     }
 

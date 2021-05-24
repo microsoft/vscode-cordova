@@ -256,7 +256,7 @@ export class TelemetryHelper {
         // Write out new list of previousPlugins
         pluginFileJson.plugins = pluginsFileList;
         try {
-            fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson), "utf8");
+            fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson));
         } catch (err) {
             throw new Error(err.message + localize("CWDDoesntReferToTheWorkspaceRootDirectory", " It seems that 'cwd' parameter doesn't refer to the workspace root directory. Please make sure that 'cwd' contains the path to the workspace root directory."));
         }
