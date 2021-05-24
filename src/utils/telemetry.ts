@@ -159,10 +159,8 @@ export module Telemetry {
 
         private static getRegistryValue(key: string, value: string, hive: string): Promise<string> {
             return new Promise((resolve, reject) => {
-                let regKey = new winreg({
-                    hive: hive,
-                    key: key,
-                });
+                let regKey = new winreg({ hive, key });
+
                 regKey.get(value, function (err: any, itemValue: winreg.RegistryItem) {
                     if (err) {
                         // Fail gracefully by returning null if there was an error.
