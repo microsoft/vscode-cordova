@@ -120,7 +120,7 @@ export class CordovaProjectHelper {
     /**
      *  Helper (synchronous) function to delete a directory recursively
      */
-    public static deleteDirectoryRecursive(dirPath: string) {
+    public static deleteDirectoryRecursive(dirPath: string): void {
         if (fs.existsSync(dirPath)) {
             if (fs.lstatSync(dirPath).isDirectory()) {
                 fs.readdirSync(dirPath).forEach(function (file) {
@@ -375,7 +375,7 @@ export class CordovaProjectHelper {
         return fs.existsSync(path.resolve(projectRoot, "tsconfig.json"));
     }
 
-    public static getCliCommand(fsPath: string) {
+    public static getCliCommand(fsPath: string): string {
         const cliName = CordovaProjectHelper.isIonicAngularProject(fsPath) ? "ionic" : "cordova";
         const commandExtension = os.platform() === "win32" ? ".cmd" : "";
         const command = cliName + commandExtension;

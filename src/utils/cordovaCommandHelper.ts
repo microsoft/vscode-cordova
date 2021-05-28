@@ -98,7 +98,7 @@ export class CordovaCommandHelper {
             });
     }
 
-    public static restartCordovaDebugging(projectRoot: string, cordovaSessionManager: CordovaSessionManager) {
+    public static restartCordovaDebugging(projectRoot: string, cordovaSessionManager: CordovaSessionManager): void {
         const cordovaDebugSession = cordovaSessionManager.getCordovaDebugSessionByProjectRoot(projectRoot);
         if (cordovaDebugSession) {
             switch (cordovaDebugSession.getStatus()) {

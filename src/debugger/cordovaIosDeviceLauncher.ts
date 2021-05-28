@@ -128,7 +128,7 @@ export class CordovaIosDeviceLauncher {
         const bundleId = allConfigs[targetConfigUUID].buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
         return Promise.resolve(bundleId);
     }
-    
+
     private static mountDeveloperImage(): Promise<void> {
         return CordovaIosDeviceLauncher.getDiskImage()
             .then((path: string) => {
