@@ -974,7 +974,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             serverReady: false,
             appReady: false,
         };
-        let serverReadyTimeout: number = launchArgs.devServerTimeout || 30000;
+        let serverReadyTimeout: number = launchArgs.devServerTimeout || 50000;
         let appReadyTimeout: number = launchArgs.devServerTimeout || 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverOut: string = "";
         let serverErr: string = "";

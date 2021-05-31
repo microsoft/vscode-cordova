@@ -112,7 +112,6 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     TelemetryHelper.determineProjectTypes(workspaceRoot)
         .then((projType) => {
             cordovaProjectTypeEvent.properties["projectType"] = projType;
-            throw new Error("afsdfa");
         })
         .finally(() => {
             Telemetry.send(cordovaProjectTypeEvent);
