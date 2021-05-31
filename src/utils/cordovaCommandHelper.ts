@@ -98,7 +98,7 @@ export class CordovaCommandHelper {
             });
     }
 
-    public static restartCordovaDebugging(projectRoot: string, cordovaSessionManager: CordovaSessionManager) {
+    public static restartCordovaDebugging(projectRoot: string, cordovaSessionManager: CordovaSessionManager): void {
         const cordovaDebugSession = cordovaSessionManager.getCordovaDebugSessionByProjectRoot(projectRoot);
         if (cordovaDebugSession) {
             switch (cordovaDebugSession.getStatus()) {
@@ -179,37 +179,6 @@ export class CordovaCommandHelper {
 
             return resolve("");
         });
-
-        // return Promise.resolve()
-        //     .then(() => {
-        //         if (["prepare", "build", "run"].indexOf(command) > -1) {
-        //             if (platforms.length > 1) {
-        //                 platforms.unshift("all");
-        //                 // Ionic doesn't support prepare and run command without platform
-        //                 if (useIonic && (command === "prepare" || command === "run")) {
-        //                     platforms.shift();
-        //                 }
-        //                 return window.showQuickPick(platforms)
-        //                     .then((platform) => {
-        //                         if (!platform) {
-        //                             throw new Error(localize("PlatformSelectionWasCancelled", "Platform selection was canceled. Please select target platform to continue!"));
-        //                         }
-
-        //                         if (platform === "all") {
-        //                             return "";
-        //                         }
-
-        //                         return platform;
-        //                     });
-        //             } else if (platforms.length === 1) {
-        //                 return platforms[0];
-        //             } else {
-        //                 throw new Error(localize("NoAnyPlatformInstalled", "No any platforms installed"));
-        //             }
-        //         }
-
-        //         return "";
-        //     });
     }
 
     private static filterAvailablePlatforms(platforms: string[]): string[] {

@@ -90,7 +90,7 @@ export function cordovaRunCommand(command: string, args: string[], env, cordovaR
         cordovaProcess.on("error", error => {
             reject(error);
         });
-    })
+    });
 }
 
 export function cordovaStartCommand(command: string, args: string[], env: any, cordovaRootPath: string): child_process.ChildProcess {
