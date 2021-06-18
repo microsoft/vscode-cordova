@@ -9,12 +9,6 @@ import * as os from "os";
 import * as path from "path";
 import * as Q from "q";
 import * as winreg from "winreg";
-
-import {
-    ExtensionMessage,
-    ExtensionMessageSender
-} from "../common/extensionMessaging";
-
 import { settingsHome } from "./settingsHelper";
 
 /**
@@ -35,7 +29,6 @@ export module Telemetry {
     }
 
     class ExtensionTelemetryReporter implements ITelemetryReporter {
-        private extensionMessageSender: ExtensionMessageSender;
         private extensionId: string;
         private extensionVersion: string;
         private appInsightsKey: string;
@@ -44,13 +37,10 @@ export module Telemetry {
             this.extensionId = extensionId;
             this.extensionVersion = extensionVersion;
             this.appInsightsKey = key;
-            this.extensionMessageSender = new ExtensionMessageSender(projectRoot);
         }
 
-        public sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures) {
-            this.extensionMessageSender.sendMessage(ExtensionMessage.SEND_TELEMETRY, [this.extensionId, this.extensionVersion, this.appInsightsKey, eventName, properties, measures])
-                .catch(function () { })
-                .done();
+        public sendTelemetryEvent(eventName: string, properties?: ITelemetryEventProperties, measures?: ITelemetryEventMeasures): void {
+            Telemetry.sendExtensionTelemetry(this.extensionId, this.extensionVersion, this.appInsightsKey, eventName, properties, measures);
         }
     }
 
