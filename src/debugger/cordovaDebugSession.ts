@@ -24,6 +24,7 @@ import { execCommand, cordovaRunCommand, killChildProcess, cordovaStartCommand }
 import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { SimulationInfo } from "../common/simulationInfo";
 import { settingsHome } from "../utils/settingsHelper";
+import { DeferredPromise } from "../common/node/promise";
 import { SimulateHelper } from "../utils/simulateHelper";
 import { LogLevel } from "../utils/log/logHelper";
 import { CordovaIosDeviceLauncher } from "./cordovaIosDeviceLauncher";
@@ -105,7 +106,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private ionicDevServerUrls: string[];
     private simulateDebugHost: SocketIOClient.Socket;
     private telemetryInitialized: boolean;
-    private isAttached: boolean;
+    private attachedDeferred: DeferredPromise<void>;
     private cdpProxyLogLevel: LogLevel;
     private jsDebugConfigAdapter: JsDebugConfigAdapter;
     private isSettingsInitialized: boolean; // used to prevent parameters reinitialization when attach is called from launch function
@@ -158,7 +159,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             }
             this.sendEvent(new OutputEvent(message + newLine, category));
         };
-        this.isAttached = false;
+        this.attachedDeferred = new DeferredPromise<void>();
     }
 
     /**
@@ -360,7 +361,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             .catch(err => reject(err))
         )
         .then(() => {
-            this.isAttached = true;
+            this.attachedDeferred.resolve(void 0);
             this.sendResponse(response);
             this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
         })
@@ -541,15 +542,18 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return Promise.all([launchSimulate, getEditorsTelemetry]);
     }
 
-    private changeSimulateViewport(data: simulate.ResizeViewportData): void {
-        if (this.isAttached && this.cordovaCdpProxy) {
-            this.cordovaCdpProxy.getSimPageTargetAPI()?.Emulation.setDeviceMetricsOverride({
-                width: data.width,
-                height: data.height,
-                deviceScaleFactor: 0,
-                mobile: true,
+    private changeSimulateViewport(data: simulate.ResizeViewportData): Promise<void> {
+        return this.attachedDeferred.promise
+            .then(() => {
+                if (this.cordovaCdpProxy) {
+                    this.cordovaCdpProxy.getSimPageTargetAPI()?.Emulation.setDeviceMetricsOverride({
+                        width: data.width,
+                        height: data.height,
+                        deviceScaleFactor: 0,
+                        mobile: true,
+                    });
+                }
             });
-        }
     }
 
     private connectSimulateDebugHost(simulateInfo: SimulationInfo): Promise<void> {
@@ -566,11 +570,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.simulateDebugHost.on("connect_timeout", simulateConnectErrorHandler);
             this.simulateDebugHost.on("connect", () => {
                 this.simulateDebugHost.on("resize-viewport", (data: simulate.ResizeViewportData) => {
-                    try {
-                        this.changeSimulateViewport(data);
-                    } catch {
+                    this.changeSimulateViewport(data).catch(() => {
                         this.outputLogger(viewportResizeFailMessage, true);
-                    }
+                    });
                 });
                 this.simulateDebugHost.emit("register-debug-host", { handlers: ["resize-viewport"] });
                 resolve(void 0);
@@ -974,7 +976,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             serverReady: false,
             appReady: false,
         };
-        let serverReadyTimeout: number = launchArgs.devServerTimeout || 50000;
+        let serverReadyTimeout: number = launchArgs.devServerTimeout || 60000;
         let appReadyTimeout: number = launchArgs.devServerTimeout || 120000; // If we're not serving, the app needs to build and deploy (and potentially start the emulator), which can be very long
         let serverOut: string = "";
         let serverErr: string = "";

@@ -8,13 +8,12 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as winreg from "winreg";
-
 import {
     ExtensionMessage,
     ExtensionMessageSender
 } from "../common/extensionMessaging";
-
 import { settingsHome } from "./settingsHelper";
+import { DeferredPromise } from "../common/node/promise";
 
 /**
  * Telemetry module specialized for vscode integration.
@@ -59,10 +58,7 @@ export module Telemetry {
         public static sessionId: string;
         public static optInCollectedForCurrentSession: boolean;
 
-        private static initDeferredResolve: (value: void | PromiseLike<void>) => void;
-        private static initDeferred: Promise<void> = new Promise((resolve, reject) => {
-            TelemetryUtils.initDeferredResolve = resolve;
-        });
+        private static initDeferred: DeferredPromise<any> = new DeferredPromise<any>();
 
         private static userId: string;
         private static telemetrySettings: ITelemetrySettings = null;
@@ -78,7 +74,7 @@ export module Telemetry {
         }
 
         public static get initDeferredPromise(): Promise<void> {
-            return TelemetryUtils.initDeferred;
+            return TelemetryUtils.initDeferred.promise;
         }
 
         public static init(appVersion: string, initOptions: ITelemetryInitOptions): Promise<any> {
@@ -98,9 +94,9 @@ export module Telemetry {
 
                     Telemetry.isOptedIn = TelemetryUtils.getTelemetryOptInSetting();
                     TelemetryUtils.saveSettings();
-                    TelemetryUtils.initDeferredResolve(void 0);
+                    TelemetryUtils.initDeferred.resolve(void 0);
                 });
-            return TelemetryUtils.initDeferred;
+            return TelemetryUtils.initDeferred.promise;
         }
 
         public static addCommonProperties(event: any): void {

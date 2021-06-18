@@ -381,7 +381,7 @@
               "devServerTimeout": {
                 "type": "number",
                 "description": "%cordova.properties.launch.devServerTimeout%",
-                "default": 20000
+                "default": 60000
               },
               "simulatePort": {
                 "type": "number",
