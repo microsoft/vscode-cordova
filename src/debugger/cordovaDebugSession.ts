@@ -175,14 +175,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return TargetType.Device;
     }
 
-    /**
-     * Sends telemetry
-     */
-    public sendTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: { [key: string]: string }, measures: { [key: string]: number }): Q.Promise<any> {
-        Telemetry.sendExtensionTelemetry(extensionId, extensionVersion, appInsightsKey, eventName, properties, measures);
-        return Q.resolve({});
-    }
-
     protected initializeRequest(response: DebugProtocol.InitializeResponse, args: DebugProtocol.InitializeRequestArguments): void {
         super.initializeRequest(response, args);
     }
