@@ -1,3 +1,7 @@
+## 2.2.3
+* Fixed security vulnerabilities [#724](https://github.com/microsoft/vscode-cordova/pull/724), [#726](https://github.com/microsoft/vscode-cordova/pull/726), [#729](https://github.com/microsoft/vscode-cordova/pull/729)
+* Fixed sending telemetry from debug adapter [#730](https://github.com/microsoft/vscode-cordova/pull/730)
+
 ## 2.2.2
 * Fixed security vulnerabilities [#718](https://github.com/microsoft/vscode-cordova/pull/718), [#717](https://github.com/microsoft/vscode-cordova/pull/717), [#719](https://github.com/microsoft/vscode-cordova/pull/719)
 * Configured [support of virtual workspaces](https://github.com/microsoft/vscode-cordova/issues/716) [#719](https://github.com/microsoft/vscode-cordova/pull/719)
