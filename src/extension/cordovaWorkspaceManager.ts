@@ -6,7 +6,6 @@ import { SimulationInfo } from "../common/simulationInfo";
 import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
 import { IProjectType } from "../utils/cordovaProjectHelper";
-import { Telemetry } from "../utils/telemetry";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { ProjectsStorage } from "./projectsStorage";
 import * as nls from "vscode-nls";
@@ -46,14 +45,6 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
             this.pluginSimulator.dispose();
             this.pluginSimulator = null;
         }
-    }
-
-    /**
-     * Sends telemetry
-     */
-    public sendTelemetry(extensionId: string, extensionVersion: string, appInsightsKey: string, eventName: string, properties: { [key: string]: string }, measures: { [key: string]: number }): Promise<void> {
-        Telemetry.sendExtensionTelemetry(extensionId, extensionVersion, appInsightsKey, eventName, properties, measures);
-        return Promise.resolve();
     }
 
     /**
