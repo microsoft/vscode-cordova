@@ -9,7 +9,6 @@ const ts = require("gulp-typescript");
 const log = require("fancy-log");
 const os = require("os");
 const path = require("path");
-const Q = require("q");
 const typescript = require("typescript");
 const del = require("del");
 const nls = require("vscode-nls-dev");
@@ -26,32 +25,32 @@ function executeCordovaCommand(cwd, command) {
 }
 
 function executeCommand(cwd, commandToExecute) {
-  var deferred = Q.defer();
-  var process = child_process.exec(
-    commandToExecute,
-    { cwd: cwd },
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error("An error occurred: " + error);
-        return;
+  return new Promise((resolve, reject) => {
+    let process = child_process.exec(
+      commandToExecute,
+      { cwd: cwd },
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("An error occurred: " + error);
+          return;
+        }
+        console.log(stderr);
+        console.log(stdout);
       }
-      console.log(stderr);
-      console.log(stdout);
-    }
-  );
-  process.on("error", function (err) {
-    console.log("Command failed with error: " + err);
-    deferred.reject(err);
+    );
+    process.on("error", function (err) {
+      console.log("Command failed with error: " + err);
+      reject(err);
+    });
+    process.stdout.on("close", function (exitCode) {
+      if (exitCode) {
+        console.log("Command failed with exit code " + exitCode);
+        reject(exitCode);
+      } else {
+        resolve({});
+      }
+    });
   });
-  process.stdout.on("close", function (exitCode) {
-    if (exitCode) {
-      console.log("Command failed with exit code " + exitCode);
-      deferred.reject(exitCode);
-    } else {
-      deferred.resolve({});
-    }
-  });
-  return deferred.promise;
 }
 
 var sources = ["src/**/*.ts"];
@@ -341,7 +340,7 @@ gulp.task("release", function () {
     fs.mkdirSync(backupFolder);
   }
 
-  return Q({})
+  return Promise.resolve()
     .then(function () {
       /* back up LICENSE.txt, ThirdPartyNotices.txt, README.md */
       console.log("Backing up license files to " + backupFolder + "...");
