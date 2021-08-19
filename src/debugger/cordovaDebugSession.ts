@@ -1268,7 +1268,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             errorLogger(errorMessage);
 
-            return Promise.reject<void>(new Error(errorMessage));
+            return Promise.reject(new Error(errorMessage));
         }
 
         let args = ["serve"];

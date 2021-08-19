@@ -54,7 +54,7 @@ export class PluginSimulator implements vscode.Disposable {
 
     public launchSimHost(target: string): Promise<void> {
         if (!this.simulator) {
-            return Promise.reject<void>(new Error(localize("LaunchingSimHostBeforeStartSimulationServer", "Launching sim host before starting simulation server")));
+            return Promise.reject(new Error(localize("LaunchingSimHostBeforeStartSimulationServer", "Launching sim host before starting simulation server")));
         }
         return this.getPackage()
             .then(simulate => {
