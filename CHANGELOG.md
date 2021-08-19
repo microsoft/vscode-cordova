@@ -1,3 +1,9 @@
+## 2.3.0
+* Fixed security vulnerabilities [#734](https://github.com/microsoft/vscode-cordova/pull/734)
+* Updated debugging configurations documentation [#732](https://github.com/microsoft/vscode-cordova/pull/732)
+* Internal changes:
+    * Got rid of Q promises [#728](https://github.com/microsoft/vscode-cordova/pull/728)
+
 ## 2.2.3
 * Fixed security vulnerabilities [#724](https://github.com/microsoft/vscode-cordova/pull/724), [#726](https://github.com/microsoft/vscode-cordova/pull/726), [#729](https://github.com/microsoft/vscode-cordova/pull/729)
 * Fixed sending telemetry from debug adapter [#730](https://github.com/microsoft/vscode-cordova/pull/730)
