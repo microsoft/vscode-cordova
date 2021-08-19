@@ -353,7 +353,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             .catch(err => reject(err))
         )
         .then(() => {
-            this.attachedDeferred.resolve(void 0);
+            this.attachedDeferred.resolve();
             this.sendResponse(response);
             this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
         })
@@ -464,7 +464,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     this.outputLogger(localize("CouldNotInitializeTelemetry", "Could not initialize telemetry. {0}", e.message || e.error || e.data || e));
                 });
         } else {
-            return Promise.resolve(void 0);
+            return Promise.resolve();
         }
     }
 
@@ -893,7 +893,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             adbPortPromise = this.runAdbCommand(adbForwardStopArgs, errorLogger)
                 .then(() => void 0);
         } else {
-            adbPortPromise = Promise.resolve(void 0);
+            adbPortPromise = Promise.resolve();
         }
 
         // Kill the Ionic dev server if necessary
@@ -905,7 +905,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 this.ionicLivereloadProcess = null;
             });
         } else {
-            killServePromise = Promise.resolve(void 0);
+            killServePromise = Promise.resolve();
         }
 
         // Clear the Ionic dev server URL if necessary

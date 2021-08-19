@@ -127,5 +127,5 @@ export function killTree(processId: number): void {
 
 export function killChildProcess(childProcess: child_process.ChildProcess): Promise<void> {
     killTree(childProcess.pid);
-    return Promise.resolve(void 0);
+    return Promise.resolve();
 }
