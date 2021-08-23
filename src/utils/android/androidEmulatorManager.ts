@@ -128,18 +128,27 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
         return this.selectVirtualDevice();
     }
 
-    public async selectOnlineDevice(): Promise<string | undefined> {
-        const emulatorsList = (await this.adbHelper.getOnlineDevices()).map(device => device.id);
+    public async selectOnlineDevice(target: string): Promise<IAndroidEmulator> {
+        const onlineDevices = await this.adbHelper.getOnlineDevices();
+        const emulatorsList: IAndroidEmulator[] = [];
+        for (let device of onlineDevices) {
+            emulatorsList.push({ name: await this.adbHelper.getAvdNameById(device.id), id: device.id });
+        }
+        for (let emulator of emulatorsList) {
+            if (emulator.id === target || emulator.name === target) {
+                return emulator;
+            }
+        }
         const quickPickOptions: QuickPickOptions = {
             ignoreFocusOut: true,
             canPickMany: false,
             placeHolder: localize("SelectOnlineDevice", "Select online Android device"),
         };
-        let result: string | undefined = emulatorsList[0];
+        let result: string | undefined = emulatorsList[0]?.name;
         if (emulatorsList.length > 1) {
-            result = await window.showQuickPick(emulatorsList, quickPickOptions);
+            result = await window.showQuickPick(emulatorsList.map(emulator => emulator.name), quickPickOptions);
         }
-        return result?.toString();
+        return emulatorsList.find(emulator => emulator.name === result);
     }
 
     protected async getVirtualDevicesNamesList(): Promise<string[]> {
