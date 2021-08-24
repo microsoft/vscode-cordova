@@ -1355,7 +1355,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         if (await androidEmulatorManager.isEmulatorTarget(configArgs.target)) {
             let targetDevice: IAndroidEmulator | null;
             if (configArgs.request === "attach") {
-                targetDevice = await androidEmulatorManager.selectOnlineDevice();
+                targetDevice = await androidEmulatorManager.selectOnlineDevice(configArgs.target);
             } else {
                 targetDevice = await androidEmulatorManager.startEmulator(configArgs.target);
             }
