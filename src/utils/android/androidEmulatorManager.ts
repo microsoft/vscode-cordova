@@ -128,11 +128,16 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
         return this.selectVirtualDevice();
     }
 
-    public async selectOnlineDevice(target: string): Promise<IAndroidEmulator> {
+    public async selectOnlineDevice(target: string, deviceType?: DeviceType): Promise<IAndroidEmulator> {
         const onlineDevices = await this.adbHelper.getOnlineDevices();
         const emulatorsList: IAndroidEmulator[] = [];
         for (let device of onlineDevices) {
-            emulatorsList.push({ name: await this.adbHelper.getAvdNameById(device.id), id: device.id });
+            if (device.type === DeviceType.AndroidSdkEmulator && (deviceType === undefined || deviceType === device.type)) {
+                emulatorsList.push({ name: await this.adbHelper.getAvdNameById(device.id), id: device.id });
+            }
+            if (device.type === DeviceType.Other && (deviceType === undefined || deviceType === device.type)) {
+                emulatorsList.push({ name: device.id, id: device.id });
+            }
         }
         for (let emulator of emulatorsList) {
             if (emulator.id === target || emulator.name === target) {
