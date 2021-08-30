@@ -35,7 +35,7 @@ import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
 import * as nls from "vscode-nls";
 import { NodeVersionHelper } from "../utils/nodeVersionHelper";
 import { AdbHelper, DeviceType } from "../utils/android/adb";
-import { AndroidEmulatorManager, IAndroidEmulator } from "../utils/android/androidEmulatorManager";
+import { AndroidEmulatorManager, AndroidTarget } from "../utils/android/androidEmulatorManager";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
@@ -1305,12 +1305,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private async getCommandLineArgsForAndroidTarget(launchArgs: ICordovaLaunchRequestArgs): Promise<string[]> {
         let targetArgs: string[] = ["--verbose"];
-        const adbHelper = new AdbHelper(launchArgs.cwd);
-        const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
 
         const useDefaultCLI = async () => {
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
+            const adbHelper = new AdbHelper(launchArgs.cwd);
             const debuggableDevices = await adbHelper.getOnlineDevices();
             // By default, if the target is not specified, Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
             // For more information, see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
@@ -1320,11 +1319,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         try {
             const target = await this.resolveAndroidTarget(launchArgs);
             if (target) {
-                if (await androidEmulatorManager.isEmulatorTarget(launchArgs.target)) {
-                    targetArgs.push("--emulator");
-                } else {
-                    targetArgs.push("--device");
-                }
+                targetArgs.push(target.isVirtualTarget ? "--emulator" : "--device");
                 targetArgs.push(`--target=${target.id}`);
             } else {
                 this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
@@ -1338,57 +1333,60 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return targetArgs;
     }
 
-    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs): Promise<IAndroidEmulator | null> {
+    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs): Promise<AndroidTarget | null> {
         let workingDirectory = configArgs.cwd;
 
         const adbHelper = new AdbHelper(workingDirectory);
         const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
-        const launchScenariousManager = new LaunchScenariosManager(workingDirectory);
 
         const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
         const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
         const isAttachScenario = configArgs.request === "attach";
 
-        if (await androidEmulatorManager.isEmulatorTarget(configArgs.target)) {
-            let targetDevice: IAndroidEmulator | null;
+        const targetList = await androidEmulatorManager.getTargetList();
+        let targetDevice: AndroidTarget | null;
+
+        const saveResult = async (target: AndroidTarget | null): Promise<void> => {
+            if (target && (isAnyEmulator || isAnyDevice)) {
+                const launchScenariousManager = new LaunchScenariosManager(workingDirectory);
+                if (isAttachScenario) {
+                    // Save selected target for attach scenario only if there are more then one online target
+                    const onlineDevices = await adbHelper.getOnlineDevices();
+                    if (onlineDevices.filter(device => (!target.isVirtualTarget && device.type === DeviceType.Other) || (target.isVirtualTarget && device.type === DeviceType.AndroidSdkEmulator)).length > 1) {
+                        launchScenariousManager.updateLaunchScenario(configArgs, {target: target.isVirtualTarget ? target.name : target.id});
+                    }
+                } else {
+                    launchScenariousManager.updateLaunchScenario(configArgs, {target: target.isVirtualTarget ? target.name : target.id});
+                }
+            }
+        };
+
+        if (await adbHelper.defineDeviceTypeByIdOrName(configArgs.target) === DeviceType.AndroidSdkEmulator) {
             if (isAttachScenario) {
-                targetDevice = await androidEmulatorManager.selectOnlineDevice(configArgs.target, DeviceType.AndroidSdkEmulator);
+                if (isAnyEmulator) {
+                    targetDevice = await androidEmulatorManager.startSelection(target => target.isOnline && target.isVirtualTarget);
+                } else {
+                    targetDevice = targetList.find(target => target.isOnline && target.isVirtualTarget && (target.name === configArgs.target || target.id === configArgs.target));
+                }
             } else {
                 targetDevice = await androidEmulatorManager.startEmulator(configArgs.target);
             }
             if (targetDevice) {
-                if (isAnyEmulator) {
-                    if (isAttachScenario) {
-                        // Save selected target for attach scenario only if there are more then one online target
-                        const onlineDevices = await adbHelper.getOnlineDevices();
-                        if (onlineDevices.filter(device => device.type === DeviceType.AndroidSdkEmulator).length > 1) {
-                            launchScenariousManager.updateLaunchScenario(configArgs, {target: targetDevice.name});
-                        }
-                    } else {
-                        launchScenariousManager.updateLaunchScenario(configArgs, {target: targetDevice.name});
-                    }
-                }
+                await saveResult(targetDevice);
                 configArgs.target = targetDevice.id;
             }
-            return targetDevice;
         } else {
-            let targetDevice: IAndroidEmulator | null;
             if (isAnyDevice) {
-                targetDevice = await androidEmulatorManager.selectOnlineDevice(configArgs.target, DeviceType.Other);
-                if (isAttachScenario) {
-                    // Save selected target for attach scenario only if there are more then one online target
-                    const onlineDevices = await adbHelper.getOnlineDevices();
-                    if (onlineDevices.filter(device => device.type === DeviceType.Other).length > 1) {
-                        launchScenariousManager.updateLaunchScenario(configArgs, {target: targetDevice.name});
-                    }
-                } else {
-                    launchScenariousManager.updateLaunchScenario(configArgs, {target: targetDevice.name});
+                targetDevice = await androidEmulatorManager.startSelection(target => target.isOnline && !target.isVirtualTarget);
+                if (targetDevice) {
+                    await saveResult(targetDevice);
+                    configArgs.target = targetDevice.id;
                 }
             } else {
-                targetDevice = await adbHelper.findOnlineDeviceById(configArgs.target);
+                targetDevice = targetList.find(target => target.isOnline && !target.isVirtualTarget && target.id === configArgs.target);
             }
-            return targetDevice ? {id: targetDevice.id} : null;
         }
+        return targetDevice;
     }
 
     private async launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Promise<void> {

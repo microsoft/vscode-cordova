@@ -92,6 +92,31 @@ export class AdbHelper {
         .catch(() => null);
     }
 
+    public async defineDeviceTypeByIdOrName(device: string): Promise<DeviceType> {
+        if (device.includes("device")) {
+            return DeviceType.Other;
+        } else if (device.includes("emulator") || (await this.getAvdsNames()).includes(device)) {
+            return DeviceType.AndroidSdkEmulator;
+        } else {
+            return (await this.findOnlineDeviceById(device)).type;
+        }
+    }
+
+    public async getAvdsNames(): Promise<string[]> {
+        const res = await this.childProcess.execToString(
+            "emulator -list-avds",
+        );
+        let emulatorsNames: string[] = [];
+        if (res) {
+            emulatorsNames = res.split(/\r?\n|\r/g);
+            const indexOfBlank = emulatorsNames.indexOf("");
+            if (emulatorsNames.indexOf("") >= 0) {
+                emulatorsNames.splice(indexOfBlank, 1);
+            }
+        }
+        return emulatorsNames;
+    }
+
     public async findOnlineDeviceById(deviceId: string): Promise<IDevice> {
         return (await this.getOnlineDevices()).find((device) => device.id === deviceId);
     }

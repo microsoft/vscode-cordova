@@ -2,8 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as nls from "vscode-nls";
-import { QuickPickOptions, window } from "vscode";
-import { IVirtualDevice, VirtualDeviceManager } from "../VirtualDeviceManager";
+import { Target, TargetManager } from "../TargetManager";
 import { AdbHelper, DeviceType } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
 import { TargetType } from "../../debugger/cordovaDebugSession";
@@ -16,11 +15,17 @@ nls.config({
 const localize = nls.loadMessageBundle();
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IAndroidEmulator extends IVirtualDevice { }
+export class AndroidTarget extends Target {
+    get name(): string | undefined {
+        if (!this._name) {
+            return this._id;
+        }
+        return this._name;
+    }
+ }
 
-export class AndroidEmulatorManager extends VirtualDeviceManager {
+export class AndroidEmulatorManager extends TargetManager {
     private static readonly EMULATOR_COMMAND = "emulator";
-    private static readonly EMULATOR_LIST_AVDS_COMMAND = "-list-avds";
     private static readonly EMULATOR_AVD_START_COMMAND = "-avd";
 
     private static readonly EMULATOR_START_TIMEOUT = 120;
@@ -39,38 +44,36 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
         this.childProcess = new ChildProcess();
     }
 
-    public async startEmulator(target: string): Promise<IAndroidEmulator | null> {
+    public async startEmulator(target: string): Promise<AndroidTarget | null> {
         if (target !== TargetType.Emulator) {
-            const onlineDevices = await this.adbHelper.getOnlineDevices();
-            for (let i = 0; i < onlineDevices.length; i++) {
-                if (onlineDevices[i].type === DeviceType.AndroidSdkEmulator) {
-                    if (onlineDevices[i].id === target) {
-                        return { name: await this.adbHelper.getAvdNameById(target), id: target };
-                    }
-                    if (await this.adbHelper.getAvdNameById(onlineDevices[i].id) === target) {
-                        return { name: target, id: onlineDevices[i].id };
-                    }
+            const targetList = await this.getTargetList(androidTarget => androidTarget.isVirtualTarget && (androidTarget.id === target || androidTarget.name === target));
+            const emulatorTarget = targetList[0];
+            if (emulatorTarget) {
+                if (!emulatorTarget.isOnline) {
+                    return await this.tryLaunchEmulator(emulatorTarget);
+                } else {
+                    return emulatorTarget;
                 }
             }
-            if ((await this.getVirtualDevicesNamesList()).includes(target)) {
-                const emulatorId = await this.tryLaunchEmulatorByName(target);
-                return { name: target, id: emulatorId };
-            }
         } else {
-            const newEmulator = await this.startSelection();
-            if (newEmulator) {
-                const emulatorId = await this.tryLaunchEmulatorByName(newEmulator);
-                return { name: newEmulator, id: emulatorId };
+            const emulator = await this.startSelection(androidTarget => androidTarget.isVirtualTarget);
+            if (emulator) {
+                return await this.tryLaunchEmulator(emulator);
             }
         }
         return null;
     }
 
-    public async tryLaunchEmulatorByName(emulatorName: string): Promise<string> {
+    public async tryLaunchEmulatorByName(emulatorName: string): Promise<AndroidTarget> {
+        const emulatorTarget = new AndroidTarget(false, true, emulatorName);
+        return this.tryLaunchEmulator(emulatorTarget);
+    }
+
+    public async tryLaunchEmulator(emulatorTarget: AndroidTarget): Promise<AndroidTarget> {
         return new Promise((resolve, reject) => {
             const emulatorProcess = this.childProcess.spawn(
                 AndroidEmulatorManager.EMULATOR_COMMAND,
-                [AndroidEmulatorManager.EMULATOR_AVD_START_COMMAND, emulatorName],
+                [AndroidEmulatorManager.EMULATOR_AVD_START_COMMAND, emulatorTarget.name],
                 {
                     detached: true,
                 },
@@ -98,7 +101,7 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
                 reject(new Error(`Virtual device launch finished with an exception: ${localize(
                     "EmulatorStartWarning",
                     "Could not start the emulator {0} within {1} seconds.",
-                    emulatorName,
+                    emulatorTarget.name,
                     AndroidEmulatorManager.EMULATOR_START_TIMEOUT,
                 )}`));
             }, AndroidEmulatorManager.EMULATOR_START_TIMEOUT * 1000);
@@ -107,12 +110,15 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
                 const connectedDevices = await this.adbHelper.getOnlineDevices();
                 for (let i = 0; i < connectedDevices.length; i++) {
                     const onlineAvdName = await this.adbHelper.getAvdNameById(connectedDevices[i].id);
-                    if (onlineAvdName === emulatorName) {
+                    if (onlineAvdName === emulatorTarget.name) {
+                        emulatorTarget.id = connectedDevices[i].id;
+                        emulatorTarget.isOnline = true;
                         this.logger.log(
-                            localize("EmulatorLaunched", "Launched emulator {0}", emulatorName),
+                            localize("EmulatorLaunched", "Launched emulator {0}", emulatorTarget.name),
                         );
                         cleanup();
-                        resolve(connectedDevices[i].id);
+                        resolve(emulatorTarget);
+                        break;
                     }
                 }
             }, 1000);
@@ -124,56 +130,34 @@ export class AndroidEmulatorManager extends VirtualDeviceManager {
         });
     }
 
-    public startSelection(): Promise<string | undefined> {
-        return this.selectVirtualDevice();
+    public startSelection(filter?: (el: Target) => boolean): Promise<AndroidTarget | undefined> {
+        return this.selectTarget(filter);
     }
 
-    public async selectOnlineDevice(target: string, deviceType?: DeviceType): Promise<IAndroidEmulator> {
-        const onlineDevices = await this.adbHelper.getOnlineDevices();
-        const emulatorsList: IAndroidEmulator[] = [];
-        for (let device of onlineDevices) {
-            if (deviceType === undefined || deviceType === device.type) {
-                if (device.type === DeviceType.AndroidSdkEmulator) {
-                    emulatorsList.push({ name: await this.adbHelper.getAvdNameById(device.id), id: device.id });
+    public async getTargetList(filter?: (el: AndroidTarget) => boolean): Promise<AndroidTarget[]>{
+        const targetList: AndroidTarget[] = [];
+
+        let emulatorsNames: string[] = await this.adbHelper.getAvdsNames();
+        targetList.push(...emulatorsNames.map(name => new AndroidTarget(false, true, name)));
+
+        const onlineTargets = await this.adbHelper.getOnlineDevices();
+        for (let device of onlineTargets) {
+            switch (device.type) {
+                case DeviceType.AndroidSdkEmulator: {
+                    const avdName = await this.adbHelper.getAvdNameById(device.id);
+                    const emulatorTarget = targetList.find(target => target.name === avdName);
+                    if (emulatorTarget) {
+                      emulatorTarget.isOnline = true;
+                      emulatorTarget.id = device.id;
+                    }
+                    break;
                 }
-                if (device.type === DeviceType.Other) {
-                    emulatorsList.push({ name: device.id, id: device.id });
+                default : {
+                    targetList.push(new AndroidTarget(true, false, undefined, device.id));
                 }
             }
         }
-        for (let emulator of emulatorsList) {
-            if (emulator.id === target || emulator.name === target) {
-                return emulator;
-            }
-        }
-        const quickPickOptions: QuickPickOptions = {
-            ignoreFocusOut: true,
-            canPickMany: false,
-            placeHolder: localize("SelectOnlineDevice", "Select online Android device"),
-        };
-        let result: string | undefined = emulatorsList[0]?.name;
-        if (emulatorsList.length > 1) {
-            result = await window.showQuickPick(emulatorsList.map(emulator => emulator.name), quickPickOptions);
-        }
-        return emulatorsList.find(emulator => emulator.name === result);
-    }
 
-    protected async getVirtualDevicesNamesList(): Promise<string[]> {
-        const res = await this.childProcess.execToString(
-            `${AndroidEmulatorManager.EMULATOR_COMMAND} ${AndroidEmulatorManager.EMULATOR_LIST_AVDS_COMMAND}`,
-        );
-        let emulatorsList: string[] = [];
-        if (res) {
-            emulatorsList = res.split(/\r?\n|\r/g);
-            const indexOfBlank = emulatorsList.indexOf("");
-            if (emulatorsList.indexOf("") >= 0) {
-                emulatorsList.splice(indexOfBlank, 1);
-            }
-        }
-        return emulatorsList;
-    }
-
-    public async isEmulatorTarget(target: string): Promise<boolean> {
-        return target.toLowerCase().includes(TargetType.Emulator) || (await this.getVirtualDevicesNamesList()).includes(target);
+        return filter ? targetList.filter(filter) : targetList;
     }
 }
