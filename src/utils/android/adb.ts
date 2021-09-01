@@ -40,25 +40,25 @@ export class AdbHelper {
     /**
      * Gets the list of Android connected devices and emulators.
      */
-    public getConnectedDevices(): Promise<IDebuggableMobileTarget[]> {
+    public getConnectedTargets(): Promise<IDebuggableMobileTarget[]> {
         return this.childProcess.execToString(`${this.adbExecutable} devices`).then(output => {
-            return this.parseConnectedDevices(output);
+            return this.parseConnectedTargets(output);
         });
     }
 
-    public apiVersion(deviceId: string): Promise<AndroidAPILevel> {
-        return this.executeQuery(deviceId, "shell getprop ro.build.version.sdk").then(output =>
+    public apiVersion(targetId: string): Promise<AndroidAPILevel> {
+        return this.executeQuery(targetId, "shell getprop ro.build.version.sdk").then(output =>
             parseInt(output, 10),
         );
     }
 
-    public reverseAdb(deviceId: string, packagerPort: number): Promise<string> {
-        return this.execute(deviceId, `reverse tcp:${packagerPort} tcp:${packagerPort}`);
+    public reverseAdb(targetId: string, packagerPort: number): Promise<string> {
+        return this.execute(targetId, `reverse tcp:${packagerPort} tcp:${packagerPort}`);
     }
 
-    public getOnlineDevices(): Promise<IDebuggableMobileTarget[]> {
-        return this.getConnectedDevices().then(devices => {
-            return devices.filter(device => device.isOnline);
+    public getOnlineTargets(): Promise<IDebuggableMobileTarget[]> {
+        return this.getConnectedTargets().then(targets => {
+            return targets.filter(target => target.isOnline);
         });
     }
 
@@ -97,8 +97,8 @@ export class AdbHelper {
         return emulatorsNames;
     }
 
-    public async findOnlineDeviceById(deviceId: string): Promise<IDebuggableMobileTarget> {
-        return (await this.getOnlineDevices()).find((device) => device.id === deviceId);
+    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget> {
+        return (await this.getOnlineTargets()).find((target) => target.id === targetId);
     }
 
     public startLogCat(adbParameters: string[]): ISpawnResult {
@@ -144,7 +144,7 @@ export class AdbHelper {
         return sdkLocation ? `"${path.join(sdkLocation, "platform-tools", "adb")}"` : "adb";
     }
 
-    private parseConnectedDevices(input: string): IDebuggableMobileTarget[] {
+    private parseConnectedTargets(input: string): IDebuggableMobileTarget[] {
         let result: IDebuggableMobileTarget[] = [];
         let regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
         let match = regex.exec(input);
@@ -165,16 +165,16 @@ export class AdbHelper {
             : false;
     }
 
-    private executeQuery(deviceId: string, command: string): Promise<string> {
-        return this.childProcess.execToString(this.generateCommandForDevice(deviceId, command));
+    private executeQuery(targetId: string, command: string): Promise<string> {
+        return this.childProcess.execToString(this.generateCommandForTarget(targetId, command));
     }
 
-    private execute(deviceId: string, command: string): Promise<string> {
-        return this.childProcess.execToString(this.generateCommandForDevice(deviceId, command));
+    private execute(targetId: string, command: string): Promise<string> {
+        return this.childProcess.execToString(this.generateCommandForTarget(targetId, command));
     }
 
-    private generateCommandForDevice(deviceId: string, adbCommand: string): string {
-        return `${this.adbExecutable} -s "${deviceId}" ${adbCommand}`;
+    private generateCommandForTarget(targetId: string, adbCommand: string): string {
+        return `${this.adbExecutable} -s "${targetId}" ${adbCommand}`;
     }
 
     private getSdkLocationFromLocalPropertiesFile(

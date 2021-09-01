@@ -53,7 +53,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
             } else if (target.includes("emulator") || (await this.adbHelper.getAvdsNames()).includes(target)) {
                 return true;
             } else {
-                const onlineTarget = await this.adbHelper.findOnlineDeviceById(target);
+                const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
                 return onlineTarget.isVirtualTarget;
             }
         } catch {
@@ -80,7 +80,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
             return {name, isOnline: false, isVirtualTarget: true};
         }));
 
-        const onlineTargets = await this.adbHelper.getOnlineDevices();
+        const onlineTargets = await this.adbHelper.getOnlineTargets();
         for (let device of onlineTargets) {
             if (device.isVirtualTarget) {
                 const avdName = await this.adbHelper.getAvdNameById(device.id);
@@ -139,7 +139,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
             }, AndroidEmulatorManager.EMULATOR_START_TIMEOUT * 1000);
 
             const bootCheckInterval = setInterval(async () => {
-                const connectedDevices = await this.adbHelper.getOnlineDevices();
+                const connectedDevices = await this.adbHelper.getOnlineTargets();
                 for (let i = 0; i < connectedDevices.length; i++) {
                     const onlineAvdName = await this.adbHelper.getAvdNameById(connectedDevices[i].id);
                     if (onlineAvdName === emulatorTarget.name) {

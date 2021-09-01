@@ -1310,7 +1310,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
             const adbHelper = new AdbHelper(launchArgs.cwd);
-            const debuggableDevices = await adbHelper.getOnlineDevices();
+            const debuggableDevices = await adbHelper.getOnlineTargets();
             // By default, if the target is not specified, Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
             // For more information, see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
             launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
@@ -1346,7 +1346,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             const launchScenariousManager = new LaunchScenariosManager(configArgs.cwd);
                 if (isAttachScenario) {
                     // Save selected target for attach scenario only if there are more then one online target
-                    const onlineDevices = await adbHelper.getOnlineDevices();
+                    const onlineDevices = await adbHelper.getOnlineTargets();
                     if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
                         launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
                     }
@@ -1372,7 +1372,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             return targetDevice;
         } else {
             // If there is no target in debug config, use first online device
-            const onlineTargets = await adbHelper.getOnlineDevices();
+            const onlineTargets = await adbHelper.getOnlineTargets();
             if (onlineTargets.length) {
                 const firstDevice = onlineTargets[0];
                 configArgs.target = firstDevice.id;
