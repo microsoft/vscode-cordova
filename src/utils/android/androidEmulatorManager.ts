@@ -57,7 +57,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
                 return onlineTarget.isVirtualTarget;
             }
         } catch {
-            throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type for target {0}"));
+            throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type for target {0}", target));
         }
     }
 
