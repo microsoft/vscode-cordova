@@ -37,7 +37,6 @@ import { NodeVersionHelper } from "../utils/nodeVersionHelper";
 import { AdbHelper } from "../utils/android/adb";
 import { AndroidEmulatorManager, AndroidTarget } from "../utils/android/androidEmulatorManager";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
-import { IMobileTarget } from "../utils/MobileTarget";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -1310,7 +1309,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
         const useDefaultCLI = async () => {
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
-            delete launchArgs.target;
+            const adbHelper = new AdbHelper(launchArgs.cwd);
+            const debuggableDevices = await adbHelper.getOnlineDevices();
+            // By default, if the target is not specified, Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
+            // For more information, see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
+            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
         };
 
         try {
@@ -1330,7 +1333,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return targetArgs;
     }
 
-    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs): Promise<AndroidTarget | null> {
+    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, ): Promise<AndroidTarget | null> {
         const adbHelper = new AdbHelper(configArgs.cwd);
         if (configArgs.target) {
             const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
@@ -1369,11 +1372,16 @@ export class CordovaDebugSession extends LoggingDebugSession {
             return targetDevice;
         } else {
             // If there is no target in debug config, use first online device
-            const onlineDevices = await adbHelper.getOnlineDevices();
-            if (onlineDevices.length > 0) {
-                configArgs.target = onlineDevices[0]?.id;
+            const onlineTargets = await adbHelper.getOnlineDevices();
+            if (onlineTargets.length) {
+                const firstDevice = onlineTargets[0];
+                configArgs.target = firstDevice.id;
+                try {
+                    firstDevice.name = await adbHelper.getAvdNameById(firstDevice.id);
+                } catch {} // Throws error in case this online target is device, just ignore it
+                return AndroidTarget.fromInterface(firstDevice);
             } else {
-                throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "There is no any online debuggable device"));
+                throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in debug configuration is undefined and there is no any online debuggable target"));
             }
         }
     }
@@ -1432,7 +1440,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private attachAndroid(attachArgs: ICordovaAttachRequestArgs): Promise<ICordovaAttachRequestArgs> {
         let errorLogger = (message: string) => this.outputLogger(message, true);
-
+        attachArgs.request = "attach";
         // Determine which device/emulator we are targeting
         let resolveTagetPromise = new Promise<string>(async (resolve, reject) => {
             try {
