@@ -1310,6 +1310,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         const useDefaultCLI = async () => {
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
+            delete launchArgs.target;
         };
 
         try {
@@ -1331,42 +1332,50 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs): Promise<AndroidTarget | null> {
         const adbHelper = new AdbHelper(configArgs.cwd);
-        const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
+        if (configArgs.target) {
+            const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
+            const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
+            const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
+            const isAttachScenario = configArgs.request === "attach";
+            const isVirtualTarget = await androidEmulatorManager.isVirtualTarget(configArgs.target);
 
-        const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
-        const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
-        const isAttachScenario = configArgs.request === "attach";
-        const isVirtualTarget = await androidEmulatorManager.isVirtualTarget(configArgs.target);
-
-        const saveResult = async (target: AndroidTarget): Promise<void> => {
+            const saveResult = async (target: AndroidTarget): Promise<void> => {
             const launchScenariousManager = new LaunchScenariosManager(configArgs.cwd);
-            if (isAttachScenario) {
-                // Save selected target for attach scenario only if there are more then one online target
-                const onlineDevices = await adbHelper.getOnlineDevices();
-                if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
+                if (isAttachScenario) {
+                    // Save selected target for attach scenario only if there are more then one online target
+                    const onlineDevices = await adbHelper.getOnlineDevices();
+                    if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
+                        launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
+                    }
+                } else {
                     launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
                 }
+            };
+
+            await androidEmulatorManager.collectTargets();
+            let targetDevice = await androidEmulatorManager.selectAndPrepareTarget(target => {
+                const conditionForAttachScenario = isAttachScenario ? target.isOnline : true;
+                const conditionForNotAnyTarget = isAnyEmulator || isAnyDevice ? true : target.name === configArgs.target || target.id === configArgs.target;
+                const conditionForVirtualTarget = isVirtualTarget === target.isVirtualTarget;
+                return conditionForVirtualTarget && conditionForNotAnyTarget && conditionForAttachScenario;
+            });
+            if (targetDevice) {
+                if (isAnyEmulator || isAnyDevice) {
+                    await saveResult(targetDevice);
+                }
+                configArgs.target = targetDevice.id;
+            }
+
+            return targetDevice;
+        } else {
+            // If there is no target in debug config, use first online device
+            const onlineDevices = await adbHelper.getOnlineDevices();
+            if (onlineDevices.length > 0) {
+                configArgs.target = onlineDevices[0]?.id;
             } else {
-                launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
+                throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "There is no any online debuggable device"));
             }
-        };
-
-        let targetFilter: (el: IMobileTarget) => boolean = target => {
-            const conditionForAttachScenario = isAttachScenario ? target.isOnline : true;
-            const conditionForNotAnyTarget = isAnyEmulator || isAnyDevice ? true : target.name === configArgs.target || target.id === configArgs.target;
-            const conditionForVirtualTarget = isVirtualTarget === target.isVirtualTarget;
-            return conditionForVirtualTarget && conditionForNotAnyTarget && conditionForAttachScenario;
-        };
-        await androidEmulatorManager.collectTargets();
-        let targetDevice = await androidEmulatorManager.selectAndPrepareTarget(targetFilter);
-        if (targetDevice) {
-            if (isAnyEmulator || isAnyDevice) {
-                await saveResult(targetDevice);
-            }
-            configArgs.target = targetDevice.id;
         }
-
-        return targetDevice;
     }
 
     private async launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Promise<void> {
