@@ -34,9 +34,10 @@ import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
 import * as nls from "vscode-nls";
 import { NodeVersionHelper } from "../utils/nodeVersionHelper";
-import { AdbHelper, DeviceType } from "../utils/android/adb";
+import { AdbHelper } from "../utils/android/adb";
 import { AndroidEmulatorManager, AndroidTarget } from "../utils/android/androidEmulatorManager";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
+import { IMobileTarget } from "../utils/MobileTarget";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -1309,11 +1310,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
         const useDefaultCLI = async () => {
             this.outputLogger("Continue using standard CLI workflow.");
             targetArgs = ["--verbose"];
-            const adbHelper = new AdbHelper(launchArgs.cwd);
-            const debuggableDevices = await adbHelper.getOnlineDevices();
-            // By default, if the target is not specified, Cordova CLI uses the first online target from ‘adb devices’ list (launched emulators are placed after devices).
-            // For more information, see https://github.com/apache/cordova-android/blob/bb7d733cdefaa9ed36ec355a42f8224da610a26e/bin/templates/cordova/lib/run.js#L57-L68
-            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
         };
 
         try {
@@ -1334,58 +1330,42 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs): Promise<AndroidTarget | null> {
-        let workingDirectory = configArgs.cwd;
-
-        const adbHelper = new AdbHelper(workingDirectory);
+        const adbHelper = new AdbHelper(configArgs.cwd);
         const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
 
         const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
         const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
         const isAttachScenario = configArgs.request === "attach";
+        const isVirtualTarget = await androidEmulatorManager.isVirtualTarget(configArgs.target);
 
-        const targetList = await androidEmulatorManager.getTargetList();
-        let targetDevice: AndroidTarget | null;
-
-        const saveResult = async (target: AndroidTarget | null): Promise<void> => {
-            if (target && (isAnyEmulator || isAnyDevice)) {
-                const launchScenariousManager = new LaunchScenariosManager(workingDirectory);
-                if (isAttachScenario) {
-                    // Save selected target for attach scenario only if there are more then one online target
-                    const onlineDevices = await adbHelper.getOnlineDevices();
-                    if (onlineDevices.filter(device => (!target.isVirtualTarget && device.type === DeviceType.Other) || (target.isVirtualTarget && device.type === DeviceType.AndroidSdkEmulator)).length > 1) {
-                        launchScenariousManager.updateLaunchScenario(configArgs, {target: target.isVirtualTarget ? target.name : target.id});
-                    }
-                } else {
-                    launchScenariousManager.updateLaunchScenario(configArgs, {target: target.isVirtualTarget ? target.name : target.id});
+        const saveResult = async (target: AndroidTarget): Promise<void> => {
+            const launchScenariousManager = new LaunchScenariosManager(configArgs.cwd);
+            if (isAttachScenario) {
+                // Save selected target for attach scenario only if there are more then one online target
+                const onlineDevices = await adbHelper.getOnlineDevices();
+                if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
+                    launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
                 }
+            } else {
+                launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
             }
         };
 
-        if (await adbHelper.defineDeviceTypeByIdOrName(configArgs.target) === DeviceType.AndroidSdkEmulator) {
-            if (isAttachScenario) {
-                if (isAnyEmulator) {
-                    targetDevice = await androidEmulatorManager.startSelection(target => target.isOnline && target.isVirtualTarget);
-                } else {
-                    targetDevice = targetList.find(target => target.isOnline && target.isVirtualTarget && (target.name === configArgs.target || target.id === configArgs.target));
-                }
-            } else {
-                targetDevice = await androidEmulatorManager.startEmulator(configArgs.target);
-            }
-            if (targetDevice) {
+        let targetFilter: (el: IMobileTarget) => boolean = target => {
+            const conditionForAttachScenario = isAttachScenario ? target.isOnline : true;
+            const conditionForNotAnyTarget = isAnyEmulator || isAnyDevice ? true : target.name === configArgs.target || target.id === configArgs.target;
+            const conditionForVirtualTarget = isVirtualTarget === target.isVirtualTarget;
+            return conditionForVirtualTarget && conditionForNotAnyTarget && conditionForAttachScenario;
+        };
+        await androidEmulatorManager.collectTargets();
+        let targetDevice = await androidEmulatorManager.selectAndPrepareTarget(targetFilter);
+        if (targetDevice) {
+            if (isAnyEmulator || isAnyDevice) {
                 await saveResult(targetDevice);
-                configArgs.target = targetDevice.id;
             }
-        } else {
-            if (isAnyDevice) {
-                targetDevice = await androidEmulatorManager.startSelection(target => target.isOnline && !target.isVirtualTarget);
-                if (targetDevice) {
-                    await saveResult(targetDevice);
-                    configArgs.target = targetDevice.id;
-                }
-            } else {
-                targetDevice = targetList.find(target => target.isOnline && !target.isVirtualTarget && target.id === configArgs.target);
-            }
+            configArgs.target = targetDevice.id;
         }
+
         return targetDevice;
     }
 
