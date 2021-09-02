@@ -1317,7 +1317,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         };
 
         try {
-            const target = await this.resolveAndroidTarget(launchArgs);
+            const target = await this.resolveAndroidTarget(launchArgs, false);
             if (target) {
                 targetArgs.push(target.isVirtualTarget ? "--emulator" : "--device");
                 targetArgs.push(`--target=${target.id}`);
@@ -1333,13 +1333,12 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return targetArgs;
     }
 
-    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, ): Promise<AndroidTarget | null> {
+    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachScenario: boolean): Promise<AndroidTarget | null> {
         const adbHelper = new AdbHelper(configArgs.cwd);
         if (configArgs.target) {
             const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
             const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
             const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
-            const isAttachScenario = configArgs.request === "attach";
             const isVirtualTarget = await androidEmulatorManager.isVirtualTarget(configArgs.target);
 
             const saveResult = async (target: AndroidTarget): Promise<void> => {
@@ -1376,9 +1375,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             if (onlineTargets.length) {
                 const firstDevice = onlineTargets[0];
                 configArgs.target = firstDevice.id;
-                try {
-                    firstDevice.name = await adbHelper.getAvdNameById(firstDevice.id);
-                } catch {} // Throws error in case this online target is device, just ignore it
                 return AndroidTarget.fromInterface(firstDevice);
             } else {
                 throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in debug configuration is undefined and there is no any online debuggable target"));
@@ -1440,13 +1436,13 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private attachAndroid(attachArgs: ICordovaAttachRequestArgs): Promise<ICordovaAttachRequestArgs> {
         let errorLogger = (message: string) => this.outputLogger(message, true);
-        attachArgs.request = "attach";
+
         // Determine which device/emulator we are targeting
         let resolveTagetPromise = new Promise<string>(async (resolve, reject) => {
             try {
                 const devicesOutput = await this.runAdbCommand(["devices"], errorLogger);
                 try {
-                    const result = await this.resolveAndroidTarget(attachArgs);
+                    const result = await this.resolveAndroidTarget(attachArgs, true);
                     if (!result) {
                         errorLogger(devicesOutput);
                         reject(new Error(`Unable to find target ${attachArgs.target}`));

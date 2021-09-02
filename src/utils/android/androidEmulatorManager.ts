@@ -6,7 +6,7 @@ import { MobileTargetManager } from "../MobileTargetManager";
 import { AdbHelper } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
-import { IMobileTarget, MobileTarget } from "../MobileTarget";
+import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../MobileTarget";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -17,7 +17,7 @@ const localize = nls.loadMessageBundle();
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export class AndroidTarget extends MobileTarget {
 
-    public static fromInterface(obj: IMobileTarget): AndroidTarget{
+    public static fromInterface(obj: IDebuggableMobileTarget): AndroidTarget {
         return new AndroidTarget(obj.isOnline, obj.isVirtualTarget, obj.id, obj.name);
     }
 
@@ -67,7 +67,9 @@ export class AndroidEmulatorManager extends MobileTargetManager {
             if (!selectedTarget.isOnline) {
                 return this.launchSimulator(selectedTarget);
             } else {
-                return AndroidTarget.fromInterface(selectedTarget);
+                if (selectedTarget.id) {
+                    return AndroidTarget.fromInterface(<IDebuggableMobileTarget> selectedTarget);
+                }
             }
         }
     }
@@ -149,7 +151,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
                             localize("EmulatorLaunched", "Launched emulator {0}", emulatorTarget.name),
                         );
                         cleanup();
-                        resolve(AndroidTarget.fromInterface(emulatorTarget));
+                        resolve(AndroidTarget.fromInterface(<IDebuggableMobileTarget> emulatorTarget));
                         break;
                     }
                 }

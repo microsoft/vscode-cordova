@@ -152,14 +152,14 @@ export class AdbHelper {
             result.push({
                 id: match[1],
                 isOnline: match[2] === "device",
-                isVirtualTarget: this.extractIsVirtualTarget(match[1]),
+                isVirtualTarget: this.determineIfItIsVirtualTarget(match[1]),
             });
             match = regex.exec(input);
         }
         return result;
     }
 
-    private extractIsVirtualTarget(id: string): boolean {
+    private determineIfItIsVirtualTarget(id: string): boolean {
         return id.match(AndroidSDKEmulatorPattern)
             ? true
             : false;
