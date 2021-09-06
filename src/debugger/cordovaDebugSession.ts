@@ -35,7 +35,7 @@ import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
 import * as nls from "vscode-nls";
 import { NodeVersionHelper } from "../utils/nodeVersionHelper";
 import { AdbHelper } from "../utils/android/adb";
-import { AndroidEmulatorManager, AndroidTarget } from "../utils/android/androidEmulatorManager";
+import { AndroidTargetManager, AndroidTarget } from "../utils/android/androidTargetManager";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
@@ -1336,7 +1336,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachScenario: boolean): Promise<AndroidTarget | null> {
         const adbHelper = new AdbHelper(configArgs.cwd);
         if (configArgs.target) {
-            const androidEmulatorManager = new AndroidEmulatorManager(adbHelper);
+            const androidEmulatorManager = new AndroidTargetManager(adbHelper);
             const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
             const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
             const isVirtualTarget = await androidEmulatorManager.isVirtualTarget(configArgs.target);

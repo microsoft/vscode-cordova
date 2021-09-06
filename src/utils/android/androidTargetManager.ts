@@ -24,9 +24,9 @@ export class AndroidTarget extends MobileTarget {
     constructor(isOnline: boolean, isVirtualTarget: boolean, id: string, name?: string) {
         super(isOnline, isVirtualTarget, id, name ? name : id);
     }
- }
+}
 
-export class AndroidEmulatorManager extends MobileTargetManager {
+export class AndroidTargetManager extends MobileTargetManager {
     private static readonly EMULATOR_COMMAND = "emulator";
     private static readonly EMULATOR_AVD_START_COMMAND = "-avd";
 
@@ -50,7 +50,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
         try {
             if (target.includes("device")) {
                 return false;
-            } else if (target.includes("emulator") || (await this.adbHelper.getAvdsNames()).includes(target)) {
+            } else if (target.match(/^emulator(-\d{1,5})?$/) || (await this.adbHelper.getAvdsNames()).includes(target)) {
                 return true;
             } else {
                 const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
@@ -68,7 +68,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
                 return this.launchSimulator(selectedTarget);
             } else {
                 if (selectedTarget.id) {
-                    return AndroidTarget.fromInterface(<IDebuggableMobileTarget> selectedTarget);
+                    return AndroidTarget.fromInterface(<IDebuggableMobileTarget>selectedTarget);
                 }
             }
         }
@@ -79,7 +79,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
 
         let emulatorsNames: string[] = await this.adbHelper.getAvdsNames();
         targetList.push(...emulatorsNames.map(name => {
-            return {name, isOnline: false, isVirtualTarget: true};
+            return { name, isOnline: false, isVirtualTarget: true };
         }));
 
         const onlineTargets = await this.adbHelper.getOnlineTargets();
@@ -92,7 +92,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
                     emulatorTarget.id = device.id;
                 }
             } else {
-                targetList.push({id: device.id, isOnline: true, isVirtualTarget: false});
+                targetList.push({ id: device.id, isOnline: true, isVirtualTarget: false });
             }
         }
 
@@ -106,8 +106,8 @@ export class AndroidEmulatorManager extends MobileTargetManager {
     protected async launchSimulator(emulatorTarget: IMobileTarget): Promise<AndroidTarget> {
         return new Promise<AndroidTarget>((resolve, reject) => {
             const emulatorProcess = this.childProcess.spawn(
-                AndroidEmulatorManager.EMULATOR_COMMAND,
-                [AndroidEmulatorManager.EMULATOR_AVD_START_COMMAND, emulatorTarget.name],
+                AndroidTargetManager.EMULATOR_COMMAND,
+                [AndroidTargetManager.EMULATOR_AVD_START_COMMAND, emulatorTarget.name],
                 {
                     detached: true,
                 },
@@ -136,9 +136,9 @@ export class AndroidEmulatorManager extends MobileTargetManager {
                     "EmulatorStartWarning",
                     "Could not start the emulator {0} within {1} seconds.",
                     emulatorTarget.name,
-                    AndroidEmulatorManager.EMULATOR_START_TIMEOUT,
+                    AndroidTargetManager.EMULATOR_START_TIMEOUT,
                 )}`));
-            }, AndroidEmulatorManager.EMULATOR_START_TIMEOUT * 1000);
+            }, AndroidTargetManager.EMULATOR_START_TIMEOUT * 1000);
 
             const bootCheckInterval = setInterval(async () => {
                 const connectedDevices = await this.adbHelper.getOnlineTargets();
@@ -151,7 +151,7 @@ export class AndroidEmulatorManager extends MobileTargetManager {
                             localize("EmulatorLaunched", "Launched emulator {0}", emulatorTarget.name),
                         );
                         cleanup();
-                        resolve(AndroidTarget.fromInterface(<IDebuggableMobileTarget> emulatorTarget));
+                        resolve(AndroidTarget.fromInterface(<IDebuggableMobileTarget>emulatorTarget));
                         break;
                     }
                 }

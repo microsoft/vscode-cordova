@@ -41,16 +41,16 @@ export abstract class MobileTargetManager {
         filter?: (el: IMobileTarget) => boolean,
     ): Promise<IMobileTarget | undefined> {
         const targetList = await this.getTargetList(filter);
-        const quickPickOptions: QuickPickOptions = {
-            ignoreFocusOut: true,
-            canPickMany: false,
-            placeHolder: localize(
-                "SelectTargetDevice",
-                "Select target device for launch application",
-            ),
-        };
         let result: string | undefined = targetList[0]?.name || targetList[0]?.id;
         if (targetList.length > 1) {
+            const quickPickOptions: QuickPickOptions = {
+                ignoreFocusOut: true,
+                canPickMany: false,
+                placeHolder: localize(
+                    "SelectTargetDevice",
+                    "Select target device for launch application",
+                ),
+            };
             result = await window.showQuickPick(targetList.map(target => target?.name || target?.id), quickPickOptions);
         }
         return targetList.find(target => target.name === result || target.id === result);
