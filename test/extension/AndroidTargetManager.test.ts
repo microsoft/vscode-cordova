@@ -55,11 +55,11 @@ suite("AndroidTargetManager", function () {
 
         launchSimulatorStub = Sinon.stub(<any> androidTargetManager, "launchSimulator").callsFake(async (emulatorTarget: IMobileTarget) => {
             emulatorTarget.isOnline = true;
-            switch (emulatorTarget) {
-                case onlineEmulator1: emulatorTarget.id = "emulator-5551"; break;
-                case onlineEmulator2: emulatorTarget.id = "emulator-5552"; break;
-                case offlineEmulator1: emulatorTarget.id = "emulator-5553"; break;
-                case offlineEmulator2: emulatorTarget.id = "emulator-5554"; break;
+            switch (emulatorTarget.name) {
+                case "emulatorName1": emulatorTarget.id = "emulator-5551"; break;
+                case "emulatorName2": emulatorTarget.id = "emulator-5552"; break;
+                case "emulatorName3": emulatorTarget.id = "emulator-5553"; break;
+                case "emulatorName4": emulatorTarget.id = "emulator-5554"; break;
             }
             return AndroidTarget.fromInterface(<IDebuggableMobileTarget> emulatorTarget);
         });
@@ -149,25 +149,25 @@ suite("AndroidTargetManager", function () {
         });
 
         test("Should show all targets in case filter has not been defined", async function () {
-            await checkTargetSeletionResult(undefined, (options: string[]) => options.length === 6);
+            await checkTargetSeletionResult(undefined, options=> options.length === 6);
         });
 
         test("Should show targets by filter", async function () {
             const onlineTargetsFilter = (target: IMobileTarget) => target.isOnline;
-            await checkTargetSeletionResult(onlineTargetsFilter, (options: string[]) => options.length === options.filter((option) => option === onlineEmulator1.name || option === onlineEmulator2.name || option === device1.name || option === device2.name).length);
+            await checkTargetSeletionResult(onlineTargetsFilter, options => options.length === options.filter((option) => option === onlineEmulator1.name || option === onlineEmulator2.name || option === device1.id || option === device2.id).length);
         });
 
         test("Should auto select option in case there is only one", async function () {
             const showQuickPickCallCount = showQuickPickStub.callCount;
             const specificNameTargetFilter = (target: IMobileTarget) => target.name === onlineEmulator1.name;
 
-            await checkTargetSeletionResult(specificNameTargetFilter, undefined, (target) => target.id === onlineEmulator1.id);
+            await checkTargetSeletionResult(specificNameTargetFilter, undefined, target => target.id === onlineEmulator1.id);
             assert.strictEqual(showQuickPickStub.callCount - showQuickPickCallCount, 0, "There is only one target, but quick pick was shown");
         });
 
         test("Should launch selected emulator in case its offline", async function () {
             const specificNameTargetFilter = (target: IMobileTarget) => target.name === offlineEmulator1.name;
-            await checkTargetSeletionResult(specificNameTargetFilter, undefined, (target) => target.id === offlineEmulator1.id && target.isOnline && !!target.id);
+            await checkTargetSeletionResult(specificNameTargetFilter, undefined, target => target.isOnline && !!target.id);
         });
     });
 });
