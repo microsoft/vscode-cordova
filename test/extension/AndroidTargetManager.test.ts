@@ -83,6 +83,7 @@ suite("AndroidTargetManager", function () {
             try {
                 await assertFun();
             } catch {
+                console.log(catchFun.toString());
                 catchFun ?? catchFun();
             }
         }
