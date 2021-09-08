@@ -88,27 +88,40 @@ suite("AndroidTargetManager", function () {
         }
 
         test("Should properly recognize virtual target type", async function () {
+            console.log(0);
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator-1234"), true, "Could not recognize emulator id: (emulator-1234)"),
                 () => assert.fail("Could not recognize emulator id: (emulator-1234)")
             );
+            console.log(1);
+
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator"), true, "Could not recognize any emulator"),
                 () => assert.fail("Could not recognize any emulator")
             );
+            console.log(2);
+
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulatorName2"), true, "Could not recognize emulator AVD name"),
                 () => assert.fail("Could not recognize emulator AVD name")
             );
+            console.log(3);
+
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulaor-1234"), false, "Misrecognized emulator id: (emulaor-1234)")
             );
+            console.log(4);
+
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator--1234"), false, "Misrecognized emulator id: (emulator--1234)")
             );
+            console.log(5);
+
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulaor1234"), false, "Misrecognized emulator id: (emulator1234)")
             );
+            console.log(6);
+
             await checkTargetTargetTypeCheck(
                 async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("1232emulator1234"), false, "Misrecognized emulator id: (1232emulator1234)")
             );
