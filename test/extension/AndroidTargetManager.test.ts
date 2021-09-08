@@ -158,7 +158,7 @@ suite("AndroidTargetManager", function () {
         });
 
         test("Should show all targets in case filter has not been defined", async function () {
-            await checkTargetSeletionResult(undefined, (options: string[]) => options.length === 6);
+            await checkTargetSeletionResult(undefined, (options: string[]) => options.length === 7);
         });
 
         test("Should show targets by filter", async function () {
@@ -168,7 +168,7 @@ suite("AndroidTargetManager", function () {
 
         test("Should auto select option in case there is only one", async function () {
             const showQuickPickCallCount = showQuickPickStub.callCount;
-            const specificNameTargetFilter = (target: IMobileTarget) => target.name === onlineEmulator1.name;
+            const specificNameTargetFilter = (target: IMobileTarget) => target.name === onlineEmulator2.name;
 
             await checkTargetSeletionResult(specificNameTargetFilter, undefined, (target) => target.id === onlineEmulator1.id);
             assert.strictEqual(showQuickPickStub.callCount - showQuickPickCallCount, 0, "There is only one target, but quick pick was shown");
