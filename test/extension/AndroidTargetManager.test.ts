@@ -92,7 +92,7 @@ suite("AndroidTargetManager", function () {
         test("Should properly recognize virtual target type", async function () {
             console.log(0);
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("mulator-1234"), true, "Could not recognize emulator id: (emulator-1234)"),
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator-1234"), true, "Could not recognize emulator id: (emulator-1234)"),
                 () => assert.fail("Could not recognize emulator id: (emulator-1234)")
             );
             console.log(1);
@@ -162,7 +162,7 @@ suite("AndroidTargetManager", function () {
         });
 
         test("Should show all targets in case filter has not been defined", async function () {
-            await checkTargetSeletionResult(undefined, (options: string[]) => options.length === 7);
+            await checkTargetSeletionResult(undefined, (options: string[]) => options.length === 6);
         });
 
         test("Should show targets by filter", async function () {
@@ -172,7 +172,7 @@ suite("AndroidTargetManager", function () {
 
         test("Should auto select option in case there is only one", async function () {
             const showQuickPickCallCount = showQuickPickStub.callCount;
-            const specificNameTargetFilter = (target: IMobileTarget) => target.name === onlineEmulator2.name;
+            const specificNameTargetFilter = (target: IMobileTarget) => target.name === onlineEmulator1.name;
 
             await checkTargetSeletionResult(specificNameTargetFilter, undefined, (target) => target.id === onlineEmulator1.id);
             assert.strictEqual(showQuickPickStub.callCount - showQuickPickCallCount, 0, "There is only one target, but quick pick was shown");
