@@ -92,7 +92,7 @@ suite("AndroidTargetManager", function () {
         test("Should properly recognize virtual target type", async function () {
             console.log(0);
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator-1234"), true, "Could not recognize emulator id: (emulator-1234)"),
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("mulator-1234"), true, "Could not recognize emulator id: (emulator-1234)"),
                 () => assert.fail("Could not recognize emulator id: (emulator-1234)")
             );
             console.log(1);
@@ -147,8 +147,12 @@ suite("AndroidTargetManager", function () {
     suite("Target selection", function () {
         async function checkTargetSeletionResult(filter: (target: IMobileTarget) => boolean = () => true, selectionListCheck: (options: string[]) => boolean = () => true, resultCheck: (target: AndroidTarget) => boolean = () => true): Promise<void> {
             const target = await androidTargetManager.selectAndPrepareTarget(filter);
-            selectionListCheck ?? assert.ok(selectionListCheck(targetsForSelection), "Did not pass options list check");
-            resultCheck ?? assert.ok(resultCheck(target), "Did not pass result target check");
+            if (selectionListCheck) {
+                assert.ok(selectionListCheck(targetsForSelection), "Did not pass options list check");
+            }
+            if (resultCheck) {
+                assert.ok(resultCheck(target), "Did not pass result target check");
+            }
         }
 
         setup(async () => {
