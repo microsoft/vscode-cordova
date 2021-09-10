@@ -160,9 +160,7 @@ export class AdbHelper {
     }
 
     private determineIfItIsVirtualTarget(id: string): boolean {
-        return id.match(AndroidSDKEmulatorPattern)
-            ? true
-            : false;
+        return !!id.match(AndroidSDKEmulatorPattern);
     }
 
     private executeQuery(targetId: string, command: string): Promise<string> {
