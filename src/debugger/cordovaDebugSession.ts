@@ -1370,7 +1370,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             return targetDevice;
         } else {
-            // If there is no target in debug config, use first online device
+            // If there is no a target in debug config, use the first online device
             const onlineTargets = await adbHelper.getOnlineTargets();
             if (onlineTargets.length) {
                 const firstDevice = onlineTargets[0];
