@@ -1344,7 +1344,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             const saveResult = async (target: AndroidTarget): Promise<void> => {
             const launchScenariousManager = new LaunchScenariosManager(configArgs.cwd);
                 if (isAttachScenario) {
-                    // Save selected target for attach scenario only if there are more then one online target
+                    // Save the selected target for attach scenario only if there are more then one online target
                     const onlineDevices = await adbHelper.getOnlineTargets();
                     if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
                         launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
