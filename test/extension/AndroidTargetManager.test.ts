@@ -164,7 +164,7 @@ suite("AndroidTargetManager", function () {
             assert.strictEqual(showQuickPickStub.callCount - showQuickPickCallCount, 0, "There is only one target, but quick pick was shown");
         });
 
-        test("Should launch selected emulator in case its offline", async function () {
+        test("Should launch the selected emulator in case it's offline", async function () {
             const specificNameTargetFilter = (target: IMobileTarget) => target.name === offlineEmulator1.name;
             await checkTargetSeletionResult(specificNameTargetFilter, undefined, target => target.isOnline && !!target.id);
         });
