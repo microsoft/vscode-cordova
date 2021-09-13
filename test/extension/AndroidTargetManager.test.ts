@@ -6,7 +6,7 @@ import * as assert from "assert";
 import Sinon = require("sinon");
 import { AdbHelper } from "../../src/utils/android/adb";
 import { AndroidTarget, AndroidTargetManager } from "../../src/utils/android/androidTargetManager";
-import { IDebuggableMobileTarget, IMobileTarget } from "../../src/utils/MobileTarget";
+import { IDebuggableMobileTarget, IMobileTarget } from "../../src/utils/mobileTarget";
 import { QuickPickItem, window } from "vscode";
 
 

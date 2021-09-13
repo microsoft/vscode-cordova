@@ -7,7 +7,7 @@ import * as os from "os";
 import * as nls from "vscode-nls";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { ChildProcess, ISpawnResult } from "../../common/node/childProcess";
-import { IDebuggableMobileTarget } from "../MobileTarget";
+import { IDebuggableMobileTarget } from "../mobileTarget";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,

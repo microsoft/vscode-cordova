@@ -2,11 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as nls from "vscode-nls";
-import { MobileTargetManager } from "../MobileTargetManager";
+import { MobileTargetManager } from "../mobileTargetManager";
 import { AdbHelper } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
-import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../MobileTarget";
+import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
