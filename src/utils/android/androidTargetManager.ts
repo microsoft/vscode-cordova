@@ -14,7 +14,6 @@ nls.config({
 })();
 const localize = nls.loadMessageBundle();
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export class AndroidTarget extends MobileTarget {
 
     public static fromInterface(obj: IDebuggableMobileTarget): AndroidTarget {
