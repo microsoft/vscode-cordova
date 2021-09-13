@@ -9,7 +9,6 @@ import { AndroidTarget, AndroidTargetManager } from "../../src/utils/android/and
 import { IDebuggableMobileTarget, IMobileTarget } from "../../src/utils/mobileTarget";
 import { QuickPickItem, window } from "vscode";
 
-
 suite("AndroidTargetManager", function () {
     const testProjectPath = path.join(__dirname, "..", "resources", "testCordovaProject");
 
