@@ -90,7 +90,7 @@ suite("AndroidTargetManager", function () {
 
         test("Should properly recognize virtual target type", async function () {
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator-1234"), true, "Could not recognize emulator id: (emulator-1234)"),
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator-1234"), true, "Could not recognize emulator id: emulator-1234"),
                 () => assert.fail("Could not recognize emulator id: (emulator-1234)")
             );
             await checkTargetTargetTypeCheck(
@@ -102,16 +102,16 @@ suite("AndroidTargetManager", function () {
                 () => assert.fail("Could not recognize emulator AVD name")
             );
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulaor-1234"), false, "Misrecognized emulator id: (emulaor-1234)")
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulaor-1234"), false, "Misrecognized emulator id: emulaor-1234")
             );
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator--1234"), false, "Misrecognized emulator id: (emulator--1234)")
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulator--1234"), false, "Misrecognized emulator id: emulator--1234")
             );
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulaor1234"), false, "Misrecognized emulator id: (emulator1234)")
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("emulaor1234"), false, "Misrecognized emulator id: emulator1234")
             );
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("1232emulator1234"), false, "Misrecognized emulator id: (1232emulator1234)")
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("1232emulator1234"), false, "Misrecognized emulator id: 1232emulator1234")
             );
         });
 
@@ -125,13 +125,17 @@ suite("AndroidTargetManager", function () {
                 () => assert.fail("Could not recognize device id")
             );
             await checkTargetTargetTypeCheck(
-                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("deviceid111"), false, "Misrecognized device id: (deviceid111)")
+                async () => assert.strictEqual(await androidTargetManager.isVirtualTarget("deviceid111"), false, "Misrecognized device id: deviceid111")
             );
         });
     });
 
     suite("Target selection", function () {
-        async function checkTargetSeletionResult(filter: (target: IMobileTarget) => boolean = () => true, selectionListCheck: (options: string[]) => boolean = () => true, resultCheck: (target: AndroidTarget) => boolean = () => true): Promise<void> {
+        async function checkTargetSeletionResult(
+            filter: (target: IMobileTarget) => boolean = () => true,
+            selectionListCheck: (options: string[]) => boolean = () => true,
+            resultCheck: (target: AndroidTarget) => boolean = () => true,
+        ): Promise<void> {
             const target = await androidTargetManager.selectAndPrepareTarget(filter);
             if (selectionListCheck) {
                 assert.ok(selectionListCheck(targetsForSelection), "Did not pass options list check");
@@ -153,7 +157,13 @@ suite("AndroidTargetManager", function () {
 
         test("Should show targets by filter", async function () {
             const onlineTargetsFilter = (target: IMobileTarget) => target.isOnline;
-            await checkTargetSeletionResult(onlineTargetsFilter, options => options.length === options.filter((option) => option === onlineEmulator1.name || option === onlineEmulator2.name || option === device1.id || option === device2.id).length);
+            await checkTargetSeletionResult(
+                onlineTargetsFilter,
+                options =>
+                    options.length === options.filter(
+                        (option) => option === onlineEmulator1.name || option === onlineEmulator2.name || option === device1.id || option === device2.id
+                    ).length
+            );
         });
 
         test("Should auto select option in case there is only one target", async function () {
