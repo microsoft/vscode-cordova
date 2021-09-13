@@ -156,7 +156,7 @@ suite("AndroidTargetManager", function () {
             await checkTargetSeletionResult(onlineTargetsFilter, options => options.length === options.filter((option) => option === onlineEmulator1.name || option === onlineEmulator2.name || option === device1.id || option === device2.id).length);
         });
 
-        test("Should auto select option in case there is only one", async function () {
+        test("Should auto select option in case there is only one target", async function () {
             const showQuickPickCallCount = showQuickPickStub.callCount;
             const specificNameTargetFilter = (target: IMobileTarget) => target.name === onlineEmulator1.name;
 
