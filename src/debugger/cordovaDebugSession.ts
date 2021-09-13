@@ -1377,7 +1377,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 configArgs.target = firstDevice.id;
                 return AndroidTarget.fromInterface(firstDevice);
             } else {
-                throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in debug configuration is undefined and there is no any online debuggable target"));
+                throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in the debug configuration is undefined, and there are no any online debuggable targets"));
             }
         }
     }
