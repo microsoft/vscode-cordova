@@ -24,7 +24,7 @@ export abstract class MobileTargetManager {
         if (target.includes("emulator")) {
             return true;
         }
-        throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type for target {0}", target));
+        throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
     }
 
     protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<MobileTarget | undefined>;
