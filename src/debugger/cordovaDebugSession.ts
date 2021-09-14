@@ -1335,6 +1335,16 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachScenario: boolean): Promise<AndroidTarget | null> {
         const adbHelper = new AdbHelper(configArgs.cwd);
+
+        const getFirstOnlineAndroidTarget = async (): Promise<AndroidTarget | undefined> => {
+            const onlineTargets = await adbHelper.getOnlineTargets();
+            if (onlineTargets.length) {
+                const firstDevice = onlineTargets[0];
+                configArgs.target = firstDevice.id;
+                return AndroidTarget.fromInterface(firstDevice);
+            }
+        };
+
         if (configArgs.target) {
             const androidEmulatorManager = new AndroidTargetManager(adbHelper);
             const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
@@ -1366,19 +1376,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     await saveResult(targetDevice);
                 }
                 configArgs.target = targetDevice.id;
+            } else if (isAttachScenario && (isAnyEmulator || isAnyDevice)) {
+                this.outputLogger("Target has not been selected.\nContinue using standard CLI workflow.");
+                targetDevice = await getFirstOnlineAndroidTarget();
             }
 
             return targetDevice;
         } else {
             // If there is no a target in debug config, use the first online device
-            const onlineTargets = await adbHelper.getOnlineTargets();
-            if (onlineTargets.length) {
-                const firstDevice = onlineTargets[0];
-                configArgs.target = firstDevice.id;
-                return AndroidTarget.fromInterface(firstDevice);
-            } else {
+            const targetDevice = await getFirstOnlineAndroidTarget();
+            if (!targetDevice) {
                 throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in the debug configuration is undefined, and there are no any online debuggable targets"));
             }
+            return targetDevice;
         }
     }
 
