@@ -21,7 +21,7 @@ export class AndroidTarget extends MobileTarget {
     }
 
     constructor(isOnline: boolean, isVirtualTarget: boolean, id: string, name?: string) {
-        super(isOnline, isVirtualTarget, id, name ? name : id);
+        super(isOnline, isVirtualTarget, id, name || id);
     }
 }
 
