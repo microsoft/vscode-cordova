@@ -1377,7 +1377,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }
                 configArgs.target = targetDevice.id;
             } else if (isAttachScenario && (isAnyEmulator || isAnyDevice)) {
-                this.outputLogger("Target has not been selected.\nContinue using standard CLI workflow.");
+                this.outputLogger("Target has not been selected. Trying to use the first online Android device");
                 targetDevice = await getFirstOnlineAndroidTarget();
             }
 
