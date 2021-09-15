@@ -1333,7 +1333,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return targetArgs;
     }
 
-    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachScenario: boolean): Promise<AndroidTarget | null> {
+    private async resolveAndroidTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachScenario: boolean): Promise<AndroidTarget | undefined> {
         const adbHelper = new AdbHelper(configArgs.cwd);
 
         const getFirstOnlineAndroidTarget = async (): Promise<AndroidTarget | undefined> => {
