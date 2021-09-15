@@ -7,6 +7,7 @@ import * as os from "os";
 import * as nls from "vscode-nls";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { ChildProcess, ISpawnResult } from "../../common/node/childProcess";
+import { IDebuggableMobileTarget } from "../mobileTarget";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -26,17 +27,6 @@ export enum AndroidAPILevel {
     GINGERBREAD_MR1 = 10,
 }
 
-export enum DeviceType {
-    AndroidSdkEmulator, // These seem to have emulator-<port> ids
-    Other,
-}
-
-export interface IDevice {
-    id: string;
-    isOnline: boolean;
-    type: DeviceType;
-}
-
 const AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
 
 export class AdbHelper {
@@ -50,25 +40,25 @@ export class AdbHelper {
     /**
      * Gets the list of Android connected devices and emulators.
      */
-    public getConnectedDevices(): Promise<IDevice[]> {
+    public getConnectedTargets(): Promise<IDebuggableMobileTarget[]> {
         return this.childProcess.execToString(`${this.adbExecutable} devices`).then(output => {
-            return this.parseConnectedDevices(output);
+            return this.parseConnectedTargets(output);
         });
     }
 
-    public apiVersion(deviceId: string): Promise<AndroidAPILevel> {
-        return this.executeQuery(deviceId, "shell getprop ro.build.version.sdk").then(output =>
+    public apiVersion(targetId: string): Promise<AndroidAPILevel> {
+        return this.executeQuery(targetId, "shell getprop ro.build.version.sdk").then(output =>
             parseInt(output, 10),
         );
     }
 
-    public reverseAdb(deviceId: string, packagerPort: number): Promise<string> {
-        return this.execute(deviceId, `reverse tcp:${packagerPort} tcp:${packagerPort}`);
+    public reverseAdb(targetId: string, packagerPort: number): Promise<string> {
+        return this.execute(targetId, `reverse tcp:${packagerPort} tcp:${packagerPort}`);
     }
 
-    public getOnlineDevices(): Promise<IDevice[]> {
-        return this.getConnectedDevices().then(devices => {
-            return devices.filter(device => device.isOnline);
+    public getOnlineTargets(): Promise<IDebuggableMobileTarget[]> {
+        return this.getConnectedTargets().then(targets => {
+            return targets.filter(target => target.isOnline);
         });
     }
 
@@ -92,8 +82,23 @@ export class AdbHelper {
         .catch(() => null);
     }
 
-    public async findOnlineDeviceById(deviceId: string): Promise<IDevice> {
-        return (await this.getOnlineDevices()).find((device) => device.id === deviceId);
+    public async getAvdsNames(): Promise<string[]> {
+        const res = await this.childProcess.execToString(
+            "emulator -list-avds",
+        );
+        let emulatorsNames: string[] = [];
+        if (res) {
+            emulatorsNames = res.split(/\r?\n|\r/g);
+            const indexOfBlank = emulatorsNames.indexOf("");
+            if (emulatorsNames.indexOf("") >= 0) {
+                emulatorsNames.splice(indexOfBlank, 1);
+            }
+        }
+        return emulatorsNames;
+    }
+
+    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget> {
+        return (await this.getOnlineTargets()).find((target) => target.id === targetId);
     }
 
     public startLogCat(adbParameters: string[]): ISpawnResult {
@@ -139,37 +144,35 @@ export class AdbHelper {
         return sdkLocation ? `"${path.join(sdkLocation, "platform-tools", "adb")}"` : "adb";
     }
 
-    private parseConnectedDevices(input: string): IDevice[] {
-        let result: IDevice[] = [];
+    private parseConnectedTargets(input: string): IDebuggableMobileTarget[] {
+        let result: IDebuggableMobileTarget[] = [];
         let regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
         let match = regex.exec(input);
         while (match != null) {
             result.push({
                 id: match[1],
                 isOnline: match[2] === "device",
-                type: this.extractDeviceType(match[1]),
+                isVirtualTarget: this.determineIfItIsVirtualTarget(match[1]),
             });
             match = regex.exec(input);
         }
         return result;
     }
 
-    private extractDeviceType(id: string): DeviceType {
-        return id.match(AndroidSDKEmulatorPattern)
-            ? DeviceType.AndroidSdkEmulator
-            : DeviceType.Other;
+    private determineIfItIsVirtualTarget(id: string): boolean {
+        return !!id.match(AndroidSDKEmulatorPattern);
     }
 
-    private executeQuery(deviceId: string, command: string): Promise<string> {
-        return this.childProcess.execToString(this.generateCommandForDevice(deviceId, command));
+    private executeQuery(targetId: string, command: string): Promise<string> {
+        return this.childProcess.execToString(this.generateCommandForTarget(targetId, command));
     }
 
-    private execute(deviceId: string, command: string): Promise<string> {
-        return this.childProcess.execToString(this.generateCommandForDevice(deviceId, command));
+    private execute(targetId: string, command: string): Promise<string> {
+        return this.childProcess.execToString(this.generateCommandForTarget(targetId, command));
     }
 
-    private generateCommandForDevice(deviceId: string, adbCommand: string): string {
-        return `${this.adbExecutable} -s "${deviceId}" ${adbCommand}`;
+    private generateCommandForTarget(targetId: string, adbCommand: string): string {
+        return `${this.adbExecutable} -s "${targetId}" ${adbCommand}`;
     }
 
     private getSdkLocationFromLocalPropertiesFile(
