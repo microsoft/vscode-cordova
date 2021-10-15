@@ -3,11 +3,11 @@
 
 import * as semver from "semver";
 import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection, ExecutionContext } from "./CDPMessageHandlerBase";
-import { CDP_API_NAMES } from "./CDPAPINames";
-import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
-import { IProjectType } from "../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../requestArgs";
-import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
+import { CDP_API_NAMES } from "../CDPAPINames";
+import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
+import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ICordovaAttachRequestArgs } from "../../../requestArgs";
+import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
 export class SafariCDPMessageHandler extends CDPMessageHandlerBase {
     private readonly Ionic3EvaluateErrorMessage;

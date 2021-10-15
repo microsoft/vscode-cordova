@@ -14,10 +14,10 @@ import { generateRandomPortNumber, delay } from "../../src/utils/extensionHelper
 import { CordovaCDPProxy } from "../../src/debugger/cdp-proxy/cordovaCDPProxy";
 import { IProjectType } from "../../src/utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../src/debugger/requestArgs";
-import { ChromeCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/chromeCDPMessageHandler";
-import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPMessageHandlerBase";
+import { ChromeCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/product/chromeCDPMessageHandler";
+import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/product/CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPAPINames";
-import { SafariCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/safariCDPMessageHandler";
+import { SafariCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/product/safariCDPMessageHandler";
 import { SourcemapPathTransformer } from "../../src/debugger/cdp-proxy/sourcemapPathTransformer";
 import { LogLevel } from "../../src/utils/log/logHelper";
 import { DebuggerEndpointHelper } from "../../src/debugger/cdp-proxy/debuggerEndpointHelper";

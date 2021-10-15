@@ -7,9 +7,9 @@ import {
     IProtocolError,
     Connection
 } from "vscode-cdp-proxy";
-import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
-import { IProjectType } from "../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../requestArgs";
+import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
+import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 
 export declare type ProtocolMessage = IProtocolCommand | IProtocolSuccess | IProtocolError;
 

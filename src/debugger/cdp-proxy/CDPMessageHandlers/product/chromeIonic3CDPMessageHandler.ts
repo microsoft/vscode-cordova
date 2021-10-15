@@ -3,14 +3,14 @@
 
 import * as url from "url";
 import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
-import { CDP_API_NAMES } from "./CDPAPINames";
-import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
-import { IProjectType } from "../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../requestArgs";
-import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
-import { PlatformType } from "../../cordovaDebugSession";
+import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
+import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ICordovaAttachRequestArgs } from "../../../requestArgs";
+import { CDP_API_NAMES } from "../CDPAPINames";
+import { PlatformType } from "../../../cordovaDebugSession";
+import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
-export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
+export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
     private isSimulate: boolean;
 
     constructor(
