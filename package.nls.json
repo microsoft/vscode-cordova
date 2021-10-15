@@ -1,6 +1,7 @@
 {
   "cordova.description": "Code-hinting, debugging and integrated commands for Apache Cordova (PhoneGap). With added support for the Ionic framework.",
   "cordova.license": "SEE LICENSE IN LICENSE.txt",
+  "cordova.workspaceTrust.description": "Trust is required to debug code and run Command Palette commands in this workspace.",
   "cordova.build": "Cordova: Build",
   "cordova.restart": "Restart Cordova debugging",
   "cordova.run": "Cordova: Run",

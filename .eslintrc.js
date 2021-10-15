@@ -48,6 +48,7 @@ module.exports = {
                 }
             }
         }],
+        "eol-last": "error",
         "prefer-const": "off",
         "no-trailing-spaces": "error",
         "header/header": [

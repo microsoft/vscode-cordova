@@ -7,7 +7,7 @@
     "ionic",
     "multi-root ready"
   ],
-  "version": "2.2.1",
+  "version": "2.3.0",
   "private": true,
   "publisher": "msjsdiag",
   "icon": "images/icon.png",
@@ -52,42 +52,50 @@
       {
         "command": "cordova.build",
         "title": "%cordova.build%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.run",
         "title": "%cordova.run%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.prepare",
         "title": "%cordova.prepare%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.simulate.android",
         "title": "%cordova.simulate.android%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.simulate.ios",
         "title": "%cordova.simulate.ios%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "ionic.build",
         "title": "%cordova.ionic.build%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "ionic.run",
         "title": "%cordova.ionic.run%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "ionic.prepare",
         "title": "%cordova.ionic.prepare%",
-        "category": "Cordova"
+        "category": "Cordova",
+        "enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
       },
       {
         "command": "cordova.restart",
@@ -373,7 +381,7 @@
               "devServerTimeout": {
                 "type": "number",
                 "description": "%cordova.properties.launch.devServerTimeout%",
-                "default": 20000
+                "default": 60000
               },
               "simulatePort": {
                 "type": "number",
@@ -579,6 +587,13 @@
       }
     ]
   },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "%cordova.workspaceTrust.description%"
+    }
+  },
   "scripts": {
     "build": "gulp build",
     "test": "node ./test/runTest.js",
@@ -589,9 +604,8 @@
     "execa": "^4.0.0",
     "ip": "^1.1.5",
     "plist": "^3.0.2",
-    "q": "^1.4.1",
     "semver": "5.1.0",
-    "socket.io-client": "^2.3.0",
+    "socket.io-client": "^2.4.0",
     "uuid": "^8.3.1",
     "vscode-cdp-proxy": "^0.2.0",
     "vscode-debugadapter": "^1.39.1",
@@ -607,16 +621,15 @@
     "@types/fancy-log": "^1.3.1",
     "@types/mocha": "^8.0.3",
     "@types/node": "^10.17.17",
-    "@types/q": "^1.0.3",
     "@types/rimraf": "^2.0.3",
     "@types/semver": "^5.5.0",
     "@types/sinon": "^9.0.7",
-    "@types/socket.io-client": "^1.4.29",
+    "@types/socket.io-client": "^1.4.36",
     "@types/uuid": "^8.3.0",
     "@types/vscode": "1.40.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
-    "cordova-simulate": "^1.0.0",
+    "cordova-simulate": "^1.1.0",
     "del": "^2.2.2",
     "devtools-protocol": "0.0.760817",
     "eslint": "^7.9.0",
@@ -630,13 +643,12 @@
     "gulp-typescript": "^5.0.1",
     "minimist": "^1.2.5",
     "mocha": "^8.1.3",
-    "mockery": "^1.4.0",
     "rimraf": "^2.7.1",
     "should": "^13.2.1",
     "sinon": "^9.1.0",
     "ts-loader": "^8.1.0",
     "typescript": "^3.8.3",
-    "vsce": "^1.74.0",
+    "vsce": "^1.88.0",
     "vscode-nls-dev": "^3.3.2",
     "vscode-test": "^1.4.0",
     "webpack": "^5.31.2",
