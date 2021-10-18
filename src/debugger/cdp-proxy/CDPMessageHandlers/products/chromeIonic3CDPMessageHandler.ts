@@ -8,11 +8,8 @@ import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { PlatformType } from "../../../cordovaDebugSession";
-import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
 export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
-    private isSimulate: boolean;
-
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
@@ -25,18 +22,12 @@ export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
         }
         if (args.simulatePort) {
             this.applicationPortPart = `:${args.simulatePort}`;
-            this.isSimulate = true;
-        } else {
-            this.isSimulate = false;
         }
     }
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        if (
-            event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL
-            && (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.projectType) || this.isSimulate)
-        ) {
+        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL) {
             event.params = this.fixIonicSourcemapRegexp(event.params);
         }
 
@@ -63,7 +54,7 @@ export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
         };
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) { }
+    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void { }
 
     private fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);

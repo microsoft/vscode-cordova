@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as url from "url";
 import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { PlatformType } from "../../../cordovaDebugSession";
-import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
 export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     private isSimulate: boolean;
@@ -20,7 +18,7 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     ) {
         super(sourcemapPathTransformer, projectType, args);
 
-        if (args.platform === PlatformType.Serve || args.ionicLiveReload) {
+        if (args.platform === PlatformType.Serve) {
             this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
         }
         if (args.simulatePort) {
@@ -33,10 +31,7 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        if (
-            event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL
-            && (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.projectType) || this.isSimulate)
-        ) {
+        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL && this.isSimulate) {
             event.params = this.fixIonicSourcemapRegexp(event.params);
         }
 
@@ -53,7 +48,6 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             && event.params.url
             && event.params.url.startsWith(`http://${this.applicationServerAddress}`)
         ) {
-            this.tryToGetIonicDevServerPortFromURL(event.params.url);
             event.params = this.fixSourcemapLocation(event.params);
         }
 
@@ -63,7 +57,7 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
         };
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) { }
+    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void { }
 
     private fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
@@ -73,7 +67,7 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             } else {
                 reqParams.url = "file://" + absoluteSourcePath;
             }
-        } else if (!(this.platform === PlatformType.Serve || (this.ionicLiveReload && this.debugRequestType === "launch"))) {
+        } else if (this.platform !== PlatformType.Serve) {
             reqParams.url = "";
         }
         return reqParams;
@@ -89,18 +83,5 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             reqParams.urlRegex = `http:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
-    }
-
-    private tryToGetIonicDevServerPortFromURL(sourceURL: string) {
-        if (this.ionicLiveReload && !this.applicationPortPart) {
-            try {
-                const devServerPort = url.parse(sourceURL).port;
-                if (devServerPort) {
-                    this.applicationPortPart = `:${devServerPort}`;
-                }
-            } catch (err) {
-                // do nothing, try to check another URL
-            }
-        }
     }
 }

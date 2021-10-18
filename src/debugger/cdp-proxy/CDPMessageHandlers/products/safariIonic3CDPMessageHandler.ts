@@ -34,7 +34,7 @@ export class SafariIonic3CDPMessageHandler extends CDPMessageHandlerBase {
         }
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) {
+    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
         this.isTargeted = semver.gte(args.iOSVersion, "12.2.0");
 
         if (args.devServerAddress) {

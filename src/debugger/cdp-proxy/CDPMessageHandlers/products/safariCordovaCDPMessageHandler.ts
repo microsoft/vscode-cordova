@@ -9,8 +9,6 @@ import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
 export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
-    private readonly Ionic3EvaluateErrorMessage;
-
     private targetId: string;
     private isTargeted: boolean;
     private iOSAppPackagePath: string;
@@ -23,28 +21,19 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
         args: ICordovaAttachRequestArgs
     ) {
         super(sourcemapPathTransformer, projectType, args);
-        this.Ionic3EvaluateErrorMessage = "process not defined";
         this.targetId = "";
         this.customMessageLastId = 0;
         this.isTargeted = true;
         this.isBackcompatConfigured = false;
-
-        if (args.ionicLiveReload) {
-            this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
-        }
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) {
+    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
         this.isTargeted = semver.gte(args.iOSVersion, "12.2.0");
 
         if (args.iOSAppPackagePath) {
             this.iOSAppPackagePath = args.iOSAppPackagePath;
         } else {
             throw new Error("\".app\" file isn't found");
-        }
-
-        if (args.devServerAddress) {
-            this.applicationServerAddress = args.devServerAddress;
         }
     }
 
@@ -93,10 +82,7 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
 
         if (
             event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url
-            && (
-                event.params.url.startsWith(`ionic://${this.applicationServerAddress}`)
-                || event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
-            )
+            && event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
         ) {
             event.params = this.fixSourcemapLocation(event.params);
         }
@@ -105,11 +91,8 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             event = this.processDeprecatedConsoleMessage(event);
         }
 
-        if (event.result) {
-            if (event.result.properties) {
-                event.result = { result: event.result.properties};
-            }
-            this.fixIonic3RuntimeEvaluateErrorResponse(event);
+        if (event.result && event.result.properties) {
+            event.result = { result: event.result.properties};
         }
 
         return {
@@ -122,11 +105,7 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     private fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromFileBasedUrl(reqParams.url);
 
-        if (absoluteSourcePath) {
-            reqParams.url = "file://" + absoluteSourcePath;
-        } else if (!(this.ionicLiveReload && this.debugRequestType === "launch")) {
-            reqParams.url = "";
-        }
+        reqParams.url = absoluteSourcePath ? "file://" + absoluteSourcePath : "";
         return reqParams;
     }
 
@@ -139,14 +118,6 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             reqParams.urlRegex = `file:\\/\\/${fixedRemotePath}\\/www\\/${uriPart}`;
         }
         return reqParams;
-    }
-
-    // Js-debug expected empty value or an object, but the target returns a string. This leads to infinite sending of
-    // Runtime.Evaluate requests from the debugger to the target.
-    private fixIonic3RuntimeEvaluateErrorResponse(event: any) {
-        if (event.result.result && event.result.result.value === this.Ionic3EvaluateErrorMessage) {
-            delete event.result.result.value;
-        }
     }
 
     private processDeprecatedConsoleMessage(event: any) {
