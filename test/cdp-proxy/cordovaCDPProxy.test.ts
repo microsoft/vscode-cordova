@@ -14,10 +14,10 @@ import { generateRandomPortNumber, delay } from "../../src/utils/extensionHelper
 import { CordovaCDPProxy } from "../../src/debugger/cdp-proxy/cordovaCDPProxy";
 import { IProjectType } from "../../src/utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../src/debugger/requestArgs";
-import { ChromeCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/products/chromeCDPMessageHandler";
+import { ChromeCDPMessageHandlerCreator } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/creators/chromeCDPMessageHandlerCreator";
 import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/products/CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPAPINames";
-import { SafariCDPMessageHandler } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/products/safariCDPMessageHandler";
+import { SafariCDPMessageHandlerCreator } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/creators/safariCDPMessageHandlerCreator";
 import { SourcemapPathTransformer } from "../../src/debugger/cdp-proxy/sourcemapPathTransformer";
 import { LogLevel } from "../../src/utils/log/logHelper";
 import { DebuggerEndpointHelper } from "../../src/debugger/cdp-proxy/debuggerEndpointHelper";
@@ -105,12 +105,12 @@ suite("cordovaCDPProxy", function () {
 
         if (cdpHandlerType === "chrome") {
             sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
-            cdpMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, attachArgs);
+            cdpMessageHandler = new ChromeCDPMessageHandlerCreator().create(sourcemapPathTransformer, projectType, attachArgs);
         } else {
             attachArgs.platform = "ios";
 
             sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
-            cdpMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, attachArgs);
+            cdpMessageHandler = new SafariCDPMessageHandlerCreator().create(sourcemapPathTransformer, projectType, attachArgs);
         }
 
         return {

@@ -9,7 +9,7 @@ import { ChromeCordovaCDPMessageHandler } from "../products/chromeCordovaCDPMess
 import { ChromeIonic3CDPMessageHandler } from "../products/chromeIonic3CDPMessageHandler";
 import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
-class chromeCordovaCDPMessageHandlerCreator extends CDPMessageHandlerBaseCreator {
+export class ChromeCDPMessageHandlerCreator extends CDPMessageHandlerBaseCreator {
     public create(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,

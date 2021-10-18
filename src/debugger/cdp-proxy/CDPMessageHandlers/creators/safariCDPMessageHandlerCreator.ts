@@ -9,7 +9,7 @@ import { SafariCordovaCDPMessageHandler } from "../products/safariCordovaCDPMess
 import { SafariIonic3CDPMessageHandler } from "../products/safariIonic3CDPMessageHandler";
 import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
-class safariCDPHandlerCreator extends CDPMessageHandlerBaseCreator {
+export class SafariCDPMessageHandlerCreator extends CDPMessageHandlerBaseCreator {
     public create(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,

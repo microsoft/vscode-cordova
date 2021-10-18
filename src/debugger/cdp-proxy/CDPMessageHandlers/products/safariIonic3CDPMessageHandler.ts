@@ -7,7 +7,6 @@ import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
-import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
 export class SafariIonic3CDPMessageHandler extends CDPMessageHandlerBase {
     private readonly Ionic3EvaluateErrorMessage;
