@@ -9,11 +9,10 @@ import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { CordovaProjectHelper } from "../../../../utils/cordovaProjectHelper";
 
-export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
+export class SafariIonic3CDPMessageHandler extends CDPMessageHandlerBase {
     private readonly Ionic3EvaluateErrorMessage;
 
     private targetId: string;
-    private isIonicProject: boolean;
     private isTargeted: boolean;
     private iOSAppPackagePath: string;
     private isBackcompatConfigured: boolean;
@@ -30,7 +29,6 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
         this.customMessageLastId = 0;
         this.isTargeted = true;
         this.isBackcompatConfigured = false;
-        this.isIonicProject = CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
 
         if (args.ionicLiveReload) {
             this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
@@ -39,13 +37,7 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
 
     public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs) {
         this.isTargeted = semver.gte(args.iOSVersion, "12.2.0");
-        if (!this.isIonicProject) {
-            if (args.iOSAppPackagePath) {
-                this.iOSAppPackagePath = args.iOSAppPackagePath;
-            } else {
-                throw new Error("\".app\" file isn't found");
-            }
-        }
+
         if (args.devServerAddress) {
             this.applicationServerAddress = args.devServerAddress;
         }
@@ -123,12 +115,7 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     }
 
     private fixSourcemapLocation(reqParams: any): any {
-        let absoluteSourcePath;
-        if (this.isIonicProject) {
-            absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
-        } else {
-            absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromFileBasedUrl(reqParams.url);
-        }
+        let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
 
         if (absoluteSourcePath) {
             reqParams.url = "file://" + absoluteSourcePath;
@@ -143,12 +130,7 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
         let foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            if (this.isIonicProject) {
-                reqParams.urlRegex = `ionic:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
-            } else {
-                const fixedRemotePath = (this.iOSAppPackagePath.split("\/").join("\\/")).split(".").join("\\.");
-                reqParams.urlRegex = `file:\\/\\/${fixedRemotePath}\\/www\\/${uriPart}`;
-            }
+            reqParams.urlRegex = `ionic:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
     }

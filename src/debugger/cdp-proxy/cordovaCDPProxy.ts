@@ -16,9 +16,9 @@ import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { PlatformType } from "../cordovaDebugSession";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
-import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/product/CDPMessageHandlerBase";
-import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/product/chromeCDPMessageHandler";
-import { SafariCDPMessageHandler } from "./CDPMessageHandlers/product/safariCDPMessageHandler";
+import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/products/CDPMessageHandlerBase";
+import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/products/chromeCDPMessageHandler";
+import { SafariCDPMessageHandler } from "./CDPMessageHandlers/products/safariCDPMessageHandler";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { TargetType } from "../cordovaDebugSession";
 

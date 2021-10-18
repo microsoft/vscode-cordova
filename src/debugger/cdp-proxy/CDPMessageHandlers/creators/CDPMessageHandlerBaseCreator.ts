@@ -4,9 +4,9 @@
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
-import { CDPMessageHandlerBase } from "../product/CDPMessageHandlerBase";
+import { CDPMessageHandlerBase } from "../products/CDPMessageHandlerBase";
 
-export abstract class CDPMessageHandlerBaseFabric {
+export abstract class CDPMessageHandlerBaseCreator {
     public abstract create(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
