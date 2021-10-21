@@ -6,7 +6,6 @@ import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
-import { PlatformType } from "../../../cordovaDebugSession";
 
 export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     private isSimulate: boolean;
@@ -18,9 +17,6 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     ) {
         super(sourcemapPathTransformer, projectType, args);
 
-        if (args.platform === PlatformType.Serve) {
-            this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
-        }
         if (args.simulatePort) {
             this.applicationPortPart = `:${args.simulatePort}`;
             this.isSimulate = true;
@@ -32,7 +28,7 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
         if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL && this.isSimulate) {
-            event.params = this.fixIonicSourcemapRegexp(event.params);
+            event.params = this.fixSourcemapRegexp(event.params);
         }
 
         return {
@@ -67,13 +63,11 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             } else {
                 reqParams.url = "file://" + absoluteSourcePath;
             }
-        } else if (this.platform !== PlatformType.Serve) {
-            reqParams.url = "";
         }
         return reqParams;
     }
 
-    private fixIonicSourcemapRegexp(reqParams: any): any {
+    private fixSourcemapRegexp(reqParams: any): any {
         const regExp = process.platform === "win32" ?
             /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g :
             /.*\\\/www\\\/(.*\.js)/g;

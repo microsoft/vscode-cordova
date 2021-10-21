@@ -39,7 +39,7 @@ export class SafariCordovaCDPMessageHandler extends CDPMessageHandlerBase {
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL && !this.ionicLiveReload) {
+        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL) {
             event.params = this.fixSourcemapRegexp(event.params);
         }
 

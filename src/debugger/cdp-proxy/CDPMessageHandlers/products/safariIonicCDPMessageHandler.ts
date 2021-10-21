@@ -8,7 +8,7 @@ import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
-export class SafariIonic3CDPMessageHandler extends CDPMessageHandlerBase {
+export class SafariIonicCDPMessageHandler extends CDPMessageHandlerBase {
     private readonly Ionic3EvaluateErrorMessage;
 
     private targetId: string;
@@ -101,7 +101,7 @@ export class SafariIonic3CDPMessageHandler extends CDPMessageHandlerBase {
 
         if (event.result) {
             if (event.result.properties) {
-                event.result = { result: event.result.properties};
+                event.result = { result: event.result.properties };
             }
             this.fixIonic3RuntimeEvaluateErrorResponse(event);
         }

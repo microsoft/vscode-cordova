@@ -17,8 +17,7 @@ import { PlatformType } from "../cordovaDebugSession";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/products/CDPMessageHandlerBase";
-import { ChromeCDPMessageHandlerCreator } from "./CDPMessageHandlers/creators/chromeCDPMessageHandlerCreator";
-import { SafariCDPMessageHandlerCreator } from "./CDPMessageHandlers/creators/safariCDPMessageHandlerCreator";
+import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/creators/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { TargetType } from "../cordovaDebugSession";
 
@@ -62,11 +61,12 @@ export class CordovaCDPProxy {
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
         this.isSimulate = !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
+
         if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
-            this.CDPMessageHandler = new SafariCDPMessageHandlerCreator().create(sourcemapPathTransformer, projectType, args);
+            this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, false);
             this.communicationPreparationsDone = false;
         } else {
-            this.CDPMessageHandler = new ChromeCDPMessageHandlerCreator().create(sourcemapPathTransformer, projectType, args);
+            this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, true);
             this.communicationPreparationsDone = true;
         }
     }

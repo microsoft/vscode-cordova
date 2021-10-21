@@ -9,7 +9,7 @@ import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { PlatformType } from "../../../cordovaDebugSession";
 
-export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
+export class ChromeIonicCDPMessageHandler extends CDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
@@ -28,7 +28,7 @@ export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
         if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL) {
-            event.params = this.fixIonicSourcemapRegexp(event.params);
+            event.params = this.fixSourcemapRegexp(event.params);
         }
 
         return {
@@ -70,7 +70,7 @@ export class ChromeIonic3CDPMessageHandler extends CDPMessageHandlerBase {
         return reqParams;
     }
 
-    private fixIonicSourcemapRegexp(reqParams: any): any {
+    private fixSourcemapRegexp(reqParams: any): any {
         const regExp = process.platform === "win32" ?
             /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g :
             /.*\\\/www\\\/(.*\.js)/g;
