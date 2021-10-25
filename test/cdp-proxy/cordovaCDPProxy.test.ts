@@ -15,7 +15,7 @@ import { CordovaCDPProxy } from "../../src/debugger/cdp-proxy/cordovaCDPProxy";
 import { IProjectType } from "../../src/utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../src/debugger/requestArgs";
 import { CDPMessageHandlerCreator } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPMessageHandlerCreator";
-import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/products/CDPMessageHandlerBase";
+import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDP_API_NAMES } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPAPINames";
 import { SourcemapPathTransformer } from "../../src/debugger/cdp-proxy/sourcemapPathTransformer";
 import { LogLevel } from "../../src/utils/log/logHelper";

@@ -16,7 +16,7 @@ import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { PlatformType } from "../cordovaDebugSession";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
-import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/products/CDPMessageHandlerBase";
+import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { TargetType } from "../cordovaDebugSession";

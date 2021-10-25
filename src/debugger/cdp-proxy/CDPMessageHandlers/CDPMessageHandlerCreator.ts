@@ -4,10 +4,10 @@
 import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../requestArgs";
-import { ChromeCordovaCDPMessageHandler } from "./products/chromeCordovaCDPMessageHandler";
-import { ChromeIonicCDPMessageHandler } from "./products/chromeIonicCDPMessageHandler";
-import { SafariCordovaCDPMessageHandler } from "./products/safariCordovaCDPMessageHandler";
-import { SafariIonicCDPMessageHandler } from "./products/safariIonicCDPMessageHandler";
+import { ChromeCordovaCDPMessageHandler } from "./implementation/chromeCordovaCDPMessageHandler";
+import { ChromeIonicCDPMessageHandler } from "./implementation/chromeIonicCDPMessageHandler";
+import { SafariCordovaCDPMessageHandler } from "./implementation/safariCordovaCDPMessageHandler";
+import { SafariIonicCDPMessageHandler } from "./implementation/safariIonicCDPMessageHandler";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
 
 export class CDPMessageHandlerCreator {
