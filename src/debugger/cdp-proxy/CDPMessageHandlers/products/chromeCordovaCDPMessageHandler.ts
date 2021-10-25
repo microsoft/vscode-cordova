@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
+import { ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
+import { ChromeCDPMessageHandlerBase } from "./ChromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
-export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
+export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase {
     private isSimulate: boolean;
 
     constructor(
@@ -55,7 +56,7 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
 
     public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void { }
 
-    private fixSourcemapLocation(reqParams: any): any {
+    protected fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
         if (absoluteSourcePath) {
             if (process.platform === "win32") {
@@ -63,18 +64,6 @@ export class ChromeCordovaCDPMessageHandler extends CDPMessageHandlerBase {
             } else {
                 reqParams.url = "file://" + absoluteSourcePath;
             }
-        }
-        return reqParams;
-    }
-
-    private fixSourcemapRegexp(reqParams: any): any {
-        const regExp = process.platform === "win32" ?
-            /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g :
-            /.*\\\/www\\\/(.*\.js)/g;
-        let foundStrings = regExp.exec(reqParams.urlRegex);
-        if (foundStrings && foundStrings[1]) {
-            const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = `http:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
     }

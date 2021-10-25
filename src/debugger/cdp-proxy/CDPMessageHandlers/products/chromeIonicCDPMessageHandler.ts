@@ -2,14 +2,15 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as url from "url";
-import { CDPMessageHandlerBase, ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
+import { ProcessedCDPMessage, DispatchDirection } from "./CDPMessageHandlerBase";
+import { ChromeCDPMessageHandlerBase } from "./ChromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { PlatformType } from "../../../cordovaDebugSession";
 
-export class ChromeIonicCDPMessageHandler extends CDPMessageHandlerBase {
+export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
@@ -56,7 +57,7 @@ export class ChromeIonicCDPMessageHandler extends CDPMessageHandlerBase {
 
     public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void { }
 
-    private fixSourcemapLocation(reqParams: any): any {
+    protected fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
         if (absoluteSourcePath) {
             if (process.platform === "win32") {
@@ -66,18 +67,6 @@ export class ChromeIonicCDPMessageHandler extends CDPMessageHandlerBase {
             }
         } else if (!(this.platform === PlatformType.Serve || (this.ionicLiveReload && this.debugRequestType === "launch"))) {
             reqParams.url = "";
-        }
-        return reqParams;
-    }
-
-    private fixSourcemapRegexp(reqParams: any): any {
-        const regExp = process.platform === "win32" ?
-            /.*\\\\\[wW\]\[wW\]\[wW\]\\\\(.*\\.\[jJ\]\[sS\])/g :
-            /.*\\\/www\\\/(.*\.js)/g;
-        let foundStrings = regExp.exec(reqParams.urlRegex);
-        if (foundStrings && foundStrings[1]) {
-            const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = `http:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
     }
