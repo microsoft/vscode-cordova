@@ -3,7 +3,7 @@
 
 import * as semver from "semver";
 import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
-import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHandlerBase";
+import { SafariCDPMessageHandlerBase } from "../abstraction/SafariCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";

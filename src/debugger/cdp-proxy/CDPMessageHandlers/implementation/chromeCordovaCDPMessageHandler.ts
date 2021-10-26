@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
-import { ChromeCDPMessageHandlerBase } from "../abstraction/chromeCDPMessageHandlerBase";
+import { ChromeCDPMessageHandlerBase } from "../abstraction/ChromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
