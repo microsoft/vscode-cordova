@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { CDPMessageHandlerBase, ProcessedCDPMessage } from "./CDPMessageHandlerBase";
+import { CDPMessageHandlerBase } from "./CDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
@@ -15,8 +15,6 @@ export abstract class ChromeCDPMessageHandlerBase extends CDPMessageHandlerBase 
         super(sourcemapPathTransformer, projectType, args);
     }
 
-    public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
-    public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
     public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {}
 
     protected abstract fixSourcemapLocation(reqParams: any): any;
