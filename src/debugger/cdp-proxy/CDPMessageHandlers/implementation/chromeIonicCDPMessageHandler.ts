@@ -3,7 +3,7 @@
 
 import * as url from "url";
 import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
-import { ChromeCDPMessageHandlerBase } from "../abstraction/ChromeCDPMessageHandlerBase";
+import { ChromeCDPMessageHandlerBase } from "../abstraction/chromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
@@ -54,8 +54,6 @@ export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
             dispatchDirection,
         };
     }
-
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void { }
 
     protected fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);

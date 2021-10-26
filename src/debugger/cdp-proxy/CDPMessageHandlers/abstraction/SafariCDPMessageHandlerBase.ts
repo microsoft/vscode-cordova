@@ -26,8 +26,6 @@ export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase 
         this.isBackcompatConfigured = false;
     }
 
-    public abstract configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void;
-
     protected abstract fixSourcemapLocation(reqParams: any): any;
     protected abstract fixSourcemapRegexp(reqParams: any): any;
 

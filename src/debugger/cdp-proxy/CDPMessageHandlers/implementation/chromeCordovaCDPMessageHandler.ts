@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
-import { ChromeCDPMessageHandlerBase } from "../abstraction/ChromeCDPMessageHandlerBase";
+import { ChromeCDPMessageHandlerBase } from "../abstraction/chromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../../requestArgs";
@@ -53,8 +53,6 @@ export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase 
             dispatchDirection,
         };
     }
-
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void { }
 
     protected fixSourcemapLocation(reqParams: any): any {
         let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
