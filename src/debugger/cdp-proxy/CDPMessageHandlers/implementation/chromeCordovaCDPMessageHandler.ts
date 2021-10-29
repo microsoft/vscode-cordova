@@ -40,10 +40,11 @@ export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase 
 
     public processApplicationCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
+        const urlRegExp = new RegExp(`^https?://${this.applicationServerAddress}`);
         if (
-            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED
-            && event.params.url
-            && event.params.url.startsWith(`http://${this.applicationServerAddress}`)
+            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED &&
+            event.params.url &&
+            event.params.url.match(urlRegExp)
         ) {
             event.params = this.fixSourcemapLocation(event.params);
         }
