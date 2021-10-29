@@ -26,7 +26,7 @@ export abstract class ChromeCDPMessageHandlerBase extends CDPMessageHandlerBase 
         let foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            reqParams.urlRegex = `http:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
+            reqParams.urlRegex = `https?:\\/\\/${this.applicationServerAddress}${this.applicationPortPart}\\/${uriPart}`;
         }
         return reqParams;
     }
