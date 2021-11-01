@@ -2,11 +2,14 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as url from "url";
-import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
+import {
+    ProcessedCDPMessage,
+    DispatchDirection,
+    HandlerOptions
+} from "../abstraction/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandlerBase } from "../abstraction/chromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { PlatformType } from "../../../cordovaDebugSession";
 
@@ -14,15 +17,15 @@ export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
-        args: ICordovaAttachRequestArgs
+        options: HandlerOptions
     ) {
-        super(sourcemapPathTransformer, projectType, args);
+        super(sourcemapPathTransformer, projectType, options);
 
-        if (args.platform === PlatformType.Serve || args.ionicLiveReload) {
-            this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
+        if (options.platform === PlatformType.Serve || options.ionicLiveReload) {
+            this.applicationPortPart = options.devServerPort ? `:${options.devServerPort}` : "";
         }
-        if (args.simulatePort) {
-            this.applicationPortPart = `:${args.simulatePort}`;
+        if (options.simulatePort) {
+            this.applicationPortPart = `:${options.simulatePort}`;
         }
     }
 

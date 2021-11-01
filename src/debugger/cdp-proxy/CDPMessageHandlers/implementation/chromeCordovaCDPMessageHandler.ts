@@ -1,11 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
+import {
+    ProcessedCDPMessage,
+    DispatchDirection,
+    HandlerOptions
+} from "../abstraction/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandlerBase } from "../abstraction/chromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
 export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase {
@@ -14,12 +17,12 @@ export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
-        args: ICordovaAttachRequestArgs
+        options: HandlerOptions
     ) {
-        super(sourcemapPathTransformer, projectType, args);
+        super(sourcemapPathTransformer, projectType, options);
 
-        if (args.simulatePort) {
-            this.applicationPortPart = `:${args.simulatePort}`;
+        if (options.simulatePort) {
+            this.applicationPortPart = `:${options.simulatePort}`;
             this.isSimulate = true;
         } else {
             this.isSimulate = false;

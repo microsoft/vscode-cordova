@@ -9,8 +9,22 @@ import { ChromeIonicCDPMessageHandler } from "./implementation/chromeIonicCDPMes
 import { SafariCordovaCDPMessageHandler } from "./implementation/safariCordovaCDPMessageHandler";
 import { SafariIonicCDPMessageHandler } from "./implementation/safariIonicCDPMessageHandler";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
+import { HandlerOptions } from "./abstraction/CDPMessageHandlerBase";
 
 export class CDPMessageHandlerCreator {
+    public static generateHandlerOptions(args: ICordovaAttachRequestArgs): HandlerOptions {
+        return ({
+            platform: args.platform,
+            debugRequest: args.request,
+            ionicLiveReload: args.ionicLiveReload,
+            devServerAddress: args.devServerAddress,
+            devServerPort: args.devServerPort,
+            simulatePort: args.simulatePort,
+            iOSAppPackagePath: args.iOSAppPackagePath,
+            iOSVersion: args.iOSVersion,
+        });
+    }
+
     public static create(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
@@ -18,18 +32,19 @@ export class CDPMessageHandlerCreator {
         isChrome: boolean
     ): ChromeCordovaCDPMessageHandler | ChromeIonicCDPMessageHandler | SafariCordovaCDPMessageHandler | SafariIonicCDPMessageHandler {
         const isIonicProject = CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType);
+        const handlerOptions = CDPMessageHandlerCreator.generateHandlerOptions(args);
 
         if (isChrome) {
             if (isIonicProject) {
-                return new ChromeIonicCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+                return new ChromeIonicCDPMessageHandler(sourcemapPathTransformer, projectType, handlerOptions);
             } else {
-                return new ChromeCordovaCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+                return new ChromeCordovaCDPMessageHandler(sourcemapPathTransformer, projectType, handlerOptions);
             }
         } else {
             if (isIonicProject) {
-                return new SafariIonicCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+                return new SafariIonicCDPMessageHandler(sourcemapPathTransformer, projectType, handlerOptions);
             } else {
-                return new SafariCordovaCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+                return new SafariCordovaCDPMessageHandler(sourcemapPathTransformer, projectType, handlerOptions);
             }
         }
     }

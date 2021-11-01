@@ -2,11 +2,14 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as semver from "semver";
-import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
+import {
+    ProcessedCDPMessage,
+    DispatchDirection,
+    HandlerOptions
+} from "../abstraction/CDPMessageHandlerBase";
 import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
 export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
@@ -15,21 +18,21 @@ export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
-        args: ICordovaAttachRequestArgs
+        options: HandlerOptions
     ) {
-        super(sourcemapPathTransformer, projectType, args);
+        super(sourcemapPathTransformer, projectType, options);
         this.Ionic3EvaluateErrorMessage = "process not defined";
 
-        if (args.ionicLiveReload) {
-            this.applicationPortPart = args.devServerPort ? `:${args.devServerPort}` : "";
+        if (options.ionicLiveReload) {
+            this.applicationPortPart = options.devServerPort ? `:${options.devServerPort}` : "";
         }
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
-        this.isTargeted = semver.gte(args.iOSVersion, "12.2.0");
+    public configureHandlerAccordingToProcessedAttachArgs(options: HandlerOptions): void {
+        this.isTargeted = semver.gte(options.iOSVersion, "12.2.0");
 
-        if (args.devServerAddress) {
-            this.applicationServerAddress = args.devServerAddress;
+        if (options.devServerAddress) {
+            this.applicationServerAddress = options.devServerAddress;
         }
     }
 

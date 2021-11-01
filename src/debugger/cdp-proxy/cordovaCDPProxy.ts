@@ -115,7 +115,9 @@ export class CordovaCDPProxy {
         ) {
             this.communicationPreparationsDone = true;
         }
-        this.CDPMessageHandler.configureHandlerAccordingToProcessedAttachArgs(args);
+        this.CDPMessageHandler.configureHandlerAccordingToProcessedAttachArgs(
+            CDPMessageHandlerCreator.generateHandlerOptions(args)
+        );
     }
 
     public getSimPageTargetAPI(): any | undefined {

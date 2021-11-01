@@ -2,27 +2,30 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as semver from "semver";
-import { ProcessedCDPMessage, DispatchDirection } from "../abstraction/CDPMessageHandlerBase";
+import {
+    ProcessedCDPMessage,
+    DispatchDirection,
+    HandlerOptions
+} from "../abstraction/CDPMessageHandlerBase";
 import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { IProjectType } from "../../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../../requestArgs";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
 export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
-        args: ICordovaAttachRequestArgs
+        options: HandlerOptions
     ) {
-        super(sourcemapPathTransformer, projectType, args);
+        super(sourcemapPathTransformer, projectType, options);
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
-        this.isTargeted = semver.gte(args.iOSVersion, "12.2.0");
+    public configureHandlerAccordingToProcessedAttachArgs(options: HandlerOptions): void {
+        this.isTargeted = semver.gte(options.iOSVersion, "12.2.0");
 
-        if (args.iOSAppPackagePath) {
-            this.iOSAppPackagePath = args.iOSAppPackagePath;
+        if (options.iOSAppPackagePath) {
+            this.iOSAppPackagePath = options.iOSAppPackagePath;
         } else {
             throw new Error("\".app\" file isn't found");
         }
