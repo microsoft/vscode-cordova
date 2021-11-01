@@ -115,7 +115,7 @@ export class CordovaCDPProxy {
         ) {
             this.communicationPreparationsDone = true;
         }
-        this.CDPMessageHandler.configureHandlerAccordingToProcessedAttachOptions(
+        this.CDPMessageHandler.configureHandlerAfterAttachmentPreparation(
             CDPMessageHandlerCreator.generateHandlerOptions(args)
         );
     }
