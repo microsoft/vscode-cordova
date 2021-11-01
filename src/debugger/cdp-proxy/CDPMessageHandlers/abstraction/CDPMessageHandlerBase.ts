@@ -75,7 +75,7 @@ export abstract class CDPMessageHandlerBase {
 
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
     public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
-    public abstract configureHandlerAccordingToProcessedAttachArgs(options: HandlerOptions): void;
+    public abstract configureHandlerAccordingToProcessedAttachOptions(options: HandlerOptions): void;
 
     public setDebuggerTarget(debuggerTarget: Connection | null): void {
         this.debuggerTarget = debuggerTarget;

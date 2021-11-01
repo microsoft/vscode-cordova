@@ -21,7 +21,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
         super(sourcemapPathTransformer, projectType, options);
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(options: HandlerOptions): void {
+    public configureHandlerAccordingToProcessedAttachOptions(options: HandlerOptions): void {
         this.isTargeted = semver.gte(options.iOSVersion, "12.2.0");
 
         if (options.iOSAppPackagePath) {

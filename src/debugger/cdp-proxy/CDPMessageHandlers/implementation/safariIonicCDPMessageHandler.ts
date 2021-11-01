@@ -28,7 +28,7 @@ export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
         }
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(options: HandlerOptions): void {
+    public configureHandlerAccordingToProcessedAttachOptions(options: HandlerOptions): void {
         this.isTargeted = semver.gte(options.iOSVersion, "12.2.0");
 
         if (options.devServerAddress) {

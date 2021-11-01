@@ -14,7 +14,7 @@ export abstract class ChromeCDPMessageHandlerBase extends CDPMessageHandlerBase 
         super(sourcemapPathTransformer, projectType, options);
     }
 
-    public configureHandlerAccordingToProcessedAttachArgs(options: HandlerOptions): void {}
+    public configureHandlerAccordingToProcessedAttachOptions(options: HandlerOptions): void {}
 
     protected abstract fixSourcemapLocation(reqParams: any): any;
 
