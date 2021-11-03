@@ -43,11 +43,10 @@ export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
 
     public processApplicationCDPMessage(event: any): ProcessedCDPMessage {
         let dispatchDirection = DispatchDirection.FORWARD;
-        const urlRegExp = new RegExp(`^https?:\/\/${this.applicationServerAddress}`);
         if (
             event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED &&
             event.params.url &&
-            urlRegExp.test(event.params.url)
+            this.verifySourceMapUrl(event.params.url)
         ) {
             this.tryToGetIonicDevServerPortFromURL(event.params.url);
             event.params = this.fixSourcemapLocation(event.params);
