@@ -32,7 +32,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
     }
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
-        let dispatchDirection = DispatchDirection.FORWARD;
+        const dispatchDirection = DispatchDirection.FORWARD;
         if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL) {
             event.params = this.fixSourcemapRegexp(event.params);
         }
@@ -97,7 +97,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
     }
 
     protected fixSourcemapLocation(reqParams: any): any {
-        let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromFileBasedUrl(reqParams.url);
+        const absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromFileBasedUrl(reqParams.url);
 
         reqParams.url = absoluteSourcePath ? "file://" + absoluteSourcePath : "";
         return reqParams;
@@ -105,7 +105,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
 
     protected fixSourcemapRegexp(reqParams: any): any {
         const regExp = /.*\\\/www\\\/(.*\.(js|html))/g;
-        let foundStrings = regExp.exec(reqParams.urlRegex);
+        const foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
             const fixedRemotePath = (this.iOSAppPackagePath.split("\/").join("\\/")).split(".").join("\\.");
