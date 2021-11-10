@@ -7,9 +7,8 @@ import {
     IProtocolError,
     Connection
 } from "vscode-cdp-proxy";
-import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
-import { IProjectType } from "../../../utils/cordovaProjectHelper";
-import { ICordovaAttachRequestArgs } from "../../requestArgs";
+import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
+import { IProjectType } from "../../../../utils/cordovaProjectHelper";
 
 export declare type ProtocolMessage = IProtocolCommand | IProtocolSuccess | IProtocolError;
 
@@ -36,6 +35,17 @@ export interface ExecutionContext {
     };
 }
 
+export interface HandlerOptions {
+    platform: string;
+    debugRequest: string;
+    ionicLiveReload?: boolean;
+    devServerAddress?: string;
+    devServerPort?: number;
+    simulatePort?: number;
+    iOSAppPackagePath?: string;
+    iOSVersion?: string;
+}
+
 export abstract class CDPMessageHandlerBase {
     protected sourcemapPathTransformer: SourcemapPathTransformer;
     protected projectType: IProjectType;
@@ -50,22 +60,22 @@ export abstract class CDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: IProjectType,
-        args: ICordovaAttachRequestArgs
+        options: HandlerOptions
     ) {
         this.sourcemapPathTransformer = sourcemapPathTransformer;
         this.projectType = projectType;
         // we use an application port part, which looks like ":<port>", since on debugging
         // Ionic apps we don't need a colon after "localhost" in the link
         this.applicationPortPart = "";
-        this.platform = args.platform;
-        this.ionicLiveReload = args.ionicLiveReload;
-        this.applicationServerAddress = args.devServerAddress || "localhost";
-        this.debugRequestType = args.request;
+        this.platform = options.platform;
+        this.ionicLiveReload = options.ionicLiveReload;
+        this.applicationServerAddress = options.devServerAddress || "localhost";
+        this.debugRequestType = options.debugRequest;
     }
 
     public abstract processDebuggerCDPMessage(event: any): ProcessedCDPMessage;
     public abstract processApplicationCDPMessage(event: any): ProcessedCDPMessage;
-    public abstract configureHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void;
+    public abstract configureHandlerAfterAttachmentPreparation(options: HandlerOptions): void;
 
     public setDebuggerTarget(debuggerTarget: Connection | null): void {
         this.debuggerTarget = debuggerTarget;
