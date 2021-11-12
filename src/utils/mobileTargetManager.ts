@@ -4,6 +4,7 @@
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
 import { IMobileTarget, MobileTarget } from "./mobileTarget";
+import { TargetType } from "../debugger/cordovaDebugSession";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -13,7 +14,7 @@ const localize = nls.loadMessageBundle();
 export abstract class MobileTargetManager {
     protected targets?: IMobileTarget[];
 
-    public abstract collectTargets(): Promise<void>;
+    public abstract collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void>;
 
     public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<MobileTarget | undefined>;
 

@@ -1364,7 +1364,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 }
             };
 
-            await androidEmulatorManager.collectTargets();
+            await androidEmulatorManager.collectTargets(isAnyEmulator ? TargetType.Emulator : isAnyDevice ? TargetType.Device : null);
             let targetDevice = await androidEmulatorManager.selectAndPrepareTarget(target => {
                 const conditionForAttachScenario = isAttachScenario ? target.isOnline : true;
                 const conditionForNotAnyTarget = isAnyEmulator || isAnyDevice ? true : target.name === configArgs.target || target.id === configArgs.target;
