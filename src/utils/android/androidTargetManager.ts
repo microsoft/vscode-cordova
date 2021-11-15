@@ -48,9 +48,9 @@ export class AndroidTargetManager extends MobileTargetManager {
 
     public async isVirtualTarget(target: string): Promise<boolean> {
         try {
-            if (target.includes("device")) {
+            if (target === TargetType.Device) {
                 return false;
-            } else if (target.match(AdbHelper.AndroidSDKEmulatorPattern)) {
+            } else if (target === TargetType.Emulator || target.match(AdbHelper.AndroidSDKEmulatorPattern)) {
                 return true;
             } else {
                 const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
