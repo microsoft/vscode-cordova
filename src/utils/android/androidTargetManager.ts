@@ -50,11 +50,19 @@ export class AndroidTargetManager extends MobileTargetManager {
         try {
             if (target.includes("device")) {
                 return false;
-            } else if (target.match(/^emulator(-\d{1,5})?$/) || (await this.adbHelper.getAvdsNames()).includes(target)) {
+            } else if (target.match(/^emulator(-\d{1,5})?$/)) {
                 return true;
             } else {
                 const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
-                return onlineTarget.isVirtualTarget;
+                if (onlineTarget) {
+                    return onlineTarget.isVirtualTarget;
+                } else {
+                    if ((await this.adbHelper.getAvdsNames()).includes(target)) {
+                        return true;
+                    } else {
+                        throw Error();
+                    }
+                }
             }
         } catch {
             throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));

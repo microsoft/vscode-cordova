@@ -97,7 +97,7 @@ export class AdbHelper {
         return emulatorsNames;
     }
 
-    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget> {
+    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget | undefined> {
         return (await this.getOnlineTargets()).find((target) => target.id === targetId);
     }
 
