@@ -50,7 +50,7 @@ export class AndroidTargetManager extends MobileTargetManager {
         try {
             if (target.includes("device")) {
                 return false;
-            } else if (target.match(/^emulator(-\d{1,5})?$/)) {
+            } else if (target.match(AdbHelper.AndroidSDKEmulatorPattern)) {
                 return true;
             } else {
                 const onlineTarget = await this.adbHelper.findOnlineTargetById(target);

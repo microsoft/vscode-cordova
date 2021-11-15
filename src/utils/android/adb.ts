@@ -27,9 +27,10 @@ export enum AndroidAPILevel {
     GINGERBREAD_MR1 = 10,
 }
 
-const AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
-
 export class AdbHelper {
+
+    public static readonly AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
+
     private childProcess: ChildProcess = new ChildProcess();
     private adbExecutable: string = "";
 
@@ -160,7 +161,7 @@ export class AdbHelper {
     }
 
     private determineIfItIsVirtualTarget(id: string): boolean {
-        return !!id.match(AndroidSDKEmulatorPattern);
+        return !!id.match(AdbHelper.AndroidSDKEmulatorPattern);
     }
 
     private executeQuery(targetId: string, command: string): Promise<string> {
