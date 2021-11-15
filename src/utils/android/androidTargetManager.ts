@@ -56,12 +56,10 @@ export class AndroidTargetManager extends MobileTargetManager {
                 const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
                 if (onlineTarget) {
                     return onlineTarget.isVirtualTarget;
+                } else if ((await this.adbHelper.getAvdsNames()).includes(target)) {
+                    return true;
                 } else {
-                    if ((await this.adbHelper.getAvdsNames()).includes(target)) {
-                        return true;
-                    } else {
-                        throw Error();
-                    }
+                    throw Error();
                 }
             }
         } catch {
