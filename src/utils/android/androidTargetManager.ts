@@ -7,6 +7,7 @@ import { AdbHelper } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
+import { TargetType } from "../../debugger/cordovaDebugSession";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -47,13 +48,19 @@ export class AndroidTargetManager extends MobileTargetManager {
 
     public async isVirtualTarget(target: string): Promise<boolean> {
         try {
-            if (target.includes("device")) {
+            if (target === TargetType.Device) {
                 return false;
-            } else if (target.match(/^emulator(-\d{1,5})?$/) || (await this.adbHelper.getAvdsNames()).includes(target)) {
+            } else if (target === TargetType.Emulator || target.match(AdbHelper.AndroidSDKEmulatorPattern)) {
                 return true;
             } else {
                 const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
-                return onlineTarget.isVirtualTarget;
+                if (onlineTarget) {
+                    return onlineTarget.isVirtualTarget;
+                } else if ((await this.adbHelper.getAvdsNames()).includes(target)) {
+                    return true;
+                } else {
+                    throw Error();
+                }
             }
         } catch {
             throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
@@ -73,24 +80,29 @@ export class AndroidTargetManager extends MobileTargetManager {
         }
     }
 
-    public async collectTargets(): Promise<void> {
+    public async collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void> {
         const targetList: IMobileTarget[] = [];
 
-        let emulatorsNames: string[] = await this.adbHelper.getAvdsNames();
-        targetList.push(...emulatorsNames.map(name => {
-            return { name, isOnline: false, isVirtualTarget: true };
-        }));
+        if (!targetType || targetType === TargetType.Emulator) {
+            const emulatorsNames: string[] = await this.adbHelper.getAvdsNames();
+            targetList.push(...emulatorsNames.map(name => {
+                return { name, isOnline: false, isVirtualTarget: true };
+            }));
+        }
 
         const onlineTargets = await this.adbHelper.getOnlineTargets();
         for (let device of onlineTargets) {
-            if (device.isVirtualTarget) {
+            if (device.isVirtualTarget && (!targetType || targetType === TargetType.Emulator)) {
                 const avdName = await this.adbHelper.getAvdNameById(device.id);
                 const emulatorTarget = targetList.find(target => target.name === avdName);
                 if (emulatorTarget) {
                     emulatorTarget.isOnline = true;
                     emulatorTarget.id = device.id;
                 }
-            } else {
+            } else if (
+                !device.isVirtualTarget &&
+                (!targetType || targetType === TargetType.Device)
+            ) {
                 targetList.push({ id: device.id, isOnline: true, isVirtualTarget: false });
             }
         }
