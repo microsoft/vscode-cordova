@@ -1,3 +1,10 @@
+## 2.4.0
+* Improved Android device and emulator targets selection [#736](https://github.com/microsoft/vscode-cordova/pull/736)
+* Fixed security vulnerabilities [#740](https://github.com/microsoft/vscode-cordova/pull/740), [#743](https://github.com/microsoft/vscode-cordova/pull/743)
+* Fixed source mapping while debugging Ionic Cordova-Android 10 applications [#744](https://github.com/microsoft/vscode-cordova/issues/744)
+* Internal changes:
+    * Refactored Chrome DevTools Protocol message handles for the CDP proxy [#741](https://github.com/microsoft/vscode-cordova/pull/741)
+
 ## 2.3.0
 * Fixed security vulnerabilities [#734](https://github.com/microsoft/vscode-cordova/pull/734)
 * Updated debugging configurations documentation [#732](https://github.com/microsoft/vscode-cordova/pull/732)
