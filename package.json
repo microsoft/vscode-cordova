@@ -316,8 +316,19 @@
                 "description": "%cordova.properties.launch.cwd%"
               },
               "target": {
-                "type": "string",
                 "description": "%cordova.properties.launch.target%",
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "device",
+                      "emulator"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
                 "default": "emulator"
               },
               "sourceMaps": {
