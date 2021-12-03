@@ -30,11 +30,90 @@ export enum AndroidAPILevel {
 const AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
 
 export class AdbHelper {
+    private static readonly PIDOFF_NOT_FOUND_ERROR = localize("pidofNotFound", "/system/bin/sh: pidof: not found");
+    private static readonly PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
+
     private childProcess: ChildProcess = new ChildProcess();
     private adbExecutable: string = "";
 
     constructor(projectRoot: string, logger?: OutputChannelLogger) {
         this.adbExecutable = this.getAdbPath(projectRoot, logger);
+    }
+
+    public async forwardTcpPortForDevToolsAbstractName(targetId: string, tcpPort: string, devToolsAbstractName: string): Promise<void> {
+        await this.execute(targetId, `forward tcp:${tcpPort} localabstract:${devToolsAbstractName}`);
+    }
+
+    public async removeforwardTcpPort(targetId: string, tcpPort: string): Promise<void> {
+        await this.execute(targetId, `forward --remove tcp:${tcpPort}`);
+    }
+
+    public async getPidForPackageName(targetId: string, appPackageName: string): Promise<string> {
+        try {
+            const pid = await this.execute(targetId, `shell pidof ${appPackageName}`);
+            if (pid && /^[0-9]+$/.test(pid.trim())) {
+                return pid.trim();
+            }
+            throw Error(AdbHelper.PIDOFF_NOT_FOUND_ERROR);
+        } catch (error) {
+            if (error.message !== AdbHelper.PIDOFF_NOT_FOUND_ERROR) {
+                throw error;
+            }
+
+            const psResult = await this.execute(targetId, "shell ps");
+            const lines = psResult.split("\n");
+            const keys = lines.shift().split(AdbHelper.PS_FIELDS_SPLITTER_RE);
+            const nameIdx = keys.indexOf("NAME");
+            const pidIdx = keys.indexOf("PID");
+            for (const line of lines) {
+                const fields = line.trim().split(AdbHelper.PS_FIELDS_SPLITTER_RE).filter(field => !!field);
+                if (fields.length < nameIdx) {
+                    continue;
+                }
+                if (fields[nameIdx] === appPackageName) {
+                    return fields[pidIdx];
+                }
+            }
+        }
+    }
+
+    public async getDevToolsAbstractName(targetId: string, appPackageName: string): Promise<string> {
+        const pid = await this.getPidForPackageName(targetId, appPackageName);
+        const getSocketsResult = await this.execute(targetId, "shell cat /proc/net/unix");
+        const lines = getSocketsResult.split("\n");
+        const keys = lines.shift().split(/[\s\r]+/);
+        const flagsIdx = keys.indexOf("Flags");
+        const stIdx = keys.indexOf("St");
+        const pathIdx = keys.indexOf("Path");
+        for (const line of lines) {
+            const fields = line.split(/[\s\r]+/);
+            if (fields.length < 8) {
+                continue;
+            }
+            // flag = 00010000 (16) -> accepting connection
+            // state = 01 (1) -> unconnected
+            if (fields[flagsIdx] !== "00010000" || fields[stIdx] !== "01") {
+                continue;
+            }
+            const pathField = fields[pathIdx];
+            if (pathField.length < 1 || pathField[0] !== "@") {
+                continue;
+            }
+            if (pathField.indexOf("_devtools_remote") === -1) {
+                continue;
+            }
+
+            if (pathField === `@webview_devtools_remote_${pid}`) {
+                // Matches the plain cordova webview format
+                return pathField.substr(1);
+            }
+
+            if (pathField === `@${appPackageName}_devtools_remote`) {
+                // Matches the crosswalk format of "@PACKAGENAME_devtools_remote
+                return pathField.substr(1);
+            }
+            // No match, keep searching
+        }
     }
 
     /**
@@ -64,22 +143,22 @@ export class AdbHelper {
 
     public async getAvdNameById(emulatorId: string): Promise<string | null> {
         return this.childProcess.execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`)
-        // The command returns the name of avd by id of this running emulator.
-        // Return value example:
-        // "
-        // emuName
-        // OK
-        // "
-        .then(output => {
-            if (output) {
-                // Return the name of avd: emuName
-                return output.split(/\r?\n|\r/g)[0];
-            } else {
-                return null;
-            }
-        })
-        // If the command returned an error, it means that we could not find the emulator with the passed id
-        .catch(() => null);
+            // The command returns the name of avd by id of this running emulator.
+            // Return value example:
+            // "
+            // emuName
+            // OK
+            // "
+            .then(output => {
+                if (output) {
+                    // Return the name of avd: emuName
+                    return output.split(/\r?\n|\r/g)[0];
+                } else {
+                    return null;
+                }
+            })
+            // If the command returned an error, it means that we could not find the emulator with the passed id
+            .catch(() => null);
     }
 
     public async getAvdsNames(): Promise<string[]> {
@@ -152,14 +231,14 @@ export class AdbHelper {
             result.push({
                 id: match[1],
                 isOnline: match[2] === "device",
-                isVirtualTarget: this.determineIfItIsVirtualTarget(match[1]),
+                isVirtualTarget: AdbHelper.isVirtualTarget(match[1]),
             });
             match = regex.exec(input);
         }
         return result;
     }
 
-    private determineIfItIsVirtualTarget(id: string): boolean {
+    public static isVirtualTarget(id: string): boolean {
         return !!id.match(AndroidSDKEmulatorPattern);
     }
 

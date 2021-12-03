@@ -6,7 +6,7 @@ import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import * as path from "path";
 import * as nls from "vscode-nls";
 import { findFileInFolderHierarchy } from "../utils/extensionHelper";
-import { DebugConsoleLogger } from "./cordovaDebugSession";
+import { DebugConsoleLogger } from "./cordovaDebugSession1";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 

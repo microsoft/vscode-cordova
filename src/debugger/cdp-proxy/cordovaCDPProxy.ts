@@ -13,14 +13,13 @@ import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
 import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
-import { PlatformType } from "../cordovaDebugSession";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
 import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
-import { TargetType } from "../cordovaDebugSession";
+import { PlatformType, TargetType } from "../cordovaDebugSession1";
 
 export class CordovaCDPProxy {
 

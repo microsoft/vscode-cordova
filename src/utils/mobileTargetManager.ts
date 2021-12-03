@@ -4,6 +4,7 @@
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
 import { IMobileTarget, MobileTarget } from "./mobileTarget";
+import { TargetType } from "../debugger/cordovaDebugSession1";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -13,18 +14,24 @@ const localize = nls.loadMessageBundle();
 export abstract class MobileTargetManager {
     protected targets?: IMobileTarget[];
 
-    public abstract collectTargets(): Promise<void>;
+    public abstract collectTargets(targetType?: TargetType): Promise<void>;
 
     public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<MobileTarget | undefined>;
 
     public async isVirtualTarget(target: string): Promise<boolean> {
-        if (target.includes("device")) {
+        if (target === TargetType.Device) {
             return false;
         }
-        if (target.includes("emulator")) {
+        if (target === TargetType.Emulator) {
             return true;
         }
         throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
+    }
+
+    public async getTargetsCountWithFilter(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<number> {
+        return (await this.getTargetList(filter)).length;
     }
 
     protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<MobileTarget | undefined>;
@@ -54,6 +61,6 @@ export abstract class MobileTargetManager {
             };
             result = await window.showQuickPick(targetList.map(target => target?.name || target?.id), quickPickOptions);
         }
-        return targetList.find(target => target.name === result || target.id === result);
+        return result ? targetList.find(target => target.name === result || target.id === result) : undefined;
     }
 }

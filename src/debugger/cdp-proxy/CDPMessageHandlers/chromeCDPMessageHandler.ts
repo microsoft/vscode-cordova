@@ -8,7 +8,7 @@ import { SourcemapPathTransformer } from "../sourcemapPathTransformer";
 import { IProjectType } from "../../../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../requestArgs";
 import { CordovaProjectHelper } from "../../../utils/cordovaProjectHelper";
-import { PlatformType } from "../../cordovaDebugSession";
+import { PlatformType } from "../../cordovaDebugSession1";
 
 export class ChromeCDPMessageHandler extends CDPMessageHandlerBase {
     private isSimulate: boolean;

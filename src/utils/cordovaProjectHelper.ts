@@ -414,12 +414,11 @@ export class CordovaProjectHelper {
         return CordovaProjectHelper.isIonicCliVersionGte(fsPath, "3.0.0", command);
     }
 
-    public static getEnvArgument(launchArgs): any {
-        let args = { ...launchArgs };
+    public static getEnvArgument(envVars?: any, envFile?: any): any {
         let env = process.env;
 
-        if (args.envFile) {
-            let buffer = fs.readFileSync(args.envFile, "utf8");
+        if (envFile) {
+            let buffer = fs.readFileSync(envFile, "utf8");
 
             // Strip BOM
             if (buffer && buffer[0] === "\uFEFF") {
@@ -441,11 +440,11 @@ export class CordovaProjectHelper {
             });
         }
 
-        if (args.env) {
+        if (env) {
             // launch config env vars overwrite .env vars
-            for (let key in args.env) {
-                if (args.env.hasOwnProperty(key)) {
-                    env[key] = args.env[key];
+            for (let key in env) {
+                if (env.hasOwnProperty(key)) {
+                    env[key] = env[key];
                 }
             }
         }
