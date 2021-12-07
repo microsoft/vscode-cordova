@@ -15,13 +15,13 @@ const localize = nls.loadMessageBundle();
 export default abstract class AbstractMobilePlatform extends AbstractPlatform {
 
     protected targetManager: MobileTargetManager;
-    protected target?: MobileTarget;
+    public target?: MobileTarget;
 
     public async getTargetsCountByFilter(filter?: (el: IMobileTarget) => boolean): Promise<number> {
         return this.targetManager.getTargetsCountWithFilter(filter);
     }
 
-    public async resolveMobileTarget(targetString: string): Promise<MobileTarget | undefined> {
+    public async resolveMobileTarget(targetString: string, additionalFilter?: (el: IMobileTarget) => boolean): Promise<MobileTarget | undefined> {
         let collectTargetsCalled = false;
 
         let isAnyTarget = false;
@@ -56,7 +56,8 @@ export default abstract class AbstractMobilePlatform extends AbstractPlatform {
                     ? true
                     : target.name === targetString || target.id === targetString;
                 const conditionForVirtualTarget = isVirtualTarget === target.isVirtualTarget;
-                return conditionForVirtualTarget && conditionForNotAnyTarget;
+                const additionalCondition = additionalFilter ? additionalFilter(target) : true;
+                return conditionForVirtualTarget && conditionForNotAnyTarget && additionalCondition;
             });
 
             if (!this.target) {

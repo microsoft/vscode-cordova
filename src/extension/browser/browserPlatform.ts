@@ -5,6 +5,7 @@ import * as nls from "vscode-nls";
 import * as fs from "fs";
 import * as execa from "execa";
 import * as vscode from "vscode";
+import * as io from "socket.io-client";
 import * as child_process from "child_process";
 import * as browserHelper from "vscode-js-debug-browsers";
 import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cordovaDebugSession1";
@@ -30,6 +31,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         protected log: DebugConsoleLogger
     ) {
         super(platformOpts, log);
+        this.pluginSimulator = new PluginSimulator();
     }
 
     public getPlatformOpts(): IBrowserPlatformOptions {
@@ -67,7 +69,7 @@ export default class BrowserPlatform extends AbstractPlatform {
             default:
                 browserFinder = new browserHelper.ChromeBrowserFinder(process.env, fs.promises, execa);
         }
-        const browserPath = await browserFinder.findAll()[0];
+        const browserPath = (await browserFinder.findAll())[0];
         if (browserPath) {
             this.browserProc = child_process.spawn(browserPath.path, this.runArguments, {
                 detached: true,
@@ -127,7 +129,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         } else {
         }
         if (this.platformOpts.url) {
-            args.push(...this.platformOpts.url);
+            args.push(this.platformOpts.url);
         }
         return args;
     }

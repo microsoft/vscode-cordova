@@ -32,6 +32,7 @@ import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import IonicDevServerHelper from "../utils/ionicDevServerHelper";
 import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
+import { IMobileTarget } from "../utils/mobileTarget";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -166,8 +167,12 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         try {
             await this.initializeTelemetry(attachArgs.cwd);
             await this.initializeSettings(attachArgs);
+            attachArgs.port = attachArgs.port || 9222;
             if (!this.platform) {
                 this.platform = await this.resolvePlatform(attachArgs);
+            }
+            if (this.platform instanceof AbstractMobilePlatform && !this.platform.target) {
+                await this.resolveAndSaveMobileTarget(this.platform, attachArgs, true);
             }
             const projectType = this.platform.getPlatformOpts().projectType;
 
@@ -185,7 +190,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                     projectType,
                     attachArgs
                 );
-                this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+                this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port || 9222);
                 await this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
 
                 this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", attachArgs.platform));
@@ -193,12 +198,10 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 this.outputLogger(localize("AttachingToApp", "Attaching to app"));
                 this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
                 const processedAttachArgs = Object.assign({}, attachArgs, attachOpts);
-                if (this.cordovaCdpProxy) {
-                    if (processedAttachArgs.webSocketDebuggerUrl) {
-                        this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
-                    }
-                    this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
+                if (processedAttachArgs.webSocketDebuggerUrl) {
+                    this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
                 }
+                this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
                 await this.establishDebugSession(processedAttachArgs);
 
                 this.attachedDeferred.resolve();
@@ -212,12 +215,18 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private async resolveAndSaveMobileTarget(mobilePlatform: AbstractMobilePlatform, args: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs): Promise<void> {
+    protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
+        await this.cleanUp(args.restart);
+        super.disconnectRequest(response, args, request);
+    }
+
+    private async resolveAndSaveMobileTarget(mobilePlatform: AbstractMobilePlatform, args: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachRequest: boolean = false): Promise<void> {
         if (args.target && !mobilePlatform.getTargetFromRunArgs()) {
             const isAnyTarget =
                 args.target.toLowerCase() === TargetType.Emulator ||
                 args.target.toLowerCase() === TargetType.Device;
-            const resultTarget = await mobilePlatform.resolveMobileTarget(args.target);
+            const additionalFilter = isAttachRequest ? (el: IMobileTarget) => el.isOnline : undefined;
+            const resultTarget = await mobilePlatform.resolveMobileTarget(args.target, additionalFilter);
 
             // Save the result to config in case there are more than one possible target with this type (simulator/device)
             if (resultTarget && isAnyTarget) {
