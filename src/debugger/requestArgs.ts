@@ -3,7 +3,7 @@
 
 import { ISourceMapPathOverrides } from "./jsDebugConfigAdapter";
 import { DebugProtocol } from "vscode-debugprotocol";
-import { PlatformType } from "./cordovaDebugSession1";
+import { PlatformType } from "./cordovaDebugSession";
 
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments {
     cwd: string; /* Automatically set by VS Code to the currently opened folder */

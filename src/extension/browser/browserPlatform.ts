@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import * as io from "socket.io-client";
 import * as child_process from "child_process";
 import * as browserHelper from "vscode-js-debug-browsers";
-import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cordovaDebugSession1";
+import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import AbstractPlatform from "../abstractPlatform";
 import { IBrowserPlatformOptions } from "../platformOptions";

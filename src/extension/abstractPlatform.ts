@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as fs from "fs";
-import { DebugConsoleLogger } from "../debugger/cordovaDebugSession1";
+import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
 import IonicDevServerHelper from "../utils/ionicDevServerHelper";
 import { IGeneralAttachOptions } from "./platformAttachOptions";
 import { IGeneralPlatformOptions } from "./platformOptions";

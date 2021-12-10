@@ -6,7 +6,7 @@ import { IAndroidPlatformOptions } from "../platformOptions";
 import AbstractMobilePlatform from "../abstractMobilePlatform";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { cordovaRunCommand } from "../../debugger/extension";
-import { DebugConsoleLogger, TargetType } from "../../debugger/cordovaDebugSession1";
+import { DebugConsoleLogger, TargetType } from "../../debugger/cordovaDebugSession";
 import * as nls from "vscode-nls";
 import { AndroidTarget, AndroidTargetManager } from "../../utils/android/androidTargetManager";
 import { retryAsync } from "../../utils/extensionHelper";

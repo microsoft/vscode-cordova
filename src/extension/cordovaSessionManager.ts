@@ -3,7 +3,7 @@
 
 import * as vscode from "vscode";
 import * as Net from "net";
-import CordovaDebugSession from "../debugger/cordovaDebugSession1";
+import CordovaDebugSession from "../debugger/cordovaDebugSession";
 import { CordovaSession, CordovaSessionStatus } from "../debugger/debugSessionWrapper";
 
 export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFactory {

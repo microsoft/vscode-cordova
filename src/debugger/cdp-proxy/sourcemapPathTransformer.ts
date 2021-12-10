@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as url from "url";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
-import { PlatformType } from "../cordovaDebugSession1";
+import { PlatformType } from "../cordovaDebugSession";
 
 export class SourcemapPathTransformer {
     private _cordovaRoot: string;

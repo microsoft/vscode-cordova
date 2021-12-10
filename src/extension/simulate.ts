@@ -6,7 +6,7 @@ import * as CordovaSimulate from "cordova-simulate";
 import { CordovaSimulateTelemetry } from "../utils/cordovaSimulateTelemetry";
 import { IProjectType, CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import { SimulationInfo } from "../common/simulationInfo";
-import { PlatformType } from "../debugger/cordovaDebugSession1";
+import { PlatformType } from "../debugger/cordovaDebugSession";
 import * as vscode from "vscode";
 import * as cp from "child_process";
 import customRequire from "../common/customRequire";

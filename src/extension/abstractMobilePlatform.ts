@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as nls from "vscode-nls";
-import { TargetType } from "../debugger/cordovaDebugSession1";
+import { TargetType } from "../debugger/cordovaDebugSession";
 import { MobileTarget, IMobileTarget } from "../utils/mobileTarget";
 import { MobileTargetManager } from "../utils/mobileTargetManager";
 import AbstractPlatform from "./abstractPlatform";

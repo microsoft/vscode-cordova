@@ -5,7 +5,7 @@ import * as http from "http";
 import * as path from "path";
 import * as fs from "fs";
 import { CancellationToken } from "vscode";
-import { CANCELLATION_ERROR_NAME } from "../debugger/cordovaDebugSession1";
+import { CANCELLATION_ERROR_NAME } from "../debugger/cordovaDebugSession";
 
 export function generateRandomPortNumber(): number {
     return Math.round(Math.random() * 40000 + 3000);

@@ -5,7 +5,7 @@ import * as nls from "vscode-nls";
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-import { DebugConsoleLogger, TargetType, WebviewData } from "../../debugger/cordovaDebugSession1";
+import { DebugConsoleLogger, TargetType, WebviewData } from "../../debugger/cordovaDebugSession";
 import { CordovaIosDeviceLauncher } from "../../debugger/cordovaIosDeviceLauncher";
 import { cordovaRunCommand } from "../../debugger/extension";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";

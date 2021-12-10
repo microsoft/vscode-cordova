@@ -18,7 +18,7 @@ import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
-import { PlatformType, TargetType } from "../cordovaDebugSession1";
+import { PlatformType, TargetType } from "../cordovaDebugSession";
 
 export class CordovaCDPProxy {
 

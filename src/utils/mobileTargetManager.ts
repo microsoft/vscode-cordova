@@ -4,7 +4,7 @@
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
 import { IMobileTarget, MobileTarget } from "./mobileTarget";
-import { TargetType } from "../debugger/cordovaDebugSession1";
+import { TargetType } from "../debugger/cordovaDebugSession";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,

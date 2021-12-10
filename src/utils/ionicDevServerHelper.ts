@@ -7,7 +7,7 @@ import * as child_process from "child_process";
 import AbstractPlatform from "../extension/abstractPlatform";
 import { CordovaProjectHelper } from "./cordovaProjectHelper";
 import { cordovaStartCommand, killChildProcess } from "../debugger/extension";
-import { DebugConsoleLogger } from "../debugger/cordovaDebugSession1";
+import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
