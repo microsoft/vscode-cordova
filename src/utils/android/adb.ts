@@ -27,11 +27,10 @@ export enum AndroidAPILevel {
     GINGERBREAD_MR1 = 10,
 }
 
-const AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
-
 export class AdbHelper {
     private static readonly PIDOFF_NOT_FOUND_ERROR = localize("pidofNotFound", "/system/bin/sh: pidof: not found");
     private static readonly PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
+    public static readonly AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
 
     private childProcess: ChildProcess = new ChildProcess();
     private adbExecutable: string = "";
@@ -176,7 +175,7 @@ export class AdbHelper {
         return emulatorsNames;
     }
 
-    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget> {
+    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget | undefined> {
         return (await this.getOnlineTargets()).find((target) => target.id === targetId);
     }
 
@@ -239,7 +238,7 @@ export class AdbHelper {
     }
 
     public static isVirtualTarget(id: string): boolean {
-        return !!id.match(AndroidSDKEmulatorPattern);
+        return !!id.match(AdbHelper.AndroidSDKEmulatorPattern);
     }
 
     private executeQuery(targetId: string, command: string): Promise<string> {

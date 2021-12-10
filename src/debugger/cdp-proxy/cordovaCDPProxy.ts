@@ -15,9 +15,8 @@ import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { IProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
-import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/CDPMessageHandlerBase";
-import { ChromeCDPMessageHandler } from "./CDPMessageHandlers/chromeCDPMessageHandler";
-import { SafariCDPMessageHandler } from "./CDPMessageHandlers/safariCDPMessageHandler";
+import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
+import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { PlatformType, TargetType } from "../cordovaDebugSession1";
 
@@ -61,11 +60,12 @@ export class CordovaCDPProxy {
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
         this.isSimulate = !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
+
         if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
-            this.CDPMessageHandler = new SafariCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+            this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, false);
             this.communicationPreparationsDone = false;
         } else {
-            this.CDPMessageHandler = new ChromeCDPMessageHandler(sourcemapPathTransformer, projectType, args);
+            this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, true);
             this.communicationPreparationsDone = true;
         }
     }
@@ -114,7 +114,9 @@ export class CordovaCDPProxy {
         ) {
             this.communicationPreparationsDone = true;
         }
-        this.CDPMessageHandler.configureHandlerAccordingToProcessedAttachArgs(args);
+        this.CDPMessageHandler.configureHandlerAfterAttachmentPreparation(
+            CDPMessageHandlerCreator.generateHandlerOptions(args)
+        );
     }
 
     public getSimPageTargetAPI(): any | undefined {
