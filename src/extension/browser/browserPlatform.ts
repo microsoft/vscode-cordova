@@ -46,8 +46,12 @@ export default class BrowserPlatform extends AbstractPlatform {
                 this.log(errorMessage, true);
                 throw new Error(errorMessage);
             }
-            const devServersUrls = await this.ionicDevServerHelper.startIonicDevServer(this.getServeRunArguments(), this.platformOpts.env);
+            const serveRunArgs = this.getServeRunArguments();
+            const devServersUrls = await this.ionicDevServerHelper.startIonicDevServer(serveRunArgs, this.platformOpts.env);
             this.platformOpts.url = devServersUrls[0];
+            if (!serveRunArgs.includes("--no-open")) {
+                return;
+            }
         } else {
             const simulatorOptions = this.convertBrowserOptionToSimulateArgs(this.platformOpts);
             let simulateInfo = await this.pluginSimulator.launchServer(this.projectRoot, simulatorOptions, this.platformOpts.projectType);
@@ -137,11 +141,11 @@ export default class BrowserPlatform extends AbstractPlatform {
     private getServeRunArguments(): string[] {
         const args = ["serve"];
 
-        if (this.platformOpts.runArguments) {
+        if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
             args.push(...this.platformOpts.runArguments);
         } else {
             // Set up "ionic serve" args
-            args.push("--nobrowser");
+            args.push("--no-open");
 
             if (!this.platformOpts.ionicLiveReload) {
                 args.push("--nolivereload");
