@@ -49,9 +49,6 @@ export default class BrowserPlatform extends AbstractPlatform {
             const serveRunArgs = this.getServeRunArguments();
             const devServersUrls = await this.ionicDevServerHelper.startIonicDevServer(serveRunArgs, this.platformOpts.env);
             this.platformOpts.url = devServersUrls[0];
-            if (!serveRunArgs.includes("--no-open")) {
-                return;
-            }
         } else {
             const simulatorOptions = this.convertBrowserOptionToSimulateArgs(this.platformOpts);
             let simulateInfo = await this.pluginSimulator.launchServer(this.projectRoot, simulatorOptions, this.platformOpts.projectType);
