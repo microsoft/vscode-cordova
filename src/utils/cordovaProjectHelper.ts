@@ -493,7 +493,7 @@ export class CordovaProjectHelper {
         version: string,
         lowVersionEdge: string,
         highVersionEdge: string,
-    ) {
+    ): boolean {
         return semver.gt(version, lowVersionEdge) && semver.lt(version, highVersionEdge);
     }
 
@@ -501,7 +501,7 @@ export class CordovaProjectHelper {
         version: string,
         lowVersionEdge: string,
         highVersionEdge: string,
-    ) {
+    ): boolean {
         return semver.ltr(lowVersionEdge, version) && semver.gtr(highVersionEdge, version);
     }
 }
