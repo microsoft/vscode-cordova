@@ -164,23 +164,28 @@ export class TelemetryHelper {
     }
 
     public static determineProjectTypes(projectRoot: string): Promise<IProjectType> {
-        let ionicVersions = CordovaProjectHelper.checkIonicVersions(projectRoot);
+        let ionicVersions = CordovaProjectHelper.determineIonicVersions(projectRoot);
         let meteor = CordovaProjectHelper.exists(path.join(projectRoot, ".meteor"));
         let mobilefirst = CordovaProjectHelper.exists(path.join(projectRoot, ".project"));
         let phonegap = CordovaProjectHelper.exists(path.join(projectRoot, "www", "res", ".pgbomit"));
         let cordova = CordovaProjectHelper.exists(path.join(projectRoot, "config.xml"));
         return Promise.all([meteor, mobilefirst, phonegap, cordova])
             .then(([isMeteor, isMobilefirst, isPhonegap, isCordova]) => ({
-                isIonic1: ionicVersions.isIonic1,
-                isIonic2: ionicVersions.isIonic2,
-                isIonic3: ionicVersions.isIonic3,
-                isIonic4: ionicVersions.isIonic4,
-                isIonic5: ionicVersions.isIonic5,
+                ...ionicVersions,
                 isMeteor: isMeteor,
                 isMobilefirst: isMobilefirst,
                 isPhonegap: isPhonegap,
                 isCordova: isCordova,
             }));
+    }
+
+    public static prepareRelevantProjectTypes(projectType: IProjectType): Partial<IProjectType> {
+        return Object.entries(projectType).reduce((relProjType, [key, val]) => {
+            if (val) {
+                relProjType[key] = val;
+            }
+            return relProjType;
+        }, {});
     }
 
     public static telemetryProperty(propertyValue: any, pii?: boolean): ITelemetryPropertyInfo {

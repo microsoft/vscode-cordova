@@ -81,6 +81,7 @@ suite("cordovaCDPProxy", function () {
             isIonic3: false,
             isIonic4: false,
             isIonic5: false,
+            isIonic6: false,
         };
 
         attachArgs = {

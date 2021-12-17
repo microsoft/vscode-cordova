@@ -218,7 +218,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     .then(([projectType, runArguments, cordovaExecutable]) => {
                         launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
                         launchArgs.allEnv = CordovaProjectHelper.getEnvArgument(launchArgs);
-                        generator.add("projectType", projectType, false);
+                        generator.add("projectType", TelemetryHelper.prepareRelevantProjectTypes(projectType), false);
                         this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", platform));
 
                         switch (platform) {
@@ -310,7 +310,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             attachArgs
                         );
                         this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-                        generator.add("projectType", projectType, false);
+                        generator.add("projectType", TelemetryHelper.prepareRelevantProjectTypes(projectType), false);
                         return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
                     })
                     .then(() => {

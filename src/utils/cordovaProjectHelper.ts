@@ -24,6 +24,7 @@ export interface IIonicVersion {
     isIonic3: boolean;
     isIonic4: boolean;
     isIonic5: boolean;
+    isIonic6: boolean;
 }
 
 export interface IPluginDetails {
@@ -267,7 +268,7 @@ export class CordovaProjectHelper {
      * Helper function to determine whether the project is an Ionic Angular project or not
      */
     public static isIonicAngularProject(projectRoot: string): boolean {
-        const versions = this.checkIonicVersions(projectRoot);
+        const versions = this.determineIonicVersions(projectRoot);
         return CordovaProjectHelper.isIonicAngularProjectByProjectType(versions);
     }
 
@@ -275,23 +276,20 @@ export class CordovaProjectHelper {
      * Helper function to determine whether the project is an project or not by project types
      */
     public static isIonicAngularProjectByProjectType(projectType: IIonicVersion): boolean {
-        return projectType.isIonic1
-            || projectType.isIonic2
-            || projectType.isIonic3
-            || projectType.isIonic4
-            || projectType.isIonic5;
+        return Object.entries(projectType).some(([key, val]) => key.startsWith("isIonic") && val);
     }
 
     /**
      * Helper function to determine which version of Ionic the project belongs to
      */
-    public static checkIonicVersions(projectRoot: string): IIonicVersion {
+    public static determineIonicVersions(projectRoot: string): IIonicVersion {
         let versions: IIonicVersion = {
             isIonic1: false,
             isIonic2: false,
             isIonic3: false,
             isIonic4: false,
             isIonic5: false,
+            isIonic6: false,
         };
 
         // Ionic 1 check
@@ -320,15 +318,21 @@ export class CordovaProjectHelper {
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta
             if (semver.valid(ionicVersion)) {
-                versions.isIonic2 = (semver.gt(ionicVersion, highestNotSupportedIonic2BetaVersion)
-                    && semver.lt(ionicVersion, "3.0.0"));
+                versions.isIonic2 = CordovaProjectHelper.versionSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic2BetaVersion,
+                    "3.0.0",
+                );
                 versions.isIonic3 = (semver.gt(ionicVersion, highestNotSupportedIonic3BetaVersion));
             }
 
             // If it's a valid range we check that the entire range is greater than highest not supported Ionic major version beta
             if (semver.validRange(ionicVersion)) {
-                versions.isIonic2 = (semver.ltr(highestNotSupportedIonic2BetaVersion, ionicVersion)
-                    && semver.gtr("3.0.0", ionicVersion));
+                versions.isIonic2 = CordovaProjectHelper.versionRangeSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic2BetaVersion,
+                    "3.0.0",
+                );
                 versions.isIonic3 = semver.ltr(highestNotSupportedIonic3BetaVersion, ionicVersion);
             }
 
@@ -338,30 +342,47 @@ export class CordovaProjectHelper {
             }
         }
 
-        // Ionic 4 & 5 check
+        // Ionic 4, 5, 6 check
         const highestNotSupportedIonic4BetaVersion = "4.0.0-beta.19";
         const highestNotSupportedIonic5BetaVersion = "5.0.0-beta.6";
+        const highestNotSupportedIonic6BetaVersion = "6.0.0-beta.7";
 
         if (dependencies["@ionic/angular"]) {
             const ionicVersion = dependencies["@ionic/angular"];
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta
             if (semver.valid(ionicVersion)) {
-                versions.isIonic4 = (semver.gt(ionicVersion, highestNotSupportedIonic4BetaVersion)
-                    && semver.lt(ionicVersion, "5.0.0"));
-                versions.isIonic5 = (semver.gt(ionicVersion, highestNotSupportedIonic5BetaVersion));
+                versions.isIonic4 = CordovaProjectHelper.versionSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic4BetaVersion,
+                    "5.0.0",
+                );
+                versions.isIonic5 = CordovaProjectHelper.versionSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic5BetaVersion,
+                    "6.0.0",
+                );
+                versions.isIonic6 = (semver.gt(ionicVersion, highestNotSupportedIonic6BetaVersion));
             }
 
             // If it's a valid range we check that the entire range is greater than highest not supported Ionic major version beta
             if (semver.validRange(ionicVersion)) {
-                versions.isIonic4 = (semver.ltr(highestNotSupportedIonic4BetaVersion, ionicVersion)
-                    && semver.gtr("5.0.0", ionicVersion));
-                versions.isIonic5 = semver.ltr(highestNotSupportedIonic5BetaVersion, ionicVersion);
+                versions.isIonic4 = CordovaProjectHelper.versionRangeSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic4BetaVersion,
+                    "5.0.0",
+                );
+                versions.isIonic5 = CordovaProjectHelper.versionRangeSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic5BetaVersion,
+                    "6.0.0",
+                );
+                versions.isIonic6 = semver.ltr(highestNotSupportedIonic6BetaVersion, ionicVersion);
             }
 
-            // Assuming for now that latest version is 5
+            // Assuming for now that latest version is 6
             if (ionicVersion === "latest" || ionicVersion === "nightly") {
-                versions.isIonic5 = true;
+                versions.isIonic6 = true;
             }
         }
         return versions;
@@ -466,5 +487,21 @@ export class CordovaProjectHelper {
     public static getPortFromURL(url: string): number {
         const serveURLInst = new URL(url);
         return +serveURLInst.port;
+    }
+
+    private static versionSatisfiesInterval(
+        version: string,
+        lowVersionEdge: string,
+        highVersionEdge: string,
+    ) {
+        return semver.gt(version, lowVersionEdge) && semver.lt(version, highVersionEdge);
+    }
+
+    private static versionRangeSatisfiesInterval(
+        version: string,
+        lowVersionEdge: string,
+        highVersionEdge: string,
+    ) {
+        return semver.ltr(lowVersionEdge, version) && semver.gtr(highVersionEdge, version);
     }
 }

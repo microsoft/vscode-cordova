@@ -21,7 +21,7 @@ suite("сordovaProjectHelper", function () {
         });
     });
 
-    suite("checkIonicVersions", function () {
+    suite("determineIonicVersions", function () {
         const ionicProjectPath = path.join(__dirname, "..", "resources", "testIonicProject");
         const ionicPackageJsonFileLocation = path.join(ionicProjectPath, "package.json");
 
@@ -31,7 +31,7 @@ suite("сordovaProjectHelper", function () {
             (fs.readFileSync as any).restore();
         });
 
-        function checkIonicVersion(
+        function determineIonicVersions(
             ionicVersion: Record<string, boolean>,
             dep: Record<string, string>,
             devDep: Record<string, string>,
@@ -52,16 +52,17 @@ suite("сordovaProjectHelper", function () {
                     isIonic3: false,
                     isIonic4: false,
                     isIonic5: false,
+                    isIonic6: false,
                 },
                 ionicVersion
             );
 
-            const versionsProcessed = CordovaProjectHelper.checkIonicVersions(ionicProjectPath);
+            const versionsProcessed = CordovaProjectHelper.determineIonicVersions(ionicProjectPath);
             assert.deepStrictEqual(versionsProcessed, versionsRef);
         }
 
         test("should detect Ionic 1 version", () => {
-            checkIonicVersion(
+            determineIonicVersions(
                 { isIonic1: true },
                 {},
                 {},
@@ -69,7 +70,7 @@ suite("сordovaProjectHelper", function () {
             );
         });
         test("should detect Ionic 2 version", () => {
-            checkIonicVersion(
+            determineIonicVersions(
                 { isIonic2: true },
                 { "ionic-angular": "2.6.5" },
                 { "@ionic/app-scripts": "2.3.4" },
@@ -77,7 +78,7 @@ suite("сordovaProjectHelper", function () {
             );
         });
         test("should detect Ionic 3 version", () => {
-            checkIonicVersion(
+            determineIonicVersions(
                 { isIonic3: true },
                 { "ionic-angular": "3.9.9" },
                 { "@ionic/app-scripts": "3.3.4" },
@@ -85,7 +86,7 @@ suite("сordovaProjectHelper", function () {
             );
         });
         test("should detect Ionic 4 version", () => {
-            checkIonicVersion(
+            determineIonicVersions(
                 { isIonic4: true },
                 { "@ionic/angular": "4.0.4" },
                 { "@ionic-native/core": "4.0.4" },
@@ -93,15 +94,23 @@ suite("сordovaProjectHelper", function () {
             );
         });
         test("should detect Ionic 5 version", () => {
-            checkIonicVersion(
+            determineIonicVersions(
                 { isIonic5: true },
                 { "@ionic/angular": "5.0.0" },
                 { "@ionic-native/core": "5.0.0" },
                 (path) => path === ionicPackageJsonFileLocation
             );
         });
+        test("should detect Ionic 6 version", () => {
+            determineIonicVersions(
+                { isIonic6: true },
+                { "@ionic/angular": "6.0.0" },
+                {},
+                (path) => path === ionicPackageJsonFileLocation
+            );
+        });
         test("shouldn't detect any Ionic version", () => {
-            checkIonicVersion(
+            determineIonicVersions(
                 {},
                 {},
                 {},

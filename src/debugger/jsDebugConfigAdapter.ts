@@ -64,7 +64,7 @@ export class JsDebugConfigAdapter {
                 "**",
                 "!**/node_modules/**",
             ];
-            if (CordovaProjectHelper.checkIonicVersions(attachArgs.cwd).isIonic3) {
+            if (CordovaProjectHelper.determineIonicVersions(attachArgs.cwd).isIonic3) {
                 if (attachArgs.sourceMapPathOverrides) {
                     attachArgs.sourceMapPathOverrides = Object.assign(attachArgs.sourceMapPathOverrides, this.Ionic3LiveReloadSourceMapPathOverrides);
                 } else {

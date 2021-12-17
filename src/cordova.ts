@@ -111,7 +111,8 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     let cordovaProjectTypeEvent = TelemetryHelper.createTelemetryEvent("cordova.projectType");
     TelemetryHelper.determineProjectTypes(workspaceRoot)
         .then((projType) => {
-            cordovaProjectTypeEvent.properties["projectType"] = projType;
+            cordovaProjectTypeEvent.properties["projectType"] =
+                TelemetryHelper.prepareRelevantProjectTypes(projType);
         })
         .finally(() => {
             Telemetry.send(cordovaProjectTypeEvent);
@@ -138,7 +139,7 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     // extensionServer takes care of disposing the simulator instance
     // context.subscriptions.push(extensionServer);
 
-    const ionicVersions = CordovaProjectHelper.checkIonicVersions(workspaceRoot);
+    const ionicVersions = CordovaProjectHelper.determineIonicVersions(workspaceRoot);
     // In case of Ionic 1 project register completions providers for html and javascript snippets
     if (ionicVersions.isIonic1) {
         EXTENSION_CONTEXT.subscriptions.push(
@@ -277,7 +278,7 @@ function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     // wrapper around core plugins. We also won't try to manage typings
     // in typescript projects as it might break compilation due to conflicts
     // between typings we install and user-installed ones.
-    const ionicVersions = CordovaProjectHelper.checkIonicVersions(cordovaProjectRoot);
+    const ionicVersions = CordovaProjectHelper.determineIonicVersions(cordovaProjectRoot);
     if (ionicVersions.isIonic2 ||
         ionicVersions.isIonic3 ||
         ionicVersions.isIonic4 ||
@@ -358,7 +359,7 @@ function launchSimulateCommand(cordovaProjectRoot: string, options: SimulateOpti
                     forceprepare: options.forceprepare,
                     corsproxy: options.corsproxy,
                 }, false);
-                generator.add("projectType", projectType, false);
+                generator.add("projectType", TelemetryHelper.prepareRelevantProjectTypes(projectType), false);
                 // visibleTextEditors is null proof (returns empty array if no editors visible)
                 generator.add("visibleTextEditorsCount", vscode.window.visibleTextEditors.length, false);
                 return projectType;
