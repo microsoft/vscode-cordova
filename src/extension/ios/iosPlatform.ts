@@ -13,7 +13,8 @@ import AbstractPlatform from "../abstractPlatform";
 import { IIosPlatformOptions } from "../platformOptions";
 import { IIosAttachOptions } from "../platformAttachOptions";
 import { promiseGet, retryAsync } from "../../utils/extensionHelper";
-import IonicDevServerHelper from "../../utils/ionicDevServerHelper";
+import IonicDevServer from "../../utils/ionicDevServer";
+import { IIosLaunchOptions } from "../platformLaunchOptions";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -32,12 +33,12 @@ export default class IosPlatform extends AbstractPlatform {
         return this.platformOpts;
     }
 
-    public async launchApp(): Promise<void> {
+    public async launchApp(): Promise<IIosLaunchOptions> {
         await this.checkIfTargetIsiOSSimulator(this.platformOpts.target);
 
         if (this.runArguments.includes("--livereload")) {
-            await this.ionicDevServerHelper.startIonicDevServer(this.runArguments, this.platformOpts.env);
-            return;
+            await this.IonicDevServer.startIonicDevServer(this.runArguments, this.platformOpts.env);
+            return { devServerPort: this.IonicDevServer.getDevServerPort() };
         }
 
         await cordovaRunCommand(
@@ -49,6 +50,7 @@ export default class IosPlatform extends AbstractPlatform {
         );
 
         await CordovaIosDeviceLauncher.startDebugProxy(this.platformOpts.iosDebugProxyPort);
+        return {};
     }
 
     public async prepareForAttach(): Promise<IIosAttachOptions> {
@@ -104,8 +106,8 @@ export default class IosPlatform extends AbstractPlatform {
                     throw new Error(localize("WebsocketDebuggerUrlIsEmpty", "WebSocket Debugger Url is empty"));
                 }
                 webSocketDebuggerUrl = cordovaWebview.webSocketDebuggerUrl;
-                if (this.ionicDevServerHelper.ionicDevServerUrls) {
-                    devServerAddress = this.ionicDevServerHelper.ionicDevServerUrls.find(url => cordovaWebview.url.indexOf(url) === 0);
+                if (this.IonicDevServer.ionicDevServerUrls) {
+                    devServerAddress = this.IonicDevServer.ionicDevServerUrls.find(url => cordovaWebview.url.indexOf(url) === 0);
                 }
             } catch (e) {
                 throw new Error(localize("UnableToFindTargetApp", "Unable to find target app"));
@@ -142,7 +144,7 @@ export default class IosPlatform extends AbstractPlatform {
                 // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
                 args.push("--livereload", "--external");
             } else {
-                this.log(IonicDevServerHelper.NO_LIVERELOAD_WARNING);
+                this.log(IonicDevServer.NO_LIVERELOAD_WARNING);
             }
         }
         return args;

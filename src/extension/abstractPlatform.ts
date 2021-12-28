@@ -3,14 +3,15 @@
 
 import * as fs from "fs";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
-import IonicDevServerHelper from "../utils/ionicDevServerHelper";
+import IonicDevServer from "../utils/ionicDevServer";
 import { IGeneralAttachOptions } from "./platformAttachOptions";
+import { IGeneralLaunchOptions } from "./platformLaunchOptions";
 import { IGeneralPlatformOptions } from "./platformOptions";
 
 export default abstract class AbstractPlatform {
     protected projectRoot: string;
     protected runArguments: string[];
-    protected ionicDevServerHelper: IonicDevServerHelper;
+    protected IonicDevServer: IonicDevServer;
 
     constructor(
         protected platformOpts: IGeneralPlatformOptions,
@@ -18,7 +19,7 @@ export default abstract class AbstractPlatform {
     ) {
         this.projectRoot = platformOpts.projectRoot;
         this.runArguments = this.getRunArguments();
-        this.ionicDevServerHelper = platformOpts.ionicDevServerHelper;
+        this.IonicDevServer = platformOpts.ionicDevServer;
     }
 
     public getPlatformOpts(): IGeneralPlatformOptions {
@@ -26,7 +27,7 @@ export default abstract class AbstractPlatform {
     }
 
     public abstract launchApp(
-    ): Promise<void>;
+    ): Promise<IGeneralLaunchOptions>;
 
     public abstract prepareForAttach(
     ): Promise<IGeneralAttachOptions>;

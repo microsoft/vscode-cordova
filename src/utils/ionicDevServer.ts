@@ -21,7 +21,7 @@ interface SeverOutput {
     serverErr: string;
 }
 
-export default class IonicDevServerHelper {
+export default class IonicDevServer {
     public static readonly NO_LIVERELOAD_WARNING = localize("IonicLiveReloadIsOnlySupportedForIonic1", "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...");
 
     private static readonly ERROR_REGEX: RegExp = /error:.*/i;
@@ -36,12 +36,16 @@ export default class IonicDevServerHelper {
     private appReadyTimeout: number;
 
     constructor(private projectRoot: string, private protocolServerStop: () => void, private log: DebugConsoleLogger, private devServerAddress?: string, private devServerPort?: number, private serverReadyTimeout?: number, private cordovaExecutable?: string) {
-        if (devServerPort < 0 || devServerPort > 65535) {
+        if (this.devServerPort < 0 || this.devServerPort > 65535) {
             new Error(localize("TheValueForDevServerPortMustBeInInterval", "The value for \"devServerPort\" must be a number between 0 and 65535"));
         }
         this.isIonic4 = CordovaProjectHelper.isIonicCliVersionGte(projectRoot, "4.0.0");
         this.serverReadyTimeout = serverReadyTimeout | 60000;
         this.appReadyTimeout = serverReadyTimeout | 120000;
+    }
+
+    public getDevServerPort(): number | undefined {
+        return this.devServerPort;
     }
 
     /**
@@ -133,7 +137,7 @@ export default class IonicDevServerHelper {
         }
 
         // When ionic 2 cli is installed, output includes ansi characters for color coded output.
-        this.ionicDevServerUrls = ionicDevServerUrls.map(url => url.replace(IonicDevServerHelper.ANSI_REGEX, ""));
+        this.ionicDevServerUrls = ionicDevServerUrls.map(url => url.replace(IonicDevServer.ANSI_REGEX, ""));
         return this.ionicDevServerUrls;
     }
 
@@ -271,7 +275,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             }
         }
 
-        let errorMatch = IonicDevServerHelper.ERROR_REGEX.exec(channel);
+        let errorMatch = IonicDevServer.ERROR_REGEX.exec(channel);
 
         if (errorMatch) {
             return localize("ErrorInTheIonicLiveReloadServer", "Error in the Ionic live reload server: {0}", os.EOL + errorMatch[0]);
@@ -280,7 +284,7 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         return null;
     }
 
-    private getRegexToResolveAppDefer(cliArgs: string[]): RegExp {
+    private getRegexToResolveAppDefer(runArguments: string[]): RegExp {
         // Now that the server is ready, listen for the app to be ready as well. For "serve", this is always true, because no build and deploy is involved. For android, we need to
         // wait until we encounter the "launch success", for iOS device, the server output is different and instead we need to look for:
         //
@@ -291,8 +295,8 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         // ios simulators:
         // "build succeeded"
 
-        const isIosDevice: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("--device") !== -1;
-        const isIosSimulator: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("emulate") !== -1;
+        const isIosDevice: boolean = runArguments.indexOf("ios") !== -1 && runArguments.indexOf("--device") !== -1;
+        const isIosSimulator: boolean = runArguments.indexOf("ios") !== -1 && runArguments.indexOf("emulate") !== -1;
         const iosDeviceAppReadyRegex: RegExp = /created bundle at path|\(lldb\)\W+run\r?\nsuccess/i;
         const iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
         const appReadyRegex: RegExp = /launch success|run successful/i;

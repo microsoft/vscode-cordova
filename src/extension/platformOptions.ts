@@ -5,13 +5,13 @@ import { IProjectType } from "../utils/cordovaProjectHelper";
 import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
 import * as vscode from "vscode";
 import simulate = require("cordova-simulate");
-import IonicDevServerHelper from "../utils/ionicDevServerHelper";
+import IonicDevServer from "../utils/ionicDevServer";
 
 export interface IGeneralPlatformOptions {
     projectRoot: string;
     projectType: IProjectType;
     workspaceManager: CordovaWorkspaceManager;
-    ionicDevServerHelper: IonicDevServerHelper;
+    ionicDevServer: IonicDevServer;
     cordovaExecutable: string;
     cancellationTokenSource: vscode.CancellationTokenSource;
     env: any;

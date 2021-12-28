@@ -16,6 +16,7 @@ import { IBrowserAttachOptions } from "../platformAttachOptions";
 import { PluginSimulator } from "../simulate";
 import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
+import { IBrowserLaunchOptions } from "../platformLaunchOptions";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -38,7 +39,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         return this.platformOpts;
     }
 
-    public async launchApp(): Promise<void> {
+    public async launchApp(): Promise<IBrowserLaunchOptions> {
         if (this.platformOpts.platform === PlatformType.Serve) {
             // Currently, "ionic serve" is only supported for Ionic projects
             if (!CordovaProjectHelper.isIonicAngularProjectByProjectType(this.platformOpts.projectType)) {
@@ -47,7 +48,7 @@ export default class BrowserPlatform extends AbstractPlatform {
                 throw new Error(errorMessage);
             }
             const serveRunArgs = this.getServeRunArguments();
-            const devServersUrls = await this.ionicDevServerHelper.startIonicDevServer(serveRunArgs, this.platformOpts.env);
+            const devServersUrls = await this.IonicDevServer.startIonicDevServer(serveRunArgs, this.platformOpts.env);
             this.platformOpts.url = devServersUrls[0];
         } else {
             const simulatorOptions = this.convertBrowserOptionToSimulateArgs(this.platformOpts);
@@ -83,6 +84,8 @@ export default class BrowserPlatform extends AbstractPlatform {
                 this.platformOpts.protocolServerStop();
             });
         }
+
+        return { devServerPort: this.IonicDevServer.getDevServerPort() };
     }
 
     public async prepareForAttach(): Promise<IBrowserAttachOptions> {
@@ -99,7 +102,7 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.simulateDebugHost.close();
             this.simulateDebugHost = null;
         }
-        await this.ionicDevServerHelper.stopAndCleanUp();
+        await this.IonicDevServer.stopAndCleanUp();
     }
 
     public getRunArguments(): string[] {

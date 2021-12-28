@@ -29,7 +29,7 @@ import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { DeferredPromise } from "../common/node/promise";
 import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
-import IonicDevServerHelper from "../utils/ionicDevServerHelper";
+import IonicDevServer from "../utils/ionicDevServer";
 import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 import { IMobileTarget } from "../utils/mobileTarget";
@@ -148,7 +148,9 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 generator.add("projectType", this.platform.getPlatformOpts().projectType, false);
                 generator.add("platform", launchArgs.platform, false);
                 this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", launchArgs.platform));
-                await this.platform.launchApp();
+
+                const launchOptions = await (this.platform as BrowserPlatform).launchApp();
+                Object.assign(launchArgs, launchOptions);
 
                 await this.vsCodeDebugSession.customRequest("attach", launchArgs);
 
@@ -331,7 +333,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             this.workspaceManager.getRunArguments(args.cwd),
             this.workspaceManager.getCordovaExecutable(args.cwd),
         ]);
-        const ionicDevServerHelper = new IonicDevServerHelper(args.cwd, this.stop, this.outputLogger, args.devServerAddress, args.devServerPort, (args as any).devServerTimeout, cordovaExecutable);
+        const ionicDevServer = new IonicDevServer(args.cwd, this.stop, this.outputLogger, args.devServerAddress, args.devServerPort, (args as any).devServerTimeout, cordovaExecutable);
         const env = CordovaProjectHelper.getEnvArgument(args.env, args.envFile);
         const runArguments = (args as any).runArguments || runArgs;
         const userDataDir = (args as any).userDataDir || path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR);
@@ -342,7 +344,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         const attachDelay = args.attachDelay || 1000;
         const port = args.port || 9222;
         const platformOptions: IBrowserPlatformOptions & IIosPlatformOptions & IAndroidPlatformOptions = Object.assign({
-            ionicDevServerHelper,
+            ionicDevServer,
             projectType,
             runArguments,
             cordovaExecutable,

@@ -14,8 +14,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as elementtree from "elementtree";
 import AbstractPlatform from "../abstractPlatform";
-import IonicDevServerHelper from "../../utils/ionicDevServerHelper";
+import IonicDevServer from "../../utils/ionicDevServer";
 import { IAndroidAttachOptions } from "../platformAttachOptions";
+import { IAndroidLaunchOptions } from "../platformLaunchOptions";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -82,12 +83,12 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
         return this.target;
     }
 
-    public async launchApp(): Promise<void> {
+    public async launchApp(): Promise<IAndroidLaunchOptions> {
         const command = this.platformOpts.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot);
 
         if (this.runArguments.includes("--livereload")) {
-            await this.ionicDevServerHelper.startIonicDevServer(this.runArguments, this.platformOpts.env);
-            return;
+            await this.IonicDevServer.startIonicDevServer(this.runArguments, this.platformOpts.env);
+            return { devServerPort: this.IonicDevServer.getDevServerPort() };
         }
 
         const output = await cordovaRunCommand(
@@ -107,6 +108,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
         if (errorMatch) {
             throw new Error(localize("ErrorRunningAndroid", "Error running android"));
         }
+        return {};
     }
 
     public async prepareForAttach(): Promise<IAndroidAttachOptions> {
@@ -138,7 +140,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
         if (this.target) {
             await this.adbHelper.removeforwardTcpPort(this.target.id, this.platformOpts.port.toString());
         }
-        await this.ionicDevServerHelper.stopAndCleanUp();
+        await this.IonicDevServer.stopAndCleanUp();
     }
 
     public getRunArguments(): string[] {
@@ -158,7 +160,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
                     // Livereload is enabled, let Ionic do the launch
                     args.push("--livereload");
                 } else {
-                    this.log(IonicDevServerHelper.NO_LIVERELOAD_WARNING);
+                    this.log(IonicDevServer.NO_LIVERELOAD_WARNING);
                 }
             }
         }
