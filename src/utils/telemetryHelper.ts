@@ -187,11 +187,7 @@ export class TelemetryHelper {
                 // We should send only relevant project types and skip all the rest.
                 // Relevant types have the true boolean value
                 if (val) {
-                    if (key === "ionicMajorVersion") {
-                        relProjType[`isIonic${val}`] = true;
-                    } else {
-                        relProjType[key] = val;
-                    }
+                    relProjType[key] = val;
                 }
                 return relProjType;
             }, {});
