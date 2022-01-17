@@ -192,7 +192,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                     projectType,
                     attachArgs
                 );
-                this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port || 9222);
+                this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
                 await this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
 
                 this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", attachArgs.platform));
