@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 /* tslint:disable:no-use-before-declare */
-import { CordovaProjectHelper, IPluginDetails, IProjectType } from "./cordovaProjectHelper";
+import { CordovaProjectHelper, IPluginDetails, ProjectType } from "./cordovaProjectHelper";
 import * as fs from "fs";
 import * as path from "path";
 import { Telemetry } from "./telemetry";
@@ -163,29 +163,45 @@ export class TelemetryHelper {
         return new Telemetry.TelemetryActivity(eventName);
     }
 
-    public static determineProjectTypes(projectRoot: string): Promise<IProjectType> {
-        let ionicVersions = CordovaProjectHelper.determineIonicVersions(projectRoot);
+    public static determineProjectTypes(projectRoot: string): Promise<ProjectType> {
+        let ionicMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(projectRoot);
         let meteor = CordovaProjectHelper.exists(path.join(projectRoot, ".meteor"));
         let mobilefirst = CordovaProjectHelper.exists(path.join(projectRoot, ".project"));
         let phonegap = CordovaProjectHelper.exists(path.join(projectRoot, "www", "res", ".pgbomit"));
         let cordova = CordovaProjectHelper.exists(path.join(projectRoot, "config.xml"));
         return Promise.all([meteor, mobilefirst, phonegap, cordova])
-            .then(([isMeteor, isMobilefirst, isPhonegap, isCordova]) => ({
-                ...ionicVersions,
-                isMeteor: isMeteor,
-                isMobilefirst: isMobilefirst,
-                isPhonegap: isPhonegap,
-                isCordova: isCordova,
-            }));
+            .then(([isMeteor, isMobilefirst, isPhonegap, isCordova]) => (
+                new ProjectType(
+                    isMeteor,
+                    isMobilefirst,
+                    isPhonegap,
+                    isCordova,
+                    ionicMajorVersion,
+                )
+            ));
     }
 
-    public static prepareRelevantProjectTypes(projectType: IProjectType): Partial<IProjectType> {
-        return Object.entries(projectType).reduce((relProjType, [key, val]) => {
-            if (val) {
-                relProjType[key] = val;
-            }
-            return relProjType;
-        }, {});
+    public static prepareProjectTypesTelemetry(projectType: ProjectType): Partial<ProjectType> {
+        let relevantProjectTypes: Partial<ProjectType> = Object.entries(projectType)
+            .reduce((relProjType, [key, val]) => {
+                // We should send only relevant project types and skip all the rest.
+                // Relevant types have the true boolean value
+                if (val) {
+                    if (key === "ionicMajorVersion") {
+                        relProjType[`isIonic${val}`] = true;
+                    } else {
+                        relProjType[key] = val;
+                    }
+                }
+                return relProjType;
+            }, {});
+
+        if (relevantProjectTypes.ionicMajorVersion) {
+            relevantProjectTypes[`isIonic${relevantProjectTypes.ionicMajorVersion}`] = true;
+            delete relevantProjectTypes.ionicMajorVersion;
+        }
+
+        return relevantProjectTypes;
     }
 
     public static telemetryProperty(propertyValue: any, pii?: boolean): ITelemetryPropertyInfo {

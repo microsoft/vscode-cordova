@@ -5,7 +5,7 @@ import { PluginSimulator } from "./simulate";
 import { SimulationInfo } from "../common/simulationInfo";
 import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
-import { IProjectType } from "../utils/cordovaProjectHelper";
+import { ProjectType } from "../utils/cordovaProjectHelper";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { ProjectsStorage } from "./projectsStorage";
 import * as nls from "vscode-nls";
@@ -53,7 +53,7 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Promise<SimulationInfo> {
+    public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: ProjectType): Promise<SimulationInfo> {
         return this.launchSimulateServer(fsPath, simulateOptions, projectType)
             .then((simulateInfo: SimulationInfo) => {
                 return this.launchSimHost(simulateOptions.target).then(() => simulateInfo);
@@ -65,7 +65,7 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    public launchSimulateServer(fsPath: string, simulateOptions: SimulateOptions, projectType: IProjectType): Promise<SimulationInfo> {
+    public launchSimulateServer(fsPath: string, simulateOptions: SimulateOptions, projectType: ProjectType): Promise<SimulationInfo> {
         return this.pluginSimulator.launchServer(fsPath, simulateOptions, projectType);
     }
 

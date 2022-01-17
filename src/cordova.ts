@@ -112,7 +112,7 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     TelemetryHelper.determineProjectTypes(workspaceRoot)
         .then((projType) => {
             cordovaProjectTypeEvent.properties["projectType"] =
-                TelemetryHelper.prepareRelevantProjectTypes(projType);
+                TelemetryHelper.prepareProjectTypesTelemetry(projType);
         })
         .finally(() => {
             Telemetry.send(cordovaProjectTypeEvent);
@@ -139,9 +139,9 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     // extensionServer takes care of disposing the simulator instance
     // context.subscriptions.push(extensionServer);
 
-    const ionicVersions = CordovaProjectHelper.determineIonicVersions(workspaceRoot);
+    const ionicMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(workspaceRoot);
     // In case of Ionic 1 project register completions providers for html and javascript snippets
-    if (ionicVersions.isIonic1) {
+    if (ionicMajorVersion === 1) {
         EXTENSION_CONTEXT.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 IonicCompletionProvider.JS_DOCUMENT_SELECTOR,
@@ -159,7 +159,7 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
             path.join("jquery", "jquery.d.ts"),
             path.join("cordova-ionic", "plugins", "keyboard.d.ts"),
         ];
-        if (ionicVersions.isIonic1) {
+        if (ionicMajorVersion === 1) {
             ionicTypings = ionicTypings.concat([
                 path.join("angularjs", "angular.d.ts"),
                 path.join("ionic", "ionic.d.ts"),
@@ -175,11 +175,7 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
 
     // Skip adding typings for cordova in case of Typescript or Ionic (except v1) projects
     // to avoid conflicts between typings we install and user-installed ones.
-    if (!ionicVersions.isIonic2 &&
-        !ionicVersions.isIonic3 &&
-        !ionicVersions.isIonic4 &&
-        !ionicVersions.isIonic5 &&
-        !CordovaProjectHelper.isTypescriptProject(workspaceRoot)) {
+    if (!CordovaProjectHelper.isTypescriptProject(workspaceRoot) || ionicMajorVersion === 1) {
 
         // Install the type defintion files for Cordova
         TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(workspaceRoot),
@@ -274,17 +270,12 @@ function getRelativeTypeDefinitionFilePath(projectRoot: string, parentPath: stri
 }
 
 function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
-    // We don't need to install typings for Ionic2 since it has own TS
+    // We don't need to install typings for Ionic2 and newer since it has own TS
     // wrapper around core plugins. We also won't try to manage typings
     // in typescript projects as it might break compilation due to conflicts
     // between typings we install and user-installed ones.
-    const ionicVersions = CordovaProjectHelper.determineIonicVersions(cordovaProjectRoot);
-    if (ionicVersions.isIonic2 ||
-        ionicVersions.isIonic3 ||
-        ionicVersions.isIonic4 ||
-        ionicVersions.isIonic5 ||
-        CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot)) {
-
+    const ionicMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(cordovaProjectRoot);
+    if (CordovaProjectHelper.isTypescriptProject(cordovaProjectRoot) || ionicMajorVersion > 1) {
         return;
     }
 
@@ -359,7 +350,7 @@ function launchSimulateCommand(cordovaProjectRoot: string, options: SimulateOpti
                     forceprepare: options.forceprepare,
                     corsproxy: options.corsproxy,
                 }, false);
-                generator.add("projectType", TelemetryHelper.prepareRelevantProjectTypes(projectType), false);
+                generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false);
                 // visibleTextEditors is null proof (returns empty array if no editors visible)
                 generator.add("visibleTextEditorsCount", vscode.window.visibleTextEditors.length, false);
                 return projectType;

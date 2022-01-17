@@ -7,7 +7,7 @@ import {
     HandlerOptions
 } from "./CDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
-import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
 export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase {
@@ -19,7 +19,7 @@ export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase 
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
-        projectType: IProjectType,
+        projectType: ProjectType,
         options: HandlerOptions
     ) {
         super(sourcemapPathTransformer, projectType, options);
