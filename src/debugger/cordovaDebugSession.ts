@@ -149,7 +149,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 generator.add("platform", launchArgs.platform, false);
                 this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", launchArgs.platform));
 
-                const launchOptions = await (this.platform as BrowserPlatform).launchApp();
+                const launchOptions = await this.platform.launchApp();
                 Object.assign(launchArgs, launchOptions);
 
                 await this.vsCodeDebugSession.customRequest("attach", launchArgs);
