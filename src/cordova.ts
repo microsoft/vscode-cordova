@@ -175,8 +175,9 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
 
     // Skip adding typings for cordova in case of Typescript or Ionic (except v1) projects
     // to avoid conflicts between typings we install and user-installed ones.
-    if (!CordovaProjectHelper.isTypescriptProject(workspaceRoot) || ionicMajorVersion === 1) {
-
+    if (!CordovaProjectHelper.isTypescriptProject(workspaceRoot) &&
+        !(ionicMajorVersion && ionicMajorVersion > 1)
+    ) {
         // Install the type defintion files for Cordova
         TsdHelper.installTypings(CordovaProjectHelper.getOrCreateTypingsTargetPath(workspaceRoot),
             [pluginTypings[CORDOVA_TYPINGS_QUERYSTRING].typingFile], workspaceRoot);
