@@ -343,6 +343,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         const attachAttempts = args.attachAttempts || 20;
         const attachDelay = args.attachDelay || 1000;
         const port = args.port || 9222;
+        const pluginSimulator = this.workspaceManager.pluginSimulator;
         const platformOptions: IBrowserPlatformOptions & IIosPlatformOptions & IAndroidPlatformOptions = Object.assign({
             ionicDevServer,
             projectType,
@@ -360,6 +361,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             attachDelay,
             protocolServerStop: this.stop,
             changeSimulateViewport: this.changeSimulateViewport,
+            pluginSimulator
         }, args, {
             env,
         });

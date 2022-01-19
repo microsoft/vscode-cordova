@@ -13,7 +13,6 @@ import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import AbstractPlatform from "../abstractPlatform";
 import { IBrowserPlatformOptions } from "../platformOptions";
 import { IBrowserAttachOptions } from "../platformAttachOptions";
-import { PluginSimulator } from "../simulate";
 import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchOptions } from "../platformLaunchOptions";
@@ -23,7 +22,6 @@ const localize = nls.loadMessageBundle();
 export default class BrowserPlatform extends AbstractPlatform {
     public static readonly CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
 
-    public pluginSimulator: PluginSimulator;
     private simulateDebugHost: SocketIOClient.Socket;
     private browserProc: child_process.ChildProcess;
 
@@ -32,7 +30,6 @@ export default class BrowserPlatform extends AbstractPlatform {
         protected log: DebugConsoleLogger
     ) {
         super(platformOpts, log);
-        this.pluginSimulator = new PluginSimulator();
     }
 
     public getPlatformOpts(): IBrowserPlatformOptions {
@@ -52,9 +49,9 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.platformOpts.url = devServersUrls[0];
         } else {
             const simulatorOptions = this.convertBrowserOptionToSimulateArgs(this.platformOpts);
-            let simulateInfo = await this.pluginSimulator.launchServer(this.projectRoot, simulatorOptions, this.platformOpts.projectType);
+            let simulateInfo = await this.platformOpts.pluginSimulator.launchServer(this.projectRoot, simulatorOptions, this.platformOpts.projectType);
             await this.connectSimulateDebugHost(simulateInfo);
-            await this.pluginSimulator.launchSimHost(this.platformOpts.target);
+            await this.platformOpts.pluginSimulator.launchSimHost(this.platformOpts.target);
             this.platformOpts.simulatePort = CordovaProjectHelper.getPortFromURL(simulateInfo.appHostUrl);
             this.platformOpts.url = simulateInfo.appHostUrl;
         }
