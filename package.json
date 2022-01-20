@@ -469,6 +469,11 @@
                   "webpack:///./~/*": "${cwd}/node_modules/*",
                   "./*": "${cwd}/*"
                 }
+              },
+              "spaurlrewrites": {
+                "type": "boolean",
+                "description": "%cordova.properties.launch.spaurlrewrites%",
+                "default": false
               }
             }
           },
