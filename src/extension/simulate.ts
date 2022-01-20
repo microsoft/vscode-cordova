@@ -4,7 +4,7 @@
 import * as path from "path";
 import * as CordovaSimulate from "cordova-simulate";
 import { CordovaSimulateTelemetry } from "../utils/cordovaSimulateTelemetry";
-import { IProjectType, CordovaProjectHelper } from "../utils/cordovaProjectHelper";
+import { ProjectType, CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import { SimulationInfo } from "../common/simulationInfo";
 import { PlatformType } from "../debugger/cordovaDebugSession";
 import * as vscode from "vscode";
@@ -39,7 +39,7 @@ export class PluginSimulator implements vscode.Disposable {
     private simulatePackage: typeof CordovaSimulate;
     private packageInstallProc: cp.ChildProcess | null = null;
 
-    public async simulate(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: IProjectType): Promise<any> {
+    public async simulate(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: ProjectType): Promise<any> {
         await this.launchServer(fsPath, simulateOptions, projectType);
         await this.launchSimHost(simulateOptions.target);
         return await this.launchAppHost(simulateOptions.target);
@@ -58,7 +58,7 @@ export class PluginSimulator implements vscode.Disposable {
         return await simulate.launchBrowser(target, this.simulator.simHostUrl());
     }
 
-    public launchServer(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: IProjectType): Promise<SimulationInfo> {
+    public launchServer(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: ProjectType): Promise<SimulationInfo> {
         const uri = vscode.Uri.file(fsPath);
         const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
         simulateOptions.dir = workspaceFolder.uri.fsPath;
@@ -85,7 +85,7 @@ export class PluginSimulator implements vscode.Disposable {
 
                 if (isPlatformMissing) {
                     let command = "cordova";
-                    if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                    if (projectType.isIonic) {
                         const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(workspaceFolder.uri.fsPath);
                         command = "ionic" + (isIonicCliVersionGte3 ? " cordova" : "");
                     }
@@ -104,7 +104,9 @@ export class PluginSimulator implements vscode.Disposable {
                             simHostUrl: this.simulator.simHostUrl(),
                             urlRoot: this.simulator.urlRoot(),
                         };
-                        if ((projectType.isIonic2 || projectType.isIonic3) && platform && platform !== PlatformType.Browser) {
+                        if ((projectType.ionicMajorVersion === 2 || projectType.ionicMajorVersion === 3)
+                            && platform && platform !== PlatformType.Browser
+                        ) {
                             this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`;
                         }
                         return this.simulationInfo;

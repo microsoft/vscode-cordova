@@ -11,25 +11,24 @@ import * as nls from "vscode-nls";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
-export interface IProjectType extends IIonicVersion {
-    isMeteor: boolean;
-    isMobilefirst: boolean;
-    isPhonegap: boolean;
-    isCordova: boolean;
-}
-
-export interface IIonicVersion {
-    isIonic1: boolean;
-    isIonic2: boolean;
-    isIonic3: boolean;
-    isIonic4: boolean;
-    isIonic5: boolean;
-}
-
 export interface IPluginDetails {
     PluginId: string;
     PluginType: string;
     Version: string;
+}
+
+export class ProjectType {
+    constructor(
+        public isMeteor: boolean,
+        public isMobilefirst: boolean,
+        public isPhonegap: boolean,
+        public isCordova: boolean,
+        public ionicMajorVersion?: number
+    ) {}
+
+    get isIonic(): boolean {
+        return !!this.ionicMajorVersion;
+    }
 }
 
 export class CordovaProjectHelper {
@@ -267,46 +266,27 @@ export class CordovaProjectHelper {
      * Helper function to determine whether the project is an Ionic Angular project or not
      */
     public static isIonicAngularProject(projectRoot: string): boolean {
-        const versions = this.checkIonicVersions(projectRoot);
-        return CordovaProjectHelper.isIonicAngularProjectByProjectType(versions);
-    }
-
-    /**
-     * Helper function to determine whether the project is an project or not by project types
-     */
-    public static isIonicAngularProjectByProjectType(projectType: IIonicVersion): boolean {
-        return projectType.isIonic1
-            || projectType.isIonic2
-            || projectType.isIonic3
-            || projectType.isIonic4
-            || projectType.isIonic5;
+        return !!this.determineIonicMajorVersion(projectRoot);
     }
 
     /**
      * Helper function to determine which version of Ionic the project belongs to
      */
-    public static checkIonicVersions(projectRoot: string): IIonicVersion {
-        let versions: IIonicVersion = {
-            isIonic1: false,
-            isIonic2: false,
-            isIonic3: false,
-            isIonic4: false,
-            isIonic5: false,
-        };
-
+    public static determineIonicMajorVersion(projectRoot: string): number | undefined {
         // Ionic 1 check
         // First look for "ionic.project" at the project root
         if (fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_PROJECT_FILE))) {
-            versions.isIonic1 = true;
-        } else {
-            // If not found, fall back to looking for "www/lib/ionic" folder. This isn't a 100% guarantee though: an Ionic project doesn't necessarily have an "ionic.project" and could have the Ionic lib
-            // files in a non-default location
-            versions.isIonic1 = fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_LIB_DEFAULT_PATH));
+            return 1;
+
+        // If not found, fall back to looking for "www/lib/ionic" folder. This isn't a 100% guarantee though: an Ionic project doesn't necessarily have an "ionic.project" and could have the Ionic lib
+        // files in a non-default location
+        } else if (fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_LIB_DEFAULT_PATH))) {
+            return 1;
         }
 
         const packageJsonPath = path.join(projectRoot, "package.json");
         if (!fs.existsSync(packageJsonPath)) {
-            return versions;
+            return;
         }
         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
         const dependencies = packageJson.dependencies || {};
@@ -320,51 +300,93 @@ export class CordovaProjectHelper {
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta
             if (semver.valid(ionicVersion)) {
-                versions.isIonic2 = (semver.gt(ionicVersion, highestNotSupportedIonic2BetaVersion)
-                    && semver.lt(ionicVersion, "3.0.0"));
-                versions.isIonic3 = (semver.gt(ionicVersion, highestNotSupportedIonic3BetaVersion));
+                if (CordovaProjectHelper.versionSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic2BetaVersion,
+                    "3.0.0")
+                ) {
+                    return 2;
+                }
+                if (semver.gt(ionicVersion, highestNotSupportedIonic3BetaVersion)) {
+                    return 3;
+                }
             }
 
             // If it's a valid range we check that the entire range is greater than highest not supported Ionic major version beta
             if (semver.validRange(ionicVersion)) {
-                versions.isIonic2 = (semver.ltr(highestNotSupportedIonic2BetaVersion, ionicVersion)
-                    && semver.gtr("3.0.0", ionicVersion));
-                versions.isIonic3 = semver.ltr(highestNotSupportedIonic3BetaVersion, ionicVersion);
+                if (CordovaProjectHelper.versionRangeSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic2BetaVersion,
+                    "3.0.0")
+                ) {
+                    return 2;
+                }
+                if (semver.ltr(highestNotSupportedIonic3BetaVersion, ionicVersion)) {
+                    return 3;
+                }
             }
 
             // Assuming for now that latest version is 3
             if (ionicVersion === "latest" || ionicVersion === "nightly") {
-                versions.isIonic3 = true;
+                return 3;
             }
         }
 
-        // Ionic 4 & 5 check
+        // Ionic 4, 5, 6 check
         const highestNotSupportedIonic4BetaVersion = "4.0.0-beta.19";
         const highestNotSupportedIonic5BetaVersion = "5.0.0-beta.6";
+        const highestNotSupportedIonic6BetaVersion = "6.0.0-beta.7";
 
         if (dependencies["@ionic/angular"]) {
             const ionicVersion = dependencies["@ionic/angular"];
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta
             if (semver.valid(ionicVersion)) {
-                versions.isIonic4 = (semver.gt(ionicVersion, highestNotSupportedIonic4BetaVersion)
-                    && semver.lt(ionicVersion, "5.0.0"));
-                versions.isIonic5 = (semver.gt(ionicVersion, highestNotSupportedIonic5BetaVersion));
+                if (CordovaProjectHelper.versionSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic4BetaVersion,
+                    "5.0.0")
+                ) {
+                    return 4;
+                }
+                if (CordovaProjectHelper.versionSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic5BetaVersion,
+                    "6.0.0")
+                ) {
+                    return 5;
+                }
+                if (semver.gt(ionicVersion, highestNotSupportedIonic6BetaVersion)) {
+                    return 6;
+                }
             }
 
             // If it's a valid range we check that the entire range is greater than highest not supported Ionic major version beta
             if (semver.validRange(ionicVersion)) {
-                versions.isIonic4 = (semver.ltr(highestNotSupportedIonic4BetaVersion, ionicVersion)
-                    && semver.gtr("5.0.0", ionicVersion));
-                versions.isIonic5 = semver.ltr(highestNotSupportedIonic5BetaVersion, ionicVersion);
+                if (CordovaProjectHelper.versionRangeSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic4BetaVersion,
+                    "5.0.0")
+                ) {
+                    return 4;
+                }
+                if (CordovaProjectHelper.versionRangeSatisfiesInterval(
+                    ionicVersion,
+                    highestNotSupportedIonic5BetaVersion,
+                    "6.0.0")
+                ) {
+                    return 5;
+                }
+                if (semver.ltr(highestNotSupportedIonic6BetaVersion, ionicVersion)) {
+                    return 6;
+                }
             }
 
-            // Assuming for now that latest version is 5
+            // Assuming for now that latest version is 6
             if (ionicVersion === "latest" || ionicVersion === "nightly") {
-                versions.isIonic5 = true;
+                return 6;
             }
         }
-        return versions;
     }
 
     /**
@@ -465,5 +487,21 @@ export class CordovaProjectHelper {
     public static getPortFromURL(url: string): number {
         const serveURLInst = new URL(url);
         return +serveURLInst.port;
+    }
+
+    private static versionSatisfiesInterval(
+        version: string,
+        lowVersionEdge: string,
+        highVersionEdge: string,
+    ): boolean {
+        return semver.gt(version, lowVersionEdge) && semver.lt(version, highVersionEdge);
+    }
+
+    private static versionRangeSatisfiesInterval(
+        version: string,
+        lowVersionEdge: string,
+        highVersionEdge: string,
+    ): boolean {
+        return semver.ltr(lowVersionEdge, version) && semver.gtr(highVersionEdge, version);
     }
 }

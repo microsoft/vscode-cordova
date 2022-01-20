@@ -139,7 +139,7 @@ export default class IosPlatform extends AbstractPlatform {
         this.addBuildFlagToArgs(args);
         // Verify if we are using Ionic livereload
         if (this.platformOpts.ionicLiveReload) {
-            if (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.platformOpts.projectType)) {
+            if (this.platformOpts.projectType.isIonic) {
                 // Livereload is enabled, let Ionic do the launch
                 // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
                 args.push("--livereload", "--external");

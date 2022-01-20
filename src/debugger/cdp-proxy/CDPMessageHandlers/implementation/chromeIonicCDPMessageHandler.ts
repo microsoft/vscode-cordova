@@ -9,14 +9,14 @@ import {
 } from "../abstraction/CDPMessageHandlerBase";
 import { ChromeCDPMessageHandlerBase } from "../abstraction/chromeCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
-import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 import { CDP_API_NAMES } from "../CDPAPINames";
 import { PlatformType } from "../../../cordovaDebugSession";
 
 export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
-        projectType: IProjectType,
+        projectType: ProjectType,
         options: HandlerOptions
     ) {
         super(sourcemapPathTransformer, projectType, options);

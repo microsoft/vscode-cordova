@@ -3,14 +3,14 @@
 
 import { CDPMessageHandlerBase, HandlerOptions } from "./CDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
-import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 
 export abstract class ChromeCDPMessageHandlerBase extends CDPMessageHandlerBase {
     protected sourcemapsProtocol?: string;
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
-        projectType: IProjectType,
+        projectType: ProjectType,
         options: HandlerOptions
     ) {
         super(sourcemapPathTransformer, projectType, options);

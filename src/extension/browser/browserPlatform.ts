@@ -39,7 +39,7 @@ export default class BrowserPlatform extends AbstractPlatform {
     public async launchApp(): Promise<IBrowserLaunchOptions> {
         if (this.platformOpts.platform === PlatformType.Serve) {
             // Currently, "ionic serve" is only supported for Ionic projects
-            if (!CordovaProjectHelper.isIonicAngularProjectByProjectType(this.platformOpts.projectType)) {
+            if (!this.platformOpts.projectType.isIonic) {
                 let errorMessage = localize("ServingToTheBrowserIsSupportedForIonicProjects", "Serving to the browser is currently only supported for Ionic projects");
                 this.log(errorMessage, true);
                 throw new Error(errorMessage);

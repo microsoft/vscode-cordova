@@ -92,7 +92,7 @@ export class CordovaCommandHelper {
                     });
 
                     return TelemetryHelper.determineProjectTypes(projectRoot)
-                        .then((projectType) => generator.add("projectType", projectType, false))
+                        .then((projectType) => generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false))
                         .then(() => execution);
                 });
             });

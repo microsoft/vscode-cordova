@@ -32,7 +32,9 @@ suite("extensionContext", () => {
 
     suite("smokeTestsContext", () => {
         test("Execute Commands from the command palette", () => {
-            return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
+            // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
+            // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
+            return testUtils.addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
                 .then(() => {
                     return vscode.commands.executeCommand("cordova.build");
                 }).then(() => {
@@ -47,7 +49,9 @@ suite("extensionContext", () => {
 
     suite("CordovaSimulateContext", () => {
         test("Verify that the simulate command launches the simulate server", () => {
-            return testUtils.addCordovaComponents("platform", testProjectPath, ["android"])
+            // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
+            // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
+            return testUtils.addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
                 .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
                 .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
                 .then((simHostStarted: boolean) => assert(simHostStarted, "The simulation host is running."))

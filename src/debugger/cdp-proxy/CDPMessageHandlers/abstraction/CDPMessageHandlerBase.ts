@@ -8,7 +8,7 @@ import {
     Connection
 } from "vscode-cdp-proxy";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
-import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 
 export declare type ProtocolMessage = IProtocolCommand | IProtocolSuccess | IProtocolError;
 
@@ -48,7 +48,7 @@ export interface HandlerOptions {
 
 export abstract class CDPMessageHandlerBase {
     protected sourcemapPathTransformer: SourcemapPathTransformer;
-    protected projectType: IProjectType;
+    protected projectType: ProjectType;
     protected applicationPortPart: string;
     protected platform: string;
     protected debugRequestType: string;
@@ -59,7 +59,7 @@ export abstract class CDPMessageHandlerBase {
 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
-        projectType: IProjectType,
+        projectType: ProjectType,
         options: HandlerOptions
     ) {
         this.sourcemapPathTransformer = sourcemapPathTransformer;

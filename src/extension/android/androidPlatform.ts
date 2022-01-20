@@ -156,7 +156,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
 
             // Verify if we are using Ionic livereload
             if (this.platformOpts.ionicLiveReload) {
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(this.platformOpts.projectType)) {
+                if (this.platformOpts.projectType.isIonic) {
                     // Livereload is enabled, let Ionic do the launch
                     args.push("--livereload");
                 } else {
