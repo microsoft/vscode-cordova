@@ -25,7 +25,7 @@ suite("telemetryHelper", function () {
 
             return TelemetryHelper.determineProjectTypes(ionicProjectPath)
                 .then((projectType) => {
-                    assert.ok(projectType.isIonic5);
+                    assert.strictEqual(projectType.ionicMajorVersion, 5);
                 })
                 .finally(() => {
                     (fs.readFileSync as any).restore();

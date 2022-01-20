@@ -9,13 +9,13 @@ import {
 } from "../abstraction/CDPMessageHandlerBase";
 import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
-import { IProjectType } from "../../../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 import { CDP_API_NAMES } from "../CDPAPINames";
 
 export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
-        projectType: IProjectType,
+        projectType: ProjectType,
         options: HandlerOptions
     ) {
         super(sourcemapPathTransformer, projectType, options);

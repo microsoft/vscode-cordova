@@ -12,7 +12,7 @@ import {
 import { convertWindowsPathToUnixOne } from "../testUtils";
 import { generateRandomPortNumber, delay } from "../../src/utils/extensionHelper";
 import { CordovaCDPProxy } from "../../src/debugger/cdp-proxy/cordovaCDPProxy";
-import { IProjectType } from "../../src/utils/cordovaProjectHelper";
+import { ProjectType } from "../../src/utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "../../src/debugger/requestArgs";
 import { CDPMessageHandlerCreator } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/CDPMessageHandlerCreator";
 import { CDPMessageHandlerBase } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
@@ -23,7 +23,7 @@ import { DebuggerEndpointHelper } from "../../src/debugger/cdp-proxy/debuggerEnd
 
 interface ICDPProxyInternalEntities {
     attachArgs: ICordovaAttachRequestArgs;
-    projectType: IProjectType;
+    projectType: ProjectType;
     sourcemapPathTransformer: SourcemapPathTransformer;
     cdpMessageHandler: CDPMessageHandlerBase;
 }
@@ -67,21 +67,16 @@ suite("cordovaCDPProxy", function () {
 
     function prepareCDPProxyInternalEntities(debugType: "ionic" | "cordova" | "simulate", cdpHandlerType: "chrome" | "safari"): ICDPProxyInternalEntities {
         let attachArgs: ICordovaAttachRequestArgs;
-        let projectType: IProjectType;
+        let projectType: ProjectType;
         let sourcemapPathTransformer: SourcemapPathTransformer;
         let cdpMessageHandler: CDPMessageHandlerBase;
 
-        projectType = {
-            isMeteor: false,
-            isMobilefirst: false,
-            isPhonegap: false,
-            isCordova: true,
-            isIonic1: false,
-            isIonic2: false,
-            isIonic3: false,
-            isIonic4: false,
-            isIonic5: false,
-        };
+        projectType = new ProjectType(
+            false, // isMeteor
+            false, // isMobilefirst
+            false, // isPhonegap
+            true, // isCordova
+        );
 
         attachArgs = {
             cwd: path.resolve(__dirname, "..", "resources", "testCordovaProject"),
@@ -93,7 +88,7 @@ suite("cordovaCDPProxy", function () {
 
         switch (debugType) {
             case "ionic":
-                projectType.isIonic5 = true;
+                projectType.ionicMajorVersion = 5;
                 break;
             case "cordova":
                 break;

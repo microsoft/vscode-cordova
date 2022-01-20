@@ -4,7 +4,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as sinon from "sinon";
-import { CordovaProjectHelper, IIonicVersion } from "../../src/utils/cordovaProjectHelper";
+import { CordovaProjectHelper } from "../../src/utils/cordovaProjectHelper";
 import * as assert from "assert";
 
 suite("сordovaProjectHelper", function () {
@@ -21,7 +21,7 @@ suite("сordovaProjectHelper", function () {
         });
     });
 
-    suite("checkIonicVersions", function () {
+    suite("determineIonicMajorVersion", function () {
         const ionicProjectPath = path.join(__dirname, "..", "resources", "testIonicProject");
         const ionicPackageJsonFileLocation = path.join(ionicProjectPath, "package.json");
 
@@ -31,8 +31,8 @@ suite("сordovaProjectHelper", function () {
             (fs.readFileSync as any).restore();
         });
 
-        function checkIonicVersion(
-            ionicVersion: Record<string, boolean>,
+        function determineIonicMajorVersion(
+            ionicMajorVersionRef: number | undefined,
             dep: Record<string, string>,
             devDep: Record<string, string>,
             existsSyncFake: (path: fs.PathLike) => boolean
@@ -45,64 +45,61 @@ suite("сordovaProjectHelper", function () {
                 });
             });
 
-            let versionsRef: IIonicVersion = Object.assign(
-                {
-                    isIonic1: false,
-                    isIonic2: false,
-                    isIonic3: false,
-                    isIonic4: false,
-                    isIonic5: false,
-                },
-                ionicVersion
-            );
-
-            const versionsProcessed = CordovaProjectHelper.checkIonicVersions(ionicProjectPath);
-            assert.deepStrictEqual(versionsProcessed, versionsRef);
+            const processedMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(ionicProjectPath);
+            assert.deepStrictEqual(processedMajorVersion, ionicMajorVersionRef);
         }
 
         test("should detect Ionic 1 version", () => {
-            checkIonicVersion(
-                { isIonic1: true },
+            determineIonicMajorVersion(
+                1,
                 {},
                 {},
                 (path) => true
             );
         });
         test("should detect Ionic 2 version", () => {
-            checkIonicVersion(
-                { isIonic2: true },
+            determineIonicMajorVersion(
+                2,
                 { "ionic-angular": "2.6.5" },
                 { "@ionic/app-scripts": "2.3.4" },
                 (path) => path === ionicPackageJsonFileLocation
             );
         });
         test("should detect Ionic 3 version", () => {
-            checkIonicVersion(
-                { isIonic3: true },
+            determineIonicMajorVersion(
+                3,
                 { "ionic-angular": "3.9.9" },
                 { "@ionic/app-scripts": "3.3.4" },
                 (path) => path === ionicPackageJsonFileLocation
             );
         });
         test("should detect Ionic 4 version", () => {
-            checkIonicVersion(
-                { isIonic4: true },
+            determineIonicMajorVersion(
+                4,
                 { "@ionic/angular": "4.0.4" },
                 { "@ionic-native/core": "4.0.4" },
                 (path) => path === ionicPackageJsonFileLocation
             );
         });
         test("should detect Ionic 5 version", () => {
-            checkIonicVersion(
-                { isIonic5: true },
+            determineIonicMajorVersion(
+                5,
                 { "@ionic/angular": "5.0.0" },
                 { "@ionic-native/core": "5.0.0" },
                 (path) => path === ionicPackageJsonFileLocation
             );
         });
-        test("shouldn't detect any Ionic version", () => {
-            checkIonicVersion(
+        test("should detect Ionic 6 version", () => {
+            determineIonicMajorVersion(
+                6,
+                { "@ionic/angular": "6.0.0" },
                 {},
+                (path) => path === ionicPackageJsonFileLocation
+            );
+        });
+        test("shouldn't detect any Ionic version", () => {
+            determineIonicMajorVersion(
+                undefined,
                 {},
                 {},
                 (path) => false

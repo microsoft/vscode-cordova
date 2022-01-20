@@ -14,7 +14,7 @@ import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { PlatformType } from "../cordovaDebugSession";
-import { IProjectType } from "../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
@@ -50,7 +50,7 @@ export class CordovaCDPProxy {
         hostAddress: string,
         port: number,
         sourcemapPathTransformer: SourcemapPathTransformer,
-        projectType: IProjectType,
+        projectType: ProjectType,
         args: ICordovaAttachRequestArgs,
         logLevel: LogLevel = LogLevel.None
     ) {

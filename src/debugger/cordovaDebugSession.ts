@@ -18,7 +18,7 @@ import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import * as elementtree from "elementtree";
 import { generateRandomPortNumber, retryAsync, promiseGet, findFileInFolderHierarchy, isNullOrUndefined } from "../utils/extensionHelper";
 import { TelemetryHelper, ISimulateTelemetryProperties, TelemetryGenerator } from "../utils/telemetryHelper";
-import { CordovaProjectHelper, IProjectType } from "../utils/cordovaProjectHelper";
+import { CordovaProjectHelper, ProjectType } from "../utils/cordovaProjectHelper";
 import { Telemetry } from "../utils/telemetry";
 import { execCommand, cordovaRunCommand, killChildProcess, cordovaStartCommand } from "./extension";
 import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
@@ -218,7 +218,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     .then(([projectType, runArguments, cordovaExecutable]) => {
                         launchArgs.cordovaExecutable = launchArgs.cordovaExecutable || cordovaExecutable;
                         launchArgs.allEnv = CordovaProjectHelper.getEnvArgument(launchArgs);
-                        generator.add("projectType", projectType, false);
+                        generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false);
                         this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", platform));
 
                         switch (platform) {
@@ -310,7 +310,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             attachArgs
                         );
                         this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-                        generator.add("projectType", projectType, false);
+                        generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false);
                         return this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
                     })
                     .then(() => {
@@ -478,7 +478,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         });
     }
 
-    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, generator: TelemetryGenerator): Promise<any> {
+    private launchSimulate(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, generator: TelemetryGenerator): Promise<any> {
         let simulateTelemetryPropts: ISimulateTelemetryProperties = {
             platform: launchArgs.platform,
             target: launchArgs.target,
@@ -601,7 +601,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return runArgs;
     }
 
-    private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Promise<void> {
+    private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
         if (os.platform() !== "darwin") {
             return Promise.reject<void>(localize("UnableToLaunchiOSOnNonMacMachnines", "Unable to launch iOS on non-mac machines"));
         }
@@ -628,7 +628,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 args.push(...buildArg);
 
                 if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
-                    if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                    if (projectType.isIonic) {
                         // Livereload is enabled, let Ionic do the launch
                         // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
                         args.push("--livereload", "--external");
@@ -654,7 +654,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             let target = launchArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : launchArgs.target;
             return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.allEnv, workingDirectory).then(() => {
                 let args = ["emulate", "ios"];
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                if (projectType.isIonic) {
                     args.push("--");
                 }
 
@@ -673,7 +673,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     }
                     // Verify if we are using Ionic livereload
                     if (launchArgs.ionicLiveReload) {
-                        if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                        if (projectType.isIonic) {
                             // Livereload is enabled, let Ionic do the launch
                             args.push("--livereload");
                         } else {
@@ -1259,11 +1259,11 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     }
 
-    private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Promise<void> {
+    private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
         let errorLogger = (message) => this.outputLogger(message, true);
 
         // Currently, "ionic serve" is only supported for Ionic projects
-        if (!CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+        if (!projectType.isIonic) {
             let errorMessage = localize("ServingToTheBrowserIsSupportedForIonicProjects", "Serving to the browser is currently only supported for Ionic projects");
 
             errorLogger(errorMessage);
@@ -1392,7 +1392,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private async launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: IProjectType, runArguments: string[]): Promise<void> {
+    private async launchAndroid(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
         let workingDirectory = launchArgs.cwd;
 
         // Prepare the command line args
@@ -1408,7 +1408,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
             // Verify if we are using Ionic livereload
             if (launchArgs.ionicLiveReload) {
-                if (CordovaProjectHelper.isIonicAngularProjectByProjectType(projectType)) {
+                if (projectType.isIonic) {
                     // Livereload is enabled, let Ionic do the launch
                     args.push("--livereload");
                 } else {

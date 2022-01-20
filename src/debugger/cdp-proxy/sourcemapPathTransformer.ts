@@ -7,17 +7,17 @@ import * as url from "url";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { PlatformType } from "../cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
-import { IProjectType } from "../../utils/cordovaProjectHelper";
+import { ProjectType } from "../../utils/cordovaProjectHelper";
 
 export class SourcemapPathTransformer {
     private _cordovaRoot: string;
     private _platform: string;
     private _webRoot: string;
-    private _projectTypes: IProjectType;
+    private _projectTypes: ProjectType;
     private _ionicLiveReload: boolean;
     private _debugRequestType: string;
 
-    constructor(args: ICordovaAttachRequestArgs, projectTypes: IProjectType) {
+    constructor(args: ICordovaAttachRequestArgs, projectTypes: ProjectType) {
         this._cordovaRoot = args.cwd;
         this._platform = args.platform.toLowerCase();
         this._webRoot = args.address || this._cordovaRoot;
@@ -57,7 +57,7 @@ export class SourcemapPathTransformer {
         let defaultPath = "";
         let foldersForSearch = [this._webRoot, this._cordovaRoot, wwwRoot];
 
-        if (this._projectTypes.isIonic4 || this._projectTypes.isIonic5) {
+        if (this._projectTypes.ionicMajorVersion === 4 || this._projectTypes.ionicMajorVersion === 5) {
             // We don't need to connect ts files with js in www folder
             // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
             // don't use www directory anymore. If www directory is fulfilled and livereload is used then
