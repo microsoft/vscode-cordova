@@ -61,5 +61,5 @@ export interface ICordovaLaunchRequestArgs extends DebugProtocol.LaunchRequestAr
     livereloadDelay?: number;
     runArguments?: string[];
     cordovaExecutable?: string;
-    spaurlrewrites?: boolean;
+    spaUrlRewrites?: boolean;
 }

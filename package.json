@@ -470,9 +470,9 @@
                   "./*": "${cwd}/*"
                 }
               },
-              "spaurlrewrites": {
+              "spaUrlRewrites": {
                 "type": "boolean",
-                "description": "%cordova.properties.launch.spaurlrewrites%",
+                "description": "%cordova.properties.launch.spaUrlRewrites%",
                 "default": false
               }
             }
