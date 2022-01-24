@@ -665,7 +665,7 @@
     "ts-loader": "^8.1.0",
     "typescript": "^3.8.3",
     "vsce": "^1.88.0",
-    "vscode-nls-dev": "^3.3.2",
+    "vscode-nls-dev": "^4.0.0",
     "vscode-test": "^1.4.0",
     "webpack": "^5.31.2",
     "webpack-bundle-analyzer": "^4.4.0"
