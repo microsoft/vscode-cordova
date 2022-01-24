@@ -645,7 +645,7 @@
     "@types/vscode": "1.40.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
-    "cordova-simulate": "^1.1.0",
+    "cordova-simulate": "^1.1.1",
     "del": "^2.2.2",
     "devtools-protocol": "0.0.760817",
     "eslint": "^7.32.0",
