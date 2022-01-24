@@ -583,7 +583,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         result.simulationpath = launchArgs.simulateTempDir;
         result.corsproxy = launchArgs.corsProxy;
         result.livereloaddelay = launchArgs.livereloadDelay;
-        result.spaUrlRewrites = launchArgs.spaUrlRewrites;
+        result.spaurlrewrites = launchArgs.spaUrlRewrites;
         result.lang = vscode.env.language;
 
         return result;
