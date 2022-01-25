@@ -1,3 +1,8 @@
+## 2.4.1
+* Added Ionic 6 version support [#748](https://github.com/microsoft/vscode-cordova/pull/748)
+* Implement `spaUrlRewrite` option for simulate scenarios [#750](https://github.com/microsoft/vscode-cordova/issues/750)
+* Fixed security vulnerabilities [#751](https://github.com/microsoft/vscode-cordova/pull/751), [#752](https://github.com/microsoft/vscode-cordova/pull/752)
+
 ## 2.4.0
 * Improved Android device and emulator targets selection [#736](https://github.com/microsoft/vscode-cordova/pull/736)
 * Fixed security vulnerabilities [#740](https://github.com/microsoft/vscode-cordova/pull/740), [#743](https://github.com/microsoft/vscode-cordova/pull/743)
