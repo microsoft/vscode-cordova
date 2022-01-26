@@ -1,6 +1,6 @@
 ## 2.4.1
 * Added Ionic 6 version support [#748](https://github.com/microsoft/vscode-cordova/pull/748)
-* Implement `spaUrlRewrite` option for simulate scenarios [#750](https://github.com/microsoft/vscode-cordova/issues/750)
+* Implemented the `spaUrlRewrite` option for Simulate debug scenarios to improve page refreshing in case of URL rewrites caused by the router in single page applications [#750](https://github.com/microsoft/vscode-cordova/issues/750)
 * Fixed security vulnerabilities [#751](https://github.com/microsoft/vscode-cordova/pull/751), [#752](https://github.com/microsoft/vscode-cordova/pull/752)
 
 ## 2.4.0
