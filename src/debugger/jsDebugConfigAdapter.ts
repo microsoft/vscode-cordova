@@ -55,7 +55,12 @@ export class JsDebugConfigAdapter {
             cordovaDebugSessionId: sessionId,
             outFiles: [
                 "${workspaceFolder}/**/*.js",
-                "!{**/node_modules/**,platforms/**}"
+                // Each Cordova platform contains a copy of the js code located in the "www" folder in the project root.
+                // JS content in platforms may differ from the actual code in the "www" folder which could cause incorrect
+                // source mapping. So we should exclude the "platforms" folder from relevant output files.
+                // There is the issue in VS Code https://github.com/microsoft/vscode/issues/104889 relatad to incorrect
+                // processing of two and more including and excluding glob expressions, so we have to use the braced section.
+                "!{**/node_modules/**,platforms/**}",
             ],
         });
     }
@@ -92,7 +97,7 @@ export class JsDebugConfigAdapter {
             cordovaDebugSessionId: sessionId,
             outFiles: [
                 "${workspaceFolder}/**/*.js",
-                "!{**/node_modules/**,platforms/**}"
+                "!{**/node_modules/**,platforms/**}",
             ],
         });
     }
