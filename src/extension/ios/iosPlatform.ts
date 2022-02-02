@@ -11,10 +11,10 @@ import { cordovaRunCommand } from "../../debugger/extension";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import AbstractPlatform from "../abstractPlatform";
 import { IIosPlatformOptions } from "../platformOptions";
-import { IIosAttachOptions } from "../platformAttachOptions";
+import { IIosAttachResult } from "../platformAttachResult";
 import { promiseGet, retryAsync } from "../../utils/extensionHelper";
 import IonicDevServer from "../../utils/ionicDevServer";
-import { IIosLaunchOptions } from "../platformLaunchOptions";
+import { IIosLaunchResult } from "../platformLaunchResult";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -33,7 +33,7 @@ export default class IosPlatform extends AbstractPlatform {
         return this.platformOpts;
     }
 
-    public async launchApp(): Promise<IIosLaunchOptions> {
+    public async launchApp(): Promise<IIosLaunchResult> {
         await this.checkIfTargetIsiOSSimulator(this.platformOpts.target);
 
         if (this.runArguments.includes("--livereload")) {
@@ -53,10 +53,10 @@ export default class IosPlatform extends AbstractPlatform {
         return {};
     }
 
-    public async prepareForAttach(): Promise<IIosAttachOptions> {
+    public async prepareForAttach(): Promise<IIosAttachResult> {
         await this.checkIfTargetIsiOSSimulator(this.platformOpts.target);
 
-        const getIosAttachOptions = async (): Promise<IIosAttachOptions> => {
+        const getIosAttachOptions = async (): Promise<IIosAttachResult> => {
             await CordovaIosDeviceLauncher.startWebkitDebugProxy(this.platformOpts.port, this.platformOpts.webkitRangeMin, this.platformOpts.webkitRangeMax);
             const iOSAppPackagePath = await this.getIosAppPackagePath();
 
@@ -120,7 +120,7 @@ export default class IosPlatform extends AbstractPlatform {
             return { iOSAppPackagePath, iOSVersion, devServerAddress, webSocketDebuggerUrl };
         };
 
-        return retryAsync<IIosAttachOptions>(getIosAttachOptions, () => true, this.platformOpts.attachAttempts, 1, this.platformOpts.attachDelay, localize("UnableToFindWebview", "Unable to find Webview"), this.platformOpts.cancellationTokenSource.token);
+        return retryAsync<IIosAttachResult>(getIosAttachOptions, () => true, this.platformOpts.attachAttempts, 1, this.platformOpts.attachDelay, localize("UnableToFindWebview", "Unable to find Webview"), this.platformOpts.cancellationTokenSource.token);
     }
 
     public async stopAndCleanUp(): Promise<void> {

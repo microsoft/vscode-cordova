@@ -2,12 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IGeneralLaunchOptions {
+export interface IGeneralLaunchResult {
     devServerPort?: number;
 }
 
-export type IAndroidLaunchOptions = IGeneralLaunchOptions;
+export type IAndroidLaunchResult = IGeneralLaunchResult;
 
-export type IBrowserLaunchOptions = IGeneralLaunchOptions;
+export type IBrowserLaunchResult = IGeneralLaunchResult;
 
-export type IIosLaunchOptions = IGeneralLaunchOptions;
+export type IIosLaunchResult = IGeneralLaunchResult;

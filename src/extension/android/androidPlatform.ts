@@ -15,8 +15,8 @@ import * as path from "path";
 import * as elementtree from "elementtree";
 import AbstractPlatform from "../abstractPlatform";
 import IonicDevServer from "../../utils/ionicDevServer";
-import { IAndroidAttachOptions } from "../platformAttachOptions";
-import { IAndroidLaunchOptions } from "../platformLaunchOptions";
+import { IAndroidAttachResult } from "../platformAttachResult";
+import { IAndroidLaunchResult } from "../platformLaunchResult";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -83,7 +83,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
         return this.target;
     }
 
-    public async launchApp(): Promise<IAndroidLaunchOptions> {
+    public async launchApp(): Promise<IAndroidLaunchResult> {
         const command = this.platformOpts.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot);
 
         if (this.runArguments.includes("--livereload")) {
@@ -111,7 +111,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
         return {};
     }
 
-    public async prepareForAttach(): Promise<IAndroidAttachOptions> {
+    public async prepareForAttach(): Promise<IAndroidAttachResult> {
         const appPackageName = await this.getAppPackageName();
         const target = await this.getTarget();
 

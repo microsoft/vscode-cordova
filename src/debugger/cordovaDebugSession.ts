@@ -359,8 +359,8 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             webkitRangeMax,
             attachAttempts,
             attachDelay,
-            protocolServerStop: this.stop,
-            changeSimulateViewport: this.changeSimulateViewport,
+            protocolServerStop: this.stop.bind(this),
+            changeSimulateViewport: this.changeSimulateViewport.bind(this),
             pluginSimulator
         }, args, {
             env,

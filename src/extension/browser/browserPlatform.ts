@@ -12,10 +12,10 @@ import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cor
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import AbstractPlatform from "../abstractPlatform";
 import { IBrowserPlatformOptions } from "../platformOptions";
-import { IBrowserAttachOptions } from "../platformAttachOptions";
+import { IBrowserAttachResult } from "../platformAttachResult";
 import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
-import { IBrowserLaunchOptions } from "../platformLaunchOptions";
+import { IBrowserLaunchResult } from "../platformLaunchResult";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -36,7 +36,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         return this.platformOpts;
     }
 
-    public async launchApp(): Promise<IBrowserLaunchOptions> {
+    public async launchApp(): Promise<IBrowserLaunchResult> {
         if (this.platformOpts.platform === PlatformType.Serve) {
             // Currently, "ionic serve" is only supported for Ionic projects
             if (!this.platformOpts.projectType.isIonic) {
@@ -85,7 +85,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         return { devServerPort: this.IonicDevServer.getDevServerPort() };
     }
 
-    public async prepareForAttach(): Promise<IBrowserAttachOptions> {
+    public async prepareForAttach(): Promise<IBrowserAttachResult> {
         return {};
     }
 

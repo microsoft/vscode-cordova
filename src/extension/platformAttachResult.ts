@@ -2,13 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IGeneralAttachOptions {}
+export interface IGeneralAttachResult { }
 
-export type IAndroidAttachOptions = IGeneralAttachOptions;
+export type IAndroidAttachResult = IGeneralAttachResult;
 
-export type IBrowserAttachOptions = IGeneralAttachOptions;
+export type IBrowserAttachResult = IGeneralAttachResult;
 
-export interface IIosAttachOptions extends IGeneralAttachOptions {
+export interface IIosAttachResult extends IGeneralAttachResult {
     webSocketDebuggerUrl: string;
     iOSVersion: string;
     iOSAppPackagePath: string;

@@ -4,8 +4,8 @@
 import * as fs from "fs";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
 import IonicDevServer from "../utils/ionicDevServer";
-import { IGeneralAttachOptions } from "./platformAttachOptions";
-import { IGeneralLaunchOptions } from "./platformLaunchOptions";
+import { IGeneralAttachResult } from "./platformAttachResult";
+import { IGeneralLaunchResult } from "./platformLaunchResult";
 import { IGeneralPlatformOptions } from "./platformOptions";
 
 export default abstract class AbstractPlatform {
@@ -26,11 +26,9 @@ export default abstract class AbstractPlatform {
         return this.platformOpts;
     }
 
-    public abstract launchApp(
-    ): Promise<IGeneralLaunchOptions>;
+    public abstract launchApp(): Promise<IGeneralLaunchResult>;
 
-    public abstract prepareForAttach(
-    ): Promise<IGeneralAttachOptions>;
+    public abstract prepareForAttach(): Promise<IGeneralAttachResult>;
 
     public abstract stopAndCleanUp(): Promise<void>;
 
