@@ -5,7 +5,7 @@ import * as fs from "fs";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
 import IonicDevServer from "../utils/ionicDevServer";
 import { IGeneralAttachResult } from "./platformAttachResult";
-import { IGeneralLaunchResult } from "./platformLaunchOptions";
+import { IGeneralLaunchResult } from "./platformLaunchResult";
 import { IGeneralPlatformOptions } from "./platformOptions";
 
 export default abstract class AbstractPlatform {

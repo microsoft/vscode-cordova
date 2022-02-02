@@ -15,7 +15,7 @@ import { IBrowserPlatformOptions } from "../platformOptions";
 import { IBrowserAttachResult } from "../platformAttachResult";
 import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
-import { IBrowserLaunchResult } from "../platformLaunchOptions";
+import { IBrowserLaunchResult } from "../platformLaunchResult";
 import { IBrowserFinder } from "vscode-js-debug-browsers";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();

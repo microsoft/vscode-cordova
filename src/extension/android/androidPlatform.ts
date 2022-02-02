@@ -16,7 +16,7 @@ import * as elementtree from "elementtree";
 import AbstractPlatform from "../abstractPlatform";
 import IonicDevServer from "../../utils/ionicDevServer";
 import { IAndroidAttachResult } from "../platformAttachResult";
-import { IAndroidLaunchResult } from "../platformLaunchOptions";
+import { IAndroidLaunchResult } from "../platformLaunchResult";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 

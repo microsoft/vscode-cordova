@@ -14,7 +14,7 @@ import { IIosPlatformOptions } from "../platformOptions";
 import { IIosAttachResult } from "../platformAttachResult";
 import { promiseGet, retryAsync } from "../../utils/extensionHelper";
 import IonicDevServer from "../../utils/ionicDevServer";
-import { IIosLaunchResult } from "../platformLaunchOptions";
+import { IIosLaunchResult } from "../platformLaunchResult";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
