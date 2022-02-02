@@ -16,6 +16,7 @@ import { IBrowserAttachResult } from "../platformAttachResult";
 import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchResult } from "../platformLaunchOptions";
+import { IBrowserFinder } from "vscode-js-debug-browsers";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -59,7 +60,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         this.runArguments = this.getRunArguments();
 
         // Launch Chrome
-        let browserFinder: any;
+        let browserFinder: IBrowserFinder;
         switch (this.platformOpts.target) {
             case TargetType.Edge:
                 browserFinder = new browserHelper.EdgeBrowserFinder(process.env, fs.promises, execa);

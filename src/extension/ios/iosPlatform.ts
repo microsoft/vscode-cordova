@@ -19,8 +19,6 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize = nls.loadMessageBundle();
 
 export default class IosPlatform extends AbstractPlatform {
-    ionicDevServerUrls: any;
-    cancellationTokenSource: any;
 
     constructor(
         protected platformOpts: IIosPlatformOptions,
@@ -171,8 +169,8 @@ export default class IosPlatform extends AbstractPlatform {
             if (!this.platformOpts.ionicLiveReload && webviewData.url.startsWith("ionic://")) {
                 return true;
             }
-            if (this.ionicDevServerUrls) {
-                return this.ionicDevServerUrls.findIndex(url => webviewData.url.indexOf(url) === 0) >= 0;
+            if (this.IonicDevServer.ionicDevServerUrls) {
+                return this.IonicDevServer.ionicDevServerUrls.findIndex(url => webviewData.url.indexOf(url) === 0) >= 0;
             }
             return false;
         });

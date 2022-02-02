@@ -155,9 +155,7 @@ export class TelemetryGenerator extends TelemetryGeneratorBase {
 }
 
 export class TelemetryHelper {
-    static sendErrorEvent(arg0: string, arg1: any) {
-        throw new Error("Method not implemented.");
-    }
+
     public static createTelemetryEvent(eventName: string): Telemetry.TelemetryEvent {
         return new Telemetry.TelemetryEvent(eventName);
     }
