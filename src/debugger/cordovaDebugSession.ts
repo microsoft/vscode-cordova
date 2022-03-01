@@ -36,6 +36,7 @@ import * as nls from "vscode-nls";
 import { NodeVersionHelper } from "../utils/nodeVersionHelper";
 import { AdbHelper } from "../utils/android/adb";
 import { AndroidTargetManager, AndroidTarget } from "../utils/android/androidTargetManager";
+import { IOSTargetManager, IOSTarget } from "../utils/ios/iOSTargetManager";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
@@ -115,6 +116,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
     private cancellationTokenSource: vscode.CancellationTokenSource;
     private vsCodeDebugSession: vscode.DebugSession;
+    private iOSTargetManager: IOSTargetManager;
 
     constructor(
         private cordovaSession: CordovaSession,
@@ -141,6 +143,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cordovaCdpProxy = null;
         this.telemetryInitialized = false;
         this.jsDebugConfigAdapter = new JsDebugConfigAdapter();
+        this.iOSTargetManager = new IOSTargetManager();
         this.onDidTerminateDebugSessionHandler = vscode.debug.onDidTerminateDebugSession(
             this.handleTerminateDebugSession.bind(this)
         );
@@ -602,145 +605,95 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return runArgs;
     }
 
-    private launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
+    private async launchIos(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
         if (os.platform() !== "darwin") {
-            return Promise.reject<void>(localize("UnableToLaunchiOSOnNonMacMachnines", "Unable to launch iOS on non-mac machines"));
+            throw new Error(localize("UnableToLaunchiOSOnNonMacMachnines", "Unable to launch iOS on non-mac machines"));
         }
+        const useDefaultCLI = async () => {
+            this.outputLogger("Continue using standard CLI workflow.");
+            const debuggableDevices = await this.iOSTargetManager.getOnlineTargets();
+            launchArgs.target = debuggableDevices.length ? debuggableDevices[0].id : TargetType.Emulator;
+        };
+
+        this.outputLogger(localize("LaunchingApp", "Launching the app (This may take a while)..."));
+
         let workingDirectory = launchArgs.cwd;
-        let errorLogger = (message) => this.outputLogger(message, true);
-
-        this.outputLogger(localize("LaunchingApp", "Launching app (This may take a while)..."));
-
         let iosDebugProxyPort = launchArgs.iosDebugProxyPort || 9221;
 
         const command = launchArgs.cordovaExecutable || CordovaProjectHelper.getCliCommand(workingDirectory);
-        // Launch the app
-        if (launchArgs.target.toLowerCase() === TargetType.Device) {
-            let args = ["run", "ios", "--device"];
+        let args = ["run", "ios"];
 
-            if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
-                args.push(...launchRunArgs);
-            } else if (runArguments && runArguments.length) {
-                const runArgs = this.addBuildFlagToArgs(runArguments);
-                args.push(...runArgs);
-            } else {
-                const buildArg = this.addBuildFlagToArgs();
-                args.push(...buildArg);
-
-                if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
-                    if (projectType.isIonic) {
-                        // Livereload is enabled, let Ionic do the launch
-                        // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
-                        args.push("--livereload", "--external");
-                    } else {
-                        this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
-                    }
-                }
-            }
-
-            if (args.indexOf("--livereload") > -1) {
-                return this.startIonicDevServer(launchArgs, args).then(() => void 0);
-            }
-
-            // cordova run ios does not terminate, so we do not know when to try and attach.
-            // Therefore we parse the command's output to find the special key, which means that the application has been successfully launched.
-            this.outputLogger(localize("InstallingAndLaunchingAppOnDevice", "Installing and launching app on device"));
-            return cordovaRunCommand(command, args, launchArgs.allEnv, workingDirectory, this.outputLogger)
-                .then(() => {
-                    return CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort);
-                })
-                .then(() => void (0));
+        if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
+            const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
+            args.push(...launchRunArgs);
+        } else if (runArguments && runArguments.length) {
+            const runArgs = this.addBuildFlagToArgs(runArguments);
+            args.push(...runArgs);
         } else {
-            let target = launchArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : launchArgs.target;
-            return this.checkIfTargetIsiOSSimulator(target, command, launchArgs.allEnv, workingDirectory).then(() => {
-                let args = ["emulate", "ios"];
-                if (projectType.isIonic) {
-                    args.push("--");
-                }
-
-                if (launchArgs.runArguments && launchArgs.runArguments.length > 0) {
-                    const launchRunArgs = this.addBuildFlagToArgs(launchArgs.runArguments);
-                    args.push(...launchRunArgs);
-                } else if (runArguments && runArguments.length) {
-                    const runArgs = this.addBuildFlagToArgs(runArguments);
-                    args.push(...runArgs);
+            try {
+                const target = await this.resolveIOSTarget(launchArgs, false);
+                if (target) {
+                    args.push(target.isVirtualTarget ? "--emulator" : "--device");
+                    args.push(`--target=${
+                        target.isVirtualTarget && target.simIdentifier ? target.simIdentifier : target.id
+                    }`);
                 } else {
-                    const buildArg = this.addBuildFlagToArgs();
-                    args.push(...buildArg);
+                    this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
+                    await useDefaultCLI();
+                }
+            } catch (err) {
+                this.outputLogger(err.message || err, true);
+                await useDefaultCLI();
+            }
 
-                    if (target === TargetType.Emulator) {
-                        args.push("--target=" + target);
+            const buildArg = this.addBuildFlagToArgs();
+            args.push(...buildArg);
+
+            if (launchArgs.ionicLiveReload) { // Verify if we are using Ionic livereload
+                if (projectType.isIonic) {
+                    // Livereload is enabled, let Ionic do the launch
+                    args.push("--livereload");
+                     // '--external' parameter is required since for iOS devices, port forwarding is not yet an option (https://github.com/ionic-team/native-run/issues/20)
+                    if (args.includes("--device")) {
+                        args.push("--external");
                     }
-                    // Verify if we are using Ionic livereload
-                    if (launchArgs.ionicLiveReload) {
-                        if (projectType.isIonic) {
-                            // Livereload is enabled, let Ionic do the launch
-                            args.push("--livereload");
-                        } else {
-                            this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
-                        }
-                    }
+                } else {
+                    this.outputLogger(CordovaDebugSession.NO_LIVERELOAD_WARNING);
                 }
-
-                if (args.indexOf("--livereload") > -1) {
-                    return this.startIonicDevServer(launchArgs, args).then(() => void 0);
-                }
-
-                return cordovaRunCommand(command, args, launchArgs.allEnv, workingDirectory, this.outputLogger)
-                    .catch((err) => {
-                        if (target === TargetType.Emulator) {
-                            return cordovaRunCommand(command, ["emulate", "ios", "--list"], launchArgs.allEnv, workingDirectory).then((output) => {
-                                // List out available targets
-                                errorLogger(localize("UnableToRunWithGivenTarget", "Unable to run with given target."));
-                                errorLogger(output[0].replace(/\*+[^*]+\*+/g, "")); // Print out list of targets, without ** RUN SUCCEEDED **
-                                throw err;
-                            });
-                        }
-
-                        throw err;
-                    });
-            });
+            }
         }
-    }
 
-    private checkIfTargetIsiOSSimulator(target: string, cordovaCommand: string, env: any, workingDirectory: string): Promise<void> {
-        const simulatorTargetIsNotSupported = () => {
-            const message = localize("InvalidTargetPleaseCheckTargetParameter", "Invalid target. Please, check target parameter value in your debug configuration and make sure it's a valid iPhone device identifier. Proceed to https://aka.ms/AA3xq86 for more information.");
-            throw new Error(message);
-        };
-        if (target === TargetType.Emulator) {
-            simulatorTargetIsNotSupported();
+        if (args.indexOf("--livereload") > -1) {
+            return this.startIonicDevServer(launchArgs, args).then(() => void 0);
         }
-        return cordovaRunCommand(cordovaCommand, ["emulate", "ios", "--list"], env, workingDirectory).then((output) => {
-            // Get list of emulators as raw strings
-            output[0] = output[0].replace(/Available iOS Simulators:/, "");
 
-            // Clean up each string to get real value
-            const emulators = output[0].split("\n").map((value) => {
-                let match = value.match(/(.*)(?=,)/gm);
-                if (!match) {
-                    return null;
-                }
-                return match[0].replace(/\t/, "");
-            });
-
-            return (emulators.indexOf(target) >= 0);
-        })
-            .then((result) => {
-                if (result) {
-                    simulatorTargetIsNotSupported();
-                }
-            });
+        // cordova run ios does not terminate, so we do not know when to try and attach.
+        // Therefore we parse the command's output to find the special key, which means that the application has been successfully launched.
+        await cordovaRunCommand(command, args, launchArgs.allEnv, workingDirectory, this.outputLogger);
+        if (args.includes("--device")) {
+            await CordovaIosDeviceLauncher.startDebugProxy(iosDebugProxyPort);
+        }
     }
 
     private attachIos(attachArgs: ICordovaAttachRequestArgs): Promise<ICordovaAttachRequestArgs> {
+        const resolveTagetPromise = async (): IOSTarget => {
+            try {
+                const target = await this.resolveIOSTarget(attachArgs, true);
+                if (!target) {
+                    this.outputLogger((await this.iOSTargetManager.getOnlineTargets()).join(), true);
+                }
+                return target;
+            } catch (error) {
+
+            }
+        }
+
+        return this.resolveIOSTarget(attachArgs, true)
+
+
         let target = attachArgs.target.toLowerCase() === TargetType.Emulator ? TargetType.Emulator : attachArgs.target;
-        let workingDirectory = attachArgs.cwd;
-        const command = CordovaProjectHelper.getCliCommand(workingDirectory);
-        // TODO add env support for attach
-        const env = CordovaProjectHelper.getEnvArgument(attachArgs);
-        return this.checkIfTargetIsiOSSimulator(target, command, env, workingDirectory).then(() => {
+
+        return this.iOSTargetManager.isVirtualTarget(target).then((isSimulator) => {
             attachArgs.webkitRangeMin = attachArgs.webkitRangeMin || 9223;
             attachArgs.webkitRangeMax = attachArgs.webkitRangeMax || 9322;
             attachArgs.attachAttempts = attachArgs.attachAttempts || 20;
@@ -841,7 +794,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             };
 
             const getAttachRequestArgs = (): Promise<ICordovaAttachRequestArgs> =>
-                CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax)
+                CordovaIosDeviceLauncher.startWebkitDebugProxy(attachArgs.port, attachArgs.webkitRangeMin, attachArgs.webkitRangeMax, isSimulator)
                     .then(getBundleIdentifier)
                     .then(getSimulatorProxyPort)
                     .then(getWebSocketDebuggerUrl)
@@ -1386,6 +1339,62 @@ export class CordovaDebugSession extends LoggingDebugSession {
         } else {
             // If there is no a target in debug config, use the first online device
             const targetDevice = await getFirstOnlineAndroidTarget();
+            if (!targetDevice) {
+                throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in the debug configuration is undefined, and there are no any online debuggable targets"));
+            }
+            return targetDevice;
+        }
+    }
+
+    private async resolveIOSTarget(configArgs: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachScenario: boolean): Promise<IOSTarget | undefined> {
+        const getFirstOnlineIOSTarget = async (): Promise<IOSTarget | undefined> => {
+            const onlineTargets = await this.iOSTargetManager.getOnlineTargets();
+            if (onlineTargets.length) {
+                const firstDevice = onlineTargets[0];
+                configArgs.target = firstDevice.id;
+                return firstDevice;
+            }
+        };
+
+        if (configArgs.target) {
+            const isAnyEmulator = configArgs.target.toLowerCase() === TargetType.Emulator;
+            const isAnyDevice = configArgs.target.toLowerCase() === TargetType.Device;
+            const isVirtualTarget = await this.iOSTargetManager.isVirtualTarget(configArgs.target);
+
+            const saveResult = async (target: AndroidTarget): Promise<void> => {
+            const launchScenariousManager = new LaunchScenariosManager(configArgs.cwd);
+                if (isAttachScenario) {
+                    // Save the selected target for attach scenario only if there are more then one online target
+                    const onlineDevices = await this.iOSTargetManager.getOnlineTargets();
+                    if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
+                        launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
+                    }
+                } else {
+                    launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
+                }
+            };
+
+            await this.iOSTargetManager.collectTargets(isVirtualTarget ? TargetType.Emulator : TargetType.Device);
+            let targetDevice = await this.iOSTargetManager.selectAndPrepareTarget(target => {
+                const conditionForAttachScenario = isAttachScenario ? target.isOnline : true;
+                const conditionForNotAnyTarget = isAnyEmulator || isAnyDevice ? true : target.name === configArgs.target || target.id === configArgs.target;
+                const conditionForVirtualTarget = isVirtualTarget === target.isVirtualTarget;
+                return conditionForVirtualTarget && conditionForNotAnyTarget && conditionForAttachScenario;
+            });
+            if (targetDevice) {
+                if (isAnyEmulator || isAnyDevice) {
+                    await saveResult(targetDevice);
+                }
+                configArgs.target = targetDevice.id;
+            } else if (isAttachScenario && (isAnyEmulator || isAnyDevice)) {
+                this.outputLogger("Target has not been selected. Trying to use the first online iOS device");
+                targetDevice = await getFirstOnlineIOSTarget();
+            }
+
+            return targetDevice;
+        } else {
+            // If there is no a target in debug config, use the first online device
+            const targetDevice = await getFirstOnlineIOSTarget();
             if (!targetDevice) {
                 throw new Error(localize("ThereIsNoAnyOnlineDebuggableDevice", "The 'target' parameter in the debug configuration is undefined, and there are no any online debuggable targets"));
             }
