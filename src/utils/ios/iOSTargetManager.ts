@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as nls from "vscode-nls";
+import * as semver from "semver";
 import { QuickPickOptions, window } from "vscode";
 import { ChildProcess } from "../../common/node/childProcess";
 import { waitUntil } from "../../common/node/promise";
