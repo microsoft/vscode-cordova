@@ -128,7 +128,6 @@ export default class BrowserPlatform extends AbstractPlatform {
             }
 
             args.push(...runArguments);
-        } else {
         }
         if (this.platformOpts.url) {
             args.push(this.platformOpts.url);

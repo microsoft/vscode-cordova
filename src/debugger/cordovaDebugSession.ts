@@ -149,8 +149,8 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 generator.add("platform", launchArgs.platform, false);
                 this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", launchArgs.platform));
 
-                const launchOptions = await this.platform.launchApp();
-                Object.assign(launchArgs, launchOptions);
+                const launchResult = await this.platform.launchApp();
+                Object.assign(launchArgs, launchResult);
 
                 await this.vsCodeDebugSession.customRequest("attach", launchArgs);
 
@@ -196,10 +196,10 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 await this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
 
                 this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", attachArgs.platform));
-                const attachOpts = await this.platform.prepareForAttach();
+                const attachResult = await this.platform.prepareForAttach();
                 this.outputLogger(localize("AttachingToApp", "Attaching to app"));
                 this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
-                const processedAttachArgs = Object.assign({}, attachArgs, attachOpts);
+                const processedAttachArgs = Object.assign({}, attachArgs, attachResult);
                 if (processedAttachArgs.webSocketDebuggerUrl) {
                     this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
                 }
@@ -327,17 +327,24 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private async resolvePlatform(args: ICordovaAttachRequestArgs | ICordovaLaunchRequestArgs): Promise<AbstractPlatform> {
+    private async resolvePlatform(args: ICordovaAttachRequestArgs & Partial<ICordovaLaunchRequestArgs>): Promise<AbstractPlatform> {
         const [projectType, runArgs, cordovaExecutable] = await Promise.all([
             TelemetryHelper.determineProjectTypes(args.cwd),
             this.workspaceManager.getRunArguments(args.cwd),
             this.workspaceManager.getCordovaExecutable(args.cwd),
         ]);
-        const ionicDevServer = new IonicDevServer(args.cwd, this.stop, this.outputLogger, args.devServerAddress, args.devServerPort, (args as any).devServerTimeout, cordovaExecutable);
+        const ionicDevServer = new IonicDevServer(
+            args.cwd,
+            this.stop.bind(this),
+            this.outputLogger.bind(this),
+            args.devServerAddress,
+            args.devServerPort,
+            args.devServerTimeout,
+            cordovaExecutable);
         const env = CordovaProjectHelper.getEnvArgument(args.env, args.envFile);
-        const runArguments = (args as any).runArguments || runArgs;
-        const userDataDir = (args as any).userDataDir || path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR);
-        const iosDebugProxyPort = (args as any).iosDebugProxyPort || 9221;
+        const runArguments = args.runArguments || runArgs;
+        const userDataDir = args.userDataDir || path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR);
+        const iosDebugProxyPort = args.iosDebugProxyPort || 9221;
         const webkitRangeMin = args.webkitRangeMin || 9223;
         const webkitRangeMax = args.webkitRangeMax || 9322;
         const attachAttempts = args.attachAttempts || 20;
