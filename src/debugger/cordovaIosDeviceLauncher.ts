@@ -12,6 +12,8 @@ import { delay } from "../utils/extensionHelper";
 import { ChildProcess } from "../common/node/childProcess";
 import * as nls from "vscode-nls";
 import { IOSTarget } from "../utils/ios/iOSTargetManager";
+import { isDirectory } from "../common/utils";
+import { PlistBuddy } from "../utils/ios/PlistBuddy";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -125,6 +127,42 @@ export class CordovaIosDeviceLauncher {
     public static encodePath(packagePath: string): string {
         // Encode the path by converting each character value to hex
         return packagePath.split("").map((c: string) => c.charCodeAt(0).toString(16)).join("").toUpperCase();
+    }
+
+    public static async getPathOnSimulator(packageId: string, deviceDataPath: string): Promise<string> {
+        const appsContainer = path.join(deviceDataPath, "Containers", "Bundle", "Application");
+        if (!fs.existsSync(appsContainer)) {
+            throw new Error(`Could not detect installed apps on the simulator: the path ${appsContainer} doesn't exist`);
+        }
+
+        const plistBuddy = new PlistBuddy();
+
+        let appFolders = (await fs.promises.readdir(appsContainer))
+            .map(appId => path.join(appsContainer, appId))
+            .filter(appDir => isDirectory(appDir));
+
+        let appFiles: string[] = [];
+        for (const appFolder of appFolders) {
+            appFiles.push(
+                ...((await fs.promises.readdir(appFolder))
+                    .filter(file => file.endsWith(".app"))
+                    .map(file => path.join(appFolder, file)))
+            );
+        }
+
+        for (const appFile of appFiles) {
+            try {
+                const bundleIdentifie = await plistBuddy.readPlistProperty(
+                    path.join(appFile, "Info.plist"),
+                    ":CFBundleIdentifier",
+                );
+                if (bundleIdentifie === packageId) {
+                    return appFile;
+                }
+            } catch { }
+        }
+
+        throw new Error(localize("ApplicationNotInstalledOnTheSimulator", "Application not installed on the simulator"));
     }
 
     private static getBundleIdentifierFromPbxproj(xcodeprojFilePath: string): Promise<string> {

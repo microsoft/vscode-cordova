@@ -19,7 +19,6 @@ import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
-import { TargetType } from "../cordovaDebugSession";
 
 export class CordovaCDPProxy {
 
@@ -60,13 +59,15 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
-        this.isSimulate = !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
+        this.isSimulate = SimulateHelper.isSimulate(args);
 
-        if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
+        if (args.platform === PlatformType.IOS && !this.isSimulate) {
             this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, false);
+            console.log("Here iOS");
             this.communicationPreparationsDone = false;
         } else {
             this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, true);
+            console.log("Here Android");
             this.communicationPreparationsDone = true;
         }
     }
@@ -108,6 +109,7 @@ export class CordovaCDPProxy {
     }
 
     public configureCDPMessageHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
+        console.log(args.iOSVersion);
         if (
             args.iOSVersion
             && !this.communicationPreparationsDone

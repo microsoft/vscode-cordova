@@ -19,13 +19,16 @@ const localize = nls.loadMessageBundle();
 export interface IDebuggableIOSTarget extends IDebuggableMobileTarget {
     name: string;
     system: string;
+
     simIdentifier?: string;
+    simDataPath?: string;
 }
 
 export class IOSTarget extends MobileTarget implements IDebuggableIOSTarget {
     protected _system: string;
     protected _name: string;
     protected _simIdentifier?: string;
+    protected _simDataPath?: string;
 
     public static fromInterface(obj: IDebuggableIOSTarget): IOSTarget {
         return new IOSTarget(
@@ -34,7 +37,8 @@ export class IOSTarget extends MobileTarget implements IDebuggableIOSTarget {
             obj.id,
             obj.name,
             obj.system,
-            obj.simIdentifier
+            obj.simIdentifier,
+            obj.simDataPath,
         );
     }
 
@@ -45,10 +49,12 @@ export class IOSTarget extends MobileTarget implements IDebuggableIOSTarget {
         name: string,
         system: string,
         simIdentifier?: string,
+        simDataPath?: string,
     ) {
         super(isOnline, isVirtualTarget, id, name);
         this._system = system;
         this._simIdentifier = simIdentifier;
+        this._simDataPath = simDataPath;
     }
 
     get system(): string {
@@ -57,6 +63,10 @@ export class IOSTarget extends MobileTarget implements IDebuggableIOSTarget {
 
     get simIdentifier(): string | undefined {
         return this._simIdentifier;
+    }
+
+    get simDataPath(): string | undefined {
+        return this._simDataPath;
     }
 
     get name(): string {
@@ -94,10 +104,10 @@ export class IOSTargetManager extends MobileTargetManager {
             );
             Object.keys(simulators.devices).forEach(rawSystem => {
                 const temp = rawSystem.split(".").slice(-1)[0].split("-"); // "com.apple.CoreSimulator.SimRuntime.iOS-11-4" -> ["iOS", "11", "4"]
-                const system = `${temp[0]} ${temp.slice(1).join(".")}`; // ["iOS", "11", "4"] -> iOS 11.4
                 simulators.devices[rawSystem].forEach((device: any) => {
                     // Now we support selection only for iOS system
-                    if (system.includes("iOS")) {
+                    if (temp[0] === "iOS") {
+                        const system = semver.coerce(temp.slice(1).join(".")).toString(); // ["iOS", "11", "4"] -> 11.4.0
                         let simIdentifier;
                         try {
                             const identifierPieces = device.deviceTypeIdentifier.split(".");
@@ -111,6 +121,7 @@ export class IOSTargetManager extends MobileTargetManager {
                             isVirtualTarget: true,
                             isOnline: device.state === IOSTargetManager.BOOTED_STATE,
                             simIdentifier,
+                            simDataPath: device.dataPath,
                         });
                     }
                 });
@@ -230,7 +241,7 @@ export class IOSTargetManager extends MobileTargetManager {
         if (!targets.find(target => target.isVirtualTarget)) {
             return IOSTargetManager.ANY_SYSTEM;
         }
-        const names: Set<string> = new Set(targets.map(target => target.system));
+        const names: Set<string> = new Set(targets.map(target => `iOS ${target.system}`));
         const systemsList = Array.from(names);
         let result: string | undefined = systemsList[0];
         if (systemsList.length > 1) {
@@ -244,7 +255,7 @@ export class IOSTargetManager extends MobileTargetManager {
             };
             result = await window.showQuickPick(systemsList, quickPickOptions);
         }
-        return result?.toString();
+        return result?.toString().substring(4);
     }
 
     protected async launchSimulator(

@@ -132,7 +132,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.vsCodeDebugSession = cordovaSession.getVSCodeDebugSession();
 
         if (this.vsCodeDebugSession.configuration.platform === PlatformType.IOS
-            && (this.vsCodeDebugSession.configuration.target === TargetType.Emulator || this.vsCodeDebugSession.configuration.target === TargetType.Device)
+            && !SimulateHelper.isSimulate({
+                target: this.vsCodeDebugSession.configuration.target,
+                simulatePort: this.vsCodeDebugSession.configuration.simulatePort,
+            })
         ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
         } else {
@@ -694,20 +697,12 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getBundleIdentifier = () => {
-                    if (attachArgs.target.toLowerCase() === TargetType.Device) {
-                        return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
-                            .then(CordovaIosDeviceLauncher.getPathOnDevice);
-                    } else {
-                        return fs.promises.readdir(path.join(attachArgs.cwd, "platforms", "ios", "build", "emulator")).then((entries: string[]) => {
-                            // TODO requires changes in case of implementing debugging on iOS simulators о
-                            let filtered = entries.filter((entry) => /\.app$/.test(entry));
-                            if (filtered.length > 0) {
-                                return filtered[0];
-                            } else {
-                                throw new Error(localize("UnableToFindAppFile", "Unable to find .app file"));
-                            }
+                    return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
+                        .then((packageId: string) => {
+                            return target.isVirtualTarget ?
+                                CordovaIosDeviceLauncher.getPathOnSimulator(packageId, target.simDataPath) :
+                                CordovaIosDeviceLauncher.getPathOnDevice(packageId);
                         });
-                    }
                 };
 
                 const getSimulatorProxyPort = (iOSAppPackagePath): Promise<{ iOSAppPackagePath: string, targetPort: number, iOSVersion: string }> => {
@@ -730,7 +725,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                             return {
                                 iOSAppPackagePath,
                                 targetPort: parseInt(device.url.split(":")[1], 10),
-                                iOSVersion: device.deviceOSVersion,
+                                iOSVersion: target.system,
                             };
                         } catch (e) {
                             throw new Error(localize("UnableToFindiOSTargetDeviceOrSimulator", "Unable to find iOS target device/simulator. Please check that \"Settings > Safari > Advanced > Web Inspector = ON\" or try specifying a different \"port\" parameter in launch.json"));
