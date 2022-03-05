@@ -20,6 +20,7 @@ import { CDP_API_NAMES } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/C
 import { SourcemapPathTransformer } from "../../src/debugger/cdp-proxy/sourcemapPathTransformer";
 import { LogLevel } from "../../src/utils/log/logHelper";
 import { DebuggerEndpointHelper } from "../../src/debugger/cdp-proxy/debuggerEndpointHelper";
+import { PlatformType } from "../../src/debugger/cordovaDebugSession";
 
 interface ICDPProxyInternalEntities {
     attachArgs: ICordovaAttachRequestArgs;
@@ -80,7 +81,7 @@ suite("cordovaCDPProxy", function () {
 
         attachArgs = {
             cwd: path.resolve(__dirname, "..", "resources", "testCordovaProject"),
-            platform: "android",
+            platform: PlatformType.Android,
             ionicLiveReload: false,
             request: "attach",
             port: 9222,
@@ -98,12 +99,26 @@ suite("cordovaCDPProxy", function () {
         }
 
         if (cdpHandlerType === "chrome") {
-            sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+            sourcemapPathTransformer = new SourcemapPathTransformer(
+                attachArgs.cwd,
+                attachArgs.platform,
+                projectType,
+                attachArgs.request,
+                attachArgs.ionicLiveReload,
+                attachArgs.address
+            );
             cdpMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, attachArgs, true);
         } else {
-            attachArgs.platform = "ios";
+            attachArgs.platform = PlatformType.IOS;
 
-            sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+            sourcemapPathTransformer = new SourcemapPathTransformer(
+                attachArgs.cwd,
+                attachArgs.platform,
+                projectType,
+                attachArgs.request,
+                attachArgs.ionicLiveReload,
+                attachArgs.address
+            );
             cdpMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, attachArgs, false);
         }
 
