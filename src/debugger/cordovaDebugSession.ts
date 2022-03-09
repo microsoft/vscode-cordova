@@ -145,7 +145,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             await TelemetryHelper.generate("launch", async (generator) => {
                 TelemetryHelper.sendPluginsList(launchArgs.cwd, CordovaProjectHelper.getInstalledPlugins(launchArgs.cwd));
                 generator.add("target", CordovaDebugSession.getTargetType(launchArgs.target), false);
-                generator.add("projectType", this.platform.getPlatformOpts().projectType, false);
+                generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(this.platform.getPlatformOpts().projectType), false);
                 generator.add("platform", launchArgs.platform, false);
                 this.outputLogger(localize("LaunchingForPlatform", "Launching for {0} (This may take a while)...", launchArgs.platform));
 
@@ -181,7 +181,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             await TelemetryHelper.generate("attach", async (generator) => {
                 TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
                 generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
-                generator.add("projectType", projectType, false);
+                generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false);
                 generator.add("platform", attachArgs.platform, false);
 
                 const sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs.cwd, attachArgs.platform, projectType, attachArgs.request, attachArgs.ionicLiveReload, attachArgs.address);
