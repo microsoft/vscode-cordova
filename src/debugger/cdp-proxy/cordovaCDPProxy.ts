@@ -152,6 +152,7 @@ export class CordovaCDPProxy {
         }
 
         this.applicationTarget = new Connection(await WebSocketTransport.create(this.browserInspectUri));
+        console.log("applicationTarget set");
 
         this.applicationTarget.onError(this.onApplicationTargetError.bind(this));
         this.debuggerTarget.onError(this.onDebuggerTargetError.bind(this));
@@ -174,6 +175,7 @@ export class CordovaCDPProxy {
 
     private handleDebuggerTargetCommand(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
+        // console.log(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -181,10 +183,13 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.applicationTarget?.send(processedMessage.event);
         }
+
+        console.log(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private handleApplicationTargetCommand(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
+        // console.log(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
         if (processedMessage.communicationPreparationsDone) {
@@ -197,10 +202,12 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.debuggerTarget?.send(processedMessage.event);
         }
+        console.log(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private handleDebuggerTargetReply(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2), this.logLevel);
+        // console.log(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -208,10 +215,13 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.applicationTarget?.send(processedMessage.event);
         }
+
+        console.log(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private handleApplicationTargetReply(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2), this.logLevel);
+        // console.log(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -219,6 +229,7 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.debuggerTarget?.send(processedMessage.event);
         }
+        console.log(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private onDebuggerTargetError(err: Error) {

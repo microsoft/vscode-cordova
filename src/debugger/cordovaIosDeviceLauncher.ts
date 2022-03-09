@@ -71,6 +71,7 @@ export class CordovaIosDeviceLauncher {
 
     public static startWebkitDebugProxy(proxyPort: number, proxyRangeStart: number, proxyRangeEnd: number, iOSTarget: IOSTarget): Promise<void> {
         if (CordovaIosDeviceLauncher.webDebuggerProxyInstance) {
+            console.log("startWebkitDebugProxy kill");
             CordovaIosDeviceLauncher.webDebuggerProxyInstance.kill();
             CordovaIosDeviceLauncher.webDebuggerProxyInstance = null;
         }
@@ -92,7 +93,7 @@ export class CordovaIosDeviceLauncher {
                 reject(new Error(localize("UnableToStartIosWebkitDebugProxy", "Unable to start ios_webkit_debug_proxy.")));
             });
             // Allow some time for the spawned process to error out
-            return delay(250).then(() => resolve(void 0));
+            return delay(300).then(() => resolve(void 0));
         });
     }
 

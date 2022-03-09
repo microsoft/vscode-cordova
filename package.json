@@ -198,6 +198,20 @@
             }
           },
           {
+            "label": "Cordova: Run on iOS simulator",
+            "description": "%cordova.snippets.iOSRunOnSimulator%",
+            "body": {
+              "name": "Run iOS on simulator",
+              "type": "cordova",
+              "request": "launch",
+              "platform": "ios",
+              "target": "emulator",
+              "port": 9220,
+              "sourceMaps": true,
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
             "label": "Cordova: Attach to running Android on device",
             "description": "%cordova.snippets.androidAttachOnDevice%",
             "body": {
@@ -234,6 +248,20 @@
               "request": "attach",
               "platform": "ios",
               "target": "device",
+              "port": 9220,
+              "sourceMaps": true,
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
+            "label": "Cordova: Attach to running iOS on simulator",
+            "description": "%cordova.snippets.iOSAttachOnSimulator%",
+            "body": {
+              "name": "Attach to running iOS on simulator",
+              "type": "cordova",
+              "request": "attach",
+              "platform": "ios",
+              "target": "emulator",
               "port": 9220,
               "sourceMaps": true,
               "cwd": "^\"\\${workspaceFolder}\""

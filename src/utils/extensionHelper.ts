@@ -13,6 +13,7 @@ export function generateRandomPortNumber(): number {
 
 export function retryAsync<T>(func: () => Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delayTime: number, failure: string, cancellationToken?: CancellationToken): Promise<T> {
     const retry = () => {
+        console.log("retry", iteration);
         if (cancellationToken && cancellationToken.isCancellationRequested) {
             let cancelError = new Error(CANCELLATION_ERROR_NAME);
             cancelError.name = CANCELLATION_ERROR_NAME;
@@ -42,17 +43,26 @@ export function delay(duration: number): Promise<void> {
 
 export function promiseGet(url: string, reqErrMessage: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        let req = http.get(url, function (res) {
+        const timeout = setTimeout(() => {
+            const err = new Error("Requiest timeout");
+            req.destroy(err);
+            reject(err);
+        }, 9500);
+
+        const req = http.get(url, function (res) {
             let responseString = "";
             res.on("data", (data: Buffer) => {
                 responseString += data.toString();
             });
             res.on("end", () => {
+                clearTimeout(timeout);
                 resolve(responseString);
             });
         });
+
         req.on("error", (err: Error) => {
             this.outputLogger(reqErrMessage);
+            clearTimeout(timeout);
             reject(err);
         });
     });

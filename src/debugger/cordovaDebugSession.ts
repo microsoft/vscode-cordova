@@ -138,6 +138,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             })
         ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
+            console.log(this.pwaSessionName);
         } else {
             this.pwaSessionName = PwaDebugType.Chrome; // the name of Chrome debug session created by js-debug extension
         }
@@ -638,7 +639,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 if (target) {
                     args.push(target.isVirtualTarget ? "--emulator" : "--device");
                     args.push(`--target=${
-                        target.isVirtualTarget && target.simIdentifier ? target.simIdentifier : target.id
+                        target.isVirtualTarget && target.simIdentifier && !projectType.isIonic ? target.simIdentifier : target.id
                     }`);
                 } else {
                     this.outputLogger(`Could not find debugable target '${launchArgs.target}'.`, true);
@@ -697,6 +698,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getBundleIdentifier = () => {
+                    console.log("getBundleIdentifier");
                     return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
                         .then((packageId: string) => {
                             return target.isVirtualTarget ?
@@ -706,6 +708,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getSimulatorProxyPort = (iOSAppPackagePath): Promise<{ iOSAppPackagePath: string, targetPort: number, iOSVersion: string }> => {
+                    console.log("getSimulatorProxyPort");
                     return promiseGet(`http://localhost:${attachArgs.port}/json`, localize("UnableToCommunicateWithiOSWebkitDebugProxy", "Unable to communicate with ios_webkit_debug_proxy")).then((response: string) => {
                         try {
                             // An example of a json response from IWDP
@@ -734,10 +737,12 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getWebSocketDebuggerUrl = ({ iOSAppPackagePath, targetPort, iOSVersion }): Promise<IOSProcessedParams> => {
+                    console.log("getWebSocketDebuggerUrl");
                     return retry(() =>
                         promiseGet(`http://localhost:${targetPort}/json`, localize("UnableToCommunicateWithTarget", "Unable to communicate with target"))
                             .then((response: string) => {
                                 try {
+                                    console.log("getWebSocketDebuggerUrl inner");
                                     // An example of a json response from IWDP
                                     // [{
                                     //     "devtoolsFrontendUrl": "",
@@ -782,6 +787,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         .then(getSimulatorProxyPort)
                         .then(getWebSocketDebuggerUrl)
                         .then((iOSProcessedParams: IOSProcessedParams) => {
+                            console.log("iOSProcessedParams");
                             attachArgs.webSocketDebuggerUrl = iOSProcessedParams.webSocketDebuggerUrl;
                             attachArgs.iOSVersion = iOSProcessedParams.iOSVersion;
                             attachArgs.iOSAppPackagePath = iOSProcessedParams.iOSAppPackagePath;
@@ -943,9 +949,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
             // "build succeeded"
 
             let isIosDevice: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("--device") !== -1;
-            let isIosSimulator: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("emulate") !== -1;
+            let isIosSimulator: boolean = cliArgs.indexOf("ios") !== -1 && cliArgs.indexOf("--emulator") !== -1;
             let iosDeviceAppReadyRegex: RegExp = /created bundle at path|\(lldb\)\W+run\r?\nsuccess/i;
-            let iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
+            let iosSimulatorAppReadyRegex: RegExp = /build succeeded|native-run ios/i;
             let appReadyRegex: RegExp = /launch success|run successful/i;
 
             if (isIosDevice) {
