@@ -187,6 +187,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         result.simulationpath = browserOption.simulateTempDir;
         result.corsproxy = browserOption.corsProxy;
         result.livereloaddelay = browserOption.livereloadDelay;
+        result.spaurlrewrites = browserOption.spaUrlRewrites;
         result.lang = vscode.env.language;
 
         return result;

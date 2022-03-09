@@ -48,5 +48,6 @@ export interface IBrowserPlatformOptions extends IGeneralPlatformOptions {
     corsProxy?: boolean;
     simulatePort?: number;
     simulateTempDir?: string;
+    spaUrlRewrites?: booleanl
 }
 

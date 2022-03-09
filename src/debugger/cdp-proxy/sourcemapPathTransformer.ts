@@ -56,7 +56,7 @@ export class SourcemapPathTransformer {
         let defaultPath = "";
         let foldersForSearch = [this._webRoot, this._cordovaRoot, wwwRoot];
 
-        if (this._projectTypes.ionicMajorVersion === 4 || this._projectTypes.ionicMajorVersion === 5) {
+        if (this._projectTypes.ionicMajorVersion >= 4) {
             // We don't need to connect ts files with js in www folder
             // because Ionic4 `serve` and `ionic cordova run` with livereload option enabled
             // don't use www directory anymore. If www directory is fulfilled and livereload is used then

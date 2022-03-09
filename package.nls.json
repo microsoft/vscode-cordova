@@ -50,6 +50,7 @@
   "cordova.properties.launch.skipFiles": "An array of file or folder names, or path globs, to skip when debugging",
   "cordova.properties.launch.pathMapping": "A mapping of URLs/paths to local folders, to resolve scripts in app webroot to scripts on disk",
   "cordova.properties.launch.sourceMapPathOverrides": "A set of mappings for rewriting the locations of source files from what the sourcemap says, to their locations on disk",
+  "cordova.properties.launch.spaUrlRewrites": " When simulating in the browser, determines whether to enable a special handler for page refreshing in case of URL rewrites caused by the router in single page applications. Defaults to `false`.",
   "cordova.properties.attach.platform": "The platform to run on",
   "cordova.properties.attach.cwd": "The root of the project",
   "cordova.properties.attach.target": "Either 'device', 'emulator', or an identifier for a specific device or emulator",
