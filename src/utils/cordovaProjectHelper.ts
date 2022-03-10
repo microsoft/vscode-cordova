@@ -437,7 +437,8 @@ export class CordovaProjectHelper {
     }
 
     public static getEnvArgument(envVars?: any, envFile?: any): any {
-        let env = process.env;
+        let env = Object.assign({}, process.env);
+        Object.assign(env, envVars);
 
         if (envFile) {
             let buffer = fs.readFileSync(envFile, "utf8");
