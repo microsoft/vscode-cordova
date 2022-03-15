@@ -81,10 +81,16 @@ export enum PlatformType {
  export enum DebugSessionStatus {
     /** The session is active */
     Active,
+    /** The session is processing attachment after failed attempt */
+    Reattaching,
+    /** Debugger attached to the app */
+    Attached,
     /** The session is handling disconnect request now */
     Stopping,
     /** The session is stopped */
     Stopped,
+    /** Failed to attach to the app */
+    AttachFailed,
 }
 
 export type DebugConsoleLogger = (message: string, error?: boolean | string) => void;
@@ -132,6 +138,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private iOSTargetManager: IOSTargetManager;
     private debugSessionStatus: DebugSessionStatus;
     private cdpProxyErrorHandlerDescriptor?: vscode.Disposable;
+    private attachRetryCount: number;
 
     constructor(
         private cordovaSession: CordovaSession,
@@ -146,6 +153,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.stopCommand = "workbench.action.debug.stop"; // the command which simulates a click on the "Stop" button
         this.vsCodeDebugSession = cordovaSession.getVSCodeDebugSession();
         this.debugSessionStatus = DebugSessionStatus.Active;
+        this.attachRetryCount = 2;
 
         if (this.vsCodeDebugSession.configuration.platform === PlatformType.IOS
             && !SimulateHelper.isSimulate({
@@ -306,6 +314,21 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected attachRequest(response: DebugProtocol.AttachResponse, attachArgs: ICordovaAttachRequestArgs, request?: DebugProtocol.Request): Promise<void> {
+        return this.doAttach(attachArgs)
+            .then(() => {
+                this.attachedDeferred.resolve();
+                this.sendResponse(response);
+                this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
+            })
+            .catch(err => {
+                return this.cleanUp()
+                    .finally(() => {
+                        this.terminateWithErrorResponse(err, response);
+                    });
+            });
+    }
+
+    protected doAttach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
             .then(() => {
                 this.initializeSettings(attachArgs);
@@ -361,10 +384,18 @@ export class CordovaDebugSession extends LoggingDebugSession {
                                 this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
                             }
                             this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
-                            this.cdpProxyErrorHandlerDescriptor = this.cordovaCdpProxy.onError(err => {
-                                this.showError(err);
-                                this.terminate();
-                                this.cdpProxyErrorHandlerDescriptor?.dispose();
+                            this.cdpProxyErrorHandlerDescriptor = this.cordovaCdpProxy.onError(async (err: Error) => {
+                                if (this.attachRetryCount > 0) {
+                                    this.debugSessionStatus = DebugSessionStatus.Reattaching;
+                                    this.attachRetryCount--;
+                                    await this.attachmentCleanUp();
+                                    this.outputLogger(localize("ReattachingToApp", "Failed attempt to attach to the app. Trying to reattach..."));
+                                    void this.doAttach(attachArgs);
+                                } else {
+                                    this.showError(err);
+                                    this.terminate();
+                                    this.cdpProxyErrorHandlerDescriptor?.dispose();
+                                }
                             });
                         }
                         this.establishDebugSession(processedAttachArgs, resolve, reject);
@@ -372,21 +403,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 })
                 .catch((err) => {
                     this.outputLogger(err.message || err.format || err, true);
-                    return this.cleanUp().then(() => {
-                        throw err;
-                    });
+                    throw err;
                 })
             )
             .catch(err => reject(err))
-        )
-        .then(() => {
-            this.attachedDeferred.resolve();
-            this.sendResponse(response);
-            this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
-        })
-        .catch(err => {
-            this.terminateWithErrorResponse(err, response);
-        });
+        ).then(
+            () => {
+                this.debugSessionStatus = DebugSessionStatus.Attached;
+            },
+            (err) => {
+                this.debugSessionStatus = DebugSessionStatus.AttachFailed;
+                throw err;
+            }
+        );
     }
 
     protected terminateWithErrorResponse(error: Error, response: DebugProtocol.Response): void {
@@ -415,6 +444,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
         if (
             debugSession.configuration.cordovaDebugSessionId === this.cordovaSession.getSessionId()
             && debugSession.type === this.pwaSessionName
+            && this.debugSessionStatus !== DebugSessionStatus.Reattaching
         ) {
             this.terminate();
         }
@@ -833,6 +863,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
         return cordovaWebview || webviewsList[0];
     }
 
+    private async attachmentCleanUp(): Promise<void> {
+        // Clear the Ionic dev server URL if necessary
+        if (this.ionicDevServerUrls) {
+            this.ionicDevServerUrls = null;
+        }
+
+        this.cdpProxyErrorHandlerDescriptor?.dispose();
+        if (this.cordovaCdpProxy) {
+            await this.cordovaCdpProxy.stopServer();
+            this.cordovaCdpProxy = null;
+        }
+    }
+
     private async cleanUp(restart?: boolean): Promise<void> {
         const errorLogger = (message) => this.outputLogger(message, true);
 
@@ -867,10 +910,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             killServePromise = Promise.resolve();
         }
 
-        // Clear the Ionic dev server URL if necessary
-        if (this.ionicDevServerUrls) {
-            this.ionicDevServerUrls = null;
-        }
+        await this.attachmentCleanUp();
 
         // Close the simulate debug-host socket if necessary
         if (this.simulateDebugHost) {
@@ -878,11 +918,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.simulateDebugHost = null;
         }
 
-        this.cdpProxyErrorHandlerDescriptor?.dispose();
-        if (this.cordovaCdpProxy) {
-            await this.cordovaCdpProxy.stopServer();
-            this.cordovaCdpProxy = null;
-        }
         this.cancellationTokenSource.cancel();
         this.cancellationTokenSource.dispose();
 
