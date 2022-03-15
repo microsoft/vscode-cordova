@@ -71,7 +71,6 @@ export class CordovaIosDeviceLauncher {
 
     public static startWebkitDebugProxy(proxyPort: number, proxyRangeStart: number, proxyRangeEnd: number, iOSTarget: IOSTarget): Promise<void> {
         if (CordovaIosDeviceLauncher.webDebuggerProxyInstance) {
-            console.log("startWebkitDebugProxy kill");
             CordovaIosDeviceLauncher.webDebuggerProxyInstance.kill();
             CordovaIosDeviceLauncher.webDebuggerProxyInstance = null;
         }

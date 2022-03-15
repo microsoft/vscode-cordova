@@ -11,7 +11,7 @@ import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
 import { LogLevel } from "../../utils/log/logHelper";
-import { CancellationToken } from "vscode";
+import { CancellationToken, EventEmitter } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { PlatformType } from "../cordovaDebugSession";
 import { ProjectType } from "../../utils/cordovaProjectHelper";
@@ -44,6 +44,10 @@ export class CordovaCDPProxy {
     private communicationPreparationsDone: boolean;
     private browserInspectUri: string;
     private isSimulate: boolean;
+    private errorEventEmitter: EventEmitter<Error> = new EventEmitter();
+    private debuggerTargetUnpausedTimeout: NodeJS.Timeout | null = null;
+
+    public readonly onError = this.errorEventEmitter.event;
 
     constructor(
         hostAddress: string,
@@ -63,11 +67,9 @@ export class CordovaCDPProxy {
 
         if (args.platform === PlatformType.IOS && !this.isSimulate) {
             this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, false);
-            console.log("Here iOS");
             this.communicationPreparationsDone = false;
         } else {
             this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, true);
-            console.log("Here Android");
             this.communicationPreparationsDone = true;
         }
     }
@@ -109,7 +111,6 @@ export class CordovaCDPProxy {
     }
 
     public configureCDPMessageHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
-        console.log(args.iOSVersion);
         if (
             args.iOSVersion
             && !this.communicationPreparationsDone
@@ -152,7 +153,7 @@ export class CordovaCDPProxy {
         }
 
         this.applicationTarget = new Connection(await WebSocketTransport.create(this.browserInspectUri));
-        console.log("applicationTarget set");
+        this.setDebuggerTargetUnpausedTimeout();
 
         this.applicationTarget.onError(this.onApplicationTargetError.bind(this));
         this.debuggerTarget.onError(this.onDebuggerTargetError.bind(this));
@@ -175,7 +176,6 @@ export class CordovaCDPProxy {
 
     private handleDebuggerTargetCommand(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
-        // console.log(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -183,13 +183,10 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.applicationTarget?.send(processedMessage.event);
         }
-
-        console.log(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private handleApplicationTargetCommand(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
-        // console.log(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
         if (processedMessage.communicationPreparationsDone) {
@@ -202,12 +199,10 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.debuggerTarget?.send(processedMessage.event);
         }
-        console.log(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private handleDebuggerTargetReply(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2), this.logLevel);
-        // console.log(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -215,13 +210,10 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.applicationTarget?.send(processedMessage.event);
         }
-
-        console.log(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private handleApplicationTargetReply(event: any) {
         this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2), this.logLevel);
-        // console.log(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2));
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -229,7 +221,6 @@ export class CordovaCDPProxy {
         } else if (processedMessage.dispatchDirection === DispatchDirection.FORWARD) {
             this.debuggerTarget?.send(processedMessage.event);
         }
-        console.log(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(processedMessage.event, null , 2));
     }
 
     private onDebuggerTargetError(err: Error) {
@@ -253,7 +244,20 @@ export class CordovaCDPProxy {
 
     private unpauseDebuggerTarget(): void {
         if (this.debuggerTarget && this.communicationPreparationsDone) {
+            if (this.debuggerTargetUnpausedTimeout) {
+                clearTimeout(this.debuggerTargetUnpausedTimeout);
+                this.debuggerTargetUnpausedTimeout = null;
+            }
             this.debuggerTarget.unpause();
         }
+    }
+
+    private setDebuggerTargetUnpausedTimeout(): void {
+        if (this.debuggerTargetUnpausedTimeout) {
+            clearTimeout(this.debuggerTargetUnpausedTimeout);
+        }
+        this.debuggerTargetUnpausedTimeout = setTimeout(() => {
+            this.errorEventEmitter.fire(new Error("Failed to resume debugger target connection"));
+        }, 6000);
     }
 }
