@@ -198,10 +198,10 @@
             }
           },
           {
-            "label": "Cordova: Run on iOS simulator",
+            "label": "Cordova: Run on iOS simulator - experimental",
             "description": "%cordova.snippets.iOSRunOnSimulator%",
             "body": {
-              "name": "Run iOS on simulator",
+              "name": "Run iOS on simulator - experimental",
               "type": "cordova",
               "request": "launch",
               "platform": "ios",
@@ -254,10 +254,10 @@
             }
           },
           {
-            "label": "Cordova: Attach to running iOS on simulator",
+            "label": "Cordova: Attach to running iOS on simulator - experimental",
             "description": "%cordova.snippets.iOSAttachOnSimulator%",
             "body": {
-              "name": "Attach to running iOS on simulator",
+              "name": "Attach to running iOS on simulator - experimental",
               "type": "cordova",
               "request": "attach",
               "platform": "ios",

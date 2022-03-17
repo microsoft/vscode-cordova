@@ -13,7 +13,6 @@ export function generateRandomPortNumber(): number {
 
 export function retryAsync<T>(func: () => Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delayTime: number, failure: string, cancellationToken?: CancellationToken): Promise<T> {
     const retry = () => {
-        console.log("retry", iteration);
         if (cancellationToken && cancellationToken.isCancellationRequested) {
             let cancelError = new Error(CANCELLATION_ERROR_NAME);
             cancelError.name = CANCELLATION_ERROR_NAME;
@@ -61,7 +60,6 @@ export function promiseGet(url: string, reqErrMessage: string): Promise<string> 
         });
 
         req.on("error", (err: Error) => {
-            this.outputLogger(reqErrMessage);
             clearTimeout(timeout);
             reject(err);
         });

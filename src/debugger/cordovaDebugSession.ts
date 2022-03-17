@@ -38,6 +38,7 @@ import { AdbHelper } from "../utils/android/adb";
 import { AndroidTargetManager, AndroidTarget } from "../utils/android/androidTargetManager";
 import { IOSTargetManager, IOSTarget } from "../utils/ios/iOSTargetManager";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
+import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -72,6 +73,24 @@ export enum PlatformType {
     Ubuntu = "ubuntu",
     Wp8 = "wp8",
     Browser = "browser",
+}
+
+/**
+ * Enum of possible statuses of debug session
+ */
+ export enum DebugSessionStatus {
+    /** The session is active */
+    Active,
+    /** The session is processing attachment after failed attempt */
+    Reattaching,
+    /** Debugger attached to the app */
+    Attached,
+    /** The session is handling disconnect request now */
+    Stopping,
+    /** The session is stopped */
+    Stopped,
+    /** Failed to attach to the app */
+    AttachFailed,
 }
 
 export type DebugConsoleLogger = (message: string, error?: boolean | string) => void;
@@ -117,6 +136,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private cancellationTokenSource: vscode.CancellationTokenSource;
     private vsCodeDebugSession: vscode.DebugSession;
     private iOSTargetManager: IOSTargetManager;
+    private debugSessionStatus: DebugSessionStatus;
+    private cdpProxyErrorHandlerDescriptor?: vscode.Disposable;
+    private attachRetryCount: number;
 
     constructor(
         private cordovaSession: CordovaSession,
@@ -130,6 +152,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
         this.cdpProxyHostAddress = "127.0.0.1"; // localhost
         this.stopCommand = "workbench.action.debug.stop"; // the command which simulates a click on the "Stop" button
         this.vsCodeDebugSession = cordovaSession.getVSCodeDebugSession();
+        this.debugSessionStatus = DebugSessionStatus.Active;
+        this.attachRetryCount = 2;
 
         if (this.vsCodeDebugSession.configuration.platform === PlatformType.IOS
             && !SimulateHelper.isSimulate({
@@ -138,7 +162,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             })
         ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
-            console.log(this.pwaSessionName);
         } else {
             this.pwaSessionName = PwaDebugType.Chrome; // the name of Chrome debug session created by js-debug extension
         }
@@ -287,10 +310,25 @@ export class CordovaDebugSession extends LoggingDebugSession {
             }))
             .catch(err => reject(err));
         })
-        .catch(err => this.showError(err, response));
+        .catch(err => this.terminateWithErrorResponse(err, response));
     }
 
     protected attachRequest(response: DebugProtocol.AttachResponse, attachArgs: ICordovaAttachRequestArgs, request?: DebugProtocol.Request): Promise<void> {
+        return this.doAttach(attachArgs)
+            .then(() => {
+                this.attachedDeferred.resolve();
+                this.sendResponse(response);
+                this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
+            })
+            .catch(err => {
+                return this.cleanUp()
+                    .finally(() => {
+                        this.terminateWithErrorResponse(err, response);
+                    });
+            });
+    }
+
+    protected doAttach(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
         return new Promise<void>((resolve, reject) => this.initializeTelemetry(attachArgs.cwd)
             .then(() => {
                 this.initializeSettings(attachArgs);
@@ -346,30 +384,41 @@ export class CordovaDebugSession extends LoggingDebugSession {
                                 this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
                             }
                             this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
+                            this.cdpProxyErrorHandlerDescriptor = this.cordovaCdpProxy.onError(async (err: Error) => {
+                                if (this.attachRetryCount > 0) {
+                                    this.debugSessionStatus = DebugSessionStatus.Reattaching;
+                                    this.attachRetryCount--;
+                                    await this.attachmentCleanUp();
+                                    this.outputLogger(localize("ReattachingToApp", "Failed attempt to attach to the app. Trying to reattach..."));
+                                    void this.doAttach(attachArgs);
+                                } else {
+                                    this.showError(err);
+                                    this.terminate();
+                                    this.cdpProxyErrorHandlerDescriptor?.dispose();
+                                }
+                            });
                         }
                         this.establishDebugSession(processedAttachArgs, resolve, reject);
                     });
                 })
                 .catch((err) => {
                     this.outputLogger(err.message || err.format || err, true);
-                    return this.cleanUp().then(() => {
-                        throw err;
-                    });
+                    throw err;
                 })
             )
             .catch(err => reject(err))
-        )
-        .then(() => {
-            this.attachedDeferred.resolve();
-            this.sendResponse(response);
-            this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
-        })
-        .catch(err => {
-            this.showError(err, response);
-        });
+        ).then(
+            () => {
+                this.debugSessionStatus = DebugSessionStatus.Attached;
+            },
+            (err) => {
+                this.debugSessionStatus = DebugSessionStatus.AttachFailed;
+                throw err;
+            }
+        );
     }
 
-    protected showError(error: Error, response: DebugProtocol.Response): void {
+    protected terminateWithErrorResponse(error: Error, response: DebugProtocol.Response): void {
 
         // We can't print error messages after the debugging session is stopped. This could break the extension work.
         if (error.name === CANCELLATION_ERROR_NAME) {
@@ -387,6 +436,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
     protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
         await this.cleanUp(args.restart);
+        this.debugSessionStatus = DebugSessionStatus.Stopped;
         super.disconnectRequest(response, args, request);
     }
 
@@ -394,8 +444,9 @@ export class CordovaDebugSession extends LoggingDebugSession {
         if (
             debugSession.configuration.cordovaDebugSessionId === this.cordovaSession.getSessionId()
             && debugSession.type === this.pwaSessionName
+            && this.debugSessionStatus !== DebugSessionStatus.Reattaching
         ) {
-            vscode.commands.executeCommand(this.stopCommand, undefined, { sessionId: this.vsCodeDebugSession.id });
+            this.terminate();
         }
     }
 
@@ -698,7 +749,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getBundleIdentifier = () => {
-                    console.log("getBundleIdentifier");
                     return CordovaIosDeviceLauncher.getBundleIdentifier(attachArgs.cwd)
                         .then((packageId: string) => {
                             return target.isVirtualTarget ?
@@ -708,7 +758,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getSimulatorProxyPort = (iOSAppPackagePath): Promise<{ iOSAppPackagePath: string, targetPort: number, iOSVersion: string }> => {
-                    console.log("getSimulatorProxyPort");
                     return promiseGet(`http://localhost:${attachArgs.port}/json`, localize("UnableToCommunicateWithiOSWebkitDebugProxy", "Unable to communicate with ios_webkit_debug_proxy")).then((response: string) => {
                         try {
                             // An example of a json response from IWDP
@@ -737,12 +786,10 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 };
 
                 const getWebSocketDebuggerUrl = ({ iOSAppPackagePath, targetPort, iOSVersion }): Promise<IOSProcessedParams> => {
-                    console.log("getWebSocketDebuggerUrl");
                     return retry(() =>
                         promiseGet(`http://localhost:${targetPort}/json`, localize("UnableToCommunicateWithTarget", "Unable to communicate with target"))
                             .then((response: string) => {
                                 try {
-                                    console.log("getWebSocketDebuggerUrl inner");
                                     // An example of a json response from IWDP
                                     // [{
                                     //     "devtoolsFrontendUrl": "",
@@ -787,7 +834,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         .then(getSimulatorProxyPort)
                         .then(getWebSocketDebuggerUrl)
                         .then((iOSProcessedParams: IOSProcessedParams) => {
-                            console.log("iOSProcessedParams");
                             attachArgs.webSocketDebuggerUrl = iOSProcessedParams.webSocketDebuggerUrl;
                             attachArgs.iOSVersion = iOSProcessedParams.iOSVersion;
                             attachArgs.iOSAppPackagePath = iOSProcessedParams.iOSAppPackagePath;
@@ -815,6 +861,19 @@ export class CordovaDebugSession extends LoggingDebugSession {
             return false;
         });
         return cordovaWebview || webviewsList[0];
+    }
+
+    private async attachmentCleanUp(): Promise<void> {
+        // Clear the Ionic dev server URL if necessary
+        if (this.ionicDevServerUrls) {
+            this.ionicDevServerUrls = null;
+        }
+
+        this.cdpProxyErrorHandlerDescriptor?.dispose();
+        if (this.cordovaCdpProxy) {
+            await this.cordovaCdpProxy.stopServer();
+            this.cordovaCdpProxy = null;
+        }
     }
 
     private async cleanUp(restart?: boolean): Promise<void> {
@@ -851,10 +910,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             killServePromise = Promise.resolve();
         }
 
-        // Clear the Ionic dev server URL if necessary
-        if (this.ionicDevServerUrls) {
-            this.ionicDevServerUrls = null;
-        }
+        await this.attachmentCleanUp();
 
         // Close the simulate debug-host socket if necessary
         if (this.simulateDebugHost) {
@@ -862,10 +918,6 @@ export class CordovaDebugSession extends LoggingDebugSession {
             this.simulateDebugHost = null;
         }
 
-        if (this.cordovaCdpProxy) {
-            await this.cordovaCdpProxy.stopServer();
-            this.cordovaCdpProxy = null;
-        }
         this.cancellationTokenSource.cancel();
         this.cancellationTokenSource.dispose();
 
@@ -1581,5 +1633,23 @@ export class CordovaDebugSession extends LoggingDebugSession {
             }).then(() => {
                 return attachArgs;
             });
+    }
+
+    private showError(error: Error): void {
+        void vscode.window.showErrorMessage(error.message, {
+            modal: true,
+        });
+        // We can't print error messages via debug session logger after the session is stopped. This could break the extension work.
+        if (this.debugSessionStatus === DebugSessionStatus.Stopped) {
+            OutputChannelLogger.getMainChannel().log(error.message);
+            return;
+        }
+        this.outputLogger(error.message, true);
+    }
+
+    private async terminate(): Promise<void> {
+        await vscode.commands.executeCommand(this.stopCommand, undefined, {
+            sessionId: this.vsCodeDebugSession.id,
+        });
     }
 }
