@@ -1434,9 +1434,15 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
                 // Ionic ends process with zero code, so we need to look for
                 // strings with error content to detect failed process
-                let errorMatch = /(ERROR.*)/.test(runOutput) || /error:.*/i.test(stderr);
+                let errorMatch = /(ERROR.*)/.exec(runOutput) || /error:.*/i.exec(stderr);
                 if (errorMatch) {
-                    throw new Error(localize("ErrorRunningAndroid", "Error running android"));
+                    // TODO remove this handler after the issue https://github.com/ionic-team/ionic-cli/issues/4809 is resolved
+                    const errorOutputJsonPattern = new RegExp(
+                        `Error: ENOENT: no such file or directory.*\\${path.sep}output\.json`, "mi"
+                    );
+                    if (!errorOutputJsonPattern.test(errorMatch[0])) {
+                        throw new Error(localize("ErrorRunningAndroid", "Error running android"));
+                    }
                 }
 
                 this.outputLogger(localize("AppSuccessfullyLaunched", "App successfully launched"));

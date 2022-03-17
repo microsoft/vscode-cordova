@@ -45,10 +45,13 @@ export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase 
         const dispatchDirection = DispatchDirection.FORWARD;
         if (
             event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED &&
-            event.params.url &&
-            this.verifySourceMapUrl(event.params.url)
+            event.params.url
         ) {
-            event.params = this.fixSourcemapLocation(event.params);
+            if (this.verifySourceMapUrl(event.params.url)) {
+                event.params = this.fixSourcemapLocation(event.params);
+            } else if ( event.params.url.includes("android_asset")) {
+                event.params = this.fixSourcemapLocation(event.params, true);
+            }
         }
 
         return {
@@ -57,8 +60,10 @@ export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase 
         };
     }
 
-    protected fixSourcemapLocation(reqParams: any): any {
-        let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
+    protected fixSourcemapLocation(reqParams: any, androidAssetURL?: boolean): any {
+        let absoluteSourcePath = androidAssetURL ?
+            this.sourcemapPathTransformer.getClientPathFromFileBasedUrlWithAndroidAsset(reqParams.url) :
+            this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
         if (absoluteSourcePath) {
             if (process.platform === "win32") {
                 reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard

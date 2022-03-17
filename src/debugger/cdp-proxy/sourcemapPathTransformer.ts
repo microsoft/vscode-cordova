@@ -26,6 +26,13 @@ export class SourcemapPathTransformer {
         this._debugRequestType = args.request;
     }
 
+    public getClientPathFromFileBasedUrlWithAndroidAsset(sourceUrl: string): string | null {
+        if (sourceUrl.startsWith("file:///android_asset")) {
+            return this.getClientPath(sourceUrl.replace("file:///android_asset", ""));
+        }
+        return null;
+    }
+
     public getClientPathFromFileBasedUrl(sourceUrl: string): string {
         const regExp = new RegExp("file:\\/\\/\\/.*\\.app(?:\\/www)*(\\/.*\\.(js|html))", "g");
         let foundStrings = regExp.exec(sourceUrl);
@@ -34,6 +41,17 @@ export class SourcemapPathTransformer {
         } else {
             return this.getClientPath("/");
         }
+    }
+
+    public getClientPathFromHttpBasedUrl0(sourceUrl: string): string {
+        let relativeSourcePath;
+        try {
+            relativeSourcePath = url.parse(sourceUrl).pathname || "/";
+        } catch (err) {
+            relativeSourcePath = "/";
+        }
+        return `android_asset/www${relativeSourcePath}`;
+        // return this.getClientPath(relativeSourcePath);
     }
 
     public getClientPathFromHttpBasedUrl(sourceUrl: string): string {

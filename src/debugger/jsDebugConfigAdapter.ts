@@ -32,9 +32,9 @@ export class JsDebugConfigAdapter {
 
     public createChromeDebuggingConfig(attachArgs: ICordovaAttachRequestArgs, cdpProxyPort: number, pwaSessionName: string, sessionId: string): any {
         let extraArgs: any = {};
-        if (!CordovaProjectHelper.isIonicAngularProject(attachArgs.cwd) && !attachArgs.simulatePort) {
+        if (!attachArgs.simulatePort) {
             extraArgs.pathMapping = {
-                "/android_asset/www": `${attachArgs.cwd}/www`,
+                "/android_asset/www": `${attachArgs.cwd.split("\\").join("/")}/www`,
             };
             extraArgs.url = "file:///";
             extraArgs.urlFilter = "*";

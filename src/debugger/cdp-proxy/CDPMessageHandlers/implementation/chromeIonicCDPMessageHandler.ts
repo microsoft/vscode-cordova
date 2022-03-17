@@ -49,7 +49,19 @@ export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
             this.verifySourceMapUrl(event.params.url)
         ) {
             this.tryToGetIonicDevServerPortFromURL(event.params.url);
-            event.params = this.fixSourcemapLocation(event.params);
+            event.params = this.fixSourcemapLocation0(event.params);
+
+
+            if (
+                event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED &&
+                event.params.url
+            ) {
+                if (this.verifySourceMapUrl(event.params.url)) {
+                    event.params = this.fixSourcemapLocation(event.params);
+                } else if ( event.params.url.includes("android_asset")) {
+                    event.params = this.fixSourcemapLocation(event.params, true);
+                }
+            }
         }
 
         return {
@@ -58,8 +70,24 @@ export class ChromeIonicCDPMessageHandler extends ChromeCDPMessageHandlerBase {
         };
     }
 
-    protected fixSourcemapLocation(reqParams: any): any {
-        let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
+    protected fixSourcemapLocation0(reqParams: any): any {
+        let absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl0(reqParams.url);
+        if (absoluteSourcePath) {
+            if (process.platform === "win32") {
+                reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard
+            } else {
+                reqParams.url = "file://" + absoluteSourcePath;
+            }
+        } else if (!(this.platform === PlatformType.Serve || (this.ionicLiveReload && this.debugRequestType === "launch"))) {
+            reqParams.url = "";
+        }
+        return reqParams;
+    }
+
+    protected fixSourcemapLocation(reqParams: any, androidAssetURL?: boolean): any {
+        let absoluteSourcePath = androidAssetURL ?
+            this.sourcemapPathTransformer.getClientPathFromFileBasedUrlWithAndroidAsset(reqParams.url) :
+            this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
         if (absoluteSourcePath) {
             if (process.platform === "win32") {
                 reqParams.url = "file:///" + absoluteSourcePath.split("\\").join("/"); // transform to URL standard
