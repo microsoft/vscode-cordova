@@ -1411,7 +1411,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                         launchScenariousManager.updateLaunchScenario(configArgs, {target: target.id});
                     }
                 } else {
-                    launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
+                    launchScenariousManager.updateLaunchScenario(configArgs, {target: target.id});
                 }
             };
 
