@@ -1408,7 +1408,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
                     // Save the selected target for attach scenario only if there are more then one online target
                     const onlineDevices = await this.iOSTargetManager.getOnlineTargets();
                     if (onlineDevices.filter(device => target.isVirtualTarget === device.isVirtualTarget).length > 1) {
-                        launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
+                        launchScenariousManager.updateLaunchScenario(configArgs, {target: target.id});
                     }
                 } else {
                     launchScenariousManager.updateLaunchScenario(configArgs, {target: target.name});
