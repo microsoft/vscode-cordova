@@ -49,7 +49,7 @@ export class ChromeCordovaCDPMessageHandler extends ChromeCDPMessageHandlerBase 
         ) {
             if (this.verifySourceMapUrl(event.params.url)) {
                 event.params = this.fixSourcemapLocation(event.params);
-            } else if ( event.params.url.includes("android_asset")) {
+            } else if (event.params.url.includes("android_asset")) {
                 event.params = this.fixSourcemapLocation(event.params, true);
             }
         }
