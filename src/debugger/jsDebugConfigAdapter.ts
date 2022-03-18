@@ -34,7 +34,7 @@ export class JsDebugConfigAdapter {
         let extraArgs: any = {};
         if (!attachArgs.simulatePort) {
             extraArgs.pathMapping = {
-                "/android_asset/www": `${attachArgs.cwd.split("\\").join("/")}/www`,
+                "/android_asset/www": `${attachArgs.cwd}/www`,
             };
             extraArgs.url = "file:///";
             extraArgs.urlFilter = "*";

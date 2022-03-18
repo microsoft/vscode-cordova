@@ -43,17 +43,6 @@ export class SourcemapPathTransformer {
         }
     }
 
-    public getClientPathFromHttpBasedUrl0(sourceUrl: string): string {
-        let relativeSourcePath;
-        try {
-            relativeSourcePath = url.parse(sourceUrl).pathname || "/";
-        } catch (err) {
-            relativeSourcePath = "/";
-        }
-        return `android_asset/www${relativeSourcePath}`;
-        // return this.getClientPath(relativeSourcePath);
-    }
-
     public getClientPathFromHttpBasedUrl(sourceUrl: string): string {
         let relativeSourcePath;
         try {
