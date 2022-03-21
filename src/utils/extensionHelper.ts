@@ -43,7 +43,7 @@ export function delay(duration: number): Promise<void> {
 export function promiseGet(url: string, reqErrMessage: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
-            const err = new Error("Requiest timeout");
+            const err = new Error("Request timeout");
             req.destroy(err);
             reject(err);
         }, 9500);
