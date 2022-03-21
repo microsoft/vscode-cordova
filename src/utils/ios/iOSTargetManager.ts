@@ -120,7 +120,7 @@ export class IOSTargetManager extends MobileTargetManager {
                             system,
                             isVirtualTarget: true,
                             isOnline: device.state === IOSTargetManager.BOOTED_STATE,
-                            simIdentifier,
+                            simIdentifier: simIdentifier,
                             simDataPath: device.dataPath,
                         });
                     }
