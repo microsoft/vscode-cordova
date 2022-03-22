@@ -11,7 +11,7 @@ import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
 import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
 import { LogLevel } from "../../utils/log/logHelper";
-import { CancellationToken } from "vscode";
+import { CancellationToken, EventEmitter } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { PlatformType } from "../cordovaDebugSession";
 import { ProjectType } from "../../utils/cordovaProjectHelper";
@@ -19,7 +19,6 @@ import { SimulateHelper } from "../../utils/simulateHelper";
 import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
-import { TargetType } from "../cordovaDebugSession";
 
 export class CordovaCDPProxy {
 
@@ -45,6 +44,10 @@ export class CordovaCDPProxy {
     private communicationPreparationsDone: boolean;
     private browserInspectUri: string;
     private isSimulate: boolean;
+    private errorEventEmitter: EventEmitter<Error> = new EventEmitter();
+    private debuggerTargetUnpausedTimeout: NodeJS.Timeout | null = null;
+
+    public readonly onError = this.errorEventEmitter.event;
 
     constructor(
         hostAddress: string,
@@ -60,9 +63,9 @@ export class CordovaCDPProxy {
         this.logger = OutputChannelLogger.getChannel("Cordova Chrome Proxy", true, false, true);
         this.debuggerEndpointHelper = new DebuggerEndpointHelper();
         this.browserInspectUri = args.webSocketDebuggerUrl || "";
-        this.isSimulate = !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
+        this.isSimulate = SimulateHelper.isSimulate(args);
 
-        if (args.platform === PlatformType.IOS && (args.target === TargetType.Emulator || args.target === TargetType.Device)) {
+        if (args.platform === PlatformType.IOS && !this.isSimulate) {
             this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, false);
             this.communicationPreparationsDone = false;
         } else {
@@ -150,6 +153,7 @@ export class CordovaCDPProxy {
         }
 
         this.applicationTarget = new Connection(await WebSocketTransport.create(this.browserInspectUri));
+        this.setDebuggerTargetUnpausedTimeout();
 
         this.applicationTarget.onError(this.onApplicationTargetError.bind(this));
         this.debuggerTarget.onError(this.onDebuggerTargetError.bind(this));
@@ -240,7 +244,20 @@ export class CordovaCDPProxy {
 
     private unpauseDebuggerTarget(): void {
         if (this.debuggerTarget && this.communicationPreparationsDone) {
+            if (this.debuggerTargetUnpausedTimeout) {
+                clearTimeout(this.debuggerTargetUnpausedTimeout);
+                this.debuggerTargetUnpausedTimeout = null;
+            }
             this.debuggerTarget.unpause();
         }
+    }
+
+    private setDebuggerTargetUnpausedTimeout(): void {
+        if (this.debuggerTargetUnpausedTimeout) {
+            clearTimeout(this.debuggerTargetUnpausedTimeout);
+        }
+        this.debuggerTargetUnpausedTimeout = setTimeout(() => {
+            this.errorEventEmitter.fire(new Error("Failed to resume debugger target connection"));
+        }, 6000);
     }
 }

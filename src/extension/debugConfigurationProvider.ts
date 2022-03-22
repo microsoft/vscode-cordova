@@ -70,6 +70,26 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             "sourceMaps": true,
             "cwd": "${workspaceFolder}",
         },
+        "Run iOS on simulator - experimental": {
+            "name": "Run iOS on simulator - experimental",
+            "type": "cordova",
+            "request": "launch",
+            "platform": "ios",
+            "target": "emulator",
+            "port": 9220,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}",
+        },
+        "Attach to running iOS on simulator - experimental": {
+            "name": "Attach to running iOS on simulator - experimental",
+            "type": "cordova",
+            "request": "attach",
+            "platform": "ios",
+            "target": "emulator",
+            "port": 9220,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}",
+        },
         "Serve to the browser (Ionic Serve)": {
             "name": "Serve to the browser (Ionic Serve)",
             "type": "cordova",
@@ -132,6 +152,14 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         {
             label: "Attach to running Android on device",
             description: localize("AttachToRunningCordovaAppOnAndroidDevice", "Attach to running Cordova app on Android device"),
+        },
+        {
+            label: "Run iOS on simulator - experimental",
+            description: localize("RunAndDebugCordovaAppOniOSSimulator", "Run and debug Cordova app on iOS simulator"),
+        },
+        {
+            label: "Attach to running iOS on simulator - experimental",
+            description: localize("AttachToRunningCordovaAppOniOSSimulator", "Attach to running Cordova app on iOS simulator"),
         },
         {
             label: "Run iOS on device",

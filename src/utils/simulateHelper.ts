@@ -7,4 +7,8 @@ export class SimulateHelper {
     public static isSimulateTarget(target: string): boolean {
         return Object.values(SimulateTargets).includes(target as SimulateTargets);
     }
+
+    public static isSimulate(args: { target?: string, simulatePort?: number }) {
+        return !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
+    }
 }

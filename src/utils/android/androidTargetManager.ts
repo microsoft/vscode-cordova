@@ -5,7 +5,6 @@ import * as nls from "vscode-nls";
 import { MobileTargetManager } from "../mobileTargetManager";
 import { AdbHelper } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
-import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { TargetType } from "../../debugger/cordovaDebugSession";
 
@@ -31,11 +30,6 @@ export class AndroidTargetManager extends MobileTargetManager {
     private static readonly EMULATOR_AVD_START_COMMAND = "-avd";
 
     private static readonly EMULATOR_START_TIMEOUT = 120;
-
-    private logger: OutputChannelLogger = OutputChannelLogger.getChannel(
-        OutputChannelLogger.MAIN_CHANNEL_NAME,
-        true,
-    );
 
     private adbHelper: AdbHelper;
     private childProcess: ChildProcess;
