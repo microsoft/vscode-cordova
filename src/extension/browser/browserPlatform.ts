@@ -91,6 +91,7 @@ export default class BrowserPlatform extends AbstractPlatform {
     }
 
     public async stopAndCleanUp(): Promise<void> {
+        await super.stopAndCleanUp();
         if (this.browserProc) {
             this.browserProc.kill("SIGINT");
             this.browserProc = null;
@@ -100,7 +101,6 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.simulateDebugHost.close();
             this.simulateDebugHost = null;
         }
-        await this.IonicDevServer.stopAndCleanUp();
     }
 
     public getRunArguments(): string[] {

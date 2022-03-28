@@ -33,6 +33,7 @@ import IonicDevServer from "../utils/ionicDevServer";
 import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 import { IMobileTarget } from "../utils/mobileTarget";
+import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -63,6 +64,24 @@ export enum PlatformType {
     Browser = "browser",
 }
 
+/**
+ * Enum of possible statuses of debug session
+ */
+ export enum DebugSessionStatus {
+    /** The session is active */
+    Active,
+    /** The session is processing attachment after failed attempt */
+    Reattaching,
+    /** Debugger attached to the app */
+    Attached,
+    /** The session is handling disconnect request now */
+    Stopping,
+    /** The session is stopped */
+    Stopped,
+    /** Failed to attach to the app */
+    AttachFailed,
+}
+
 export type DebugConsoleLogger = (message: string, error?: boolean | string) => void;
 
 export interface WebviewData {
@@ -90,6 +109,9 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     private platform: AbstractPlatform | undefined;
     private onDidTerminateDebugSessionHandler: vscode.Disposable;
     private jsDebugConfigAdapter: JsDebugConfigAdapter = new JsDebugConfigAdapter();
+    private debugSessionStatus: DebugSessionStatus = DebugSessionStatus.Active;
+    private cdpProxyErrorHandlerDescriptor?: vscode.Disposable;
+    private attachRetryCount: number = 2;
 
     private cdpProxyLogLevel: LogLevel;
     private cancellationTokenSource: vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
@@ -117,7 +139,10 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         CordovaDebugSession.CDP_PROXY_PORT = generateRandomPortNumber();
         this.vsCodeDebugSession = cordovaSession.getVSCodeDebugSession();
         if (this.vsCodeDebugSession.configuration.platform === PlatformType.IOS
-            && (this.vsCodeDebugSession.configuration.target === TargetType.Emulator || this.vsCodeDebugSession.configuration.target === TargetType.Device)
+            && !SimulateHelper.isSimulate({
+                target: this.vsCodeDebugSession.configuration.target,
+                simulatePort: this.vsCodeDebugSession.configuration.simulatePort,
+            })
         ) {
             this.pwaSessionName = PwaDebugType.Node; // the name of Node debug session created by js-debug extension
         } else {
@@ -160,70 +185,97 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         } catch (error) {
             this.outputLogger(error.message || error, true);
             await this.cleanUp();
-            this.showError(error, response);
+            this.terminateWithErrorResponse(error, response);
         }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected async attachRequest(response: DebugProtocol.AttachResponse, attachArgs: ICordovaAttachRequestArgs, request?: DebugProtocol.Request): Promise<void> {
-        try {
-            await this.initializeTelemetry(attachArgs.cwd);
-            await this.initializeSettings(attachArgs);
-            attachArgs.port = attachArgs.port || 9222;
-            if (!this.platform) {
-                this.platform = await this.resolvePlatform(attachArgs);
-            }
-            if (this.platform instanceof AbstractMobilePlatform && !this.platform.target) {
-                await this.resolveAndSaveMobileTarget(this.platform, attachArgs, true);
-            }
-            const projectType = this.platform.getPlatformOpts().projectType;
-
-            await TelemetryHelper.generate("attach", async (generator) => {
-                TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
-                generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
-                generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false);
-                generator.add("platform", attachArgs.platform, false);
-
-                const sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs.cwd, attachArgs.platform, projectType, attachArgs.request, attachArgs.ionicLiveReload, attachArgs.address);
-                this.cordovaCdpProxy = new CordovaCDPProxy(
-                    CordovaDebugSession.CDP_PROXY_HOST_ADDRESS,
-                    CordovaDebugSession.CDP_PROXY_PORT,
-                    sourcemapPathTransformer,
-                    projectType,
-                    attachArgs
-                );
-                this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
-                await this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
-
-                this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", attachArgs.platform));
-                const attachResult = await this.platform.prepareForAttach();
-                this.outputLogger(localize("AttachingToApp", "Attaching to app"));
-                this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
-                const processedAttachArgs = Object.assign({}, attachArgs, attachResult);
-                if (processedAttachArgs.webSocketDebuggerUrl) {
-                    this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
+        const doAttach = async (attachArgs: ICordovaAttachRequestArgs) => {
+            try {
+                await this.initializeTelemetry(attachArgs.cwd);
+                await this.initializeSettings(attachArgs);
+                attachArgs.port = attachArgs.port || 9222;
+                if (!this.platform) {
+                    this.platform = await this.resolvePlatform(attachArgs);
                 }
-                this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
-                await this.establishDebugSession(processedAttachArgs);
+                if (this.platform instanceof AbstractMobilePlatform && !this.platform.target) {
+                    await this.resolveAndSaveMobileTarget(this.platform, attachArgs, true);
+                }
+                const projectType = this.platform.getPlatformOpts().projectType;
 
-                this.attachedDeferred.resolve();
-                this.sendResponse(response);
-                this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
-            });
+                await TelemetryHelper.generate("attach", async (generator) => {
+                    TelemetryHelper.sendPluginsList(attachArgs.cwd, CordovaProjectHelper.getInstalledPlugins(attachArgs.cwd));
+                    generator.add("target", CordovaDebugSession.getTargetType(attachArgs.target), false);
+                    generator.add("projectType", TelemetryHelper.prepareProjectTypesTelemetry(projectType), false);
+                    generator.add("platform", attachArgs.platform, false);
+
+                    const sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs.cwd, attachArgs.platform, projectType, attachArgs.request, attachArgs.ionicLiveReload, attachArgs.address);
+                    this.cordovaCdpProxy = new CordovaCDPProxy(
+                        CordovaDebugSession.CDP_PROXY_HOST_ADDRESS,
+                        CordovaDebugSession.CDP_PROXY_PORT,
+                        sourcemapPathTransformer,
+                        projectType,
+                        attachArgs
+                    );
+                    this.cordovaCdpProxy.setApplicationTargetPort(attachArgs.port);
+                    await this.cordovaCdpProxy.createServer(this.cdpProxyLogLevel, this.cancellationTokenSource.token);
+
+                    this.outputLogger(localize("AttachingToPlatform", "Attaching to {0}", attachArgs.platform));
+                    const attachResult = await this.platform.prepareForAttach();
+                    this.outputLogger(localize("AttachingToApp", "Attaching to app"));
+                    this.outputLogger("", true); // Send blank message on stderr to include a divider between prelude and app starting
+                    const processedAttachArgs = Object.assign({}, attachArgs, attachResult);
+                    if (processedAttachArgs.webSocketDebuggerUrl) {
+                        this.cordovaCdpProxy.setBrowserInspectUri(processedAttachArgs.webSocketDebuggerUrl);
+                    }
+                    this.cordovaCdpProxy.configureCDPMessageHandlerAccordingToProcessedAttachArgs(processedAttachArgs);
+                    this.cdpProxyErrorHandlerDescriptor = this.cordovaCdpProxy.onError(async (err: Error) => {
+                        if (this.attachRetryCount > 0) {
+                            this.debugSessionStatus = DebugSessionStatus.Reattaching;
+                            this.attachRetryCount--;
+                            await this.attachmentCleanUp();
+                            this.outputLogger(localize("ReattachingToApp", "Failed attempt to attach to the app. Trying to reattach..."));
+                            void doAttach(attachArgs);
+                        } else {
+                            this.showError(err);
+                            this.terminate();
+                            this.cdpProxyErrorHandlerDescriptor?.dispose();
+                        }
+                    });
+                    await this.establishDebugSession(processedAttachArgs);
+
+                    this.debugSessionStatus = DebugSessionStatus.Attached;
+                });
+            } catch (error) {
+                this.outputLogger(error.message || error, true);
+                this.debugSessionStatus = DebugSessionStatus.AttachFailed;
+                throw error;
+            }
+        };
+
+        try {
+            await doAttach(attachArgs);
+            this.attachedDeferred.resolve();
+            this.sendResponse(response);
+            this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
         } catch (error) {
-            this.outputLogger(error.message || error, true);
-            await this.cleanUp();
-            this.showError(error, response);
+            try {
+                await this.cleanUp();
+            } finally {
+                this.terminateWithErrorResponse(error, response);
+            }
         }
     }
 
     protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
         await this.cleanUp(args.restart);
+        this.debugSessionStatus = DebugSessionStatus.Stopped;
         super.disconnectRequest(response, args, request);
     }
 
     private async resolveAndSaveMobileTarget(mobilePlatform: AbstractMobilePlatform, args: ICordovaLaunchRequestArgs | ICordovaAttachRequestArgs, isAttachRequest: boolean = false): Promise<void> {
-        if (args.target && !mobilePlatform.getTargetFromRunArgs()) {
+        if (args.target && !(await mobilePlatform.getTargetFromRunArgs())) {
             const isAnyTarget =
                 args.target.toLowerCase() === TargetType.Emulator ||
                 args.target.toLowerCase() === TargetType.Device;
@@ -248,22 +300,6 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private showError(error: Error, response: DebugProtocol.Response): void {
-
-        // We can't print error messages after the debugging session is stopped. This could break the extension work.
-        if (error.name === CordovaDebugSession.CANCELLATION_ERROR_NAME) {
-            return;
-        }
-        const errorString = error.message || error.name || "Error";
-        this.sendErrorResponse(
-            response,
-            { format: errorString, id: 1 },
-            undefined,
-            undefined,
-            ErrorDestination.User
-        );
-    }
-
     private async cleanUp(restart?: boolean): Promise<void> {
         if (this.platform) {
             await this.platform.stopAndCleanUp();
@@ -282,6 +318,19 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         this.sessionManager.terminate(this.cordovaSession.getSessionId(), !!restart);
 
         await logger.dispose();
+    }
+
+    private async attachmentCleanUp(): Promise<void> {
+        // Clear the Ionic dev server URL if necessary
+        if (this.platform) {
+            await this.platform.stopAndCleanUp();
+        }
+
+        this.cdpProxyErrorHandlerDescriptor?.dispose();
+        if (this.cordovaCdpProxy) {
+            await this.cordovaCdpProxy.stopServer();
+            this.cordovaCdpProxy = null;
+        }
     }
 
     private async establishDebugSession(
@@ -321,9 +370,9 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     private handleTerminateDebugSession(debugSession: vscode.DebugSession) {
         if (
             debugSession.configuration.cordovaDebugSessionId === this.cordovaSession.getVSCodeDebugSession().id
-            && debugSession.type === this.pwaSessionName
+            && debugSession.type === this.pwaSessionName && this.debugSessionStatus !== DebugSessionStatus.Reattaching
         ) {
-            vscode.commands.executeCommand(CordovaDebugSession.STOP_COMMAND, undefined, { sessionId: this.vsCodeDebugSession.id });
+            this.terminate();
         }
     }
 
@@ -457,5 +506,39 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         }
 
         return TargetType.Device;
+    }
+
+    protected terminateWithErrorResponse(error: Error, response: DebugProtocol.Response): void {
+
+        // We can't print error messages after the debugging session is stopped. This could break the extension work.
+        if (error.name === CordovaDebugSession.CANCELLATION_ERROR_NAME) {
+            return;
+        }
+        const errorString = error.message || error.name || "Error";
+        this.sendErrorResponse(
+            response,
+            { format: errorString, id: 1 },
+            undefined,
+            undefined,
+            ErrorDestination.User
+        );
+    }
+
+    private showError(error: Error): void {
+        void vscode.window.showErrorMessage(error.message, {
+            modal: true,
+        });
+        // We can't print error messages via debug session logger after the session is stopped. This could break the extension work.
+        if (this.debugSessionStatus === DebugSessionStatus.Stopped) {
+            OutputChannelLogger.getMainChannel().log(error.message);
+            return;
+        }
+        this.outputLogger(error.message, true);
+    }
+
+    private async terminate(): Promise<void> {
+        await vscode.commands.executeCommand(CordovaDebugSession.STOP_COMMAND, undefined, {
+            sessionId: this.vsCodeDebugSession.id,
+        });
     }
 }

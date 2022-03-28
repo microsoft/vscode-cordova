@@ -30,7 +30,9 @@ export default abstract class AbstractPlatform {
 
     public abstract prepareForAttach(): Promise<IGeneralAttachResult>;
 
-    public abstract stopAndCleanUp(): Promise<void>;
+    public async stopAndCleanUp(): Promise<void> {
+        await this.IonicDevServer.stopAndCleanUp();
+    }
 
     public abstract getRunArguments(): string[];
 

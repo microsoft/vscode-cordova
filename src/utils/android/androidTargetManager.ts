@@ -5,7 +5,6 @@ import * as nls from "vscode-nls";
 import { MobileTargetManager } from "../mobileTargetManager";
 import { AdbHelper } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
-import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { TargetType } from "../../debugger/cordovaDebugSession";
 
@@ -16,26 +15,19 @@ nls.config({
 const localize = nls.loadMessageBundle();
 
 export class AndroidTarget extends MobileTarget {
-
-    public static fromInterface(obj: IDebuggableMobileTarget): AndroidTarget {
-        return new AndroidTarget(obj.isOnline, obj.isVirtualTarget, obj.id, obj.name);
-    }
-
-    constructor(isOnline: boolean, isVirtualTarget: boolean, id: string, name?: string) {
-        super(isOnline, isVirtualTarget, id, name || id);
+    constructor(obj: IDebuggableMobileTarget) {
+        if (!obj.name) {
+            obj.name = obj.id;
+        }
+        super(obj);
     }
 }
 
-export class AndroidTargetManager extends MobileTargetManager {
+export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
     private static readonly EMULATOR_COMMAND = "emulator";
     private static readonly EMULATOR_AVD_START_COMMAND = "-avd";
 
     private static readonly EMULATOR_START_TIMEOUT = 120;
-
-    private logger: OutputChannelLogger = OutputChannelLogger.getChannel(
-        OutputChannelLogger.MAIN_CHANNEL_NAME,
-        true,
-    );
 
     private adbHelper: AdbHelper;
     private childProcess: ChildProcess;
@@ -74,7 +66,7 @@ export class AndroidTargetManager extends MobileTargetManager {
                 return this.launchSimulator(selectedTarget);
             } else {
                 if (selectedTarget.id) {
-                    return AndroidTarget.fromInterface(<IDebuggableMobileTarget>selectedTarget);
+                    return new AndroidTarget(<IDebuggableMobileTarget>selectedTarget);
                 }
             }
         }
@@ -162,7 +154,7 @@ export class AndroidTargetManager extends MobileTargetManager {
                             localize("EmulatorLaunched", "Launched emulator {0}", emulatorTarget.name),
                         );
                         cleanup();
-                        resolve(AndroidTarget.fromInterface(<IDebuggableMobileTarget>emulatorTarget));
+                        resolve(new AndroidTarget(<IDebuggableMobileTarget>emulatorTarget));
                         break;
                     }
                 }

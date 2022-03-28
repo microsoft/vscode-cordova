@@ -12,17 +12,17 @@ export interface IDebuggableMobileTarget extends IMobileTarget {
     id: string;
 }
 
-export class MobileTarget implements IDebuggableMobileTarget {
+export abstract class MobileTarget implements IDebuggableMobileTarget {
     protected _name?: string;
     protected _id: string;
     protected _isOnline: boolean;
     protected _isVirtualTarget: boolean;
 
-    constructor(isOnline: boolean, isVirtualTarget: boolean, id: string, name?: string) {
-        this._isOnline = isOnline;
-        this._isVirtualTarget = isVirtualTarget;
-        this._name = name;
-        this._id = id;
+    constructor(obj: IDebuggableMobileTarget) {
+        this._isOnline = obj.isOnline;
+        this._isVirtualTarget = obj.isVirtualTarget;
+        this._id = obj.id;
+        this._name = obj.name;
     }
 
     get name(): string {

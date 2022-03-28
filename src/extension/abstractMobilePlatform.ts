@@ -3,25 +3,32 @@
 
 import * as nls from "vscode-nls";
 import { TargetType } from "../debugger/cordovaDebugSession";
-import { MobileTarget, IMobileTarget } from "../utils/mobileTarget";
 import { MobileTargetManager } from "../utils/mobileTargetManager";
 import AbstractPlatform from "./abstractPlatform";
+import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../utils/mobileTarget";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
 const localize = nls.loadMessageBundle();
 
-export default abstract class AbstractMobilePlatform extends AbstractPlatform {
+export default abstract class AbstractMobilePlatform<
+Target extends MobileTarget = MobileTarget,
+TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
+> extends AbstractPlatform {
 
-    protected targetManager: MobileTargetManager;
-    public target?: MobileTarget;
+    protected targetManager: TargetManager;
+    protected _target?: Target;
 
-    public async getTargetsCountByFilter(filter?: (el: IMobileTarget) => boolean): Promise<number> {
-        return this.targetManager.getTargetsCountWithFilter(filter);
+    get target(): Target | undefined {
+        return this._target;
     }
 
-    public async resolveMobileTarget(targetString: string, additionalFilter?: (el: IMobileTarget) => boolean): Promise<MobileTarget | undefined> {
+    public async getTargetsCountByFilter(filter?: (el: IMobileTarget) => boolean): Promise<number> {
+        return (await this.targetManager.getTargetList(filter)).length;
+    }
+
+    public async resolveMobileTarget(targetString: string, additionalFilter?: (el: IMobileTarget) => boolean): Promise<Target | undefined> {
         let collectTargetsCalled = false;
 
         let isAnyTarget = false;
@@ -51,7 +58,7 @@ export default abstract class AbstractMobilePlatform extends AbstractPlatform {
         };
 
         try {
-            this.target = await this.targetManager.selectAndPrepareTarget(target => {
+            this._target = await this.targetManager.selectAndPrepareTarget(target => {
                 const conditionForNotAnyTarget = isAnyTarget
                     ? true
                     : target.name === targetString || target.id === targetString;
@@ -60,7 +67,7 @@ export default abstract class AbstractMobilePlatform extends AbstractPlatform {
                 return conditionForVirtualTarget && conditionForNotAnyTarget && additionalCondition;
             });
 
-            if (!this.target) {
+            if (!this._target) {
                 this.log(
                     localize(
                         "CouldNotFindAnyDebuggableTarget",
@@ -76,7 +83,7 @@ export default abstract class AbstractMobilePlatform extends AbstractPlatform {
                 );
                 cleanupTargetModifications();
             } else {
-                this.addTargetToRunArgs(this.target);
+                this.addTargetToRunArgs(this._target);
             }
         } catch (error) {
             if (error) {
@@ -94,13 +101,61 @@ export default abstract class AbstractMobilePlatform extends AbstractPlatform {
             }
         }
 
-        return this.target;
+        return this._target;
     }
 
-    protected addTargetToRunArgs(target: MobileTarget): void {
+    public abstract getTargetFromRunArgs(): Promise<Target | undefined>;
+
+    protected async getPrefferedTarget(): Promise<Target> {
+        if (!this._target) {
+            this._target =
+            await this.getTargetFromRunArgs() ||
+            await this.getFirstAvailableOnlineTarget();
+        }
+        return this._target;
+    }
+
+    protected abstract getFirstAvailableOnlineTarget(): Promise<Target>;
+
+    protected async getFirstDebugableTarget(): Promise<IDebuggableMobileTarget> {
+        const targets = (await this.targetManager.getTargetList(target => target.isOnline && !!target.id)) as IDebuggableMobileTarget[];
+        const targetsBySpecifiedType = targets.filter(target => {
+            switch (this.platformOpts.target) {
+                case TargetType.Emulator:
+                    return target.isVirtualTarget;
+                case TargetType.Device:
+                    return !target.isVirtualTarget;
+                case undefined:
+                case "":
+                    return true;
+                default:
+                    return (
+                        target.id === this.platformOpts.target ||
+                        target.name === this.platformOpts.target
+                    );
+            }
+        });
+        if (targetsBySpecifiedType.length) {
+            return targetsBySpecifiedType[0];
+        } else if (targets.length) {
+            this.log(
+                localize(
+                    "ThereIsNoOnlineTargetWithSpecifiedTargetType",
+                    "There is no any online target with specified target type '{0}'. Continue with any online target.",
+                    this.platformOpts.target,
+                ),
+            );
+            return targets[0];
+        } else {
+            throw Error(localize(
+                "IosThereIsNoAnyOnlineDebuggableTarget",
+                "There is no any iOS debuggable online target",
+            ));
+        }
+    }
+
+    protected addTargetToRunArgs(target: Target): void {
         this.platformOpts.target = target.id;
         this.runArguments = this.getRunArguments();
     }
-
-    public abstract getTargetFromRunArgs(): MobileTarget | undefined;
 }

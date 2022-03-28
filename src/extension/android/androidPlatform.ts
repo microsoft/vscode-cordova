@@ -6,7 +6,7 @@ import { IAndroidPlatformOptions } from "../platformOptions";
 import AbstractMobilePlatform from "../abstractMobilePlatform";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { cordovaRunCommand } from "../../debugger/extension";
-import { DebugConsoleLogger, TargetType } from "../../debugger/cordovaDebugSession";
+import { DebugConsoleLogger } from "../../debugger/cordovaDebugSession";
 import * as nls from "vscode-nls";
 import { AndroidTarget, AndroidTargetManager } from "../../utils/android/androidTargetManager";
 import { retryAsync } from "../../utils/extensionHelper";
@@ -20,13 +20,12 @@ import { IAndroidLaunchResult } from "../platformLaunchResult";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
-export default class AndroidPlatform extends AbstractMobilePlatform {
+export default class AndroidPlatform extends AbstractMobilePlatform<AndroidTarget ,AndroidTargetManager> {
 
     private static readonly ANDROID_MANIFEST_PATH = path.join("platforms", "android", "AndroidManifest.xml");
     private static readonly ANDROID_MANIFEST_PATH_8 = path.join("platforms", "android", "app", "src", "main", "AndroidManifest.xml");
 
     private adbHelper: AdbHelper;
-    protected targetManager: AndroidTargetManager;
 
     constructor(
         protected platformOpts: IAndroidPlatformOptions,
@@ -39,48 +38,6 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
 
     public getPlatformOpts(): IAndroidPlatformOptions {
         return this.platformOpts;
-    }
-
-    public async getTarget(): Promise<AndroidTarget> {
-        if (!this.target) {
-            const target = this.getTargetFromRunArgs();
-            if (target) {
-                this.target = target;
-            } else {
-                const onlineTargets = await this.adbHelper.getOnlineTargets();
-                const onlineTargetsBySpecifiedType = onlineTargets.filter(target => {
-                    switch (this.platformOpts.target) {
-                        case TargetType.Emulator:
-                            return target.isVirtualTarget;
-                        case TargetType.Device:
-                            return !target.isVirtualTarget;
-                        case undefined:
-                        case "":
-                            return true;
-                        default:
-                            return target.id === this.platformOpts.target;
-                    }
-                });
-                if (onlineTargetsBySpecifiedType.length) {
-                    this.target = AndroidTarget.fromInterface(onlineTargetsBySpecifiedType[0]);
-                } else if (onlineTargets.length) {
-                    this.log(
-                        localize(
-                            "ThereIsNoOnlineTargetWithSpecifiedTargetType",
-                            "There is no any online target with specified target type '{0}'. Continue with any online target.",
-                            this.platformOpts.target,
-                        ),
-                    );
-                    this.target = AndroidTarget.fromInterface(onlineTargets[0]);
-                } else {
-                    throw Error(localize(
-                        "AndroidThereIsNoAnyOnlineDebuggableTarget",
-                        "There is no any Android debuggable online target",
-                    ));
-                }
-            }
-        }
-        return this.target;
     }
 
     public async launchApp(): Promise<IAndroidLaunchResult> {
@@ -113,7 +70,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
 
     public async prepareForAttach(): Promise<IAndroidAttachResult> {
         const appPackageName = await this.getAppPackageName();
-        const target = await this.getTarget();
+        const target = await this.getPrefferedTarget();
 
         const findAbstractNameFunction = () => {
             return this.adbHelper.getDevToolsAbstractName(target.id, appPackageName);
@@ -136,11 +93,11 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
     }
 
     public async stopAndCleanUp(): Promise<void> {
+        await super.stopAndCleanUp();
         // Stop ADB port forwarding if necessary
         if (this.target) {
             await this.adbHelper.removeforwardTcpPort(this.target.id, this.platformOpts.port.toString());
         }
-        await this.IonicDevServer.stopAndCleanUp();
     }
 
     public getRunArguments(): string[] {
@@ -168,17 +125,27 @@ export default class AndroidPlatform extends AbstractMobilePlatform {
         return args;
     }
 
-    public getTargetFromRunArgs(): AndroidTarget | undefined {
+    public async getTargetFromRunArgs(): Promise<AndroidTarget | undefined> {
         if (this.platformOpts.runArguments && this.platformOpts.runArguments.length) {
-            const deviceId = AbstractPlatform.getOptFromRunArgs(
+            const targetId = AbstractPlatform.getOptFromRunArgs(
                 this.platformOpts.runArguments,
                 "--target",
             ) as string;
-            if (deviceId) {
-                return new AndroidTarget(true, AdbHelper.isVirtualTarget(deviceId), deviceId);
+            if (targetId) {
+                return new AndroidTarget(
+                    {
+                        isOnline: true,
+                        isVirtualTarget: AdbHelper.isVirtualTarget(targetId),
+                        id: targetId
+                    }
+                );
             }
         }
         return undefined;
+    }
+
+    protected async getFirstAvailableOnlineTarget(): Promise<AndroidTarget> {
+        return new AndroidTarget(await this.getFirstDebugableTarget());
     }
 
     private async getAppPackageName(): Promise<string> {

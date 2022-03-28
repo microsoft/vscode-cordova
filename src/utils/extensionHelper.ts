@@ -42,17 +42,25 @@ export function delay(duration: number): Promise<void> {
 
 export function promiseGet(url: string, reqErrMessage: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        let req = http.get(url, function (res) {
+        const timeout = setTimeout(() => {
+            const err = new Error("Request timeout");
+            req.destroy(err);
+            reject(err);
+        }, 9500);
+
+        const req = http.get(url, function (res) {
             let responseString = "";
             res.on("data", (data: Buffer) => {
                 responseString += data.toString();
             });
             res.on("end", () => {
+                clearTimeout(timeout);
                 resolve(responseString);
             });
         });
+
         req.on("error", (err: Error) => {
-            this.outputLogger(reqErrMessage);
+            clearTimeout(timeout);
             reject(err);
         });
     });

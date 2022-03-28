@@ -9,16 +9,17 @@ import { DebugConsoleLogger, TargetType, WebviewData } from "../../debugger/cord
 import { CordovaIosDeviceLauncher } from "../../debugger/cordovaIosDeviceLauncher";
 import { cordovaRunCommand } from "../../debugger/extension";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
-import AbstractPlatform from "../abstractPlatform";
 import { IIosPlatformOptions } from "../platformOptions";
 import { IIosAttachResult } from "../platformAttachResult";
 import { promiseGet, retryAsync } from "../../utils/extensionHelper";
 import IonicDevServer from "../../utils/ionicDevServer";
 import { IIosLaunchResult } from "../platformLaunchResult";
+import AbstractMobilePlatform from "../abstractMobilePlatform";
+import { IDebuggableIOSTarget, IOSTarget, IOSTargetManager } from "../../utils/ios/iOSTargetManager";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
-export default class IosPlatform extends AbstractPlatform {
+export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTargetManager> {
 
     constructor(
         protected platformOpts: IIosPlatformOptions,
@@ -32,8 +33,6 @@ export default class IosPlatform extends AbstractPlatform {
     }
 
     public async launchApp(): Promise<IIosLaunchResult> {
-        await this.checkIfTargetIsiOSSimulator(this.platformOpts.target);
-
         if (this.runArguments.includes("--livereload")) {
             await this.IonicDevServer.startIonicDevServer(this.runArguments, this.platformOpts.env);
             return { devServerPort: this.IonicDevServer.getDevServerPort() };
@@ -52,11 +51,15 @@ export default class IosPlatform extends AbstractPlatform {
     }
 
     public async prepareForAttach(): Promise<IIosAttachResult> {
-        await this.checkIfTargetIsiOSSimulator(this.platformOpts.target);
-
         const getIosAttachOptions = async (): Promise<IIosAttachResult> => {
-            await CordovaIosDeviceLauncher.startWebkitDebugProxy(this.platformOpts.port, this.platformOpts.webkitRangeMin, this.platformOpts.webkitRangeMax);
+            await CordovaIosDeviceLauncher.startWebkitDebugProxy(
+                this.platformOpts.port,
+                this.platformOpts.webkitRangeMin,
+                this.platformOpts.webkitRangeMax,
+                this.target
+            );
             const iOSAppPackagePath = await this.getIosAppPackagePath();
+            const target = await this.getPrefferedTarget();
 
             let targetPort: number;
             let iOSVersion: string;
@@ -73,8 +76,7 @@ export default class IosPlatform extends AbstractPlatform {
                 //  }]
                 let endpointsList = JSON.parse(await promiseGet(`http://localhost:${this.platformOpts.port}/json`, localize("UnableToCommunicateWithiOSWebkitDebugProxy", "Unable to communicate with ios_webkit_debug_proxy")));
                 let devices = endpointsList.filter((entry) =>
-                    this.platformOpts.target.toLowerCase() === TargetType.Device ? entry.deviceId !== "SIMULATOR"
-                        : entry.deviceId === "SIMULATOR"
+                    target.id === entry.deviceId
                 );
                 let device = devices[0];
                 // device.url is of the form 'localhost:port'
@@ -122,6 +124,7 @@ export default class IosPlatform extends AbstractPlatform {
     }
 
     public async stopAndCleanUp(): Promise<void> {
+        await super.stopAndCleanUp();
         CordovaIosDeviceLauncher.cleanup();
     }
 
@@ -146,6 +149,39 @@ export default class IosPlatform extends AbstractPlatform {
             }
         }
         return args;
+    }
+
+    public async getTargetFromRunArgs(): Promise<IOSTarget> {
+        if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
+            const targetId = AbstractMobilePlatform.getOptFromRunArgs(
+                this.platformOpts.runArguments,
+                "--target",
+            );
+
+            if (targetId) {
+                const targets = await this.targetManager.getTargetList();
+                const target = targets.find(target =>
+                        target.id === targetId ||
+                        target.name === targetId
+                    );
+                if (target) {
+                    return new IOSTarget(target);
+                }
+                this.log(
+                    localize(
+                        "ThereIsNoIosTargetWithSuchUdid",
+                        "There is no iOS target with such UDID: {0}",
+                        targetId,
+                    ),
+                );
+            }
+        }
+
+        return undefined;
+    }
+
+    protected async getFirstAvailableOnlineTarget(): Promise<IOSTarget> {
+        return new IOSTarget((await this.getFirstDebugableTarget()) as IDebuggableIOSTarget);
     }
 
     private addBuildFlagToArgs(runArgs: Array<string> = []): Array<string> {
@@ -189,32 +225,6 @@ export default class IosPlatform extends AbstractPlatform {
                 return filtered[0];
             } else {
                 throw new Error(localize("UnableToFindAppFile", "Unable to find .app file"));
-            }
-        }
-    }
-
-    private async checkIfTargetIsiOSSimulator(target?: string): Promise<void> {
-        if (target) {
-            const simulatorTargetIsNotSupported = () => {
-                const message = localize("InvalidTargetPleaseCheckTargetParameter", "Invalid target. Please, check target parameter value in your debug configuration and make sure it's a valid iPhone device identifier. Proceed to https://aka.ms/AA3xq86 for more information.");
-                throw new Error(message);
-            };
-            if (target === TargetType.Emulator) {
-                simulatorTargetIsNotSupported();
-            }
-            const output = await cordovaRunCommand(this.platformOpts.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot), ["emulate", "ios", "--list"], this.platformOpts.env, this.projectRoot);
-            // Get list of emulators as raw strings
-            output[0] = output[0].replace(/Available iOS Simulators:/, "");
-            // Clean up each string to get real value
-            const emulators = output[0].split("\n").map((value) => {
-                let match = value.match(/(.*)(?=,)/gm);
-                if (!match) {
-                    return null;
-                }
-                return match[0].replace(/\t/, "");
-            });
-            if (emulators.indexOf(target) >= 0) {
-                simulatorTargetIsNotSupported();
             }
         }
     }

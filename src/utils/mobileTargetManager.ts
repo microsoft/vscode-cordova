@@ -3,20 +3,26 @@
 
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
-import { IMobileTarget, MobileTarget } from "./mobileTarget";
+import { OutputChannelLogger } from "./log/outputChannelLogger";
 import { TargetType } from "../debugger/cordovaDebugSession";
+import { IMobileTarget, MobileTarget } from "./mobileTarget";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
 const localize = nls.loadMessageBundle();
 
-export abstract class MobileTargetManager {
+export abstract class MobileTargetManager<T extends MobileTarget> {
     protected targets?: IMobileTarget[];
+
+    protected logger: OutputChannelLogger = OutputChannelLogger.getChannel(
+        OutputChannelLogger.MAIN_CHANNEL_NAME,
+        true,
+    );
 
     public abstract collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void>;
 
-    public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<MobileTarget | undefined>;
+    public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<T | undefined>;
 
     public async isVirtualTarget(target: string): Promise<boolean> {
         if (target === TargetType.Device) {
@@ -28,22 +34,16 @@ export abstract class MobileTargetManager {
         throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
     }
 
-    public async getTargetsCountWithFilter(
-        filter?: (el: IMobileTarget) => boolean,
-    ): Promise<number> {
-        return (await this.getTargetList(filter)).length;
-    }
-
-    protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<MobileTarget | undefined>;
-
-    protected abstract startSelection(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget | undefined>;
-
-    protected async getTargetList(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget[]> {
+    public async getTargetList(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget[]> {
         if (!this.targets) {
             await this.collectTargets();
         }
         return filter ? this.targets.filter(filter) : this.targets;
     }
+
+    protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<T | undefined>;
+
+    protected abstract startSelection(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget | undefined>;
 
     protected async selectTarget(
         filter?: (el: IMobileTarget) => boolean,
