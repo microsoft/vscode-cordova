@@ -8,6 +8,7 @@ import AbstractPlatform from "../extension/abstractPlatform";
 import { CordovaProjectHelper } from "./cordovaProjectHelper";
 import { cordovaStartCommand, killChildProcess } from "../debugger/extension";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
+import { EventEmitter } from "vscode";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -35,7 +36,10 @@ export default class IonicDevServer {
     private appReady: boolean = false;
     private appReadyTimeout: number;
 
-    constructor(private projectRoot: string, private protocolServerStop: () => void, private log: DebugConsoleLogger, private devServerAddress?: string, private devServerPort?: number, private serverReadyTimeout?: number, private cordovaExecutable?: string) {
+    private serverStopEventEmitter: EventEmitter<Error | undefined> = new EventEmitter();
+    public readonly onServerStop = this.serverStopEventEmitter.event;
+
+    constructor(private projectRoot: string, private log: DebugConsoleLogger, private devServerAddress?: string, private devServerPort?: number, private serverReadyTimeout?: number, private cordovaExecutable?: string) {
         if (this.devServerPort < 0 || this.devServerPort > 65535) {
             new Error(localize("TheValueForDevServerPortMustBeInInterval", "The value for \"devServerPort\" must be a number between 0 and 65535"));
         }
@@ -110,14 +114,16 @@ export default class IonicDevServer {
                     }
                 }
 
+                const error = new Error(exitMessage);
+
                 if (!this.serverReady && !this.appReady) {
                     // We are already debugging; disconnect the session
                     this.log(exitMessage, true);
-                    this.protocolServerStop();
-                    throw new Error(exitMessage);
+                    this.serverStopEventEmitter.fire(error);
+                    throw error;
                 } else {
                     // The Ionic dev server wasn't ready yet, so reject its promises
-                    reject(new Error(exitMessage));
+                    reject(error);
                 }
             }));
             this.ionicLivereloadProcess.stdout.on("data", outputHandler);

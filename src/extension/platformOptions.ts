@@ -4,7 +4,6 @@
 import { ProjectType } from "../utils/cordovaProjectHelper";
 import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
 import * as vscode from "vscode";
-import simulate = require("cordova-simulate");
 import IonicDevServer from "../utils/ionicDevServer";
 import { PluginSimulator } from "./simulate";
 
@@ -36,15 +35,12 @@ export type IAndroidPlatformOptions = IGeneralPlatformOptions;
 export interface IBrowserPlatformOptions extends IGeneralPlatformOptions {
     userDataDir: string;
     pluginSimulator: PluginSimulator;
-    protocolServerStop: () => void;
-    changeSimulateViewport: (data: simulate.ResizeViewportData) => Promise<void>;
 
     platform?: string;
     url?: string;
     livereload?: boolean;
     livereloadDelay?: number;
     forcePrepare?: boolean;
-    simulationPath?: string;
     corsProxy?: boolean;
     simulatePort?: number;
     simulateTempDir?: string;

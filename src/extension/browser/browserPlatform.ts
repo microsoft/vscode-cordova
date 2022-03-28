@@ -17,6 +17,7 @@ import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchResult } from "../platformLaunchResult";
 import { IBrowserFinder } from "vscode-js-debug-browsers";
+import { EventEmitter } from "vscode";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
@@ -25,6 +26,12 @@ export default class BrowserPlatform extends AbstractPlatform {
 
     private simulateDebugHost: SocketIOClient.Socket;
     private browserProc: child_process.ChildProcess;
+
+    private browserStopEventEmitter: EventEmitter<Error | undefined> = new EventEmitter();
+    public readonly onBrowserStop = this.browserStopEventEmitter.event;
+
+    private changeSimulateViewportEventEmitter: EventEmitter<simulate.ResizeViewportData> = new EventEmitter();
+    public readonly onСhangeSimulateViewport = this.changeSimulateViewportEventEmitter.event;
 
     constructor(
         protected platformOpts: IBrowserPlatformOptions,
@@ -77,9 +84,17 @@ export default class BrowserPlatform extends AbstractPlatform {
             });
             this.browserProc.unref();
             this.browserProc.on("error", (err) => {
-                const errMsg = localize("ChromeError", "Chrome error: {0}", err.message);
+                const errMsg = localize("BrowserError", "Browser error: {0}", err.message);
                 this.log(errMsg, true);
-                this.platformOpts.protocolServerStop();
+                this.browserStopEventEmitter.fire(err);
+            });
+            this.browserProc.once("exit", (code: number) => {
+                const exitMessage = localize("BrowserExit",
+                    "Browser has been closed with exit code: {0}",
+                    code
+                );
+                this.log(exitMessage);
+                this.browserStopEventEmitter.fire();
             });
         }
 
@@ -154,7 +169,6 @@ export default class BrowserPlatform extends AbstractPlatform {
 
     private connectSimulateDebugHost(simulateInfo: SimulationInfo): Promise<void> {
         // Connect debug-host to cordova-simulate
-        let viewportResizeFailMessage = localize("ViewportResizingFailed", "Viewport resizing failed. Please try again.");
         return new Promise<void>((resolve, reject) => {
             let simulateConnectErrorHandler = (err: any): void => {
                 this.log("Error connecting to the simulated app.", err);
@@ -166,9 +180,7 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.simulateDebugHost.on("connect_timeout", simulateConnectErrorHandler);
             this.simulateDebugHost.on("connect", () => {
                 this.simulateDebugHost.on("resize-viewport", (data: simulate.ResizeViewportData) => {
-                    this.platformOpts.changeSimulateViewport(data).catch(() => {
-                        this.log(viewportResizeFailMessage, true);
-                    });
+                    this.changeSimulateViewportEventEmitter.fire(data);
                 });
                 this.simulateDebugHost.emit("register-debug-host", { handlers: ["resize-viewport"] });
                 resolve();

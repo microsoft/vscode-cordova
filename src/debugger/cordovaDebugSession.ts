@@ -19,7 +19,7 @@ import { TelemetryHelper } from "../utils/telemetryHelper";
 import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import AbstractPlatform from "../extension/abstractPlatform";
 import { SimulateHelper } from "../utils/simulateHelper";
-import { IAndroidPlatformOptions, IBrowserPlatformOptions, IIosPlatformOptions } from "../extension/platformOptions";
+import { IAndroidPlatformOptions, IBrowserPlatformOptions, IGeneralPlatformOptions, IIosPlatformOptions } from "../extension/platformOptions";
 import { settingsHome } from "../utils/settingsHelper";
 import BrowserPlatform from "../extension/browser/browserPlatform";
 import simulate = require("cordova-simulate");
@@ -321,7 +321,6 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private async attachmentCleanUp(): Promise<void> {
-        // Clear the Ionic dev server URL if necessary
         if (this.platform) {
             await this.platform.stopAndCleanUp();
         }
@@ -377,59 +376,92 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private async resolvePlatform(args: ICordovaAttachRequestArgs & Partial<ICordovaLaunchRequestArgs>): Promise<AbstractPlatform> {
+        const {
+            cwd,
+            devServerAddress,
+            devServerPort,
+            devServerTimeout,
+            platform,
+            url,
+            livereload,
+            livereloadDelay,
+            forcePrepare,
+            corsProxy,
+            simulatePort,
+            simulateTempDir,
+            spaUrlRewrites,
+            target,
+            ionicLiveReload
+        } = args;
         const [projectType, runArgs, cordovaExecutable] = await Promise.all([
-            TelemetryHelper.determineProjectTypes(args.cwd),
-            this.workspaceManager.getRunArguments(args.cwd),
-            this.workspaceManager.getCordovaExecutable(args.cwd),
+            TelemetryHelper.determineProjectTypes(cwd),
+            this.workspaceManager.getRunArguments(cwd),
+            this.workspaceManager.getCordovaExecutable(cwd),
         ]);
         const ionicDevServer = new IonicDevServer(
-            args.cwd,
-            this.stop.bind(this),
+            cwd,
             this.outputLogger.bind(this),
-            args.devServerAddress,
-            args.devServerPort,
-            args.devServerTimeout,
-            cordovaExecutable);
+            devServerAddress,
+            devServerPort,
+            devServerTimeout,
+            cordovaExecutable
+        );
+        ionicDevServer.onServerStop(() =>
+            this.stop()
+        );
+
         const env = CordovaProjectHelper.getEnvArgument(args.env, args.envFile);
         const runArguments = args.runArguments || runArgs;
-        const userDataDir = args.userDataDir || path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR);
-        const iosDebugProxyPort = args.iosDebugProxyPort || 9221;
-        const webkitRangeMin = args.webkitRangeMin || 9223;
-        const webkitRangeMax = args.webkitRangeMax || 9322;
-        const attachAttempts = args.attachAttempts || 20;
-        const attachDelay = args.attachDelay || 1000;
         const port = args.port || 9222;
-        const pluginSimulator = this.workspaceManager.pluginSimulator;
-        const platformOptions: IBrowserPlatformOptions & IIosPlatformOptions & IAndroidPlatformOptions = Object.assign({
-            ionicDevServer,
-            projectType,
-            runArguments,
-            cordovaExecutable,
-            projectRoot: args.cwd,
-            workspaceManager: this.workspaceManager,
-            cancellationTokenSource: this.cancellationTokenSource,
-            port,
-            userDataDir,
-            iosDebugProxyPort,
-            webkitRangeMin,
-            webkitRangeMax,
-            attachAttempts,
-            attachDelay,
-            protocolServerStop: this.stop.bind(this),
-            changeSimulateViewport: this.changeSimulateViewport.bind(this),
-            pluginSimulator
-        }, args, {
-            env,
-        });
 
-        if (SimulateHelper.isSimulateTarget(args.target)) {
-            return new BrowserPlatform(platformOptions, this.outputLogger);
+        const generalPlatformOptions: IGeneralPlatformOptions = {
+            projectRoot: args.cwd,
+            projectType,
+            workspaceManager: this.workspaceManager,
+            ionicDevServer,
+            cordovaExecutable,
+            cancellationTokenSource: this.cancellationTokenSource,
+            env,
+            port,
+            target,
+            ionicLiveReload,
+            runArguments,
+        };
+        const androidPlatformOptions = generalPlatformOptions as IAndroidPlatformOptions;
+        const iosPlatformOptions = {
+            iosDebugProxyPort: args.iosDebugProxyPort || 9221,
+            webkitRangeMin: args.webkitRangeMin || 9223,
+            webkitRangeMax: args.webkitRangeMax || 9322,
+            attachAttempts: args.attachAttempts || 20,
+            attachDelay: args.attachDelay || 1000,
+            ...generalPlatformOptions
+        } as IIosPlatformOptions;
+        const browserPlatformOptions = {
+            userDataDir: args.userDataDir || path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR),
+            pluginSimulator: this.workspaceManager.pluginSimulator,
+            platform,
+            url,
+            livereload,
+            livereloadDelay,
+            forcePrepare,
+            corsProxy,
+            simulatePort,
+            simulateTempDir,
+            spaUrlRewrites,
+            ...generalPlatformOptions
+        } as IBrowserPlatformOptions;
+
+        let resolverdPlatform: AbstractPlatform;
+        if (SimulateHelper.isSimulateTarget(target)) {
+            resolverdPlatform = new BrowserPlatform(browserPlatformOptions, this.outputLogger);
         } else {
-            switch (args.platform) {
+            switch (platform) {
                 case PlatformType.Android:
-                    return new AndroidPlatform(platformOptions, this.outputLogger);
+                    resolverdPlatform = new AndroidPlatform(androidPlatformOptions, this.outputLogger);
+                    break;
                 case PlatformType.IOS:
-                    return new IosPlatform(platformOptions, this.outputLogger);
+                    resolverdPlatform = new IosPlatform(iosPlatformOptions, this.outputLogger);
+                    break;
                 case PlatformType.Serve:
                 // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
                 case PlatformType.Windows:
@@ -439,25 +471,39 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 case PlatformType.Ubuntu:
                 case PlatformType.Wp8:
                 case PlatformType.Browser:
-                    return new BrowserPlatform(platformOptions, this.outputLogger);
+                    resolverdPlatform = new BrowserPlatform(browserPlatformOptions, this.outputLogger);
+                    break;
                 default:
                     throw new Error(localize("UnknownPlatform", "Unknown Platform: {0}", args.platform));
             }
         }
+
+        if (resolverdPlatform instanceof BrowserPlatform) {
+            resolverdPlatform.onBrowserStop(() =>
+                this.stop()
+            );
+            resolverdPlatform.onСhangeSimulateViewport((viewportData) => {
+                this.changeSimulateViewport(viewportData).catch(() => {
+                    this.outputLogger(
+                        localize("ViewportResizingFailed", "Viewport resizing failed. Please try again."),
+                        true
+                    );
+                });
+            });
+        }
+        return resolverdPlatform;
     }
 
-    private changeSimulateViewport(data: simulate.ResizeViewportData): Promise<void> {
-        return this.attachedDeferred.promise
-            .then(() => {
-                if (this.cordovaCdpProxy) {
-                    this.cordovaCdpProxy.getSimPageTargetAPI()?.Emulation.setDeviceMetricsOverride({
-                        width: data.width,
-                        height: data.height,
-                        deviceScaleFactor: 0,
-                        mobile: true,
-                    });
-                }
+    private async changeSimulateViewport(data: simulate.ResizeViewportData): Promise<void> {
+        await this.attachedDeferred.promise;
+        if (this.cordovaCdpProxy) {
+            this.cordovaCdpProxy.getSimPageTargetAPI()?.Emulation.setDeviceMetricsOverride({
+                width: data.width,
+                height: data.height,
+                deviceScaleFactor: 0,
+                mobile: true,
             });
+        }
     }
 
     private async initializeTelemetry(projectRoot: string): Promise<void> {
