@@ -60,7 +60,7 @@ suite("AndroidTargetManager", function () {
                 case "emulatorName3": emulatorTarget.id = "emulator-5553"; break;
                 case "emulatorName4": emulatorTarget.id = "emulator-5554"; break;
             }
-            return AndroidTarget.fromInterface(<IDebuggableMobileTarget> emulatorTarget);
+            return new AndroidTarget(<IDebuggableMobileTarget> emulatorTarget);
         });
 
         showQuickPickStub = Sinon.stub(window, "showQuickPick").callsFake(async (items: string[] | Thenable<string[]> | QuickPickItem[] | Thenable<QuickPickItem[]>) => {
