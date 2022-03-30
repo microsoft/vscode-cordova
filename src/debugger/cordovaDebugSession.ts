@@ -37,8 +37,6 @@ import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize = nls.loadMessageBundle();
 
-export const CANCELLATION_ERROR_NAME = "tokenCanceled";
-
 export enum TargetType {
     Emulator = "emulator",
     Device = "device",
@@ -301,15 +299,8 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private async cleanUp(restart?: boolean): Promise<void> {
-        if (this.platform) {
-            await this.platform.stopAndCleanUp();
-            this.platform = null;
-        }
-
-        if (this.cordovaCdpProxy) {
-            await this.cordovaCdpProxy.stopServer();
-            this.cordovaCdpProxy = null;
-        }
+        await this.attachmentCleanUp();
+        this.platform = null;
 
         this.cancellationTokenSource.cancel();
         this.cancellationTokenSource.dispose();

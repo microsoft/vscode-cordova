@@ -39,6 +39,15 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             return { devServerPort: this.IonicDevServer.getDevServerPort() };
         }
 
+        // Here we guarantee the existence of the target
+        if (!this._target) {
+            this._target = await this.getTargetFromRunArgs();
+            if (!this._target) {
+                this._target = await this.getPrefferedTarget();
+                this.addTargetToRunArgs(this._target);
+            }
+        }
+
         await cordovaRunCommand(
             this.platformOpts.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot),
             this.runArguments,
@@ -47,7 +56,9 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             this.log,
         );
 
-        await CordovaIosDeviceLauncher.startDebugProxy(this.platformOpts.iosDebugProxyPort);
+        if (!this._target.isVirtualTarget) {
+            await CordovaIosDeviceLauncher.startDebugProxy(this.platformOpts.iosDebugProxyPort);
+        }
         return {};
     }
 
@@ -130,13 +141,17 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     }
 
     public getRunArguments(): string[] {
-        let args: string[] = [this.platformOpts.target === TargetType.Device ? "run" : "emulate", "ios"];
+        let args: string[] = ["run", "ios"];
 
         if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
             args.push(...this.platformOpts.runArguments);
         } else {
-            if (this.platformOpts.target !== TargetType.Device && this.platformOpts.target !== TargetType.Emulator)
-            args.push("--target=" + this.platformOpts.target);
+            switch(this.platformOpts.target) {
+                case undefined: break;
+                case TargetType.Device: args.push("--device"); break;
+                case TargetType.Emulator: args.push("--emulator"); break;
+                default: args.push("--target=" + this.platformOpts.target);
+            }
         }
         this.addBuildFlagToArgs(args);
         // Verify if we are using Ionic livereload
@@ -183,6 +198,11 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
 
     protected async getFirstAvailableOnlineTarget(): Promise<IOSTarget> {
         return new IOSTarget((await this.getFirstDebugableTarget()) as IDebuggableIOSTarget);
+    }
+
+    protected addTargetToRunArgs(target: IOSTarget): void {
+        this.platformOpts.target = target.simIdentifier;
+        this.runArguments = this.getRunArguments();
     }
 
     private addBuildFlagToArgs(runArgs: Array<string> = []): Array<string> {
