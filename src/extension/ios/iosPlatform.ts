@@ -201,7 +201,11 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     }
 
     protected addTargetToRunArgs(target: IOSTarget): void {
-        this.platformOpts.target = target.simIdentifier;
+        if (this.platformOpts.projectType.isIonic) {
+            this.platformOpts.target = target.id;
+        } else {
+            this.platformOpts.target = target.simIdentifier;
+        }
         this.runArguments = this.getRunArguments();
     }
 
