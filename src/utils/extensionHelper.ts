@@ -5,7 +5,7 @@ import * as http from "http";
 import * as path from "path";
 import * as fs from "fs";
 import { CancellationToken } from "vscode";
-import { CANCELLATION_ERROR_NAME } from "../debugger/cordovaDebugSession";
+import CordovaDebugSession from "../debugger/cordovaDebugSession";
 
 export function generateRandomPortNumber(): number {
     return Math.round(Math.random() * 40000 + 3000);
@@ -14,8 +14,8 @@ export function generateRandomPortNumber(): number {
 export function retryAsync<T>(func: () => Promise<T>, condition: (result: T) => boolean, maxRetries: number, iteration: number, delayTime: number, failure: string, cancellationToken?: CancellationToken): Promise<T> {
     const retry = () => {
         if (cancellationToken && cancellationToken.isCancellationRequested) {
-            let cancelError = new Error(CANCELLATION_ERROR_NAME);
-            cancelError.name = CANCELLATION_ERROR_NAME;
+            let cancelError = new Error(CordovaDebugSession.CANCELLATION_ERROR_NAME);
+            cancelError.name = CordovaDebugSession.CANCELLATION_ERROR_NAME;
             throw cancelError;
         }
         if (iteration < maxRetries) {

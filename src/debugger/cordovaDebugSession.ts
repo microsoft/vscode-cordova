@@ -90,7 +90,7 @@ export interface WebviewData {
 }
 
 export default class CordovaDebugSession extends LoggingDebugSession {
-    private static readonly CANCELLATION_ERROR_NAME = "tokenCanceled";
+    public static readonly CANCELLATION_ERROR_NAME = "tokenCanceled";
     private static readonly STOP_COMMAND = "workbench.action.debug.stop"; // the command which simulates a click on the "Stop" button
     private static readonly CDP_PROXY_HOST_ADDRESS = "127.0.0.1"; // localhost
     private static CDP_PROXY_PORT: number;
