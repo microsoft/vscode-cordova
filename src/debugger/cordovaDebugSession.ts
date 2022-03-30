@@ -375,7 +375,10 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    private async resolvePlatform(args: ICordovaAttachRequestArgs & Partial<ICordovaLaunchRequestArgs>): Promise<AbstractPlatform> {
+    private async resolvePlatform(
+        args: ICordovaAttachRequestArgs &
+        Partial<Omit<ICordovaLaunchRequestArgs, keyof ICordovaAttachRequestArgs>>
+    ): Promise<AbstractPlatform> {
         const {
             cwd,
             devServerAddress,

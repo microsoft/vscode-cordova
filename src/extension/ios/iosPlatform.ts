@@ -26,6 +26,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         protected log: DebugConsoleLogger
     ) {
         super(platformOpts, log);
+        this.targetManager = new IOSTargetManager();
     }
 
     public getPlatformOpts(): IIosPlatformOptions {
