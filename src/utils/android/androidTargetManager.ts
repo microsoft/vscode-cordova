@@ -16,10 +16,11 @@ const localize = nls.loadMessageBundle();
 
 export class AndroidTarget extends MobileTarget {
     constructor(obj: IDebuggableMobileTarget) {
-        if (!obj.name) {
-            obj.name = obj.id;
+        const objCopy = Object.assign({}, obj);
+        if (!objCopy.name) {
+            objCopy.name = objCopy.id;
         }
-        super(obj);
+        super(objCopy);
     }
 }
 

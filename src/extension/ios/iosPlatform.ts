@@ -143,6 +143,10 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     public getRunArguments(): string[] {
         let args: string[] = ["run", "ios"];
 
+        // Workaround for dealing with new build system in XCode 10
+        // https://github.com/apache/cordova-ios/issues/407
+        this.addBuildFlagToArgs(args);
+
         if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
             args.push(...this.platformOpts.runArguments);
         } else {
@@ -153,7 +157,6 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 default: args.push("--target=" + this.platformOpts.target);
             }
         }
-        this.addBuildFlagToArgs(args);
         // Verify if we are using Ionic livereload
         if (this.platformOpts.ionicLiveReload) {
             if (this.platformOpts.projectType.isIonic) {
@@ -213,10 +216,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         const hasBuildFlag = runArgs.findIndex((arg) => arg.includes("--buildFlag")) > -1;
 
         if (!hasBuildFlag) {
-            // Workaround for dealing with new build system in XCode 10
-            // https://github.com/apache/cordova-ios/issues/407
-
-            runArgs.unshift("--buildFlag=-UseModernBuildSystem=0");
+            runArgs.push("--buildFlag=-UseModernBuildSystem=0");
         }
 
         return runArgs;

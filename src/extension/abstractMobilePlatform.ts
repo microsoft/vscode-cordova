@@ -86,19 +86,14 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
                 this.addTargetToRunArgs(this._target);
             }
         } catch (error) {
-            if (error) {
-                this.log(error);
-                this.log(
-                    localize(
-                        "ContinueWithCordovaCliWorkflow",
-                        "Continue using standard Cordova CLI workflow.",
-                    ),
-                );
-
-                cleanupTargetModifications();
-            } else {
-                throw error;
-            }
+            this.log(error);
+            this.log(
+                localize(
+                    "ContinueWithCordovaCliWorkflow",
+                    "Continue using standard Cordova CLI workflow.",
+                ),
+            );
+            cleanupTargetModifications();
         }
 
         return this._target;

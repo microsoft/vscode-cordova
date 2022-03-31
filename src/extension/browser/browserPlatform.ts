@@ -45,6 +45,8 @@ export default class BrowserPlatform extends AbstractPlatform {
     }
 
     public async launchApp(): Promise<IBrowserLaunchResult> {
+        let devServerPort: number;
+
         if (this.platformOpts.platform === PlatformType.Serve) {
             // Currently, "ionic serve" is only supported for Ionic projects
             if (!this.platformOpts.projectType.isIonic) {
@@ -62,6 +64,7 @@ export default class BrowserPlatform extends AbstractPlatform {
             await this.platformOpts.pluginSimulator.launchSimHost(this.platformOpts.target);
             this.platformOpts.simulatePort = CordovaProjectHelper.getPortFromURL(simulateInfo.appHostUrl);
             this.platformOpts.url = simulateInfo.appHostUrl;
+            devServerPort = this.IonicDevServer.getDevServerPort();
         }
 
         this.runArguments = this.getRunArguments();
@@ -98,7 +101,7 @@ export default class BrowserPlatform extends AbstractPlatform {
             });
         }
 
-        return { devServerPort: this.IonicDevServer.getDevServerPort() };
+        return { devServerPort };
     }
 
     public async prepareForAttach(): Promise<IBrowserAttachResult> {
@@ -116,6 +119,9 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.simulateDebugHost.close();
             this.simulateDebugHost = null;
         }
+
+        this.browserStopEventEmitter.dispose();
+        this.changeSimulateViewportEventEmitter.dispose();
     }
 
     public getRunArguments(): string[] {

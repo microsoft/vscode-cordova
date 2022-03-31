@@ -161,6 +161,8 @@ export default class IonicDevServer {
                 this.ionicLivereloadProcess = null;
             }
         }
+
+        this.serverStopEventEmitter.dispose();
     }
 
     private serverOutputHandler(output: SeverOutput, isServe: boolean, regexp: RegExp, resolve: (ready: IonicDevServerStatus, serverUrls?: string[]) => void, reject: (err: Error | string | void) => void, data: Buffer): void {
