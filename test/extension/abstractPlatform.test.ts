@@ -5,7 +5,6 @@ import * as assert from "assert";
 import AbstractPlatform from "../../src/extension/abstractPlatform";
 
 suite("AbstractPlatform", function () {
-
     suite("Run arguments", function () {
         const stringSeparatedArgumentKey = "separatedKey";
         const stringSeparatedArgumentValue = "separatedValue";
@@ -43,9 +42,9 @@ suite("AbstractPlatform", function () {
                     runArguments,
                     argumentsBeforeOperation,
                     `Array of the run arguments has been changed after operation:
-                    Before: ${before.toString()}
+                    Before: ${argumentsBeforeOperation.toString()}
                      ---
-                    After: ${after.toString()}`
+                    After: ${runArguments.toString()}`
                 );
             }
 
@@ -90,7 +89,7 @@ suite("AbstractPlatform", function () {
             });
         });
 
-        suite("Setting run arguments", function () {
+        suite("setRunArgument", function () {
             function setArgumentValueTest(
                 runArguments: string[],
                 key: string,
@@ -128,11 +127,105 @@ suite("AbstractPlatform", function () {
                 assert.strictEqual(settedValue, value);
             }
 
+            test("Should set new value for the united argument", function () {
+                setArgumentValueTest(
+                    runArguments,
+                    stringUnitedArgumentKey,
+                    "newStringUnitedArgumentValue"
+                );
+            });
+
             test("Should set new value for the separated argument", function () {
                 setArgumentValueTest(
                     runArguments,
                     stringSeparatedArgumentKey,
-                    stringSeparatedArgumentValue
+                    "newStringSeparatedArgumentValue"
+                );
+            });
+
+            test("Should add key and value for not presented separated argument", function () {
+                setArgumentValueTest(
+                    runArguments,
+                    "newKey",
+                    "newValue"
+                );
+            });
+
+            test("Should remove binary argument in case new value is false", function () {
+                setArgumentValueTest(
+                    runArguments,
+                    presentedBooleanArgumentKey,
+                    false
+                );
+            });
+
+            test("Should add new binary argument in case new value is true", function () {
+                setArgumentValueTest(
+                    runArguments,
+                    notPresentedBooleanArgumentKey,
+                    true
+                );
+            });
+        });
+
+        suite("removeRunArgument", function () {
+            function removeArgumentValueTest(
+                runArguments: string[],
+                key: string,
+                isBinary: boolean,
+                isSeparatedArgument?: boolean
+            ) {
+                const argsLenghtBefore = runArguments.length;
+                AbstractPlatform.removeRunArgument(
+                    runArguments,
+                    key,
+                    isBinary
+                );
+
+                const keyIndex = runArguments.indexOf(key);
+                if (isBinary || argsLenghtBefore - runArguments.length === 2) {
+                    if (keyIndex > -1) {
+                        assert.fail("Binary argument was not removed");
+                    }
+                } else if (isSeparatedArgument) {
+                    if (keyIndex > -1 || argsLenghtBefore - runArguments.length !== 2) {
+                        assert.fail("Separated argument was not removed");
+                    }
+                } else {
+                    if (argsLenghtBefore - runArguments.length !== 1) {
+                        assert.fail("United argument was not removed");
+                    }
+                    for (let i = 0; i < runArguments.length; i++) {
+                        if (runArguments[i].includes(key)) {
+                            assert.fail("United argument was not removed");
+                        }
+                    }
+                }
+            }
+
+            test("Should remove the united argument", function () {
+                removeArgumentValueTest(
+                    runArguments,
+                    stringUnitedArgumentKey,
+                    false,
+                    false
+                );
+            });
+
+            test("Should remove the separated argument", function () {
+                removeArgumentValueTest(
+                    runArguments,
+                    stringSeparatedArgumentKey,
+                    false,
+                    true
+                );
+            });
+
+            test("Should remove binary argument", function () {
+                removeArgumentValueTest(
+                    runArguments,
+                    presentedBooleanArgumentKey,
+                    true
                 );
             });
         });
