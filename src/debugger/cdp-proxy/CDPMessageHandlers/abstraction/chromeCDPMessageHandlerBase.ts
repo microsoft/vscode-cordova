@@ -18,7 +18,7 @@ export abstract class ChromeCDPMessageHandlerBase extends CDPMessageHandlerBase 
 
     public configureHandlerAfterAttachmentPreparation(options: HandlerOptions): void {}
 
-    protected abstract fixSourcemapLocation(reqParams: any): any;
+    protected abstract fixSourcemapLocation(reqParams: any, androidAssetURL?: boolean): any;
 
     protected fixSourcemapRegexp(reqParams: any): any {
         const regExp = process.platform === "win32" ?
