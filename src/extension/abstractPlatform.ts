@@ -25,15 +25,9 @@ export default abstract class AbstractPlatform {
         return this.platformOpts;
     }
 
-    public abstract launchApp(): Promise<IGeneralLaunchResult>;
-
-    public abstract prepareForAttach(): Promise<IGeneralAttachResult>;
-
     public async stopAndCleanUp(): Promise<void> {
         await this.IonicDevServer.stopAndCleanUp();
     }
-
-    public abstract getRunArguments(): string[];
 
     public static getOptFromRunArgs(
         runArguments: any[],
@@ -146,4 +140,11 @@ export default abstract class AbstractPlatform {
             }
         }
     }
+
+    public abstract launchApp(): Promise<IGeneralLaunchResult>;
+
+    public abstract prepareForAttach(): Promise<IGeneralAttachResult>;
+
+    public abstract getRunArguments(): string[];
+
 }

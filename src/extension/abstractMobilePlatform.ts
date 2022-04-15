@@ -101,6 +101,8 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
 
     public abstract getTargetFromRunArgs(): Promise<Target | undefined>;
 
+    protected abstract getFirstAvailableOnlineTarget(): Promise<Target>;
+
     protected async getPrefferedTarget(): Promise<Target> {
         if (!this._target) {
             this._target =
@@ -109,8 +111,6 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
         }
         return this._target;
     }
-
-    protected abstract getFirstAvailableOnlineTarget(): Promise<Target>;
 
     protected async getFirstDebugableTarget(): Promise<IDebuggableMobileTarget> {
         const targets = (await this.targetManager.getTargetList(target => target.isOnline && !!target.id)) as IDebuggableMobileTarget[];

@@ -189,7 +189,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 this.log(
                     localize(
                         "ThereIsNoIosTargetWithSuchUdid",
-                        "There is no iOS target with such UDID: {0}",
+                        "There is no iOS target with such UDID or name: {0}",
                         targetId,
                     ),
                 );
