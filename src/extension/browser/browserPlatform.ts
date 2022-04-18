@@ -3,6 +3,7 @@
 
 import * as nls from "vscode-nls";
 import * as fs from "fs";
+import * as path from "path";
 import * as execa from "execa";
 import * as vscode from "vscode";
 import * as io from "socket.io-client";
@@ -112,6 +113,10 @@ export default class BrowserPlatform extends AbstractPlatform {
         await super.stopAndCleanUp();
         if (this.browserProc) {
             this.browserProc.kill("SIGINT");
+            // Workaround for issue https://github.com/microsoft/vscode-cordova/issues/766
+            if (this.platformOpts.target === TargetType.Chrome) {
+                this.setChromeExitTypeNormal();
+            }
             this.browserProc = null;
         }
         // Close the simulate debug-host socket if necessary
@@ -154,6 +159,18 @@ export default class BrowserPlatform extends AbstractPlatform {
             args.push(this.platformOpts.url);
         }
         return args;
+    }
+
+    private setChromeExitTypeNormal() {
+        try {
+            const preferencesPath = path.resolve(this.platformOpts.userDataDir, "Default", "Preferences");
+            const browserPrefs = JSON.parse(fs.readFileSync(preferencesPath, "utf8"));
+            console.log(browserPrefs);
+            browserPrefs.profile.exit_type = "normal";
+            fs.writeFileSync(preferencesPath, JSON.stringify(browserPrefs));
+        } catch {
+            // Just ignore possible errors
+        }
     }
 
     private getServeRunArguments(): string[] {
