@@ -1265,7 +1265,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
             browserPrefs.profile.exit_type = "normal";
             fs.writeFileSync(preferencesPath, JSON.stringify(browserPrefs));
         } catch (error) {
-            // Just ignore possible errors
+            this.outputLogger("Warning: Failed to set normal exit type for Chrome browser");
         }
     }
 
