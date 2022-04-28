@@ -782,9 +782,10 @@ License, as follows:
 
 ---------------------------------------------------------
 
-semver 5.1.0 - ISC
+semver 6.3.0 - ISC
 https://github.com/npm/node-semver#readme
 
+Copyright Isaac Z.
 Copyright Isaac Z. Schlueter
 Copyright (c) Isaac Z. Schlueter and Contributors
 
@@ -812,7 +813,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 signal-exit 3.0.3 - ISC
 https://github.com/tapjs/signal-exit
 
-Copyright (c) 2015
+Copyright (c) 2015, Contributors
 
 The ISC License
 
@@ -1506,7 +1507,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ip 1.1.5 - MIT
 https://github.com/indutny/node-ip
 
-Copyright Fedor Indutny, 2012.
+Copyright Fedor Indutny, 2012
 
 MIT License
 
@@ -1615,7 +1616,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---------------------------------------------------------
 
-minimist 1.2.5 - MIT
+minimist 1.2.6 - MIT
 https://github.com/substack/minimist
 
 
@@ -1831,7 +1832,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---------------------------------------------------------
 
-plist 3.0.4 - MIT
+plist 3.0.5 - MIT
 https://github.com/TooTallNate/node-plist#readme
 
 Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net>
