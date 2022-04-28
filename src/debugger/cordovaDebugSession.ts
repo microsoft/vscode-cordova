@@ -11,7 +11,7 @@ import * as os from "os";
 import * as io from "socket.io-client";
 import * as execa from "execa";
 import * as browserHelper from "vscode-js-debug-browsers";
-import { LoggingDebugSession, OutputEvent, logger, Logger, ErrorDestination } from "vscode-debugadapter";
+import { LoggingDebugSession, OutputEvent, logger, Logger, ErrorDestination, InitializedEvent } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
@@ -208,7 +208,26 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected initializeRequest(response: DebugProtocol.InitializeResponse, args: DebugProtocol.InitializeRequestArguments): void {
-        super.initializeRequest(response, args);
+        // Support default breakpoints filters for exceptions
+        response.body.exceptionBreakpointFilters = [
+			{
+				filter: "all",
+				label: "Caught Exceptions",
+				default: false,
+			},
+			{
+				filter: "uncaught",
+				label: "Uncaught Exceptions",
+				default: false,
+			}
+		];
+
+		this.sendResponse(response);
+
+		// since this debug adapter can accept configuration requests like 'setBreakpoint' at any time,
+		// we request them early by sending an 'initializeRequest' to the frontend.
+		// The frontend will end the configuration sequence by calling 'configurationDone' request.
+		this.sendEvent(new InitializedEvent());
     }
 
     protected launchRequest(response: DebugProtocol.LaunchResponse, launchArgs: ICordovaLaunchRequestArgs, request?: DebugProtocol.Request): Promise<void> {
