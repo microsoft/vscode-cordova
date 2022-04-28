@@ -11,7 +11,7 @@ import * as os from "os";
 import * as io from "socket.io-client";
 import * as execa from "execa";
 import * as browserHelper from "vscode-js-debug-browsers";
-import { LoggingDebugSession, OutputEvent, logger, Logger, ErrorDestination } from "vscode-debugadapter";
+import { LoggingDebugSession, OutputEvent, logger, Logger, ErrorDestination, InitializedEvent } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
 import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
@@ -139,6 +139,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private debugSessionStatus: DebugSessionStatus;
     private cdpProxyErrorHandlerDescriptor?: vscode.Disposable;
     private attachRetryCount: number;
+    private setChromeExitTypeNormal?: () => void;
 
     constructor(
         private cordovaSession: CordovaSession,
@@ -208,7 +209,26 @@ export class CordovaDebugSession extends LoggingDebugSession {
     }
 
     protected initializeRequest(response: DebugProtocol.InitializeResponse, args: DebugProtocol.InitializeRequestArguments): void {
-        super.initializeRequest(response, args);
+        // Support default breakpoints filters for exceptions
+        response.body.exceptionBreakpointFilters = [
+			{
+				filter: "all",
+				label: "Caught Exceptions",
+				default: false,
+			},
+			{
+				filter: "uncaught",
+				label: "Uncaught Exceptions",
+				default: false,
+			}
+		];
+
+		this.sendResponse(response);
+
+		// since this debug adapter can accept configuration requests like 'setBreakpoint' at any time,
+		// we request them early by sending an 'initializeRequest' to the frontend.
+		// The frontend will end the configuration sequence by calling 'configurationDone' request.
+		this.sendEvent(new InitializedEvent());
     }
 
     protected launchRequest(response: DebugProtocol.LaunchResponse, launchArgs: ICordovaLaunchRequestArgs, request?: DebugProtocol.Request): Promise<void> {
@@ -881,6 +901,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         if (this.browserProc) {
             this.browserProc.kill("SIGINT");
+            // Workaround for issue https://github.com/microsoft/vscode-cordova/issues/766
+            this.setChromeExitTypeNormal?.();
             this.browserProc = null;
         }
 
@@ -1248,10 +1270,22 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 this.outputLogger(errMsg, true);
                 this.stop();
             });
+            this.setChromeExitTypeNormal = this.setChromeExitTypeNormalByUserDataDir.bind(this, args.userDataDir);
 
             this.vsCodeDebugSession.customRequest("attach", args);
         }
 
+    }
+
+    private setChromeExitTypeNormalByUserDataDir(userDataDir: string) {
+        try {
+            const preferencesPath = path.resolve(userDataDir, "Default", "Preferences");
+            const browserPrefs = JSON.parse(fs.readFileSync(preferencesPath, "utf8"));
+            browserPrefs.profile.exit_type = "normal";
+            fs.writeFileSync(preferencesPath, JSON.stringify(browserPrefs));
+        } catch (error) {
+            this.outputLogger("Warning: Failed to set normal exit type for Chrome browser");
+        }
     }
 
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
