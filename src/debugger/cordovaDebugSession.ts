@@ -139,6 +139,7 @@ export class CordovaDebugSession extends LoggingDebugSession {
     private debugSessionStatus: DebugSessionStatus;
     private cdpProxyErrorHandlerDescriptor?: vscode.Disposable;
     private attachRetryCount: number;
+    private setChromeExitTypeNormal?: () => void;
 
     constructor(
         private cordovaSession: CordovaSession,
@@ -900,6 +901,8 @@ export class CordovaDebugSession extends LoggingDebugSession {
 
         if (this.browserProc) {
             this.browserProc.kill("SIGINT");
+            // Workaround for issue https://github.com/microsoft/vscode-cordova/issues/766
+            this.setChromeExitTypeNormal?.();
             this.browserProc = null;
         }
 
@@ -1267,10 +1270,22 @@ export class CordovaDebugSession extends LoggingDebugSession {
                 this.outputLogger(errMsg, true);
                 this.stop();
             });
+            this.setChromeExitTypeNormal = this.setChromeExitTypeNormalByUserDataDir.bind(this, args.userDataDir);
 
             this.vsCodeDebugSession.customRequest("attach", args);
         }
 
+    }
+
+    private setChromeExitTypeNormalByUserDataDir(userDataDir: string) {
+        try {
+            const preferencesPath = path.resolve(userDataDir, "Default", "Preferences");
+            const browserPrefs = JSON.parse(fs.readFileSync(preferencesPath, "utf8"));
+            browserPrefs.profile.exit_type = "normal";
+            fs.writeFileSync(preferencesPath, JSON.stringify(browserPrefs));
+        } catch (error) {
+            this.outputLogger("Warning: Failed to set normal exit type for Chrome browser");
+        }
     }
 
     private launchServe(launchArgs: ICordovaLaunchRequestArgs, projectType: ProjectType, runArguments: string[]): Promise<void> {
