@@ -1,3 +1,10 @@
+## 2.5.0
+* Added support for iOS simulators [#758](https://github.com/microsoft/vscode-cordova/pull/758)
+* Improved sourcemap URLs processing for Cordova projects with typescript [#762](https://github.com/microsoft/vscode-cordova/issues/762)
+* Fixed bug `"Chrome did not shut down correctly"` after closing browser window via stopping debugging in VSCode [#767](https://github.com/microsoft/vscode-cordova/pull/767)
+* Fixed auto unchecking default breakpoints filters for exceptions [#768](https://github.com/microsoft/vscode-cordova/pull/768)
+* Fixed security vulnerabilities [#763](https://github.com/microsoft/vscode-cordova/pull/763), [#764](https://github.com/microsoft/vscode-cordova/pull/764)
+
 ## 2.4.1
 * Added Ionic 6 version support [#748](https://github.com/microsoft/vscode-cordova/pull/748)
 * Implemented the `spaUrlRewrite` option for Simulate debug scenarios to improve page refreshing in case of URL rewrites caused by the router in single page applications [#750](https://github.com/microsoft/vscode-cordova/issues/750)
