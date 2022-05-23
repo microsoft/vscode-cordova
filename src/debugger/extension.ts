@@ -11,7 +11,10 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize = nls.loadMessageBundle();
 
 // suppress the following strings because they are not actual errors:
-const errorsToSuppress = ["Run an Ionic project on a connected device"];
+const errorsToSuppress = [
+    "Run an Ionic project on a connected device",
+    "Error: Unhandled error. ('[ios-sim] Simulator already running.\\n')"
+];
 
 export function execCommand(command: string, args: string[], errorLogger: (message: string) => void): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -53,10 +56,18 @@ export function cordovaRunCommand(command: string, args: string[], env, cordovaR
             "cordova platform add": false,
         };
 
+        // There is error about run command with specified iOS simulator.
+        // If this simulator is online error "Error: Unhandled error. ('[ios-sim] Simulator already running.\\n')"
+        // is shown
+        let skipCommandReject = false;
+
         cordovaProcess.stderr.on("data", data => {
             stderr += data.toString();
             for (let i = 0; i < errorsToSuppress.length; i++) {
                 if (data.toString().indexOf(errorsToSuppress[i]) >= 0) {
+                    if (data.toString().includes("Error: Unhandled error. ('[ios-sim] Simulator already running.\\n')")) {
+                        skipCommandReject = true;
+                    }
                     return;
                 }
             }
@@ -81,7 +92,7 @@ export function cordovaRunCommand(command: string, args: string[], env, cordovaR
             }
         });
         cordovaProcess.on("exit", exitCode => {
-            if (exitCode) {
+            if (exitCode && !skipCommandReject) {
                 reject(new Error(localize("CommandFailedWithExitCode", "{0} {1} failed with exit code {2}", command, args.join(" "), exitCode)));
             } else {
                 resolve([output, stderr]);
