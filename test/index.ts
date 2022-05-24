@@ -6,38 +6,38 @@ import * as Mocha from "mocha";
 import * as glob from "glob";
 
 export function run(): Promise<void> {
-    const mocha = new Mocha ({
-        ui: "tdd",
-        grep: "smokeTestsContext",
-        color: true,
-        timeout: 150000,
-    });
+  const mocha = new Mocha({
+    ui: "tdd",
+    grep: "smokeTestsContext",
+    color: true,
+    timeout: 150000,
+  });
 
-    mocha.invert();
+  mocha.invert();
 
-    const testsRoot = __dirname;
-    // Register Mocha options
-    return new Promise((resolve, reject) => {
-        glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
-            if (err) {
-                return reject(err);
-            }
+  const testsRoot = __dirname;
+  // Register Mocha options
+  return new Promise((resolve, reject) => {
+    glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
+      if (err) {
+        return reject(err);
+      }
 
-            // Add files to the test suite
-            files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+      // Add files to the test suite
+      files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
 
-            try {
-                // Run the mocha test
-                mocha.run((failures: any) => {
-                    if (failures > 0) {
-                        reject(new Error(`${failures} tests failed.`));
-                    } else {
-                        resolve();
-                    }
-                });
-            } catch (err) {
-                reject(err);
-            }
+      try {
+        // Run the mocha test
+        mocha.run((failures: any) => {
+          if (failures > 0) {
+            reject(new Error(`${failures} tests failed.`));
+          } else {
+            resolve();
+          }
         });
+      } catch (err) {
+        reject(err);
+      }
     });
+  });
 }

@@ -10,54 +10,91 @@ import * as testUtils from "./testUtils";
 import { CordovaProjectHelper } from "../src/utils/cordovaProjectHelper";
 
 suite("extensionContext", () => {
-    let testProjectPath: string = path.resolve(__dirname, "resources", "testCordovaProject");
-    let cordovaTypeDefDir: string = CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
+  let testProjectPath: string = path.resolve(
+    __dirname,
+    "resources",
+    "testCordovaProject"
+  );
+  let cordovaTypeDefDir: string =
+    CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
 
-    suiteTeardown(() => {
-        // Cleanup the target folder for type definitions
-        if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
-            rimraf.sync(cordovaTypeDefDir);
-        }
+  suiteTeardown(() => {
+    // Cleanup the target folder for type definitions
+    if (CordovaProjectHelper.existsSync(cordovaTypeDefDir)) {
+      rimraf.sync(cordovaTypeDefDir);
+    }
+  });
+
+  test("Verify that the commands registered by Cordova extension are loaded", () => {
+    return vscode.commands.getCommands(true).then((results) => {
+      let cordovaCmdsAvailable = results.filter((commandName: string) => {
+        return commandName.indexOf("cordova.") > -1;
+      });
+      assert.deepStrictEqual(cordovaCmdsAvailable, [
+        "cordova.restart",
+        "cordova.prepare",
+        "cordova.build",
+        "cordova.run",
+        "cordova.simulate.android",
+        "cordova.simulate.ios",
+      ]);
     });
+  });
 
-    test("Verify that the commands registered by Cordova extension are loaded", () => {
-        return vscode.commands.getCommands(true)
-            .then((results) => {
-                let cordovaCmdsAvailable = results.filter((commandName: string) => {
-                    return commandName.indexOf("cordova.") > -1;
-                });
-                assert.deepStrictEqual(cordovaCmdsAvailable, ["cordova.restart", "cordova.prepare", "cordova.build", "cordova.run", "cordova.simulate.android", "cordova.simulate.ios"]);
-            });
-    });
-
-    suite("smokeTestsContext", () => {
-        test("Execute Commands from the command palette", () => {
-            // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
-            // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
-            return testUtils.addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
-                .then(() => {
-                    return vscode.commands.executeCommand("cordova.build");
-                }).then(() => {
-                    return delay(10000);
-                }).then(_res => {
-                    let androidBuildPath = path.resolve(testProjectPath, "platforms", "android", "app", "build");
-                    assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
-                    return testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]);
-                });
+  suite("smokeTestsContext", () => {
+    test("Execute Commands from the command palette", () => {
+      // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
+      // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
+      return testUtils
+        .addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
+        .then(() => {
+          return vscode.commands.executeCommand("cordova.build");
+        })
+        .then(() => {
+          return delay(10000);
+        })
+        .then((_res) => {
+          let androidBuildPath = path.resolve(
+            testProjectPath,
+            "platforms",
+            "android",
+            "app",
+            "build"
+          );
+          assert.ok(CordovaProjectHelper.existsSync(androidBuildPath));
+          return testUtils.removeCordovaComponents(
+            "platform",
+            testProjectPath,
+            ["android"]
+          );
         });
     });
+  });
 
-    suite("CordovaSimulateContext", () => {
-        test("Verify that the simulate command launches the simulate server", () => {
-            // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
-            // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
-            return testUtils.addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
-                .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
-                .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
-                .then((simHostStarted: boolean) => assert(simHostStarted, "The simulation host is running."))
-                .then(() => testUtils.isUrlReachable("http://localhost:8000/index.html"))
-                .then((appHostStarted: boolean) => assert(appHostStarted, "The application host is running."))
-                .finally(() => testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]));
-        });
+  suite("CordovaSimulateContext", () => {
+    test("Verify that the simulate command launches the simulate server", () => {
+      // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
+      // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
+      return testUtils
+        .addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
+        .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
+        .then(() =>
+          testUtils.isUrlReachable("http://localhost:8000/simulator/index.html")
+        )
+        .then((simHostStarted: boolean) =>
+          assert(simHostStarted, "The simulation host is running.")
+        )
+        .then(() =>
+          testUtils.isUrlReachable("http://localhost:8000/index.html")
+        )
+        .then((appHostStarted: boolean) =>
+          assert(appHostStarted, "The application host is running.")
+        )
+        .finally(() =>
+          testUtils.removeCordovaComponents("platform", testProjectPath, [
+            "android",
+          ])
+        );
     });
+  });
 });
