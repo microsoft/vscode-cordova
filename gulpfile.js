@@ -44,6 +44,8 @@ const extensionName = isNightly
   ? "vscode-react-native-preview"
   : "vscode-react-native";
 
+const buildDir = "src";
+
 const translationProjectName = "vscode-extensions";
 const defaultLanguages = [
   { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
@@ -358,7 +360,7 @@ gulp.task("lint", gulp.series("lint:prettier", "lint:eslint"));
 gulp.task("webpack-bundle", async () => {
   const packages = [
     {
-      entry: `${srcPath}/extension/rn-extension.ts`,
+      entry: `${buildDir}/cordova.ts`,
       filename: "rn-extension.js",
       library: true,
     },
