@@ -24,6 +24,7 @@ const { promisify } = require("util");
 const assert = require("assert");
 const through2 = require("through2");
 const { Transform } = require("readable-stream");
+const { message } = require("gulp-typescript/release/utils");
 
 const copyright = GulpExtras.checkCopyright;
 const executeCommand = GulpExtras.executeCommand;
@@ -302,16 +303,17 @@ const runPrettier = async (fix) => {
       "gulpfile.js",
       "*.md",
       "!CHANGELOG.md",
-      "!test/smoke/**",
       "!src/**/*.d.ts",
+      "src/**/*.ts",
+      "!test/resources",
     ],
     {
       stdio: "inherit",
     }
   );
-
   await new Promise((resolve, reject) => {
     child.on("exit", (code) => {
+      // console.log(code);
       code ? reject(`Prettier exited with code ${code}`) : resolve();
     });
   });

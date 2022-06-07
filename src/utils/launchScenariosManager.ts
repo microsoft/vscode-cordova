@@ -6,65 +6,69 @@ import * as fs from "fs";
 import stripJsonComments = require("strip-json-comments");
 
 export interface IConfiguration {
-    name: string;
-    platform?: string;
-    target?: string;
-    type?: string;
-    request?: string;
+  name: string;
+  platform?: string;
+  target?: string;
+  type?: string;
+  request?: string;
 }
 export interface ILaunchScenarios {
-    configurations?: IConfiguration[];
+  configurations?: IConfiguration[];
 }
 
 export class LaunchScenariosManager {
-    private pathToLaunchFile: string;
-    private launchScenarios: ILaunchScenarios;
+  private pathToLaunchFile: string;
+  private launchScenarios: ILaunchScenarios;
 
-    constructor(rootPath: string) {
-        this.pathToLaunchFile = path.resolve(rootPath, ".vscode", "launch.json");
-    }
+  constructor(rootPath: string) {
+    this.pathToLaunchFile = path.resolve(rootPath, ".vscode", "launch.json");
+  }
 
-    public getLaunchScenarios(): ILaunchScenarios {
-        return this.launchScenarios;
-    }
+  public getLaunchScenarios(): ILaunchScenarios {
+    return this.launchScenarios;
+  }
 
-    private getFirstScenarioIndexByParams(scenario: IConfiguration): number | null {
-        if (this.launchScenarios.configurations) {
-            for (let i = 0; i < this.launchScenarios.configurations.length; i++) {
-                const config = this.launchScenarios.configurations[i];
-                if (
-                    scenario.name === config.name &&
-                    scenario.platform === config.platform &&
-                    scenario.type === config.type &&
-                    scenario.request === config.request
-                ) {
-                    return i;
-                }
-            }
+  private getFirstScenarioIndexByParams(
+    scenario: IConfiguration
+  ): number | null {
+    if (this.launchScenarios.configurations) {
+      for (let i = 0; i < this.launchScenarios.configurations.length; i++) {
+        const config = this.launchScenarios.configurations[i];
+        if (
+          scenario.name === config.name &&
+          scenario.platform === config.platform &&
+          scenario.type === config.type &&
+          scenario.request === config.request
+        ) {
+          return i;
         }
-        return null;
+      }
     }
+    return null;
+  }
 
-    private writeLaunchScenarios(launch: ILaunchScenarios = this.launchScenarios): void {
-        if (fs.existsSync(this.pathToLaunchFile)) {
-            fs.writeFileSync(this.pathToLaunchFile, JSON.stringify(launch, null, 4));
-        }
+  private writeLaunchScenarios(
+    launch: ILaunchScenarios = this.launchScenarios
+  ): void {
+    if (fs.existsSync(this.pathToLaunchFile)) {
+      fs.writeFileSync(this.pathToLaunchFile, JSON.stringify(launch, null, 4));
     }
+  }
 
-    public readLaunchScenarios(): void {
-        if (fs.existsSync(this.pathToLaunchFile)) {
-            const content = fs.readFileSync(this.pathToLaunchFile, "utf8");
-            this.launchScenarios = JSON.parse(stripJsonComments(content));
-        }
+  public readLaunchScenarios(): void {
+    if (fs.existsSync(this.pathToLaunchFile)) {
+      const content = fs.readFileSync(this.pathToLaunchFile, "utf8");
+      this.launchScenarios = JSON.parse(stripJsonComments(content));
     }
+  }
 
-    public updateLaunchScenario(launchArgs: any, updates: any): void {
-        this.readLaunchScenarios();
-        let launchConfigIndex = this.getFirstScenarioIndexByParams(launchArgs);
-        const launchScenarios = this.getLaunchScenarios();
-        if (launchConfigIndex !== null && launchScenarios.configurations) {
-            Object.assign(launchScenarios.configurations[launchConfigIndex], updates);
-            this.writeLaunchScenarios(launchScenarios);
-        }
+  public updateLaunchScenario(launchArgs: any, updates: any): void {
+    this.readLaunchScenarios();
+    let launchConfigIndex = this.getFirstScenarioIndexByParams(launchArgs);
+    const launchScenarios = this.getLaunchScenarios();
+    if (launchConfigIndex !== null && launchScenarios.configurations) {
+      Object.assign(launchScenarios.configurations[launchConfigIndex], updates);
+      this.writeLaunchScenarios(launchScenarios);
     }
+  }
 }

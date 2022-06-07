@@ -9,20 +9,27 @@ import { TelemetryGenerator, TelemetryHelper } from "./telemetryHelper";
  * telemetry event. This wrapper creates a telemetry event compatible with vscode-cordova's telemetry, based on cordova-simulate's event, and sends it using the Telemetry module.
  */
 export class CordovaSimulateTelemetry {
-    public sendTelemetry(eventName: string, props: Telemetry.ITelemetryProperties, piiProps: Telemetry.ITelemetryProperties): void {
-        let fullEventName = "cordova-simulate-" + eventName;
-        let generator = new TelemetryGenerator(fullEventName);
-        let telemetryEvent = new Telemetry.TelemetryEvent(fullEventName);
+  public sendTelemetry(
+    eventName: string,
+    props: Telemetry.ITelemetryProperties,
+    piiProps: Telemetry.ITelemetryProperties
+  ): void {
+    let fullEventName = "cordova-simulate-" + eventName;
+    let generator = new TelemetryGenerator(fullEventName);
+    let telemetryEvent = new Telemetry.TelemetryEvent(fullEventName);
 
-        Object.keys(props).forEach((prop) => {
-            generator.add(prop, props[prop], false);
-        });
+    Object.keys(props).forEach((prop) => {
+      generator.add(prop, props[prop], false);
+    });
 
-        Object.keys(piiProps).forEach((prop) => {
-            generator.add(prop, piiProps[prop], true);
-        });
+    Object.keys(piiProps).forEach((prop) => {
+      generator.add(prop, piiProps[prop], true);
+    });
 
-        TelemetryHelper.addTelemetryEventProperties(telemetryEvent, generator.getTelemetryProperties());
-        Telemetry.send(telemetryEvent);
-    }
+    TelemetryHelper.addTelemetryEventProperties(
+      telemetryEvent,
+      generator.getTelemetryProperties()
+    );
+    Telemetry.send(telemetryEvent);
+  }
 }

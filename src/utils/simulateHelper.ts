@@ -4,11 +4,13 @@
 import { SimulateTargets } from "../extension/simulate";
 
 export class SimulateHelper {
-    public static isSimulateTarget(target: string): boolean {
-        return Object.values(SimulateTargets).includes(target as SimulateTargets);
-    }
+  public static isSimulateTarget(target: string): boolean {
+    return Object.values(SimulateTargets).includes(target as SimulateTargets);
+  }
 
-    public static isSimulate(args: { target?: string, simulatePort?: number }) {
-        return !!(SimulateHelper.isSimulateTarget(args.target) && args.simulatePort);
-    }
+  public static isSimulate(args: { target?: string, simulatePort?: number }) {
+    return !!(
+      SimulateHelper.isSimulateTarget(args.target) && args.simulatePort
+    );
+  }
 }

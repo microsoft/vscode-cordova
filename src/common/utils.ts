@@ -4,9 +4,9 @@
 import * as fs from "fs";
 
 export function isDirectory(dir: string): boolean {
-    try {
-        return fs.statSync(dir).isDirectory();
-    } catch {
-        return false;
-    }
+  try {
+    return fs.statSync(dir).isDirectory();
+  } catch {
+    return false;
+  }
 }
