@@ -5,33 +5,28 @@ import * as vscode from "vscode";
 import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
 
 export class ProjectsStorage {
-  public static readonly projectsCache: {
-    [key: string]: CordovaWorkspaceManager,
-  } = {};
+    public static readonly projectsCache: {
+        [key: string]: CordovaWorkspaceManager;
+    } = {};
 
-  public static addFolder(
-    workspaceFolder: vscode.WorkspaceFolder,
-    workspaceManager: CordovaWorkspaceManager
-  ): void {
-    this.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()] =
-      workspaceManager;
-  }
-
-  public static getFolder(
-    workspaceFolder: vscode.WorkspaceFolder
-  ): CordovaWorkspaceManager {
-    return this.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
-  }
-
-  public static delFolder(
-    workspaceFolder: vscode.WorkspaceFolder | string
-  ): void {
-    let key = "";
-    if (typeof workspaceFolder === "string") {
-      key = workspaceFolder.toLowerCase();
-    } else {
-      key = workspaceFolder.uri.fsPath.toLowerCase();
+    public static addFolder(
+        workspaceFolder: vscode.WorkspaceFolder,
+        workspaceManager: CordovaWorkspaceManager,
+    ): void {
+        this.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()] = workspaceManager;
     }
-    delete this.projectsCache[key];
-  }
+
+    public static getFolder(workspaceFolder: vscode.WorkspaceFolder): CordovaWorkspaceManager {
+        return this.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
+    }
+
+    public static delFolder(workspaceFolder: vscode.WorkspaceFolder | string): void {
+        let key = "";
+        if (typeof workspaceFolder === "string") {
+            key = workspaceFolder.toLowerCase();
+        } else {
+            key = workspaceFolder.uri.fsPath.toLowerCase();
+        }
+        delete this.projectsCache[key];
+    }
 }

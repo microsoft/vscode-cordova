@@ -2,59 +2,54 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 export interface IMobileTarget {
-  name?: string;
-  id?: string;
-  isOnline: boolean;
-  isVirtualTarget: boolean;
+    name?: string;
+    id?: string;
+    isOnline: boolean;
+    isVirtualTarget: boolean;
 }
 
 export interface IDebuggableMobileTarget extends IMobileTarget {
-  id: string;
+    id: string;
 }
 
 export class MobileTarget implements IDebuggableMobileTarget {
-  protected _name?: string;
-  protected _id: string;
-  protected _isOnline: boolean;
-  protected _isVirtualTarget: boolean;
+    protected _name?: string;
+    protected _id: string;
+    protected _isOnline: boolean;
+    protected _isVirtualTarget: boolean;
 
-  constructor(
-    isOnline: boolean,
-    isVirtualTarget: boolean,
-    id: string,
-    name?: string
-  ) {
-    this._isOnline = isOnline;
-    this._isVirtualTarget = isVirtualTarget;
-    this._name = name;
-    this._id = id;
-  }
+    constructor(isOnline: boolean, isVirtualTarget: boolean, id: string, name?: string) {
+        this._isOnline = isOnline;
+        this._isVirtualTarget = isVirtualTarget;
+        this._name = name;
+        this._id = id;
+    }
 
-  get name(): string {
-    return this._name;
-  }
+    get name(): string {
+        return this._name;
+    }
 
-  set name(value: string) {
-    this._name = value;
-  }
+    set name(value: string) {
+        this._name = value;
+    }
 
-  get id(): string {
-    return this._id;
-  }
+    get id(): string {
+        return this._id;
+    }
 
-  set id(id: string) {
-    this._id = id;
-  }
+    set id(id: string) {
+        this._id = id;
+    }
 
-  get isOnline(): boolean {
-    return this._isOnline;
-  }
+    get isOnline(): boolean {
+        return this._isOnline;
+    }
 
-  set isOnline(value: boolean) {
-    this._isOnline = value;
-  }
+    set isOnline(value: boolean) {
+        this._isOnline = value;
+    }
 
-  get isVirtualTarget(): boolean {
-    return this._isVirtualTarget;
-  }
+    get isVirtualTarget(): boolean {
+        return this._isVirtualTarget;
+    }
 }

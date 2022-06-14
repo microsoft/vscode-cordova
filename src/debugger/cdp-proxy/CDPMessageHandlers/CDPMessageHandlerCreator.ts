@@ -11,62 +11,56 @@ import { SafariIonicCDPMessageHandler } from "./implementation/safariIonicCDPMes
 import { HandlerOptions } from "./abstraction/CDPMessageHandlerBase";
 
 export class CDPMessageHandlerCreator {
-  public static generateHandlerOptions(
-    args: ICordovaAttachRequestArgs
-  ): HandlerOptions {
-    return {
-      platform: args.platform,
-      debugRequest: args.request,
-      ionicLiveReload: args.ionicLiveReload,
-      devServerAddress: args.devServerAddress,
-      devServerPort: args.devServerPort,
-      simulatePort: args.simulatePort,
-      iOSAppPackagePath: args.iOSAppPackagePath,
-      iOSVersion: args.iOSVersion,
-    };
-  }
-
-  public static create(
-    sourcemapPathTransformer: SourcemapPathTransformer,
-    projectType: ProjectType,
-    args: ICordovaAttachRequestArgs,
-    isChrome: boolean
-  ):
-    | ChromeCordovaCDPMessageHandler
-    | ChromeIonicCDPMessageHandler
-    | SafariCordovaCDPMessageHandler
-    | SafariIonicCDPMessageHandler {
-    const handlerOptions =
-      CDPMessageHandlerCreator.generateHandlerOptions(args);
-
-    if (isChrome) {
-      if (projectType.isIonic) {
-        return new ChromeIonicCDPMessageHandler(
-          sourcemapPathTransformer,
-          projectType,
-          handlerOptions
-        );
-      } else {
-        return new ChromeCordovaCDPMessageHandler(
-          sourcemapPathTransformer,
-          projectType,
-          handlerOptions
-        );
-      }
-    } else {
-      if (projectType.isIonic) {
-        return new SafariIonicCDPMessageHandler(
-          sourcemapPathTransformer,
-          projectType,
-          handlerOptions
-        );
-      } else {
-        return new SafariCordovaCDPMessageHandler(
-          sourcemapPathTransformer,
-          projectType,
-          handlerOptions
-        );
-      }
+    public static generateHandlerOptions(args: ICordovaAttachRequestArgs): HandlerOptions {
+        return {
+            platform: args.platform,
+            debugRequest: args.request,
+            ionicLiveReload: args.ionicLiveReload,
+            devServerAddress: args.devServerAddress,
+            devServerPort: args.devServerPort,
+            simulatePort: args.simulatePort,
+            iOSAppPackagePath: args.iOSAppPackagePath,
+            iOSVersion: args.iOSVersion,
+        };
     }
-  }
+
+    public static create(
+        sourcemapPathTransformer: SourcemapPathTransformer,
+        projectType: ProjectType,
+        args: ICordovaAttachRequestArgs,
+        isChrome: boolean,
+    ):
+        | ChromeCordovaCDPMessageHandler
+        | ChromeIonicCDPMessageHandler
+        | SafariCordovaCDPMessageHandler
+        | SafariIonicCDPMessageHandler {
+        const handlerOptions = CDPMessageHandlerCreator.generateHandlerOptions(args);
+
+        if (isChrome) {
+            if (projectType.isIonic) {
+                return new ChromeIonicCDPMessageHandler(
+                    sourcemapPathTransformer,
+                    projectType,
+                    handlerOptions,
+                );
+            }
+            return new ChromeCordovaCDPMessageHandler(
+                sourcemapPathTransformer,
+                projectType,
+                handlerOptions,
+            );
+        }
+        if (projectType.isIonic) {
+            return new SafariIonicCDPMessageHandler(
+                sourcemapPathTransformer,
+                projectType,
+                handlerOptions,
+            );
+        }
+        return new SafariCordovaCDPMessageHandler(
+            sourcemapPathTransformer,
+            projectType,
+            handlerOptions,
+        );
+    }
 }

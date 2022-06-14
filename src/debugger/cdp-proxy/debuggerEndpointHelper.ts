@@ -3,181 +3,174 @@
 
 import * as URL from "url";
 import * as ipModule from "ip";
+
 const dns = require("dns").promises;
+
 import * as http from "http";
 import * as https from "https";
 import { CancellationToken } from "vscode";
-import { delay } from "../../utils/extensionHelper";
 import * as nls from "vscode-nls";
+import { delay } from "../../utils/extensionHelper";
+
 nls.config({
-  messageFormat: nls.MessageFormat.bundle,
-  bundleFormat: nls.BundleFormat.standalone,
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
 })();
 const localize = nls.loadMessageBundle();
 
 export class DebuggerEndpointHelper {
-  private localv4: Buffer;
-  private localv6: Buffer;
+    private localv4: Buffer;
+    private localv6: Buffer;
 
-  constructor() {
-    this.localv4 = ipModule.toBuffer("127.0.0.1");
-    this.localv6 = ipModule.toBuffer("::1");
-  }
+    constructor() {
+        this.localv4 = ipModule.toBuffer("127.0.0.1");
+        this.localv6 = ipModule.toBuffer("::1");
+    }
 
-  /**
-   * Attempts to retrieve the debugger websocket URL for a process listening
-   * at the given address, retrying until available.
-   * @param browserURL -- Address like `http://localhost:1234`
-   * @param cancellationToken -- Cancellation for this operation
-   */
-  public async retryGetWSEndpoint(
-    browserURL: string,
-    attemptNumber: number,
-    cancellationToken: CancellationToken
-  ): Promise<string> {
-    try {
-      return await this.getWSEndpoint(browserURL);
-    } catch (err) {
-      if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
-        const internalError = new Error(
-          localize(
-            "CouldNotConnectToTheDebugTarget",
-            "Could not connect to the debug target at {0}: {1}",
-            browserURL,
-            err.message
-          )
-        );
+    /**
+     * Attempts to retrieve the debugger websocket URL for a process listening
+     * at the given address, retrying until available.
+     * @param browserURL -- Address like `http://localhost:1234`
+     * @param cancellationToken -- Cancellation for this operation
+     */
+    public async retryGetWSEndpoint(
+        browserURL: string,
+        attemptNumber: number,
+        cancellationToken: CancellationToken,
+    ): Promise<string> {
+        try {
+            return await this.getWSEndpoint(browserURL);
+        } catch (err) {
+            if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
+                const internalError = new Error(
+                    localize(
+                        "CouldNotConnectToTheDebugTarget",
+                        "Could not connect to the debug target at {0}: {1}",
+                        browserURL,
+                        err.message,
+                    ),
+                );
 
-        if (cancellationToken.isCancellationRequested) {
-          throw new Error(localize("OperationCancelled", "Operation canceled"));
+                if (cancellationToken.isCancellationRequested) {
+                    throw new Error(localize("OperationCancelled", "Operation canceled"));
+                }
+
+                throw internalError;
+            }
+
+            await delay(1000);
+            return await this.retryGetWSEndpoint(browserURL, --attemptNumber, cancellationToken);
+        }
+    }
+
+    /**
+     * Returns the debugger websocket URL a process listening at the given address.
+     * @param browserURL -- Address like `http://localhost:1234`
+     */
+    public async getWSEndpoint(browserURL: string, isSimulate: boolean = false): Promise<string> {
+        if (!isSimulate) {
+            const jsonVersion = await this.fetchJson<{
+                webSocketDebuggerUrl?: string;
+            }>(URL.resolve(browserURL, "/json/version"));
+            if (jsonVersion.webSocketDebuggerUrl) {
+                return jsonVersion.webSocketDebuggerUrl;
+            }
         }
 
-        throw internalError;
-      }
+        // Chrome its top-level debugg on /json/version, while Node does not.
+        // Request both and return whichever one got us a string.
+        const jsonList = await this.fetchJson<{ webSocketDebuggerUrl: string }[]>(
+            URL.resolve(browserURL, "/json/list"),
+        );
+        if (jsonList.length) {
+            return jsonList[0].webSocketDebuggerUrl;
+        }
 
-      await delay(1000);
-      return await this.retryGetWSEndpoint(
-        browserURL,
-        --attemptNumber,
-        cancellationToken
-      );
-    }
-  }
-
-  /**
-   * Returns the debugger websocket URL a process listening at the given address.
-   * @param browserURL -- Address like `http://localhost:1234`
-   */
-  public async getWSEndpoint(
-    browserURL: string,
-    isSimulate: boolean = false
-  ): Promise<string> {
-    if (!isSimulate) {
-      const jsonVersion = await this.fetchJson<{
-        webSocketDebuggerUrl?: string,
-      }>(URL.resolve(browserURL, "/json/version"));
-      if (jsonVersion.webSocketDebuggerUrl) {
-        return jsonVersion.webSocketDebuggerUrl;
-      }
+        throw new Error(
+            localize("CouldNotFindAnyDebuggableTarget", "Could not find any debuggable target"),
+        );
     }
 
-    // Chrome its top-level debugg on /json/version, while Node does not.
-    // Request both and return whichever one got us a string.
-    const jsonList = await this.fetchJson<{ webSocketDebuggerUrl: string }[]>(
-      URL.resolve(browserURL, "/json/list")
-    );
-    if (jsonList.length) {
-      return jsonList[0].webSocketDebuggerUrl;
+    /**
+     * Fetches JSON content from the given URL.
+     */
+    private async fetchJson<T>(url: string): Promise<T> {
+        const data = await this.fetch(url);
+        return JSON.parse(data);
     }
 
-    throw new Error(
-      localize(
-        "CouldNotFindAnyDebuggableTarget",
-        "Could not find any debuggable target"
-      )
-    );
-  }
+    /**
+     * Fetches content from the given URL.
+     */
+    private async fetch(url: string): Promise<string> {
+        const isSecure = !url.startsWith("http://");
+        const driver = isSecure ? https : http;
+        const targetAddressIsLoopback = await this.isLoopback(url);
 
-  /**
-   * Fetches JSON content from the given URL.
-   */
-  private async fetchJson<T>(url: string): Promise<T> {
-    const data = await this.fetch(url);
-    return JSON.parse(data);
-  }
+        return new Promise<string>((fulfill, reject) => {
+            const requestOptions: https.RequestOptions = {};
 
-  /**
-   * Fetches content from the given URL.
-   */
-  private async fetch(url: string): Promise<string> {
-    const isSecure = !url.startsWith("http://");
-    const driver = isSecure ? https : http;
-    const targetAddressIsLoopback = await this.isLoopback(url);
+            if (isSecure && targetAddressIsLoopback) {
+                requestOptions.rejectUnauthorized = false;
+            }
 
-    return new Promise<string>((fulfill, reject) => {
-      const requestOptions: https.RequestOptions = {};
+            const request = driver.get(url, requestOptions, response => {
+                let data = "";
+                response.setEncoding("utf8");
+                response.on("data", (chunk: string) => (data += chunk));
+                response.on("end", () => fulfill(data));
+                response.on("error", reject);
+            });
 
-      if (isSecure && targetAddressIsLoopback) {
-        requestOptions.rejectUnauthorized = false;
-      }
-
-      const request = driver.get(url, requestOptions, (response) => {
-        let data = "";
-        response.setEncoding("utf8");
-        response.on("data", (chunk: string) => (data += chunk));
-        response.on("end", () => fulfill(data));
-        response.on("error", reject);
-      });
-
-      request.on("error", reject);
-      request.end();
-    });
-  }
-
-  /**
-   * Gets whether the IP is a loopback address.
-   */
-  private async isLoopback(address: string) {
-    let ipOrHostname: string;
-    try {
-      const url = new URL.URL(address);
-      // replace brackets in ipv6 addresses:
-      ipOrHostname = url.hostname.replace(/^\[|\]$/g, "");
-    } catch {
-      ipOrHostname = address;
+            request.on("error", reject);
+            request.end();
+        });
     }
 
-    if (this.isLoopbackIp(ipOrHostname)) {
-      return true;
+    /**
+     * Gets whether the IP is a loopback address.
+     */
+    private async isLoopback(address: string) {
+        let ipOrHostname: string;
+        try {
+            const url = new URL.URL(address);
+            // replace brackets in ipv6 addresses:
+            ipOrHostname = url.hostname.replace(/^\[|]$/g, "");
+        } catch {
+            ipOrHostname = address;
+        }
+
+        if (this.isLoopbackIp(ipOrHostname)) {
+            return true;
+        }
+
+        try {
+            const resolved = await dns.lookup(ipOrHostname);
+            return this.isLoopbackIp(resolved.address);
+        } catch {
+            return false;
+        }
     }
 
-    try {
-      const resolved = await dns.lookup(ipOrHostname);
-      return this.isLoopbackIp(resolved.address);
-    } catch {
-      return false;
-    }
-  }
+    /**
+     * Checks if the given address, well-formed loopback IPs. We don't need exotic
+     * variations like `127.1` because `dns.lookup()` will resolve the proper
+     * version for us. The "right" way would be to parse the IP to an integer
+     * like Go does (https://golang.org/pkg/net/#IP.IsLoopback), but this
+     * is lightweight and works.
+     */
+    private isLoopbackIp(ipOrLocalhost: string) {
+        if (ipOrLocalhost.toLowerCase() === "localhost") {
+            return true;
+        }
 
-  /**
-   * Checks if the given address, well-formed loopback IPs. We don't need exotic
-   * variations like `127.1` because `dns.lookup()` will resolve the proper
-   * version for us. The "right" way would be to parse the IP to an integer
-   * like Go does (https://golang.org/pkg/net/#IP.IsLoopback), but this
-   * is lightweight and works.
-   */
-  private isLoopbackIp(ipOrLocalhost: string) {
-    if (ipOrLocalhost.toLowerCase() === "localhost") {
-      return true;
-    }
+        let buf: Buffer;
+        try {
+            buf = ipModule.toBuffer(ipOrLocalhost);
+        } catch {
+            return false;
+        }
 
-    let buf: Buffer;
-    try {
-      buf = ipModule.toBuffer(ipOrLocalhost);
-    } catch {
-      return false;
+        return buf.equals(this.localv4) || buf.equals(this.localv6);
     }
-
-    return buf.equals(this.localv4) || buf.equals(this.localv6);
-  }
 }
