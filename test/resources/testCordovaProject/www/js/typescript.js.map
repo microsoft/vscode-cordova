@@ -1,0 +1,15 @@
+{
+    "version": 3,
+    "file": "typescript.js",
+    "sourceRoot": "",
+    "sources": [
+        "typescript.ts"
+    ],
+    "names": [
+        "testClass",
+        "testClass.constructor",
+        "testClass.printValue",
+        "typeScript"
+    ],
+    "mappings": "AAAA;IAEIA,mBAAYA,GAAWA;QACnBC,IAAIA,CAACA,KAAKA,GAAGA,GAAGA,CAACA;IACrBA,CAACA;IAEMD,8BAAUA,GAAjBA;QACIE,OAAOA,CAACA,IAAIA,CAACA,wBAAwBA,GAAGA,IAAIA,CAACA,KAAKA,CAACA,CAACA;IACxDA,CAACA;IACLF,gBAACA;AAADA,CAACA,AATD,IASC;AAED;IACIG,IAAIA,GAAGA,GAAGA,IAAIA,SAASA,CAACA,EAAEA,CAACA,CAACA;IAC5BA,GAAGA,CAACA,UAAUA,EAAEA,CAACA;AACrBA,CAACA"
+}
