@@ -1,27 +1,25 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {
-    Connection,
-    Server,
-    WebSocketTransport
-} from "vscode-cdp-proxy";
-import * as semver from "semver";
 import { IncomingMessage } from "http";
-import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
-import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
-import { LogLevel } from "../../utils/log/logHelper";
+import { Connection, Server, WebSocketTransport } from "vscode-cdp-proxy";
+import * as semver from "semver";
 import { CancellationToken, EventEmitter } from "vscode";
-import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
+import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
+import { LogLevel } from "../../utils/log/logHelper";
 import { PlatformType } from "../cordovaDebugSession";
 import { ProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
-import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
-import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
+import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
+import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
+import {
+    CDPMessageHandlerBase,
+    DispatchDirection,
+} from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
+import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 
 export class CordovaCDPProxy {
-
     private readonly PROXY_LOG_TAGS = {
         DEBUGGER_COMMAND: "Command Debugger To Target",
         APPLICATION_COMMAND: "Command Target To Debugger",
@@ -55,7 +53,7 @@ export class CordovaCDPProxy {
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: ProjectType,
         args: ICordovaAttachRequestArgs,
-        logLevel: LogLevel = LogLevel.None
+        logLevel: LogLevel = LogLevel.None,
     ) {
         this.port = port;
         this.hostAddress = hostAddress;
@@ -66,10 +64,20 @@ export class CordovaCDPProxy {
         this.isSimulate = SimulateHelper.isSimulate(args);
 
         if (args.platform === PlatformType.IOS && !this.isSimulate) {
-            this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, false);
+            this.CDPMessageHandler = CDPMessageHandlerCreator.create(
+                sourcemapPathTransformer,
+                projectType,
+                args,
+                false,
+            );
             this.communicationPreparationsDone = false;
         } else {
-            this.CDPMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, args, true);
+            this.CDPMessageHandler = CDPMessageHandlerCreator.create(
+                sourcemapPathTransformer,
+                projectType,
+                args,
+                true,
+            );
             this.communicationPreparationsDone = true;
         }
     }
@@ -77,11 +85,10 @@ export class CordovaCDPProxy {
     public createServer(logLevel: LogLevel, cancellationToken: CancellationToken): Promise<void> {
         this.cancellationToken = cancellationToken;
         this.logLevel = logLevel;
-        return Server.create({ port: this.port, host: this.hostAddress })
-            .then((server: Server) => {
-                this.server = server;
-                this.server.onConnection(this.onConnectionHandler.bind(this));
-            });
+        return Server.create({ port: this.port, host: this.hostAddress }).then((server: Server) => {
+            this.server = server;
+            this.server.onConnection(this.onConnectionHandler.bind(this));
+        });
     }
 
     public async stopServer(): Promise<void> {
@@ -110,16 +117,18 @@ export class CordovaCDPProxy {
         this.browserInspectUri = browserInspectUri;
     }
 
-    public configureCDPMessageHandlerAccordingToProcessedAttachArgs(args: ICordovaAttachRequestArgs): void {
+    public configureCDPMessageHandlerAccordingToProcessedAttachArgs(
+        args: ICordovaAttachRequestArgs,
+    ): void {
         if (
-            args.iOSVersion
-            && !this.communicationPreparationsDone
-            && semver.lt(args.iOSVersion, "12.2.0")
+            args.iOSVersion &&
+            !this.communicationPreparationsDone &&
+            semver.lt(args.iOSVersion, "12.2.0")
         ) {
             this.communicationPreparationsDone = true;
         }
         this.CDPMessageHandler.configureHandlerAfterAttachmentPreparation(
-            CDPMessageHandlerCreator.generateHandlerOptions(args)
+            CDPMessageHandlerCreator.generateHandlerOptions(args),
         );
     }
 
@@ -127,7 +136,10 @@ export class CordovaCDPProxy {
         return this.simPageTarget?.api;
     }
 
-    private async onConnectionHandler([debuggerTarget]: [Connection, IncomingMessage]): Promise<void> {
+    private async onConnectionHandler([debuggerTarget]: [
+        Connection,
+        IncomingMessage,
+    ]): Promise<void> {
         this.debuggerTarget = debuggerTarget;
 
         this.debuggerTarget.pause(); // don't listen for events until the target is ready
@@ -137,10 +149,12 @@ export class CordovaCDPProxy {
                 this.browserInspectUri = await this.debuggerEndpointHelper.retryGetWSEndpoint(
                     `http://localhost:${this.applicationTargetPort}`,
                     20,
-                    this.cancellationToken
+                    this.cancellationToken,
                 );
             } else {
-                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`);
+                this.browserInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(
+                    `http://localhost:${this.applicationTargetPort}`,
+                );
             }
         }
         if (this.isSimulate) {
@@ -148,11 +162,16 @@ export class CordovaCDPProxy {
             // the application page endpoint, since each page is processed in a separate process.
             // But the application page endpoint does not handle "Target" domain requests, that's why we store both browser
             // and app page connections.
-            const simPageInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(`http://localhost:${this.applicationTargetPort}`, this.isSimulate);
+            const simPageInspectUri = await this.debuggerEndpointHelper.getWSEndpoint(
+                `http://localhost:${this.applicationTargetPort}`,
+                this.isSimulate,
+            );
             this.simPageTarget = new Connection(await WebSocketTransport.create(simPageInspectUri));
         }
 
-        this.applicationTarget = new Connection(await WebSocketTransport.create(this.browserInspectUri));
+        this.applicationTarget = new Connection(
+            await WebSocketTransport.create(this.browserInspectUri),
+        );
         this.setDebuggerTargetUnpausedTimeout();
 
         this.applicationTarget.onError(this.onApplicationTargetError.bind(this));
@@ -175,7 +194,11 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetCommand(event: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(
+            this.PROXY_LOG_TAGS.DEBUGGER_COMMAND,
+            JSON.stringify(event, null, 2),
+            this.logLevel,
+        );
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -186,7 +209,11 @@ export class CordovaCDPProxy {
     }
 
     private handleApplicationTargetCommand(event: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_COMMAND, JSON.stringify(event, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(
+            this.PROXY_LOG_TAGS.APPLICATION_COMMAND,
+            JSON.stringify(event, null, 2),
+            this.logLevel,
+        );
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
         if (processedMessage.communicationPreparationsDone) {
@@ -202,7 +229,11 @@ export class CordovaCDPProxy {
     }
 
     private handleDebuggerTargetReply(event: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.DEBUGGER_REPLY, JSON.stringify(event, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(
+            this.PROXY_LOG_TAGS.DEBUGGER_REPLY,
+            JSON.stringify(event, null, 2),
+            this.logLevel,
+        );
         const processedMessage = this.CDPMessageHandler.processDebuggerCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -213,7 +244,11 @@ export class CordovaCDPProxy {
     }
 
     private handleApplicationTargetReply(event: any) {
-        this.logger.logWithCustomTag(this.PROXY_LOG_TAGS.APPLICATION_REPLY, JSON.stringify(event, null , 2), this.logLevel);
+        this.logger.logWithCustomTag(
+            this.PROXY_LOG_TAGS.APPLICATION_REPLY,
+            JSON.stringify(event, null, 2),
+            this.logLevel,
+        );
         const processedMessage = this.CDPMessageHandler.processApplicationCDPMessage(event);
 
         if (processedMessage.dispatchDirection === DispatchDirection.BACK) {
@@ -236,7 +271,7 @@ export class CordovaCDPProxy {
     }
 
     private async onDebuggerTargetClosed() {
-        this.CDPMessageHandler.processDebuggerCDPMessage({method: "close"});
+        this.CDPMessageHandler.processDebuggerCDPMessage({ method: "close" });
         this.debuggerTarget = null;
         this.communicationPreparationsDone = false;
         this.browserInspectUri = "";

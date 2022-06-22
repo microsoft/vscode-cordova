@@ -643,13 +643,33 @@
     "test": "node ./test/runTest.js",
     "vscode:prepublish": "gulp"
   },
+  "prettier": {
+    "trailingComma": "all",
+    "arrowParens": "avoid",
+    "printWidth": 100,
+    "tabWidth": 4,
+    "endOfLine": "auto",
+    "overrides": [
+      {
+        "files": [
+          "*.md"
+        ],
+        "options": {
+          "tabWidth": 2,
+          "printWidth": 80
+        }
+      }
+    ]
+  },
   "dependencies": {
+    "@mixer/parallel-prettier": "^2.0.2",
     "elementtree": "^0.1.6",
     "execa": "^4.0.0",
+    "gulp-mocha": "^8.0.0",
     "ip": "^1.1.5",
     "plist": "^3.0.5",
     "semver": "^6.3.0",
-    "socket.io-client": "^2.4.0",
+    "socket.io-client": "2.4.0",
     "uuid": "^8.3.1",
     "vscode-cdp-proxy": "^0.2.0",
     "vscode-debugadapter": "^1.39.1",
@@ -672,21 +692,30 @@
     "@types/uuid": "^8.3.0",
     "@types/vscode": "1.40.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
-    "@typescript-eslint/parser": "^4.2.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "cordova-simulate": "^1.1.3",
     "del": "^2.2.2",
     "devtools-protocol": "0.0.760817",
     "eslint": "^7.32.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-header": "^3.1.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-unicorn": "^28.0.2",
     "event-stream": "3.3.4",
     "fancy-log": "^1.3.3",
     "glob": "^7.2.0",
     "gulp": "^4.0.2",
     "gulp-filter": "^6.0.0",
+    "gulp-preprocess": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
     "minimist": "^1.2.6",
     "mocha": "^9.2.0",
+    "prettier": "2.6.2",
     "rimraf": "^2.7.1",
     "should": "^13.2.1",
     "sinon": "^9.1.0",

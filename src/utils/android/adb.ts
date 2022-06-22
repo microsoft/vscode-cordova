@@ -8,6 +8,7 @@ import * as nls from "vscode-nls";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { ChildProcess, ISpawnResult } from "../../common/node/childProcess";
 import { IDebuggableMobileTarget } from "../mobileTarget";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -28,7 +29,6 @@ export enum AndroidAPILevel {
 }
 
 export class AdbHelper {
-
     public static readonly AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
 
     private childProcess: ChildProcess = new ChildProcess();
@@ -64,46 +64,48 @@ export class AdbHelper {
     }
 
     public async getAvdNameById(emulatorId: string): Promise<string | null> {
-        return this.childProcess.execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`)
-        // The command returns the name of avd by id of this running emulator.
-        // Return value example:
-        // "
-        // emuName
-        // OK
-        // "
-        .then(output => {
-            if (output) {
-                // Return the name of avd: emuName
-                return output.split(/\r?\n|\r/g)[0];
-            } else {
-                return null;
-            }
-        })
-        // If the command returned an error, it means that we could not find the emulator with the passed id
-        .catch(() => null);
+        return (
+            this.childProcess
+                .execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`)
+                // The command returns the name of avd by id of this running emulator.
+                // Return value example:
+                // "
+                // emuName
+                // OK
+                // "
+                .then(output => {
+                    if (output) {
+                        // Return the name of avd: emuName
+                        return output.split(/\r?\n|\r/g)[0];
+                    }
+                    return null;
+                })
+                // If the command returned an error, it means that we could not find the emulator with the passed id
+                .catch(() => null)
+        );
     }
 
     public async getAvdsNames(): Promise<string[]> {
-        const res = await this.childProcess.execToString(
-            "emulator -list-avds",
-        );
+        const res = await this.childProcess.execToString("emulator -list-avds");
         let emulatorsNames: string[] = [];
         if (res) {
             emulatorsNames = res.split(/\r?\n|\r/g);
             const indexOfBlank = emulatorsNames.indexOf("");
-            if (emulatorsNames.indexOf("") >= 0) {
+            if (emulatorsNames.includes("")) {
                 emulatorsNames.splice(indexOfBlank, 1);
             }
         }
         return emulatorsNames;
     }
 
-    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget | undefined> {
-        return (await this.getOnlineTargets()).find((target) => target.id === targetId);
+    public async findOnlineTargetById(
+        targetId: string,
+    ): Promise<IDebuggableMobileTarget | undefined> {
+        return (await this.getOnlineTargets()).find(target => target.id === targetId);
     }
 
     public startLogCat(adbParameters: string[]): ISpawnResult {
-        return this.childProcess.spawn(this.adbExecutable.replace(/\"/g, ""), adbParameters);
+        return this.childProcess.spawn(this.adbExecutable.replace(/"/g, ""), adbParameters);
     }
 
     public parseSdkLocation(fileContent: string, logger?: OutputChannelLogger): string | null {
@@ -146,8 +148,8 @@ export class AdbHelper {
     }
 
     private parseConnectedTargets(input: string): IDebuggableMobileTarget[] {
-        let result: IDebuggableMobileTarget[] = [];
-        let regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
+        const result: IDebuggableMobileTarget[] = [];
+        const regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
         let match = regex.exec(input);
         while (match != null) {
             result.push({
@@ -198,7 +200,13 @@ export class AdbHelper {
             fileContent = fs.readFileSync(localPropertiesFilePath).toString();
         } catch (e) {
             if (logger) {
-                logger.log(`${localize("CouldNotReadFrom", "Couldn't read from {0}.", localPropertiesFilePath)}\n${e}\n${e.stack}`);
+                logger.log(
+                    `${localize(
+                        "CouldNotReadFrom",
+                        "Couldn't read from {0}.",
+                        localPropertiesFilePath,
+                    )}\n${e}\n${e.stack}`,
+                );
                 logger.log(
                     localize(
                         "UsingAndroidSDKLocationFromPATH",

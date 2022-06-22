@@ -20,11 +20,15 @@ suite("cordovaIosDeviceLauncher", function () {
     });
 
     test("should be able to find the bundle identifier", () => {
-        readdirMock = (sinon.stub(fs.promises, "readdir") as any).returns(Promise.resolve(["foo", "bar.xcodeproj"]));
+        readdirMock = (sinon.stub(fs.promises, "readdir") as any).returns(
+            Promise.resolve(["foo", "bar.xcodeproj"]),
+        );
         readFileSyncMock = sinon.stub(fs, "readFileSync").returns("");
-        parseMock = sinon.stub(plist, "parse").returns({CFBundleIdentifier: "test.bundle.identifier"});
+        parseMock = sinon
+            .stub(plist, "parse")
+            .returns({ CFBundleIdentifier: "test.bundle.identifier" });
 
-        return CordovaIosDeviceLauncher.getBundleIdentifier("testApp").then((bundleId) => {
+        return CordovaIosDeviceLauncher.getBundleIdentifier("testApp").then(bundleId => {
             should.equal(bundleId, "test.bundle.identifier");
         });
     });

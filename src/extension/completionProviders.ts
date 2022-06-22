@@ -3,15 +3,22 @@
 
 import * as fs from "fs";
 import {
-    CompletionItem, CompletionItemKind, CompletionItemProvider,
-    DocumentSelector, SnippetString
+    CompletionItem,
+    CompletionItemKind,
+    CompletionItemProvider,
+    DocumentSelector,
+    SnippetString,
 } from "vscode";
 import * as nls from "vscode-nls";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 // Types to outline TextMate snippets format, used in this extension's snippet files
-type TMSnippet = { prefix: string, body: string[], description: string };
+type TMSnippet = { prefix: string; body: string[]; description: string };
 type TMSnippets = { [name: string]: TMSnippet };
 
 export class IonicCompletionProvider implements CompletionItemProvider {
@@ -20,10 +27,9 @@ export class IonicCompletionProvider implements CompletionItemProvider {
 
     private snippetCompletions: CompletionItem[];
 
-    constructor(private completionsSource: string) { }
+    constructor(private completionsSource: string) {}
 
     public provideCompletionItems(): CompletionItem[] {
-
         if (this.snippetCompletions) {
             return this.snippetCompletions;
         }
@@ -31,13 +37,21 @@ export class IonicCompletionProvider implements CompletionItemProvider {
         this.snippetCompletions = [];
 
         try {
-            let rawSnippets: TMSnippets = JSON.parse(fs.readFileSync(this.completionsSource, "utf8"));
-            this.snippetCompletions = Object.keys(rawSnippets)
-                .map(name => makeCompletionItem(rawSnippets[name]));
-
+            const rawSnippets: TMSnippets = JSON.parse(
+                fs.readFileSync(this.completionsSource, "utf8"),
+            );
+            this.snippetCompletions = Object.keys(rawSnippets).map(name =>
+                makeCompletionItem(rawSnippets[name]),
+            );
         } catch (err) {
             // Log error here and do not try to read snippets anymore
-            console.warn(localize("FailedToReadSnippetsFrom", "Failed to read snippets from {0}", this.completionsSource));
+            console.warn(
+                localize(
+                    "FailedToReadSnippetsFrom",
+                    "Failed to read snippets from {0}",
+                    this.completionsSource,
+                ),
+            );
         }
 
         return this.snippetCompletions;

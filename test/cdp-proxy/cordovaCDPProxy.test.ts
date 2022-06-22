@@ -4,11 +4,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import * as assert from "assert";
-import {
-    Connection,
-    Server,
-    WebSocketTransport
-} from "vscode-cdp-proxy";
+import { Connection, Server, WebSocketTransport } from "vscode-cdp-proxy";
 import { convertWindowsPathToUnixOne } from "../testUtils";
 import { generateRandomPortNumber, delay } from "../../src/utils/extensionHelper";
 import { CordovaCDPProxy } from "../../src/debugger/cdp-proxy/cordovaCDPProxy";
@@ -32,12 +28,16 @@ suite("cordovaCDPProxy", function () {
     const cdpProxyHostAddress = "127.0.0.1"; // localhost
     const cdpProxyPort = generateRandomPortNumber();
     const cdpProxyLogLevel = LogLevel.Custom;
-    const testProjectPath = process.platform === "win32" ?
-        convertWindowsPathToUnixOne(path.join(__dirname, "..", "resources", "testCordovaProject")) :
-        path.join(__dirname, "..", "resources", "testCordovaProject");
+    const testProjectPath =
+        process.platform === "win32"
+            ? convertWindowsPathToUnixOne(
+                  path.join(__dirname, "..", "resources", "testCordovaProject"),
+              )
+            : path.join(__dirname, "..", "resources", "testCordovaProject");
 
     let proxy: CordovaCDPProxy;
-    let cancellationTokenSource: vscode.CancellationTokenSource = new vscode.CancellationTokenSource();
+    let cancellationTokenSource: vscode.CancellationTokenSource =
+        new vscode.CancellationTokenSource();
 
     let wsTargetPort = generateRandomPortNumber();
     let wsTargetServer: Server | null;
@@ -65,7 +65,10 @@ suite("cordovaCDPProxy", function () {
         }
     }
 
-    function prepareCDPProxyInternalEntities(debugType: "ionic" | "cordova" | "simulate", cdpHandlerType: "chrome" | "safari"): ICDPProxyInternalEntities {
+    function prepareCDPProxyInternalEntities(
+        debugType: "ionic" | "cordova" | "simulate",
+        cdpHandlerType: "chrome" | "safari",
+    ): ICDPProxyInternalEntities {
         let attachArgs: ICordovaAttachRequestArgs;
         let projectType: ProjectType;
         let sourcemapPathTransformer: SourcemapPathTransformer;
@@ -99,12 +102,22 @@ suite("cordovaCDPProxy", function () {
 
         if (cdpHandlerType === "chrome") {
             sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
-            cdpMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, attachArgs, true);
+            cdpMessageHandler = CDPMessageHandlerCreator.create(
+                sourcemapPathTransformer,
+                projectType,
+                attachArgs,
+                true,
+            );
         } else {
             attachArgs.platform = "ios";
 
             sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
-            cdpMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, attachArgs, false);
+            cdpMessageHandler = CDPMessageHandlerCreator.create(
+                sourcemapPathTransformer,
+                projectType,
+                attachArgs,
+                false,
+            );
         }
 
         return {
@@ -122,22 +135,23 @@ suite("cordovaCDPProxy", function () {
             cdpProxyPort,
             cdpProxyInternalEntities.sourcemapPathTransformer,
             cdpProxyInternalEntities.projectType,
-            cdpProxyInternalEntities.attachArgs
+            cdpProxyInternalEntities.attachArgs,
         );
 
         proxy.setApplicationTargetPort(wsTargetPort);
         await proxy.createServer(cdpProxyLogLevel, cancellationTokenSource.token);
 
-        await Server.create({ host: "localhost", port: wsTargetPort })
-            .then((server: Server) => {
-                wsTargetServer = server;
+        await Server.create({ host: "localhost", port: wsTargetPort }).then((server: Server) => {
+            wsTargetServer = server;
 
-                server.onConnection(([connection, request]: [Connection, any]) => {
-                    targetConnection = connection;
-                });
+            server.onConnection(([connection, request]: [Connection, any]) => {
+                targetConnection = connection;
             });
+        });
 
-        const proxyUri = await new DebuggerEndpointHelper().getWSEndpoint(`http://${cdpProxyHostAddress}:${cdpProxyPort}`);
+        const proxyUri = await new DebuggerEndpointHelper().getWSEndpoint(
+            `http://${cdpProxyHostAddress}:${cdpProxyPort}`,
+        );
         debugConnection = new Connection(await WebSocketTransport.create(proxyUri));
 
         // Due to the time limit, sooner or later this cycle will end
@@ -154,15 +168,26 @@ suite("cordovaCDPProxy", function () {
         suite("ChromeCDPMessageHandler", () => {
             suite("Pure Cordova", () => {
                 suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("cordova", "chrome");
-                    Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
+                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                        "cordova",
+                        "chrome",
+                    );
+                    Object.assign(proxy, {
+                        CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler,
+                    });
                 });
 
                 test("Messages should be delivered correctly with ChromeCDPMessageHandler", async () => {
-                    const targetMessageStart = { method: "Target.start", params: { reason: "test" } };
-                    const debuggerMessageStart = { method: "Debugger.start", params: { reason: "test" } };
+                    const targetMessageStart = {
+                        method: "Target.start",
+                        params: { reason: "test" },
+                    };
+                    const debuggerMessageStart = {
+                        method: "Debugger.start",
+                        params: { reason: "test" },
+                    };
 
-                    const messageFromTarget = await new Promise((resolve) => {
+                    const messageFromTarget = await new Promise(resolve => {
                         targetConnection?.send(targetMessageStart);
 
                         debugConnection?.onCommand((evt: any) => {
@@ -170,7 +195,7 @@ suite("cordovaCDPProxy", function () {
                         });
                     });
 
-                    const messageFromDebugger = await new Promise((resolve) => {
+                    const messageFromDebugger = await new Promise(resolve => {
                         debugConnection?.send(debuggerMessageStart);
 
                         targetConnection?.onCommand((evt: any) => {
@@ -184,15 +209,24 @@ suite("cordovaCDPProxy", function () {
 
                 suite("Simulate", () => {
                     suiteSetup(() => {
-                        let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("simulate", "chrome");
-                        Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
+                        let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                            "simulate",
+                            "chrome",
+                        );
+                        Object.assign(proxy, {
+                            CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler,
+                        });
                     });
 
                     test(`Message from the target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
                         const processedMessageRef = {
                             method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
                             params: {
-                                url: `file://${process.platform === "win32" ? "/" + testProjectPath : testProjectPath}/www/js/index.js`,
+                                url: `file://${
+                                    process.platform === "win32"
+                                        ? "/" + testProjectPath
+                                        : testProjectPath
+                                }/www/js/index.js`,
                             },
                         };
 
@@ -203,7 +237,7 @@ suite("cordovaCDPProxy", function () {
                             },
                         };
 
-                        const processedMessage = await new Promise((resolve) => {
+                        const processedMessage = await new Promise(resolve => {
                             targetConnection?.send(targetMessageTest);
 
                             debugConnection?.onCommand((evt: any) => {
@@ -218,15 +252,24 @@ suite("cordovaCDPProxy", function () {
 
             suite("Ionic", () => {
                 suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "chrome");
-                    Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
+                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                        "ionic",
+                        "chrome",
+                    );
+                    Object.assign(proxy, {
+                        CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler,
+                    });
                 });
 
                 test(`Message from the target with ${CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED} should replace the "url" prop with the correct absolute path for the source`, async () => {
                     const processedMessageRef = {
                         method: CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED,
                         params: {
-                            url: `file://${process.platform === "win32" ? "/" + testProjectPath : testProjectPath}/www/main.js`,
+                            url: `file://${
+                                process.platform === "win32"
+                                    ? "/" + testProjectPath
+                                    : testProjectPath
+                            }/www/main.js`,
                         },
                     };
 
@@ -237,7 +280,7 @@ suite("cordovaCDPProxy", function () {
                         },
                     };
 
-                    const processedMessage = await new Promise((resolve) => {
+                    const processedMessage = await new Promise(resolve => {
                         targetConnection?.send(targetMessageTest);
 
                         debugConnection?.onCommand((evt: any) => {
@@ -252,16 +295,26 @@ suite("cordovaCDPProxy", function () {
                     const processedMessageRef = {
                         method: CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL,
                         params: {
-                            urlRegex: `http:\\/\\/localhost\\/${process.platform === "win32" ? "[mM][aA][iI][nN]\\.[jJ][sS]" : "main\\.js"}`,
+                            urlRegex: `http:\\/\\/localhost\\/${
+                                process.platform === "win32"
+                                    ? "[mM][aA][iI][nN]\\.[jJ][sS]"
+                                    : "main\\.js"
+                            }`,
                         },
                     };
 
                     let testUrlRegex;
                     if (process.platform === "win32") {
-                        const testPathRegex = `${testProjectPath.replace(/([\/\.])/g, "\\$1")}\\\\[wW][wW][wW]\\\\[mM][aA][iI][nN]\\.[jJ][sS]`;
+                        const testPathRegex = `${testProjectPath.replace(
+                            /([\/\.])/g,
+                            "\\$1",
+                        )}\\\\[wW][wW][wW]\\\\[mM][aA][iI][nN]\\.[jJ][sS]`;
                         testUrlRegex = `[fF][iI][lL][eE]:\\/\\/${testPathRegex}|${testPathRegex}`;
                     } else {
-                        const testPathRegex = `${testProjectPath}/www/main.js`.replace(/([\/\.])/g, "\\$1");
+                        const testPathRegex = `${testProjectPath}/www/main.js`.replace(
+                            /([\/\.])/g,
+                            "\\$1",
+                        );
                         testUrlRegex = `file:\\/\\/${testPathRegex}|${testPathRegex}`;
                     }
 
@@ -272,7 +325,7 @@ suite("cordovaCDPProxy", function () {
                         },
                     };
 
-                    const processedMessage = await new Promise((resolve) => {
+                    const processedMessage = await new Promise(resolve => {
                         debugConnection?.send(debuggerMessageTest);
 
                         targetConnection?.onCommand((evt: any) => {
@@ -288,9 +341,14 @@ suite("cordovaCDPProxy", function () {
             suite("Ionic", () => {
                 const targetPageId = "page-7";
                 suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("ionic", "safari");
+                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                        "ionic",
+                        "safari",
+                    );
                     (cdpProxyInternalEntities.cdpMessageHandler as any).targetId = targetPageId;
-                    Object.assign(proxy, { CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler });
+                    Object.assign(proxy, {
+                        CDPMessageHandler: cdpProxyInternalEntities.cdpMessageHandler,
+                    });
                 });
 
                 test("Messages should be wrapped in the Target form", async () => {
@@ -310,7 +368,7 @@ suite("cordovaCDPProxy", function () {
                         },
                     };
 
-                    const processedMessage = await new Promise((resolve) => {
+                    const processedMessage = await new Promise(resolve => {
                         debugConnection?.send(debuggerMessageTest);
 
                         targetConnection?.onReply((evt: any) => {

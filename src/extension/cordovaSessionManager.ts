@@ -1,13 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as vscode from "vscode";
 import * as Net from "net";
+import * as vscode from "vscode";
 import { CordovaDebugSession } from "../debugger/cordovaDebugSession";
 import { CordovaSession, CordovaSessionStatus } from "../debugger/debugSessionWrapper";
 
 export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFactory {
-
     protected readonly cordovaDebuggingFlag = "isCordovaDebugging";
 
     private servers = new Map<string, Net.Server>();
@@ -15,14 +14,17 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
     private cordovaDebugSessions = new Map<string, CordovaSession>();
     private restartingVSCodeSessions = new Set<string>();
 
-    public createDebugAdapterDescriptor(session: vscode.DebugSession, executable: vscode.DebugAdapterExecutable | undefined): vscode.ProviderResult<vscode.DebugAdapterDescriptor> {
+    public createDebugAdapterDescriptor(
+        session: vscode.DebugSession,
+        executable: vscode.DebugAdapterExecutable | undefined,
+    ): vscode.ProviderResult<vscode.DebugAdapterDescriptor> {
         const cordovaSession = this.createCordovaSession(session);
         this.cordovaDebugSessions.set(cordovaSession.getSessionId(), cordovaSession);
 
         vscode.commands.executeCommand("setContext", this.cordovaDebuggingFlag, true);
 
         const debugServer = Net.createServer(socket => {
-            let cordovaDebugSession = new CordovaDebugSession(cordovaSession, this);
+            const cordovaDebugSession = new CordovaDebugSession(cordovaSession, this);
             cordovaDebugSession.setRunAsServer(true);
             this.connections.set(cordovaSession.getSessionId(), socket);
             cordovaDebugSession.start(<NodeJS.ReadableStream>socket, socket);
@@ -33,9 +35,15 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
         return new vscode.DebugAdapterServer((<Net.AddressInfo>debugServer.address()).port);
     }
 
-    public terminate(cordovaDebugSessionId: string, restart: boolean = false, forcedStop: boolean = false): void {
+    public terminate(
+        cordovaDebugSessionId: string,
+        restart: boolean = false,
+        forcedStop: boolean = false,
+    ): void {
         if (restart && this.cordovaDebugSessions.has(cordovaDebugSessionId)) {
-            this.restartingVSCodeSessions.add(this.cordovaDebugSessions.get(cordovaDebugSessionId).getVSCodeDebugSession().id);
+            this.restartingVSCodeSessions.add(
+                this.cordovaDebugSessions.get(cordovaDebugSessionId).getVSCodeDebugSession().id,
+            );
         }
         this.cordovaDebugSessions.delete(cordovaDebugSessionId);
         if (this.cordovaDebugSessions.size === 0) {
@@ -44,7 +52,7 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
 
         this.destroyServer(cordovaDebugSessionId, this.servers.get(cordovaDebugSessionId));
 
-        let connection = this.connections.get(cordovaDebugSessionId);
+        const connection = this.connections.get(cordovaDebugSessionId);
         if (connection) {
             if (forcedStop) {
                 this.destroySocketConnection(connection);
@@ -54,7 +62,7 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
     }
 
     public getCordovaDebugSessionByProjectRoot(projectRoot: string): CordovaSession | null {
-        for (let cordovaSession of this.cordovaDebugSessions.values()) {
+        for (const cordovaSession of this.cordovaDebugSessions.values()) {
             if (cordovaSession.getVSCodeDebugSession().workspaceFolder.uri.fsPath === projectRoot) {
                 return cordovaSession;
             }
@@ -74,7 +82,7 @@ export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFacto
     }
 
     private createCordovaSession(session: vscode.DebugSession): CordovaSession {
-        let cordovaSession = new CordovaSession(session);
+        const cordovaSession = new CordovaSession(session);
         if (this.restartingVSCodeSessions.has(session.id)) {
             cordovaSession.setStatus(CordovaSessionStatus.Pending);
             this.restartingVSCodeSessions.delete(session.id);

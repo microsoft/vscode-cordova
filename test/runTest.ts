@@ -6,24 +6,29 @@ import * as path from "path";
 import { runTests } from "vscode-test";
 
 async function launchTests() {
-  try {
-    // The folder containing the Extension Manifest package.json
-    // Passed to `--extensionDevelopmentPath`
-    const extensionDevelopmentPath = path.resolve(__dirname, "..");
+    try {
+        // The folder containing the Extension Manifest package.json
+        // Passed to `--extensionDevelopmentPath`
+        const extensionDevelopmentPath = path.resolve(__dirname, "..");
 
-    // The path to the extension test runner script
-    // Passed to --extensionTestsPath
-    const extensionTestsPath = path.resolve(__dirname, "index");
+        // The path to the extension test runner script
+        // Passed to --extensionTestsPath
+        const extensionTestsPath = path.resolve(__dirname, "index");
 
-    const testWorkspace = path.resolve(__dirname, "resources", "testCordovaProject");
+        const testWorkspace = path.resolve(__dirname, "resources", "testCordovaProject");
 
-    // Download VS Code, unzip it and run the integration test
-    await runTests({ extensionDevelopmentPath, extensionTestsPath , launchArgs: [testWorkspace], version: "1.53.2" });
-  } catch (err) {
-    console.error(err);
-    console.error("Failed to run tests");
-    process.exit(1);
-  }
+        // Download VS Code, unzip it and run the integration test
+        await runTests({
+            extensionDevelopmentPath,
+            extensionTestsPath,
+            launchArgs: [testWorkspace],
+            version: "1.53.2",
+        });
+    } catch (err) {
+        console.error(err);
+        console.error("Failed to run tests");
+        process.exit(1);
+    }
 }
 
 launchTests();

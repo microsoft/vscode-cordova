@@ -91,11 +91,15 @@ export class IOSTargetManager extends MobileTargetManager {
     private childProcess: ChildProcess = new ChildProcess();
     protected targets?: IDebuggableIOSTarget[];
 
-    public async getTargetList(filter?: (el: IDebuggableIOSTarget) => boolean): Promise<IDebuggableIOSTarget[]> {
+    public async getTargetList(
+        filter?: (el: IDebuggableIOSTarget) => boolean,
+    ): Promise<IDebuggableIOSTarget[]> {
         return (await super.getTargetList(filter)) as IDebuggableIOSTarget[];
     }
 
-    public async collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void> {
+    public async collectTargets(
+        targetType?: TargetType.Device | TargetType.Emulator,
+    ): Promise<void> {
         this.targets = [];
 
         if (targetType === undefined || targetType === TargetType.Emulator) {
@@ -112,7 +116,7 @@ export class IOSTargetManager extends MobileTargetManager {
                         try {
                             const identifierPieces = device.deviceTypeIdentifier.split(".");
                             simIdentifier = identifierPieces[identifierPieces.length - 1];
-                        } catch { }
+                        } catch {}
 
                         this.targets?.push({
                             id: device.udid,
@@ -120,7 +124,7 @@ export class IOSTargetManager extends MobileTargetManager {
                             system,
                             isVirtualTarget: true,
                             isOnline: device.state === IOSTargetManager.BOOTED_STATE,
-                            simIdentifier: simIdentifier,
+                            simIdentifier,
                             simDataPath: device.dataPath,
                         });
                     }
@@ -183,12 +187,16 @@ export class IOSTargetManager extends MobileTargetManager {
     }
 
     public async getOnlineTargets(): Promise<IOSTarget[]> {
-        const onlineTargets = (await this.getTargetList(target => target.isOnline)) as IDebuggableIOSTarget[];
+        const onlineTargets = (await this.getTargetList(
+            target => target.isOnline,
+        )) as IDebuggableIOSTarget[];
         return onlineTargets.map(target => IOSTarget.fromInterface(target));
     }
 
     public async getOnlineSimulators(): Promise<IOSTarget[]> {
-        const onlineTargets = (await this.getTargetList(target => target.isOnline && target.isVirtualTarget)) as IDebuggableIOSTarget[];
+        const onlineTargets = (await this.getTargetList(
+            target => target.isOnline && target.isVirtualTarget,
+        )) as IDebuggableIOSTarget[];
         return onlineTargets.map(target => IOSTarget.fromInterface(target));
     }
 
@@ -274,7 +282,11 @@ export class IOSTargetManager extends MobileTargetManager {
             emulatorProcess.spawnedProcess.unref();
             emulatorProcess.outcome.catch(err => {
                 emulatorLaunchFailed = true;
-                reject(new Error(`Error while launching simulator ${emulatorTarget.name}(${emulatorTarget.id} with an exception: ${err}`));
+                reject(
+                    new Error(
+                        `Error while launching simulator ${emulatorTarget.name}(${emulatorTarget.id} with an exception: ${err}`,
+                    ),
+                );
             });
 
             const condition = async () => {
@@ -296,10 +308,13 @@ export class IOSTargetManager extends MobileTargetManager {
                     if (isBooted) {
                         emulatorTarget.isOnline = true;
                         this.logger.log(
-                            localize("SimulatorLaunched", "Launched simulator {0}", emulatorTarget.name),
+                            localize(
+                                "SimulatorLaunched",
+                                "Launched simulator {0}",
+                                emulatorTarget.name,
+                            ),
                         );
                         resolve(IOSTarget.fromInterface(emulatorTarget));
-
                     } else {
                         reject(
                             new Error(
@@ -308,8 +323,8 @@ export class IOSTargetManager extends MobileTargetManager {
                                     "Could not start the simulator {0} within {1} seconds.",
                                     emulatorTarget.name,
                                     IOSTargetManager.SIMULATOR_START_TIMEOUT,
-                                )}`
-                            )
+                                )}`,
+                            ),
                         );
                     }
                 },

@@ -5,10 +5,14 @@ import * as child_process from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { URL } from "url";
-import * as semver from "semver";
 import * as os from "os";
+import * as semver from "semver";
 import * as nls from "vscode-nls";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export interface IPluginDetails {
@@ -23,7 +27,7 @@ export class ProjectType {
         public isMobilefirst: boolean,
         public isPhonegap: boolean,
         public isCordova: boolean,
-        public ionicMajorVersion?: number
+        public ionicMajorVersion?: number,
     ) {}
 
     get isIonic(): boolean {
@@ -46,7 +50,8 @@ export class CordovaProjectHelper {
     private static CONFIG_IONIC_FILENAME: string = "ionic.config.json";
     private static IONIC_LIB_DEFAULT_PATH: string = path.join("www", "lib", "ionic");
 
-    private static CORE_PLUGIN_LIST: string[] = ["cordova-plugin-battery-status",
+    private static CORE_PLUGIN_LIST: string[] = [
+        "cordova-plugin-battery-status",
         "cordova-plugin-camera",
         "cordova-plugin-console",
         "cordova-plugin-contacts",
@@ -76,7 +81,8 @@ export class CordovaProjectHelper {
         "cordova-plugin-ms-adal",
         "com-intel-security-cordova-plugin",
         "cordova-sqlite-storage",
-        "cordova-plugin-ms-intune-mam"];
+        "cordova-plugin-ms-intune-mam",
+    ];
 
     /**
      *  Helper function check if a file exists.
@@ -95,7 +101,8 @@ export class CordovaProjectHelper {
      *  Helper (asynchronous) function to check if a file or directory exists
      */
     public static exists(filename: string): Promise<boolean> {
-        return fs.promises.stat(filename)
+        return fs.promises
+            .stat(filename)
             .then(() => {
                 return true;
             })
@@ -108,7 +115,7 @@ export class CordovaProjectHelper {
      *  Helper (synchronous) function to create a directory recursively
      */
     public static makeDirectoryRecursive(dirPath: string): void {
-        let parentPath = path.dirname(dirPath);
+        const parentPath = path.dirname(dirPath);
         if (!CordovaProjectHelper.existsSync(parentPath)) {
             CordovaProjectHelper.makeDirectoryRecursive(parentPath);
         }
@@ -123,7 +130,7 @@ export class CordovaProjectHelper {
         if (fs.existsSync(dirPath)) {
             if (fs.lstatSync(dirPath).isDirectory()) {
                 fs.readdirSync(dirPath).forEach(function (file) {
-                    let curPath = path.join(dirPath, file);
+                    const curPath = path.join(dirPath, file);
                     CordovaProjectHelper.deleteDirectoryRecursive(curPath);
                 });
 
@@ -145,15 +152,19 @@ export class CordovaProjectHelper {
      *  Helper function to get the list of plugins installed for the project.
      */
     public static getInstalledPlugins(projectRoot: string): string[] {
-        let fetchJsonPath: string = path.resolve(projectRoot, CordovaProjectHelper.PROJECT_PLUGINS_DIR, CordovaProjectHelper.PLUGINS_FETCH_FILENAME);
+        const fetchJsonPath: string = path.resolve(
+            projectRoot,
+            CordovaProjectHelper.PROJECT_PLUGINS_DIR,
+            CordovaProjectHelper.PLUGINS_FETCH_FILENAME,
+        );
 
         if (!CordovaProjectHelper.existsSync(fetchJsonPath)) {
             return [];
         }
 
         try {
-            let fetchJsonContents = fs.readFileSync(fetchJsonPath, "utf8");
-            let fetchJson = JSON.parse(fetchJsonContents);
+            const fetchJsonContents = fs.readFileSync(fetchJsonPath, "utf8");
+            const fetchJson = JSON.parse(fetchJsonContents);
             return Object.keys(fetchJson);
         } catch (error) {
             console.error(error);
@@ -165,15 +176,18 @@ export class CordovaProjectHelper {
      *  Helper function to get the list of platforms installed for the project.
      */
     public static getInstalledPlatforms(projectRoot: string): string[] {
-        let platformsPath: string = path.resolve(projectRoot, CordovaProjectHelper.PLATFORMS_PATH);
+        const platformsPath: string = path.resolve(
+            projectRoot,
+            CordovaProjectHelper.PLATFORMS_PATH,
+        );
 
         if (!CordovaProjectHelper.existsSync(platformsPath)) {
             return [];
         }
 
         try {
-            let platformsDirContents = fs.readdirSync(platformsPath);
-            return platformsDirContents.filter((platform) => {
+            const platformsDirContents = fs.readdirSync(platformsPath);
+            return platformsDirContents.filter(platform => {
                 return platform.charAt(0) !== ".";
             });
         } catch (error) {
@@ -183,19 +197,26 @@ export class CordovaProjectHelper {
     }
 
     public static getInstalledPluginDetails(projectRoot: string, pluginId: string): IPluginDetails {
-        let packageJsonPath: string = path.resolve(projectRoot, CordovaProjectHelper.PROJECT_PLUGINS_DIR, pluginId, "package.json");
+        const packageJsonPath: string = path.resolve(
+            projectRoot,
+            CordovaProjectHelper.PROJECT_PLUGINS_DIR,
+            pluginId,
+            "package.json",
+        );
 
         if (!CordovaProjectHelper.existsSync(packageJsonPath)) {
             return null;
         }
 
         try {
-            let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 
-            let details: IPluginDetails = {
+            const details: IPluginDetails = {
                 PluginId: packageJson.name,
                 Version: packageJson.version,
-                PluginType: CordovaProjectHelper.CORE_PLUGIN_LIST.indexOf(pluginId) >= 0 ? "Core" : "Npm",
+                PluginType: CordovaProjectHelper.CORE_PLUGIN_LIST.includes(pluginId)
+                    ? "Core"
+                    : "Npm",
             };
 
             return details;
@@ -209,8 +230,13 @@ export class CordovaProjectHelper {
      *  Helper to check whether a workspace root equals to a Cordova project root
      */
     public static isCordovaProject(workspaceRoot: string): boolean {
-        return !!(CordovaProjectHelper.existsSync(path.join(workspaceRoot, CordovaProjectHelper.CONFIG_XML_FILENAME))
-            || CordovaProjectHelper.existsSync(path.join(workspaceRoot, CordovaProjectHelper.CONFIG_IONIC_FILENAME))
+        return !!(
+            CordovaProjectHelper.existsSync(
+                path.join(workspaceRoot, CordovaProjectHelper.CONFIG_XML_FILENAME),
+            ) ||
+            CordovaProjectHelper.existsSync(
+                path.join(workspaceRoot, CordovaProjectHelper.CONFIG_IONIC_FILENAME),
+            )
         );
     }
 
@@ -237,7 +263,11 @@ export class CordovaProjectHelper {
      */
     public static getOrCreateTypingsTargetPath(projectRoot: string): string {
         if (projectRoot) {
-            let targetPath = path.resolve(projectRoot, CordovaProjectHelper.VSCODE_DIR, CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME);
+            const targetPath = path.resolve(
+                projectRoot,
+                CordovaProjectHelper.VSCODE_DIR,
+                CordovaProjectHelper.PROJECT_TYPINGS_FOLDERNAME,
+            );
             if (!CordovaProjectHelper.existsSync(targetPath)) {
                 CordovaProjectHelper.makeDirectoryRecursive(targetPath);
             }
@@ -252,14 +282,22 @@ export class CordovaProjectHelper {
      *  Helper function to get the path to Cordova plugin type definitions folder
      */
     public static getCordovaPluginTypeDefsPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+        return path.resolve(
+            CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot),
+            CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_FOLDERNAME,
+            CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME,
+        );
     }
 
     /**
      *  Helper function to get the path to Ionic plugin type definitions folder
      */
     public static getIonicPluginTypeDefsPath(projectRoot: string): string {
-        return path.resolve(CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot), CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME, CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME);
+        return path.resolve(
+            CordovaProjectHelper.getOrCreateTypingsTargetPath(projectRoot),
+            CordovaProjectHelper.PROJECT_TYPINGS_CORDOVA_IONIC_FOLDERNAME,
+            CordovaProjectHelper.PROJECT_TYPINGS_PLUGINS_FOLDERNAME,
+        );
     }
 
     /**
@@ -278,9 +316,11 @@ export class CordovaProjectHelper {
         if (fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_PROJECT_FILE))) {
             return 1;
 
-        // If not found, fall back to looking for "www/lib/ionic" folder. This isn't a 100% guarantee though: an Ionic project doesn't necessarily have an "ionic.project" and could have the Ionic lib
-        // files in a non-default location
-        } else if (fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_LIB_DEFAULT_PATH))) {
+            // If not found, fall back to looking for "www/lib/ionic" folder. This isn't a 100% guarantee though: an Ionic project doesn't necessarily have an "ionic.project" and could have the Ionic lib
+            // files in a non-default location
+        } else if (
+            fs.existsSync(path.join(projectRoot, CordovaProjectHelper.IONIC_LIB_DEFAULT_PATH))
+        ) {
             return 1;
         }
 
@@ -295,15 +335,20 @@ export class CordovaProjectHelper {
         // Ionic 2 & 3 check
         const highestNotSupportedIonic2BetaVersion = "2.0.0-beta.9";
         const highestNotSupportedIonic3BetaVersion = "3.0.0-beta.3";
-        if ((dependencies["ionic-angular"]) && (devDependencies["@ionic/app-scripts"] || dependencies["@ionic/app-scripts"])) {
+        if (
+            dependencies["ionic-angular"] &&
+            (devDependencies["@ionic/app-scripts"] || dependencies["@ionic/app-scripts"])
+        ) {
             const ionicVersion = dependencies["ionic-angular"];
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta
             if (semver.valid(ionicVersion)) {
-                if (CordovaProjectHelper.versionSatisfiesInterval(
-                    ionicVersion,
-                    highestNotSupportedIonic2BetaVersion,
-                    "3.0.0")
+                if (
+                    CordovaProjectHelper.versionSatisfiesInterval(
+                        ionicVersion,
+                        highestNotSupportedIonic2BetaVersion,
+                        "3.0.0",
+                    )
                 ) {
                     return 2;
                 }
@@ -314,10 +359,12 @@ export class CordovaProjectHelper {
 
             // If it's a valid range we check that the entire range is greater than highest not supported Ionic major version beta
             if (semver.validRange(ionicVersion)) {
-                if (CordovaProjectHelper.versionRangeSatisfiesInterval(
-                    ionicVersion,
-                    highestNotSupportedIonic2BetaVersion,
-                    "3.0.0")
+                if (
+                    CordovaProjectHelper.versionRangeSatisfiesInterval(
+                        ionicVersion,
+                        highestNotSupportedIonic2BetaVersion,
+                        "3.0.0",
+                    )
                 ) {
                     return 2;
                 }
@@ -342,17 +389,21 @@ export class CordovaProjectHelper {
 
             // If it's a valid version let's check it's greater than highest not supported Ionic major version beta
             if (semver.valid(ionicVersion)) {
-                if (CordovaProjectHelper.versionSatisfiesInterval(
-                    ionicVersion,
-                    highestNotSupportedIonic4BetaVersion,
-                    "5.0.0")
+                if (
+                    CordovaProjectHelper.versionSatisfiesInterval(
+                        ionicVersion,
+                        highestNotSupportedIonic4BetaVersion,
+                        "5.0.0",
+                    )
                 ) {
                     return 4;
                 }
-                if (CordovaProjectHelper.versionSatisfiesInterval(
-                    ionicVersion,
-                    highestNotSupportedIonic5BetaVersion,
-                    "6.0.0")
+                if (
+                    CordovaProjectHelper.versionSatisfiesInterval(
+                        ionicVersion,
+                        highestNotSupportedIonic5BetaVersion,
+                        "6.0.0",
+                    )
                 ) {
                     return 5;
                 }
@@ -363,17 +414,21 @@ export class CordovaProjectHelper {
 
             // If it's a valid range we check that the entire range is greater than highest not supported Ionic major version beta
             if (semver.validRange(ionicVersion)) {
-                if (CordovaProjectHelper.versionRangeSatisfiesInterval(
-                    ionicVersion,
-                    highestNotSupportedIonic4BetaVersion,
-                    "5.0.0")
+                if (
+                    CordovaProjectHelper.versionRangeSatisfiesInterval(
+                        ionicVersion,
+                        highestNotSupportedIonic4BetaVersion,
+                        "5.0.0",
+                    )
                 ) {
                     return 4;
                 }
-                if (CordovaProjectHelper.versionRangeSatisfiesInterval(
-                    ionicVersion,
-                    highestNotSupportedIonic5BetaVersion,
-                    "6.0.0")
+                if (
+                    CordovaProjectHelper.versionRangeSatisfiesInterval(
+                        ionicVersion,
+                        highestNotSupportedIonic5BetaVersion,
+                        "6.0.0",
+                    )
                 ) {
                     return 5;
                 }
@@ -404,7 +459,10 @@ export class CordovaProjectHelper {
         return command;
     }
 
-    public static getIonicCliVersion(fsPath: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): string {
+    public static getIonicCliVersion(
+        fsPath: string,
+        command: string = CordovaProjectHelper.getCliCommand(fsPath),
+    ): string {
         const ionicInfo = child_process.spawnSync(command, ["-v", "--quiet"], {
             cwd: fsPath,
             env: {
@@ -412,7 +470,7 @@ export class CordovaProjectHelper {
                 CI: "Hack to disable Ionic autoupdate prompt",
             },
         });
-        let parseVersion = /\d+\.\d+\.\d+/.exec(ionicInfo.stdout.toString());
+        const parseVersion = /\d+\.\d+\.\d+/.exec(ionicInfo.stdout.toString());
         return parseVersion[0].trim();
     }
 
@@ -422,23 +480,36 @@ export class CordovaProjectHelper {
      * @param version version to compare
      * @param command multiplatform command to use
      */
-    public static isIonicCliVersionGte(fsPath: string, version: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): boolean {
+    public static isIonicCliVersionGte(
+        fsPath: string,
+        version: string,
+        command: string = CordovaProjectHelper.getCliCommand(fsPath),
+    ): boolean {
         try {
             const ionicVersion = CordovaProjectHelper.getIonicCliVersion(fsPath, command);
             return semver.gte(ionicVersion, version);
         } catch (err) {
-            console.error(localize("ErrorWhileDetectingIonicCLIVersion", "Error while detecting Ionic CLI version"), err);
+            console.error(
+                localize(
+                    "ErrorWhileDetectingIonicCLIVersion",
+                    "Error while detecting Ionic CLI version",
+                ),
+                err,
+            );
         }
         return true;
     }
 
-    public static isIonicCliVersionGte3(fsPath: string, command: string = CordovaProjectHelper.getCliCommand(fsPath)): boolean {
+    public static isIonicCliVersionGte3(
+        fsPath: string,
+        command: string = CordovaProjectHelper.getCliCommand(fsPath),
+    ): boolean {
         return CordovaProjectHelper.isIonicCliVersionGte(fsPath, "3.0.0", command);
     }
 
     public static getEnvArgument(launchArgs): any {
-        let args = { ...launchArgs };
-        let env = process.env;
+        const args = { ...launchArgs };
+        const env = process.env;
 
         if (args.envFile) {
             let buffer = fs.readFileSync(args.envFile, "utf8");
@@ -449,15 +520,20 @@ export class CordovaProjectHelper {
             }
 
             buffer.split("\n").forEach((line: string) => {
-                const r = line.match(/^\s*([\w\.\-]+)\s*=\s*(.*)?\s*$/);
+                const r = line.match(/^\s*([\w.\-]+)\s*=\s*(.*)?\s*$/);
                 if (r !== null) {
                     const key = r[1];
-                    if (!env[key]) {	// .env variables never overwrite existing variables
+                    if (!env[key]) {
+                        // .env variables never overwrite existing variables
                         let value = r[2] || "";
-                        if (value.length > 0 && value.charAt(0) === "\"" && value.charAt(value.length - 1) === "\"") {
+                        if (
+                            value.length > 0 &&
+                            value.charAt(0) === '"' && // eslint-disable-line
+                            value.charAt(value.length - 1) === '"' // eslint-disable-line
+                        ) {
                             value = value.replace(/\\n/gm, "\n");
                         }
-                        env[key] = value.replace(/(^['"]|['"]$)/g, "");
+                        env[key] = value.replace(/(^["']|["']$)/g, "");
                     }
                 }
             });
@@ -465,7 +541,8 @@ export class CordovaProjectHelper {
 
         if (args.env) {
             // launch config env vars overwrite .env vars
-            for (let key in args.env) {
+            // eslint-disable-next-line
+            for (const key in args.env) {
                 if (args.env.hasOwnProperty(key)) {
                     env[key] = args.env[key];
                 }
@@ -480,9 +557,8 @@ export class CordovaProjectHelper {
             return path.posix.join(...segments);
         } else if (path.win32.isAbsolute(segments[0])) {
             return path.win32.join(...segments);
-        } else {
-            return path.join(...segments);
         }
+        return path.join(...segments);
     }
 
     public static getPortFromURL(url: string): number {

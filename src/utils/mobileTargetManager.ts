@@ -3,9 +3,10 @@
 
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
+import { TargetType } from "../debugger/cordovaDebugSession";
 import { IMobileTarget, MobileTarget } from "./mobileTarget";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
-import { TargetType } from "../debugger/cordovaDebugSession";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -20,9 +21,13 @@ export abstract class MobileTargetManager {
         true,
     );
 
-    public abstract collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void>;
+    public abstract collectTargets(
+        targetType?: TargetType.Device | TargetType.Emulator,
+    ): Promise<void>;
 
-    public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<MobileTarget | undefined>;
+    public abstract selectAndPrepareTarget(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<MobileTarget | undefined>;
 
     public async isVirtualTarget(target: string): Promise<boolean> {
         if (target.includes("device")) {
@@ -31,7 +36,13 @@ export abstract class MobileTargetManager {
         if (target.includes("emulator")) {
             return true;
         }
-        throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
+        throw new Error(
+            localize(
+                "CouldNotRecognizeTargetType",
+                "Could not recognize type of the target {0}",
+                target,
+            ),
+        );
     }
 
     public async getTargetList(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget[]> {
@@ -41,9 +52,13 @@ export abstract class MobileTargetManager {
         return filter ? this.targets.filter(filter) : this.targets;
     }
 
-    protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<MobileTarget | undefined>;
+    protected abstract launchSimulator(
+        emulatorTarget: IMobileTarget,
+    ): Promise<MobileTarget | undefined>;
 
-    protected abstract startSelection(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget | undefined>;
+    protected abstract startSelection(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<IMobileTarget | undefined>;
 
     protected async selectTarget(
         filter?: (el: IMobileTarget) => boolean,
@@ -59,7 +74,10 @@ export abstract class MobileTargetManager {
                     "Select target device for launch application",
                 ),
             };
-            result = await window.showQuickPick(targetList.map(target => target?.name || target?.id), quickPickOptions);
+            result = await window.showQuickPick(
+                targetList.map(target => target?.name || target?.id),
+                quickPickOptions,
+            );
         }
         return result
             ? targetList.find(target => target.name === result || target.id === result)

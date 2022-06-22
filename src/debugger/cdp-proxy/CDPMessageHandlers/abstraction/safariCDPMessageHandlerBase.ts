@@ -1,14 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {
-    CDPMessageHandlerBase,
-    ExecutionContext,
-    HandlerOptions
-} from "./CDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 import { CDP_API_NAMES } from "../CDPAPINames";
+import { CDPMessageHandlerBase, ExecutionContext, HandlerOptions } from "./CDPMessageHandlerBase";
 
 export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase {
     protected targetId: string;
@@ -20,7 +16,7 @@ export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: ProjectType,
-        options: HandlerOptions
+        options: HandlerOptions,
     ) {
         super(sourcemapPathTransformer, projectType, options);
         this.targetId = "";
@@ -38,8 +34,12 @@ export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase 
             params: {
                 type: event.params.message.type,
                 timestamp: event.params.message.timestamp,
-                args: event.params.message.parameters || [{ type: "string", value: event.params.message.text }],
-                stackTrace: { callFrames: event.params.message.stack || event.params.message.stackTrace },
+                args: event.params.message.parameters || [
+                    { type: "string", value: event.params.message.text },
+                ],
+                stackTrace: {
+                    callFrames: event.params.message.stack || event.params.message.stackTrace,
+                },
                 executionContextId: 1,
             },
         };
@@ -60,7 +60,9 @@ export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase 
     protected configureTargetForIWDPCommunication(): void {
         try {
             this.sendCustomRequestToAppTarget(CDP_API_NAMES.CONSOLE_ENABLE, {});
-            this.sendCustomRequestToAppTarget(CDP_API_NAMES.DEBUGGER_SET_BREAKPOINTS_ACTIVE, { active: true });
+            this.sendCustomRequestToAppTarget(CDP_API_NAMES.DEBUGGER_SET_BREAKPOINTS_ACTIVE, {
+                active: true,
+            });
         } catch (err) {
             // Specifically ignore a fail here since it's only for backcompat
         }
@@ -74,18 +76,26 @@ export abstract class SafariCDPMessageHandlerBase extends CDPMessageHandlerBase 
             auxData: {
                 isDefault: true,
                 type: "page",
-                frameId: this.targetId
-            }
+                frameId: this.targetId,
+            },
         };
         try {
-            this.sendCustomRequestToDebuggerTarget(CDP_API_NAMES.EXECUTION_CONTEXT_CREATED, { context }, false);
+            this.sendCustomRequestToDebuggerTarget(
+                CDP_API_NAMES.EXECUTION_CONTEXT_CREATED,
+                { context },
+                false,
+            );
         } catch (err) {
             throw Error("Could not create Execution context");
         }
     }
 
-    protected sendCustomRequestToDebuggerTarget(method: string, params: any = {}, addMessageId: boolean = true): void {
-        let request: any = {
+    protected sendCustomRequestToDebuggerTarget(
+        method: string,
+        params: any = {},
+        addMessageId: boolean = true,
+    ): void {
+        const request: any = {
             method,
             params,
         };

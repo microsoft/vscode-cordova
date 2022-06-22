@@ -7,12 +7,16 @@ import { LogLevel, getFormattedDatetimeString } from "./logHelper";
 const channels: { [channelName: string]: OutputChannelLogger } = {};
 
 export class OutputChannelLogger {
-
     public static MAIN_CHANNEL_NAME: string = "Cordova Tools";
     private outputChannel: vscode.OutputChannel;
     private logTimestamps: boolean;
 
-    constructor(public readonly channelName: string, lazy: boolean = false, private preserveFocus: boolean = false, logTimestamps: boolean = false) {
+    constructor(
+        public readonly channelName: string,
+        lazy: boolean = false,
+        private preserveFocus: boolean = false,
+        logTimestamps: boolean = false,
+    ) {
         this.logTimestamps = logTimestamps;
         if (!lazy) {
             this.channel = vscode.window.createOutputChannel(this.channelName);
@@ -31,9 +35,19 @@ export class OutputChannelLogger {
         return this.getChannel(this.MAIN_CHANNEL_NAME, true);
     }
 
-    public static getChannel(channelName: string, lazy?: boolean, preserveFocus?: boolean, logTimestamps?: boolean): OutputChannelLogger {
+    public static getChannel(
+        channelName: string,
+        lazy?: boolean,
+        preserveFocus?: boolean,
+        logTimestamps?: boolean,
+    ): OutputChannelLogger {
         if (!channels[channelName]) {
-            channels[channelName] = new OutputChannelLogger(channelName, lazy, preserveFocus, logTimestamps);
+            channels[channelName] = new OutputChannelLogger(
+                channelName,
+                lazy,
+                preserveFocus,
+                logTimestamps,
+            );
         }
 
         return channels[channelName];
@@ -73,18 +87,21 @@ export class OutputChannelLogger {
     private get channel(): vscode.OutputChannel {
         if (this.outputChannel) {
             return this.outputChannel;
-        } else {
-            this.outputChannel = vscode.window.createOutputChannel(this.channelName);
-            this.outputChannel.show(this.preserveFocus);
-            return this.outputChannel;
         }
+        this.outputChannel = vscode.window.createOutputChannel(this.channelName);
+        this.outputChannel.show(this.preserveFocus);
+        return this.outputChannel;
     }
 
     private set channel(channel: vscode.OutputChannel) {
         this.outputChannel = channel;
     }
 
-    private getFormattedMessage(message: string, tag: string, prependTimestamp: boolean = false): string {
+    private getFormattedMessage(
+        message: string,
+        tag: string,
+        prependTimestamp: boolean = false,
+    ): string {
         let formattedMessage = `[${tag}] ${message}\n`;
 
         if (prependTimestamp) {

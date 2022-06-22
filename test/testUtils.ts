@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as http from "http";
 import * as os from "os";
 
-import {CordovaProjectHelper} from "../src/utils/cordovaProjectHelper";
+import { CordovaProjectHelper } from "../src/utils/cordovaProjectHelper";
 
 export function executeCordovaCommand(cwd: string, command: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -27,9 +27,11 @@ export function executeCordovaCommand(cwd: string, command: string): Promise<any
             reject(err);
         });
 
-        process.on("close" , exitCode => {
+        process.on("close", exitCode => {
             if (exitCode !== 0) {
-                return reject(`Cordova command failed with exit code ${exitCode}. Error: ${stderr}`);
+                return reject(
+                    `Cordova command failed with exit code ${exitCode}. Error: ${stderr}`,
+                );
             }
             resolve({});
         });
@@ -41,12 +43,20 @@ export function createCordovaProject(cwd: string, projectName: string): Promise<
     return executeCordovaCommand(cwd, cordovaCommandToRun);
 }
 
-export function addCordovaComponents(componentName: string, projectRoot: string, componentsToAdd: string[]): Promise<any> {
+export function addCordovaComponents(
+    componentName: string,
+    projectRoot: string,
+    componentsToAdd: string[],
+): Promise<any> {
     let cordovaCommandToRun = componentName + " add " + componentsToAdd.join(" ");
     return executeCordovaCommand(projectRoot, cordovaCommandToRun);
 }
 
-export function removeCordovaComponents(componentName: string, projectRoot: string, componentsToRemove: string[]): Promise<any> {
+export function removeCordovaComponents(
+    componentName: string,
+    projectRoot: string,
+    componentsToRemove: string[],
+): Promise<any> {
     let cordovaCommandToRun = componentName + " remove " + componentsToRemove.join(" ");
     return executeCordovaCommand(projectRoot, cordovaCommandToRun);
 }
@@ -64,7 +74,7 @@ export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
 
 export function isUrlReachable(url: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-        http.get(url, (res) => {
+        http.get(url, res => {
             resolve(true);
             res.resume();
         }).on("error", (_err: Error) => {

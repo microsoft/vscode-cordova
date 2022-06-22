@@ -2,18 +2,22 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as path from "path";
+import * as cp from "child_process";
 import * as CordovaSimulate from "cordova-simulate";
+import * as vscode from "vscode";
+import * as nls from "vscode-nls";
 import { CordovaSimulateTelemetry } from "../utils/cordovaSimulateTelemetry";
 import { ProjectType, CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import { SimulationInfo } from "../common/simulationInfo";
 import { PlatformType } from "../debugger/cordovaDebugSession";
-import * as vscode from "vscode";
-import * as cp from "child_process";
 import customRequire from "../common/customRequire";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 import { findFileInFolderHierarchy } from "../utils/extensionHelper";
-import * as nls from "vscode-nls";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export enum SimulateTargets {
@@ -39,35 +43,52 @@ export class PluginSimulator implements vscode.Disposable {
     private simulatePackage: typeof CordovaSimulate;
     private packageInstallProc: cp.ChildProcess | null = null;
 
-    public simulate(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: ProjectType): Promise<any> {
+    public simulate(
+        fsPath: string,
+        simulateOptions: CordovaSimulate.SimulateOptions,
+        projectType: ProjectType,
+    ): Promise<any> {
         return this.launchServer(fsPath, simulateOptions, projectType)
             .then(() => this.launchSimHost(simulateOptions.target))
             .then(() => this.launchAppHost(simulateOptions.target));
     }
 
     public launchAppHost(target: string): Promise<void> {
-        return this.getPackage()
-            .then(simulate => {
-                return simulate.launchBrowser(target, this.simulationInfo.appHostUrl);
-            });
+        return this.getPackage().then(simulate => {
+            return simulate.launchBrowser(target, this.simulationInfo.appHostUrl);
+        });
     }
 
     public launchSimHost(target: string): Promise<void> {
         if (!this.simulator) {
-            return Promise.reject(new Error(localize("LaunchingSimHostBeforeStartSimulationServer", "Launching sim host before starting simulation server")));
+            return Promise.reject(
+                new Error(
+                    localize(
+                        "LaunchingSimHostBeforeStartSimulationServer",
+                        "Launching sim host before starting simulation server",
+                    ),
+                ),
+            );
         }
-        return this.getPackage()
-            .then(simulate => {
-                return simulate.launchBrowser(target, this.simulator.simHostUrl());
-            });
+        return this.getPackage().then(simulate => {
+            return simulate.launchBrowser(target, this.simulator.simHostUrl());
+        });
     }
 
-    public launchServer(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: ProjectType): Promise<SimulationInfo> {
+    public launchServer(
+        fsPath: string,
+        simulateOptions: CordovaSimulate.SimulateOptions,
+        projectType: ProjectType,
+    ): Promise<SimulationInfo> {
         const uri = vscode.Uri.file(fsPath);
         const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
         simulateOptions.dir = workspaceFolder.uri.fsPath;
         if (!simulateOptions.simulationpath) {
-            simulateOptions.simulationpath = path.join(workspaceFolder.uri.fsPath, ".vscode", "simulate");
+            simulateOptions.simulationpath = path.join(
+                workspaceFolder.uri.fsPath,
+                ".vscode",
+                "simulate",
+            );
         }
 
         return this.getPackage()
@@ -78,43 +99,59 @@ export class PluginSimulator implements vscode.Disposable {
                 }
             })
             .then(() => {
-                let simulateTelemetryWrapper = new CordovaSimulateTelemetry();
+                const simulateTelemetryWrapper = new CordovaSimulateTelemetry();
                 simulateOptions.telemetry = simulateTelemetryWrapper;
 
                 this.simulator = new this.simulatePackage.Simulator(simulateOptions);
-                let platforms = CordovaProjectHelper.getInstalledPlatforms(workspaceFolder.uri.fsPath);
+                const platforms = CordovaProjectHelper.getInstalledPlatforms(
+                    workspaceFolder.uri.fsPath,
+                );
 
-                let platform = simulateOptions.platform;
-                let isPlatformMissing = platform && platforms.indexOf(platform) < 0;
+                const platform = simulateOptions.platform;
+                const isPlatformMissing = platform && !platforms.includes(platform);
 
                 if (isPlatformMissing) {
                     let command = "cordova";
                     if (projectType.isIonic) {
-                        const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(workspaceFolder.uri.fsPath);
-                        command = "ionic" + (isIonicCliVersionGte3 ? " cordova" : "");
+                        const isIonicCliVersionGte3 = CordovaProjectHelper.isIonicCliVersionGte3(
+                            workspaceFolder.uri.fsPath,
+                        );
+                        command = `ionic${isIonicCliVersionGte3 ? " cordova" : ""}`;
                     }
 
-                    throw new Error(localize("CouldntFindPlatformInProject", "Couldn't find platform {0} in project, please install it using '{1} platform add {2}'", platform, command, platform));
+                    throw new Error(
+                        localize(
+                            "CouldntFindPlatformInProject",
+                            "Couldn't find platform {0} in project, please install it using '{1} platform add {2}'",
+                            platform,
+                            command,
+                            platform,
+                        ),
+                    );
                 }
 
-                return this.simulator.startSimulation()
-                    .then(() => {
-                        if (!this.simulator.isRunning()) {
-                            throw new Error(localize("ErrorStartingTheSimulation", "Error starting the simulation"));
-                        }
+                return this.simulator.startSimulation().then(() => {
+                    if (!this.simulator.isRunning()) {
+                        throw new Error(
+                            localize("ErrorStartingTheSimulation", "Error starting the simulation"),
+                        );
+                    }
 
-                        this.simulationInfo = {
-                            appHostUrl: this.simulator.appUrl(),
-                            simHostUrl: this.simulator.simHostUrl(),
-                            urlRoot: this.simulator.urlRoot(),
-                        };
-                        if ((projectType.ionicMajorVersion === 2 || projectType.ionicMajorVersion === 3)
-                            && platform && platform !== PlatformType.Browser
-                        ) {
-                            this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`;
-                        }
-                        return this.simulationInfo;
-                    });
+                    this.simulationInfo = {
+                        appHostUrl: this.simulator.appUrl(),
+                        simHostUrl: this.simulator.simHostUrl(),
+                        urlRoot: this.simulator.urlRoot(),
+                    };
+                    if (
+                        (projectType.ionicMajorVersion === 2 ||
+                            projectType.ionicMajorVersion === 3) &&
+                        platform &&
+                        platform !== PlatformType.Browser
+                    ) {
+                        this.simulationInfo.appHostUrl = `${this.simulationInfo.appHostUrl}?ionicplatform=${simulateOptions.platform}`;
+                    }
+                    return this.simulationInfo;
+                });
             });
     }
 
@@ -125,7 +162,10 @@ export class PluginSimulator implements vscode.Disposable {
         }
 
         if (this.simulator) {
-            this.simulator.stopSimulation().then(() => { }, () => { });
+            this.simulator.stopSimulation().then(
+                () => {},
+                () => {},
+            );
             this.simulator = null;
         }
     }
@@ -141,7 +181,12 @@ export class PluginSimulator implements vscode.Disposable {
             return Promise.resolve(this.simulatePackage);
         } catch (e) {
             if (e.code === "MODULE_NOT_FOUND") {
-                OutputChannelLogger.getMainChannel().log(localize("CordovaSimulateDepNotPresent", "cordova-simulate dependency not present. Installing it..."));
+                OutputChannelLogger.getMainChannel().log(
+                    localize(
+                        "CordovaSimulateDepNotPresent",
+                        "cordova-simulate dependency not present. Installing it...",
+                    ),
+                );
             } else {
                 throw e;
             }
@@ -149,17 +194,31 @@ export class PluginSimulator implements vscode.Disposable {
 
         return new Promise((resolve, reject) => {
             if (!this.packageInstallProc) {
-                this.packageInstallProc = cp.spawn(process.platform === "win32" ? "npm.cmd" : "npm",
+                this.packageInstallProc = cp.spawn(
+                    process.platform === "win32" ? "npm.cmd" : "npm",
                     ["install", this.CORDOVA_SIMULATE_PACKAGE, "--verbose", "--no-save"],
-                    { cwd: path.dirname(findFileInFolderHierarchy(__dirname, "package.json")) });
+                    {
+                        cwd: path.dirname(findFileInFolderHierarchy(__dirname, "package.json")),
+                    },
+                );
 
                 this.packageInstallProc.once("exit", (code: number) => {
                     if (code === 0) {
                         this.simulatePackage = customRequire(this.CORDOVA_SIMULATE_PACKAGE);
                         resolve(this.simulatePackage);
                     } else {
-                        OutputChannelLogger.getMainChannel().log(localize("ErrorWhileInstallingCordovaSimulateDep", "Error while installing cordova-simulate dependency to the extension"));
-                        reject(localize("ErrorWhileInstallingCordovaSimulateDep", "Error while installing cordova-simulate dependency to the extension"));
+                        OutputChannelLogger.getMainChannel().log(
+                            localize(
+                                "ErrorWhileInstallingCordovaSimulateDep",
+                                "Error while installing cordova-simulate dependency to the extension",
+                            ),
+                        );
+                        reject(
+                            localize(
+                                "ErrorWhileInstallingCordovaSimulateDep",
+                                "Error while installing cordova-simulate dependency to the extension",
+                            ),
+                        );
                     }
                 });
 

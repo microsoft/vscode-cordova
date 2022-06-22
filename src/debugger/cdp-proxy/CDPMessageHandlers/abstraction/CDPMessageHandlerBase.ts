@@ -1,12 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {
-    IProtocolCommand,
-    IProtocolSuccess,
-    IProtocolError,
-    Connection
-} from "vscode-cdp-proxy";
+import { IProtocolCommand, IProtocolSuccess, IProtocolError, Connection } from "vscode-cdp-proxy";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 
@@ -29,9 +24,9 @@ export interface ExecutionContext {
     origin: string;
     name: string;
     auxData?: {
-      isDefault: boolean,
-      type?: "default" | "page",
-      frameId?: string,
+        isDefault: boolean;
+        type?: "default" | "page";
+        frameId?: string;
     };
 }
 
@@ -60,7 +55,7 @@ export abstract class CDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: ProjectType,
-        options: HandlerOptions
+        options: HandlerOptions,
     ) {
         this.sourcemapPathTransformer = sourcemapPathTransformer;
         this.projectType = projectType;

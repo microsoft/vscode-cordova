@@ -14,11 +14,20 @@ suite("extensionHelper", function () {
             const indexJsFilePath = path.join(testingDirectory, "index.js");
             const configXmlFilePath = path.join(testProjectPath, "config.xml");
 
-            assert.strictEqual(findFileInFolderHierarchy(testingDirectory, "index.js"), indexJsFilePath);
-            assert.strictEqual(findFileInFolderHierarchy(testingDirectory, "config.xml"), configXmlFilePath);
+            assert.strictEqual(
+                findFileInFolderHierarchy(testingDirectory, "index.js"),
+                indexJsFilePath,
+            );
+            assert.strictEqual(
+                findFileInFolderHierarchy(testingDirectory, "config.xml"),
+                configXmlFilePath,
+            );
         });
         test("should not find a nonexistent required folder and should return 'null'", () => {
-            assert.strictEqual(findFileInFolderHierarchy(testProjectPath, "testFileHierarchy.js"), null);
+            assert.strictEqual(
+                findFileInFolderHierarchy(testProjectPath, "testFileHierarchy.js"),
+                null,
+            );
         });
     });
 });
