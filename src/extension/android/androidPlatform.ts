@@ -70,7 +70,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform<AndroidTarge
 
     public async prepareForAttach(): Promise<IAndroidAttachResult> {
         const appPackageName = await this.getAppPackageName();
-        const target = await this.getPrefferedTarget();
+        const target = await this.getPreferredTarget();
 
         const findAbstractNameFunction = () => {
             return this.adbHelper.getDevToolsAbstractName(target.id, appPackageName);
@@ -96,7 +96,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform<AndroidTarge
         await super.stopAndCleanUp();
         // Stop ADB port forwarding if necessary
         if (this.target) {
-            await this.adbHelper.removeforwardTcpPort(this.target.id, this.platformOpts.port.toString());
+            await this.adbHelper.removeForwardTcpPort(this.target.id, this.platformOpts.port.toString());
         }
     }
 
@@ -145,7 +145,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform<AndroidTarge
     }
 
     protected async getFirstAvailableOnlineTarget(): Promise<AndroidTarget> {
-        return new AndroidTarget(await this.getFirstDebugableTarget());
+        return new AndroidTarget(await this.getFirstDebuggableTarget());
     }
 
     private async getAppPackageName(): Promise<string> {

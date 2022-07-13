@@ -102,17 +102,17 @@ suite("AbstractPlatform", function () {
                     value
                 );
 
-                let settedValue: string | boolean;
+                let setValue: string | boolean;
                 let keyIndex = runArguments.indexOf(key);
                 if (typeof value === "boolean") {
                     if (keyIndex > -1) {
-                        settedValue = true;
+                        setValue = true;
                     } else {
-                        settedValue = false;
+                        setValue = false;
                     }
                 } else {
                     if (keyIndex > -1) {
-                        settedValue = runArguments[keyIndex + 1];
+                        setValue = runArguments[keyIndex + 1];
                     } else {
                         for (let i = 0; i < runArguments.length; i++) {
                             if (runArguments[i].includes(key)) {
@@ -120,11 +120,11 @@ suite("AbstractPlatform", function () {
                                 break;
                             }
                         }
-                        settedValue = runArguments[keyIndex].split("=")[1];
+                        setValue = runArguments[keyIndex].split("=")[1];
                     }
                 }
 
-                assert.strictEqual(settedValue, value);
+                assert.strictEqual(setValue, value);
             }
 
             test("Should set new value for the united argument", function () {

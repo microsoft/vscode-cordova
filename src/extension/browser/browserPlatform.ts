@@ -32,7 +32,7 @@ export default class BrowserPlatform extends AbstractPlatform {
     public readonly onBrowserStop = this.browserStopEventEmitter.event;
 
     private changeSimulateViewportEventEmitter: EventEmitter<simulate.ResizeViewportData> = new EventEmitter();
-    public readonly onСhangeSimulateViewport = this.changeSimulateViewportEventEmitter.event;
+    public readonly onChangeSimulateViewport = this.changeSimulateViewportEventEmitter.event;
 
     constructor(
         protected platformOpts: IBrowserPlatformOptions,

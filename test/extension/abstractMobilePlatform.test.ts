@@ -11,11 +11,9 @@ import { PluginSimulator } from "../../src/extension/simulate";
 import { CordovaProjectHelper, ProjectType } from "../../src/utils/cordovaProjectHelper";
 import IonicDevServer from "../../src/utils/ionicDevServer";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../../src/utils/mobileTarget";
-import Sinon = require("sinon");
 import { MobileTargetManager } from "../../src/utils/mobileTargetManager";
 import { TargetType } from "../../src/debugger/cordovaDebugSession";
 import assert = require("assert");
-import { after } from "mocha";
 
 suite("AbstractMobilePlatform", function () {
 
@@ -101,19 +99,19 @@ suite("AbstractMobilePlatform", function () {
         }
 
         protected async getFirstAvailableOnlineTarget(): Promise<MobileTarget> {
-            return new TestMobileTarget((await this.getFirstDebugableTarget()) as IDebuggableMobileTarget);
+            return new TestMobileTarget((await this.getFirstDebuggableTarget()) as IDebuggableMobileTarget);
         }
 
         public launchApp(): Promise<IGeneralLaunchResult> {
-            throw Error("Not imlemented yet");
+            throw Error("Not implemented yet");
         }
 
         public prepareForAttach(): Promise<IGeneralAttachResult> {
-            throw Error("Not imlemented yet");
+            throw Error("Not implemented yet");
         }
 
         public getRunArguments(): string[] {
-            throw Error("Not imlemented yet");
+            throw Error("Not implemented yet");
         }
     }
 
@@ -173,11 +171,9 @@ suite("AbstractMobilePlatform", function () {
         });
     });
 
-    suite("getPrefferedTarget", function () {
-
+    suite("getPreferredTarget", function () {
         beforeEach(function () {
             collectedTargets = [onlineDevice1, onlineDevice2, offlineSimulator, onlineSimulator];
-            platformOptions.runArguments = 
         });
 
         test(`Should resolve any device for target: ${TargetType.Device}`, async function () {

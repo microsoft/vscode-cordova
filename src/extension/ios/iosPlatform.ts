@@ -43,7 +43,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         if (!this._target) {
             this._target = await this.getTargetFromRunArgs();
             if (!this._target) {
-                this._target = await this.getPrefferedTarget();
+                this._target = await this.getPreferredTarget();
                 this.addTargetToRunArgs(this._target);
             }
         }
@@ -71,7 +71,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 this.target
             );
             const iOSAppPackagePath = await this.getIosAppPackagePath();
-            const target = await this.getPrefferedTarget();
+            const target = await this.getPreferredTarget();
 
             let targetPort: number;
             let iOSVersion: string;
@@ -200,7 +200,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     }
 
     protected async getFirstAvailableOnlineTarget(): Promise<IOSTarget> {
-        return new IOSTarget((await this.getFirstDebugableTarget()) as IDebuggableIOSTarget);
+        return new IOSTarget((await this.getFirstDebuggableTarget()) as IDebuggableIOSTarget);
     }
 
     protected addTargetToRunArgs(target: IOSTarget): void {

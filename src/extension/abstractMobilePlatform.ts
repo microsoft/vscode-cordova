@@ -103,7 +103,7 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
 
     protected abstract getFirstAvailableOnlineTarget(): Promise<Target>;
 
-    protected async getPrefferedTarget(): Promise<Target> {
+    protected async getPreferredTarget(): Promise<Target> {
         if (!this._target) {
             this._target =
             await this.getTargetFromRunArgs() ||
@@ -112,7 +112,7 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
         return this._target;
     }
 
-    protected async getFirstDebugableTarget(): Promise<IDebuggableMobileTarget> {
+    protected async getFirstDebuggableTarget(): Promise<IDebuggableMobileTarget> {
         const targets = (await this.targetManager.getTargetList(target => target.isOnline && !!target.id)) as IDebuggableMobileTarget[];
         const targetsBySpecifiedType = targets.filter(target => {
             switch (this.platformOpts.target) {
