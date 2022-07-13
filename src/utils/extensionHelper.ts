@@ -22,7 +22,7 @@ export function retryAsync<T>(
 ): Promise<T> {
     const retry = () => {
         if (cancellationToken && cancellationToken.isCancellationRequested) {
-            let cancelError = new Error(CordovaDebugSession.CANCELLATION_ERROR_NAME);
+            const cancelError = new Error(CordovaDebugSession.CANCELLATION_ERROR_NAME);
             cancelError.name = CordovaDebugSession.CANCELLATION_ERROR_NAME;
             throw cancelError;
         }

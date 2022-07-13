@@ -19,7 +19,10 @@ import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchResult } from "../platformLaunchResult";
 import { IBrowserFinder } from "vscode-js-debug-browsers";
 import { EventEmitter } from "vscode";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export default class BrowserPlatform extends AbstractPlatform {
@@ -31,12 +34,13 @@ export default class BrowserPlatform extends AbstractPlatform {
     private browserStopEventEmitter: EventEmitter<Error | undefined> = new EventEmitter();
     public readonly onBrowserStop = this.browserStopEventEmitter.event;
 
-    private changeSimulateViewportEventEmitter: EventEmitter<simulate.ResizeViewportData> = new EventEmitter();
+    private changeSimulateViewportEventEmitter: EventEmitter<simulate.ResizeViewportData> =
+        new EventEmitter();
     public readonly onChangeSimulateViewport = this.changeSimulateViewportEventEmitter.event;
 
     constructor(
         protected platformOpts: IBrowserPlatformOptions,
-        protected log: DebugConsoleLogger
+        protected log: DebugConsoleLogger,
     ) {
         super(platformOpts, log);
     }
@@ -51,19 +55,31 @@ export default class BrowserPlatform extends AbstractPlatform {
         if (this.platformOpts.platform === PlatformType.Serve) {
             // Currently, "ionic serve" is only supported for Ionic projects
             if (!this.platformOpts.projectType.isIonic) {
-                let errorMessage = localize("ServingToTheBrowserIsSupportedForIonicProjects", "Serving to the browser is currently only supported for Ionic projects");
+                const errorMessage = localize(
+                    "ServingToTheBrowserIsSupportedForIonicProjects",
+                    "Serving to the browser is currently only supported for Ionic projects",
+                );
                 this.log(errorMessage, true);
                 throw new Error(errorMessage);
             }
             const serveRunArgs = this.getServeRunArguments();
-            const devServersUrls = await this.IonicDevServer.startIonicDevServer(serveRunArgs, this.platformOpts.env);
+            const devServersUrls = await this.IonicDevServer.startIonicDevServer(
+                serveRunArgs,
+                this.platformOpts.env,
+            );
             this.platformOpts.url = devServersUrls[0];
         } else {
             const simulatorOptions = this.convertBrowserOptionToSimulateArgs(this.platformOpts);
-            let simulateInfo = await this.platformOpts.pluginSimulator.launchServer(this.projectRoot, simulatorOptions, this.platformOpts.projectType);
+            const simulateInfo = await this.platformOpts.pluginSimulator.launchServer(
+                this.projectRoot,
+                simulatorOptions,
+                this.platformOpts.projectType,
+            );
             await this.connectSimulateDebugHost(simulateInfo);
             await this.platformOpts.pluginSimulator.launchSimHost(this.platformOpts.target);
-            this.platformOpts.simulatePort = CordovaProjectHelper.getPortFromURL(simulateInfo.appHostUrl);
+            this.platformOpts.simulatePort = CordovaProjectHelper.getPortFromURL(
+                simulateInfo.appHostUrl,
+            );
             this.platformOpts.url = simulateInfo.appHostUrl;
             devServerPort = this.IonicDevServer.getDevServerPort();
         }
@@ -74,11 +90,19 @@ export default class BrowserPlatform extends AbstractPlatform {
         let browserFinder: IBrowserFinder;
         switch (this.platformOpts.target) {
             case TargetType.Edge:
-                browserFinder = new browserHelper.EdgeBrowserFinder(process.env, fs.promises, execa);
+                browserFinder = new browserHelper.EdgeBrowserFinder(
+                    process.env,
+                    fs.promises,
+                    execa,
+                );
                 break;
             case TargetType.Chrome:
             default:
-                browserFinder = new browserHelper.ChromeBrowserFinder(process.env, fs.promises, execa);
+                browserFinder = new browserHelper.ChromeBrowserFinder(
+                    process.env,
+                    fs.promises,
+                    execa,
+                );
         }
         const browserPath = (await browserFinder.findAll())[0];
         if (browserPath) {
@@ -87,15 +111,16 @@ export default class BrowserPlatform extends AbstractPlatform {
                 stdio: ["ignore"],
             });
             this.browserProc.unref();
-            this.browserProc.on("error", (err) => {
+            this.browserProc.on("error", err => {
                 const errMsg = localize("BrowserError", "Browser error: {0}", err.message);
                 this.log(errMsg, true);
                 this.browserStopEventEmitter.fire(err);
             });
             this.browserProc.once("exit", (code: number) => {
-                const exitMessage = localize("BrowserExit",
+                const exitMessage = localize(
+                    "BrowserExit",
                     "Browser has been closed with exit code: {0}",
-                    code
+                    code,
                 );
                 this.log(exitMessage);
                 this.browserStopEventEmitter.fire();
@@ -130,12 +155,28 @@ export default class BrowserPlatform extends AbstractPlatform {
     }
 
     public getRunArguments(): string[] {
-        let args: string[] = ["--remote-debugging-port=" + String(this.platformOpts.port || 9222), "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + this.platformOpts.userDataDir];
+        const args: string[] = [
+            `--remote-debugging-port=${this.platformOpts.port || 9222}`,
+            "--no-first-run",
+            "--no-default-browser-check",
+            `--user-data-dir=${this.platformOpts.userDataDir}`,
+        ];
         if (this.platformOpts.runArguments) {
             const runArguments = [...this.platformOpts.runArguments];
-            const remoteDebuggingPort = BrowserPlatform.getOptFromRunArgs(runArguments, "--remote-debugging-port");
-            const noFirstRun = BrowserPlatform.getOptFromRunArgs(runArguments, "--no-first-run", true);
-            const noDefaultBrowserCheck = BrowserPlatform.getOptFromRunArgs(runArguments, "--no-default-browser-check", true);
+            const remoteDebuggingPort = BrowserPlatform.getOptFromRunArgs(
+                runArguments,
+                "--remote-debugging-port",
+            );
+            const noFirstRun = BrowserPlatform.getOptFromRunArgs(
+                runArguments,
+                "--no-first-run",
+                true,
+            );
+            const noDefaultBrowserCheck = BrowserPlatform.getOptFromRunArgs(
+                runArguments,
+                "--no-default-browser-check",
+                true,
+            );
             const userDataDir = BrowserPlatform.getOptFromRunArgs(runArguments, "--user-data-dir");
 
             if (noFirstRun) {
@@ -145,7 +186,11 @@ export default class BrowserPlatform extends AbstractPlatform {
                 BrowserPlatform.removeRunArgument(runArguments, "--no-default-browser-check", true);
             }
             if (remoteDebuggingPort) {
-                BrowserPlatform.setRunArgument(args, "--remote-debugging-port", remoteDebuggingPort);
+                BrowserPlatform.setRunArgument(
+                    args,
+                    "--remote-debugging-port",
+                    remoteDebuggingPort,
+                );
                 BrowserPlatform.removeRunArgument(runArguments, "--remote-debugging-port", false);
             }
             if (userDataDir) {
@@ -163,7 +208,11 @@ export default class BrowserPlatform extends AbstractPlatform {
 
     private setChromeExitTypeNormal() {
         try {
-            const preferencesPath = path.resolve(this.platformOpts.userDataDir, "Default", "Preferences");
+            const preferencesPath = path.resolve(
+                this.platformOpts.userDataDir,
+                "Default",
+                "Preferences",
+            );
             const browserPrefs = JSON.parse(fs.readFileSync(preferencesPath, "utf8"));
             console.log(browserPrefs);
             browserPrefs.profile.exit_type = "normal";
@@ -193,7 +242,7 @@ export default class BrowserPlatform extends AbstractPlatform {
     private connectSimulateDebugHost(simulateInfo: SimulationInfo): Promise<void> {
         // Connect debug-host to cordova-simulate
         return new Promise<void>((resolve, reject) => {
-            let simulateConnectErrorHandler = (err: any): void => {
+            const simulateConnectErrorHandler = (err: any): void => {
                 this.log("Error connecting to the simulated app.", err);
                 reject(err);
             };
@@ -202,17 +251,24 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.simulateDebugHost.on("connect_error", simulateConnectErrorHandler);
             this.simulateDebugHost.on("connect_timeout", simulateConnectErrorHandler);
             this.simulateDebugHost.on("connect", () => {
-                this.simulateDebugHost.on("resize-viewport", (data: simulate.ResizeViewportData) => {
-                    this.changeSimulateViewportEventEmitter.fire(data);
+                this.simulateDebugHost.on(
+                    "resize-viewport",
+                    (data: simulate.ResizeViewportData) => {
+                        this.changeSimulateViewportEventEmitter.fire(data);
+                    },
+                );
+                this.simulateDebugHost.emit("register-debug-host", {
+                    handlers: ["resize-viewport"],
                 });
-                this.simulateDebugHost.emit("register-debug-host", { handlers: ["resize-viewport"] });
                 resolve();
             });
         });
     }
 
-    private convertBrowserOptionToSimulateArgs(browserOption: IBrowserPlatformOptions): simulate.SimulateOptions {
-        let result: simulate.SimulateOptions = {};
+    private convertBrowserOptionToSimulateArgs(
+        browserOption: IBrowserPlatformOptions,
+    ): simulate.SimulateOptions {
+        const result: simulate.SimulateOptions = {};
 
         result.platform = browserOption.platform;
         result.target = browserOption.target;
@@ -227,5 +283,4 @@ export default class BrowserPlatform extends AbstractPlatform {
 
         return result;
     }
-
 }

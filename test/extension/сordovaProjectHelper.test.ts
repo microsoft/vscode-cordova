@@ -123,7 +123,10 @@ suite("cordovaProjectHelper", function () {
             Object.assign(envRef, envData);
 
             try {
-                const envProcessed = Object.assign({}, CordovaProjectHelper.getEnvArgument(launchArgs.env, launchArgs.envFile));
+                const envProcessed = Object.assign(
+                    {},
+                    CordovaProjectHelper.getEnvArgument(launchArgs.env, launchArgs.envFile),
+                );
                 assert.deepStrictEqual(envProcessed, envRef);
             } finally {
                 Object.keys(envData).forEach(key => {

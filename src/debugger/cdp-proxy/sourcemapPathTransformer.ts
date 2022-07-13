@@ -16,7 +16,13 @@ export class SourcemapPathTransformer {
     private _debugRequestType: string;
 
     constructor(
-        cwd: string, platform: PlatformType, projectType: ProjectType, debugRequestType: string, ionicLiveReload: boolean = false, address?: string) {
+        cwd: string,
+        platform: PlatformType,
+        projectType: ProjectType,
+        debugRequestType: string,
+        ionicLiveReload: boolean = false,
+        address?: string,
+    ) {
         this._cordovaRoot = cwd;
         this._platform = platform;
         this._webRoot = address || this._cordovaRoot;

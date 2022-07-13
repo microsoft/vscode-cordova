@@ -228,8 +228,11 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
     ];
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async provideDebugConfigurations(folder: vscode.WorkspaceFolder | undefined, token?: vscode.CancellationToken): Promise<vscode.DebugConfiguration[]> {
-        return new Promise<vscode.DebugConfiguration[]>((resolve) => {
+    public async provideDebugConfigurations(
+        folder: vscode.WorkspaceFolder | undefined,
+        token?: vscode.CancellationToken,
+    ): Promise<vscode.DebugConfiguration[]> {
+        return new Promise<vscode.DebugConfiguration[]>(resolve => {
             const configPicker = this.prepareDebugConfigPicker();
             const disposables: vscode.Disposable[] = [];
             const pickHandler = () => {

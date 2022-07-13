@@ -28,13 +28,13 @@ suite("AbstractPlatform", function () {
             function getArgumentValueTest(
                 runArguments: string[],
                 key: string,
-                expectedValue: string | boolean | undefined
+                expectedValue: string | boolean | undefined,
             ) {
                 const argumentsBeforeOperation = Array.from(runArguments);
                 const foundedValue = AbstractPlatform.getOptFromRunArgs(
                     runArguments,
                     key,
-                    typeof expectedValue === "boolean"
+                    typeof expectedValue === "boolean",
                 );
 
                 assert.strictEqual(foundedValue, expectedValue);
@@ -44,23 +44,19 @@ suite("AbstractPlatform", function () {
                     `Array of the run arguments has been changed after operation:
                     Before: ${argumentsBeforeOperation.toString()}
                      ---
-                    After: ${runArguments.toString()}`
+                    After: ${runArguments.toString()}`,
                 );
             }
 
             test("Should return undefined for the not presented non binary argument", function () {
-                getArgumentValueTest(
-                    runArguments,
-                    "notPresentedArgument",
-                    undefined
-                );
+                getArgumentValueTest(runArguments, "notPresentedArgument", undefined);
             });
 
             test("Should return value of the separated argument", function () {
                 getArgumentValueTest(
                     runArguments,
                     stringSeparatedArgumentKey,
-                    stringSeparatedArgumentValue
+                    stringSeparatedArgumentValue,
                 );
             });
 
@@ -68,24 +64,16 @@ suite("AbstractPlatform", function () {
                 getArgumentValueTest(
                     runArguments,
                     stringUnitedArgumentKey,
-                    stringUnitedArgumentValue
+                    stringUnitedArgumentValue,
                 );
             });
 
             test("Should return true for the presented binary argument", function () {
-                getArgumentValueTest(
-                    runArguments,
-                    presentedBooleanArgumentKey,
-                    true
-                );
+                getArgumentValueTest(runArguments, presentedBooleanArgumentKey, true);
             });
 
             test("Should return false for the not presented binary argument", function () {
-                getArgumentValueTest(
-                    runArguments,
-                    notPresentedBooleanArgumentKey,
-                    true
-                );
+                getArgumentValueTest(runArguments, notPresentedBooleanArgumentKey, true);
             });
         });
 
@@ -93,14 +81,9 @@ suite("AbstractPlatform", function () {
             function setArgumentValueTest(
                 runArguments: string[],
                 key: string,
-                value: string | boolean
+                value: string | boolean,
             ) {
-
-                AbstractPlatform.setRunArgument(
-                    runArguments,
-                    key,
-                    value
-                );
+                AbstractPlatform.setRunArgument(runArguments, key, value);
 
                 let setValue: string | boolean;
                 let keyIndex = runArguments.indexOf(key);
@@ -131,7 +114,7 @@ suite("AbstractPlatform", function () {
                 setArgumentValueTest(
                     runArguments,
                     stringUnitedArgumentKey,
-                    "newStringUnitedArgumentValue"
+                    "newStringUnitedArgumentValue",
                 );
             });
 
@@ -139,32 +122,20 @@ suite("AbstractPlatform", function () {
                 setArgumentValueTest(
                     runArguments,
                     stringSeparatedArgumentKey,
-                    "newStringSeparatedArgumentValue"
+                    "newStringSeparatedArgumentValue",
                 );
             });
 
             test("Should add key and value for not presented separated argument", function () {
-                setArgumentValueTest(
-                    runArguments,
-                    "newKey",
-                    "newValue"
-                );
+                setArgumentValueTest(runArguments, "newKey", "newValue");
             });
 
             test("Should remove binary argument in case new value is false", function () {
-                setArgumentValueTest(
-                    runArguments,
-                    presentedBooleanArgumentKey,
-                    false
-                );
+                setArgumentValueTest(runArguments, presentedBooleanArgumentKey, false);
             });
 
             test("Should add new binary argument in case new value is true", function () {
-                setArgumentValueTest(
-                    runArguments,
-                    notPresentedBooleanArgumentKey,
-                    true
-                );
+                setArgumentValueTest(runArguments, notPresentedBooleanArgumentKey, true);
             });
         });
 
@@ -173,14 +144,10 @@ suite("AbstractPlatform", function () {
                 runArguments: string[],
                 key: string,
                 isBinary: boolean,
-                isSeparatedArgument?: boolean
+                isSeparatedArgument?: boolean,
             ) {
                 const argsLenghtBefore = runArguments.length;
-                AbstractPlatform.removeRunArgument(
-                    runArguments,
-                    key,
-                    isBinary
-                );
+                AbstractPlatform.removeRunArgument(runArguments, key, isBinary);
 
                 const keyIndex = runArguments.indexOf(key);
                 if (isBinary || argsLenghtBefore - runArguments.length === 2) {
@@ -204,29 +171,15 @@ suite("AbstractPlatform", function () {
             }
 
             test("Should remove the united argument", function () {
-                removeArgumentValueTest(
-                    runArguments,
-                    stringUnitedArgumentKey,
-                    false,
-                    false
-                );
+                removeArgumentValueTest(runArguments, stringUnitedArgumentKey, false, false);
             });
 
             test("Should remove the separated argument", function () {
-                removeArgumentValueTest(
-                    runArguments,
-                    stringSeparatedArgumentKey,
-                    false,
-                    true
-                );
+                removeArgumentValueTest(runArguments, stringSeparatedArgumentKey, false, true);
             });
 
             test("Should remove binary argument", function () {
-                removeArgumentValueTest(
-                    runArguments,
-                    presentedBooleanArgumentKey,
-                    true
-                );
+                removeArgumentValueTest(runArguments, presentedBooleanArgumentKey, true);
             });
         });
     });

@@ -16,7 +16,6 @@ export interface IGeneralPlatformOptions {
     cancellationTokenSource: vscode.CancellationTokenSource;
     env: any;
     port: number;
-
     target?: string;
     ionicLiveReload?: boolean;
     runArguments?: string[];
@@ -46,4 +45,3 @@ export interface IBrowserPlatformOptions extends IGeneralPlatformOptions {
     simulateTempDir?: string;
     spaUrlRewrites?: boolean;
 }
-

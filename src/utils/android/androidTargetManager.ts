@@ -154,7 +154,8 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
             emulatorProcess.spawnedProcess.unref();
 
             const rejectTimeout = setTimeout(() => {
-                cleanup(); // eslint-disable-line
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                cleanup();
                 reject(
                     new Error(
                         `Virtual device launch finished with an exception: ${localize(
@@ -183,6 +184,7 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
                                 emulatorTarget.name,
                             ),
                         );
+                        // eslint-disable-next-line @typescript-eslint/no-use-before-define
                         cleanup();
                         resolve(new AndroidTarget(<IDebuggableMobileTarget>emulatorTarget));
                         break;

@@ -9,7 +9,10 @@ import { CordovaProjectHelper } from "./cordovaProjectHelper";
 import { cordovaStartCommand, killChildProcess } from "../debugger/extension";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
 import { EventEmitter } from "vscode";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export enum IonicDevServerStatus {
@@ -23,10 +26,14 @@ interface SeverOutput {
 }
 
 export default class IonicDevServer {
-    public static readonly NO_LIVERELOAD_WARNING = localize("IonicLiveReloadIsOnlySupportedForIonic1", "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...");
+    public static readonly NO_LIVERELOAD_WARNING = localize(
+        "IonicLiveReloadIsOnlySupportedForIonic1",
+        "Warning: Ionic live reload is currently only supported for Ionic 1 projects. Continuing deployment without Ionic live reload...",
+    );
 
     private static readonly ERROR_REGEX: RegExp = /error:.*/i;
-    private static readonly ANSI_REGEX: RegExp = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+    private static readonly ANSI_REGEX: RegExp =
+        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
     public ionicDevServerUrls: string[] | undefined;
     private ionicLivereloadProcess: child_process.ChildProcess;
@@ -39,9 +46,21 @@ export default class IonicDevServer {
     private serverStopEventEmitter: EventEmitter<Error | undefined> = new EventEmitter();
     public readonly onServerStop = this.serverStopEventEmitter.event;
 
-    constructor(private projectRoot: string, private log: DebugConsoleLogger, private devServerAddress?: string, private devServerPort?: number, private serverReadyTimeout?: number, private cordovaExecutable?: string) {
+    constructor(
+        private projectRoot: string,
+        private log: DebugConsoleLogger,
+        private devServerAddress?: string,
+        private devServerPort?: number,
+        private serverReadyTimeout?: number,
+        private cordovaExecutable?: string,
+    ) {
         if (this.devServerPort < 0 || this.devServerPort > 65535) {
-            new Error(localize("TheValueForDevServerPortMustBeInInterval", "The value for \"devServerPort\" must be a number between 0 and 65535"));
+            new Error(
+                localize(
+                    "TheValueForDevServerPortMustBeInInterval",
+                    "The value for `devServerPort` must be a number between 0 and 65535",
+                ),
+            );
         }
         this.isIonic4 = CordovaProjectHelper.isIonicCliVersionGte(projectRoot, "4.0.0");
         this.serverReadyTimeout = serverReadyTimeout | 60000;
@@ -63,17 +82,29 @@ export default class IonicDevServer {
             AbstractPlatform.setRunArgument(runArguments, "--port", this.devServerPort.toString());
         }
 
-        const command = this.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot);
-        this.ionicLivereloadProcess = cordovaStartCommand(command, runArguments, allEnv, this.projectRoot);
+        const command =
+            this.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot);
+        this.ionicLivereloadProcess = cordovaStartCommand(
+            command,
+            runArguments,
+            allEnv,
+            this.projectRoot,
+        );
         const output: SeverOutput = {
             serverOut: "",
-            serverErr: ""
+            serverErr: "",
         };
-        let isServe: boolean = runArguments[0] === "serve";
+        const isServe: boolean = runArguments[0] === "serve";
 
         const ionicDevServerUrls = await new Promise<string[]>((resolve, reject) => {
             let rejectTimeout = setTimeout(() => {
-                reject(localize("StartingIonicDevServerTimedOut", "Starting the Ionic dev server timed out ({0} ms)", this.serverReadyTimeout));
+                reject(
+                    localize(
+                        "StartingIonicDevServerTimedOut",
+                        "Starting the Ionic dev server timed out ({0} ms)",
+                        this.serverReadyTimeout,
+                    ),
+                );
             }, this.serverReadyTimeout);
             const resolveIfPossible = (ready: IonicDevServerStatus, serverUrls?: string[]) => {
                 if (ready === IonicDevServerStatus.ServerReady && !this.serverReady) {
@@ -81,7 +112,13 @@ export default class IonicDevServer {
                     this.serverReady = true;
                     this.log("Building and deploying app");
                     rejectTimeout = setTimeout(() => {
-                        reject(localize("BuildingAndDeployingTheAppTimedOut", "Building and deploying the app timed out ({0} ms)", this.appReadyTimeout));
+                        reject(
+                            localize(
+                                "BuildingAndDeployingTheAppTimedOut",
+                                "Building and deploying the app timed out ({0} ms)",
+                                this.appReadyTimeout,
+                            ),
+                        );
                     }, this.appReadyTimeout);
                 } else if (ready === IonicDevServerStatus.AppReady && this.serverReady) {
                     clearTimeout(rejectTimeout);
@@ -89,26 +126,52 @@ export default class IonicDevServer {
                     resolve(serverUrls);
                 }
             };
-            const outputHandler: (data: Buffer) => void = this.serverOutputHandler.bind(this, output, isServe, this.getRegexToResolveAppDefer(runArguments), resolveIfPossible, reject);
-            const errorOutputHandler: (data: Buffer) => void = this.serverErrorOutputHandler.bind(this, output, reject);
+            const outputHandler: (data: Buffer) => void = this.serverOutputHandler.bind(
+                this,
+                output,
+                isServe,
+                this.getRegexToResolveAppDefer(runArguments),
+                resolveIfPossible,
+                reject,
+            );
+            const errorOutputHandler: (data: Buffer) => void = this.serverErrorOutputHandler.bind(
+                this,
+                output,
+                reject,
+            );
 
             this.ionicLivereloadProcess.on("error", (err: { code: string }) => {
                 if (err.code === "ENOENT") {
-                    reject(new Error(localize("IonicNotFound", "Ionic not found, please run 'npm install –g ionic' to install it globally")));
+                    reject(
+                        new Error(
+                            localize(
+                                "IonicNotFound",
+                                "Ionic not found, please run 'npm install –g ionic' to install it globally",
+                            ),
+                        ),
+                    );
                 } else {
                     reject(err);
                 }
             });
-            this.ionicLivereloadProcess.on("exit", (() => {
+            this.ionicLivereloadProcess.on("exit", () => {
                 this.ionicLivereloadProcess = null;
 
                 let exitMessage: string = "The Ionic live reload server exited unexpectedly";
-                let errorMsg = this.getServerErrorMessage(output.serverErr);
+                const errorMsg = this.getServerErrorMessage(output.serverErr);
 
                 if (errorMsg) {
                     // The Ionic live reload server has an error; check if it is related to the devServerAddress to give a better message
-                    if (errorMsg.indexOf("getaddrinfo ENOTFOUND") !== -1 || errorMsg.indexOf("listen EADDRNOTAVAIL") !== -1) {
-                        exitMessage += os.EOL + localize("InvalidAddress", "Invalid address: please provide a valid IP address or hostname for the \"devServerAddress\" property in launch.json");
+                    if (
+                        errorMsg.indexOf("getaddrinfo ENOTFOUND") !== -1 ||
+                        errorMsg.indexOf("listen EADDRNOTAVAIL") !== -1
+                    ) {
+                        exitMessage +=
+                            os.EOL +
+                            localize(
+                                "InvalidAddress",
+                                "Invalid address: please provide a valid IP address or hostname for the `devServerAddress` property in launch.json",
+                            );
                     } else {
                         exitMessage += os.EOL + errorMsg;
                     }
@@ -125,7 +188,7 @@ export default class IonicDevServer {
                     // The Ionic dev server wasn't ready yet, so reject its promises
                     reject(error);
                 }
-            }));
+            });
             this.ionicLivereloadProcess.stdout.on("data", outputHandler);
             this.ionicLivereloadProcess.stderr.on("data", (data: Buffer) => {
                 if (this.isIonic4) {
@@ -135,15 +198,28 @@ export default class IonicDevServer {
                 errorOutputHandler(data);
             });
 
-            this.log(localize("StartingIonicDevServer", "Starting Ionic dev server (live reload: {0})", runArguments.includes("--livereload")));
+            this.log(
+                localize(
+                    "StartingIonicDevServer",
+                    "Starting Ionic dev server (live reload: {0})",
+                    runArguments.includes("--livereload"),
+                ),
+            );
         });
 
         if (!ionicDevServerUrls || !ionicDevServerUrls.length) {
-            throw new Error(localize("UnableToDetermineTheIonicDevServerAddress", "Unable to determine the Ionic dev server address, please try re-launching the debugger"));
+            throw new Error(
+                localize(
+                    "UnableToDetermineTheIonicDevServerAddress",
+                    "Unable to determine the Ionic dev server address, please try re-launching the debugger",
+                ),
+            );
         }
 
         // When ionic 2 cli is installed, output includes ansi characters for color coded output.
-        this.ionicDevServerUrls = ionicDevServerUrls.map(url => url.replace(IonicDevServer.ANSI_REGEX, ""));
+        this.ionicDevServerUrls = ionicDevServerUrls.map(url =>
+            url.replace(IonicDevServer.ANSI_REGEX, ""),
+        );
         return this.ionicDevServerUrls;
     }
 
@@ -165,7 +241,14 @@ export default class IonicDevServer {
         this.serverStopEventEmitter.dispose();
     }
 
-    private serverOutputHandler(output: SeverOutput, isServe: boolean, regexp: RegExp, resolve: (ready: IonicDevServerStatus, serverUrls?: string[]) => void, reject: (err: Error | string | void) => void, data: Buffer): void {
+    private serverOutputHandler(
+        output: SeverOutput,
+        isServe: boolean,
+        regexp: RegExp,
+        resolve: (ready: IonicDevServerStatus, serverUrls?: string[]) => void,
+        reject: (err: Error | string | void) => void,
+        data: Buffer,
+    ): void {
         output.serverOut += data.toString();
         this.log(data.toString(), "stdout");
 
@@ -212,7 +295,8 @@ export default class IonicDevServer {
         // watch ready
         // dev server running: http://localhost:8100/
 
-        const SERVER_URL_RE = /(dev server running|Running dev server|Local):.*(http:\/\/.[^\s]*)/gmi;
+        const SERVER_URL_RE =
+            /(dev server running|Running dev server|Local):.*(http:\/\/.[^\s]*)/gim;
         const localServerMatchResult = SERVER_URL_RE.exec(output.serverOut);
         if (!this.serverReady && localServerMatchResult) {
             resolve(IonicDevServerStatus.ServerReady);
@@ -233,9 +317,11 @@ export default class IonicDevServer {
 
         if (/Multiple network interfaces detected/.test(output.serverOut)) {
             // Ionic does not know which address to use for the dev server, and requires human interaction; error out and let the user know
-            let errorMessage: string = localize("YourMachineHasMultipleNetworkAddresses",
+            let errorMessage: string = localize(
+                "YourMachineHasMultipleNetworkAddresses",
                 `Your machine has multiple network addresses. Please specify which one your device or emulator will use to communicate with the dev server by adding a \"devServerAddress\": \"ADDRESS\" property to .vscode/launch.json.
-To get the list of addresses run "ionic cordova run PLATFORM --livereload" (where PLATFORM is platform name to run) and wait until prompt with this list is appeared.`);
+To get the list of addresses run "ionic cordova run PLATFORM --livereload" (where PLATFORM is platform name to run) and wait until prompt with this list is appeared.`,
+            );
             const addresses: string[] = [];
             const addressRegex = /(\d+\) .*)/gm;
             let match: string[] = addressRegex.exec(output.serverOut);
@@ -249,7 +335,9 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
                 // Give the user the list of addresses that Ionic found
                 // NOTE: since ionic started to use inquirer.js for showing _interactive_ prompts this trick does not work as no output
                 // of prompt are sent from ionic process which we starts with --no-interactive parameter
-                errorMessage += [localize("AvailableAdresses", " Available addresses:")].concat(addresses).join(os.EOL + " ");
+                errorMessage += [localize("AvailableAdresses", " Available addresses:")]
+                    .concat(addresses)
+                    .join(`${os.EOL} `);
             }
 
             reject(new Error(errorMessage));
@@ -262,10 +350,14 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         }
     }
 
-    private serverErrorOutputHandler(output: SeverOutput, reject: (err: Error | string | void) => void, data: Buffer): void {
+    private serverErrorOutputHandler(
+        output: SeverOutput,
+        reject: (err: Error | string | void) => void,
+        data: Buffer,
+    ): void {
         output.serverErr += data.toString();
 
-        let errorMsg = this.getServerErrorMessage(output.serverErr);
+        const errorMsg = this.getServerErrorMessage(output.serverErr);
 
         if (errorMsg) {
             reject(new Error(errorMsg));
@@ -273,7 +365,6 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
     }
 
     private getServerErrorMessage(channel: string): string | null {
-
         // Skip Ionic 4 searching port errors because, actually, they are not errors
         // https://github.com/ionic-team/ionic-cli/blob/4ee312ad983922ff4398b5900dcfcaebb6ef57df/packages/%40ionic/utils-network/src/index.ts#L85
         if (this.isIonic4) {
@@ -283,10 +374,14 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
             }
         }
 
-        let errorMatch = IonicDevServer.ERROR_REGEX.exec(channel);
+        const errorMatch = IonicDevServer.ERROR_REGEX.exec(channel);
 
         if (errorMatch) {
-            return localize("ErrorInTheIonicLiveReloadServer", "Error in the Ionic live reload server: {0}", os.EOL + errorMatch[0]);
+            return localize(
+                "ErrorInTheIonicLiveReloadServer",
+                "Error in the Ionic live reload server: {0}",
+                os.EOL + errorMatch[0],
+            );
         }
 
         return null;
@@ -303,8 +398,10 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         // ios simulators:
         // "build succeeded"
 
-        const isIosDevice: boolean = runArguments.indexOf("ios") !== -1 && runArguments.indexOf("--device") !== -1;
-        const isIosSimulator: boolean = runArguments.indexOf("ios") !== -1 && runArguments.indexOf("emulate") !== -1;
+        const isIosDevice: boolean =
+            runArguments.indexOf("ios") !== -1 && runArguments.indexOf("--device") !== -1;
+        const isIosSimulator: boolean =
+            runArguments.indexOf("ios") !== -1 && runArguments.indexOf("emulate") !== -1;
         const iosDeviceAppReadyRegex: RegExp = /created bundle at path|\(lldb\)\W+run\r?\nsuccess/i;
         const iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
         const appReadyRegex: RegExp = /launch success|run successful/i;

@@ -15,16 +15,19 @@ import { promiseGet, retryAsync } from "../../utils/extensionHelper";
 import IonicDevServer from "../../utils/ionicDevServer";
 import { IIosLaunchResult } from "../platformLaunchResult";
 import AbstractMobilePlatform from "../abstractMobilePlatform";
-import { IDebuggableIOSTarget, IOSTarget, IOSTargetManager } from "../../utils/ios/iOSTargetManager";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+import {
+    IDebuggableIOSTarget,
+    IOSTarget,
+    IOSTargetManager,
+} from "../../utils/ios/iOSTargetManager";
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTargetManager> {
-
-    constructor(
-        protected platformOpts: IIosPlatformOptions,
-        protected log: DebugConsoleLogger
-    ) {
+    constructor(protected platformOpts: IIosPlatformOptions, protected log: DebugConsoleLogger) {
         super(platformOpts, log);
         this.targetManager = new IOSTargetManager();
     }
@@ -49,7 +52,8 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         }
 
         await cordovaRunCommand(
-            this.platformOpts.cordovaExecutable || CordovaProjectHelper.getCliCommand(this.projectRoot),
+            this.platformOpts.cordovaExecutable ||
+                CordovaProjectHelper.getCliCommand(this.projectRoot),
             this.runArguments,
             this.platformOpts.env,
             this.projectRoot,
@@ -68,7 +72,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 this.platformOpts.port,
                 this.platformOpts.webkitRangeMin,
                 this.platformOpts.webkitRangeMax,
-                this.target
+                this.target,
             );
             const iOSAppPackagePath = await this.getIosAppPackagePath();
             const target = await this.getPreferredTarget();
@@ -86,16 +90,26 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 //     "deviceOSVersion": "13.4.1",
                 //     "url": "localhost:9223"
                 //  }]
-                let endpointsList = JSON.parse(await promiseGet(`http://localhost:${this.platformOpts.port}/json`, localize("UnableToCommunicateWithiOSWebkitDebugProxy", "Unable to communicate with ios_webkit_debug_proxy")));
-                let devices = endpointsList.filter((entry) =>
-                    target.id === entry.deviceId
+                const endpointsList = JSON.parse(
+                    await promiseGet(
+                        `http://localhost:${this.platformOpts.port}/json`,
+                        localize(
+                            "UnableToCommunicateWithiOSWebkitDebugProxy",
+                            "Unable to communicate with ios_webkit_debug_proxy",
+                        ),
+                    ),
                 );
-                let device = devices[0];
+                const device = endpointsList.find(entry => target.id === entry.deviceId);
                 // device.url is of the form 'localhost:port'
                 targetPort = parseInt(device.url.split(":")[1], 10);
                 iOSVersion = device.deviceOSVersion;
             } catch (e) {
-                throw new Error(localize("UnableToFindiOSTargetDeviceOrSimulator", "Unable to find iOS target device/simulator. Please check that \"Settings > Safari > Advanced > Web Inspector = ON\" or try specifying a different \"port\" parameter in launch.json"));
+                throw new Error(
+                    localize(
+                        "UnableToFindiOSTargetDeviceOrSimulator",
+                        "Unable to find iOS target device/simulator. Please check that `Settings > Safari > Advanced > Web Inspector = ON` or try specifying a different `port` parameter in launch.json",
+                    ),
+                );
             }
 
             try {
@@ -109,17 +123,29 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 //     "webSocketDebuggerUrl": "ws://localhost:9223/devtools/page/1",
                 //     "appId": "PID:37819"
                 //  }]
-                const webviewsList: Array<WebviewData> = JSON.parse(await promiseGet(`http://localhost:${targetPort}/json`, localize("UnableToCommunicateWithTarget", "Unable to communicate with target")));
+                const webviewsList: Array<WebviewData> = JSON.parse(
+                    await promiseGet(
+                        `http://localhost:${targetPort}/json`,
+                        localize(
+                            "UnableToCommunicateWithTarget",
+                            "Unable to communicate with target",
+                        ),
+                    ),
+                );
                 if (webviewsList.length === 0) {
                     throw new Error(localize("UnableToFindTargetApp", "Unable to find target app"));
                 }
                 const cordovaWebview = this.getCordovaWebview(webviewsList, iOSAppPackagePath);
                 if (!cordovaWebview.webSocketDebuggerUrl) {
-                    throw new Error(localize("WebsocketDebuggerUrlIsEmpty", "WebSocket Debugger Url is empty"));
+                    throw new Error(
+                        localize("WebsocketDebuggerUrlIsEmpty", "WebSocket Debugger Url is empty"),
+                    );
                 }
                 webSocketDebuggerUrl = cordovaWebview.webSocketDebuggerUrl;
                 if (this.IonicDevServer.ionicDevServerUrls) {
-                    devServerAddress = this.IonicDevServer.ionicDevServerUrls.find(url => cordovaWebview.url.indexOf(url) === 0);
+                    devServerAddress = this.IonicDevServer.ionicDevServerUrls.find(
+                        url => cordovaWebview.url.indexOf(url) === 0,
+                    );
                 }
             } catch (e) {
                 throw new Error(localize("UnableToFindTargetApp", "Unable to find target app"));
@@ -132,7 +158,15 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             return { iOSAppPackagePath, iOSVersion, devServerAddress, webSocketDebuggerUrl };
         };
 
-        return retryAsync<IIosAttachResult>(getIosAttachOptions, () => true, this.platformOpts.attachAttempts, 1, this.platformOpts.attachDelay, localize("UnableToFindWebview", "Unable to find Webview"), this.platformOpts.cancellationTokenSource.token);
+        return retryAsync<IIosAttachResult>(
+            getIosAttachOptions,
+            () => true,
+            this.platformOpts.attachAttempts,
+            1,
+            this.platformOpts.attachDelay,
+            localize("UnableToFindWebview", "Unable to find Webview"),
+            this.platformOpts.cancellationTokenSource.token,
+        );
     }
 
     public async stopAndCleanUp(): Promise<void> {
@@ -141,7 +175,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     }
 
     public getRunArguments(): string[] {
-        let args: string[] = ["run", "ios"];
+        const args: string[] = ["run", "ios"];
 
         // Workaround for dealing with new build system in XCode 10
         // https://github.com/apache/cordova-ios/issues/407
@@ -150,11 +184,17 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
             args.push(...this.platformOpts.runArguments);
         } else {
-            switch(this.platformOpts.target) {
-                case undefined: break;
-                case TargetType.Device: args.push("--device"); break;
-                case TargetType.Emulator: args.push("--emulator"); break;
-                default: args.push("--target=" + this.platformOpts.target);
+            switch (this.platformOpts.target) {
+                case undefined:
+                    break;
+                case TargetType.Device:
+                    args.push("--device");
+                    break;
+                case TargetType.Emulator:
+                    args.push("--emulator");
+                    break;
+                default:
+                    args.push(`--target=${this.platformOpts.target}`);
             }
         }
         // Verify if we are using Ionic livereload
@@ -179,10 +219,9 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
 
             if (targetId) {
                 const targets = await this.targetManager.getTargetList();
-                const target = targets.find(target =>
-                        target.id === targetId ||
-                        target.name === targetId
-                    );
+                const target = targets.find(
+                    target => target.id === targetId || target.name === targetId,
+                );
                 if (target) {
                     return new IOSTarget(target);
                 }
@@ -213,7 +252,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     }
 
     private addBuildFlagToArgs(runArgs: Array<string> = []): Array<string> {
-        const hasBuildFlag = runArgs.findIndex((arg) => arg.includes("--buildFlag")) > -1;
+        const hasBuildFlag = runArgs.findIndex(arg => arg.includes("--buildFlag")) > -1;
 
         if (!hasBuildFlag) {
             runArgs.push("--buildFlag=-UseModernBuildSystem=0");
@@ -222,8 +261,11 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         return runArgs;
     }
 
-    private getCordovaWebview(webviewsList: Array<WebviewData>, iOSAppPackagePath: string): WebviewData {
-        let cordovaWebview = webviewsList.find(webviewData => {
+    private getCordovaWebview(
+        webviewsList: Array<WebviewData>,
+        iOSAppPackagePath: string,
+    ): WebviewData {
+        const cordovaWebview = webviewsList.find(webviewData => {
             if (webviewData.url.includes(iOSAppPackagePath)) {
                 return true;
             }
@@ -231,7 +273,11 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 return true;
             }
             if (this.IonicDevServer.ionicDevServerUrls) {
-                return this.IonicDevServer.ionicDevServerUrls.findIndex(url => webviewData.url.indexOf(url) === 0) >= 0;
+                return (
+                    this.IonicDevServer.ionicDevServerUrls.findIndex(
+                        url => webviewData.url.indexOf(url) === 0,
+                    ) >= 0
+                );
             }
             return false;
         });
@@ -243,9 +289,11 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             const packageId = await CordovaIosDeviceLauncher.getBundleIdentifier(this.projectRoot);
             return CordovaIosDeviceLauncher.getPathOnDevice(packageId);
         } else {
-            const entries = await fs.promises.readdir(path.join(this.projectRoot, "platforms", "ios", "build", "emulator"));
+            const entries = await fs.promises.readdir(
+                path.join(this.projectRoot, "platforms", "ios", "build", "emulator"),
+            );
             // TODO requires changes in case of implementing debugging on iOS simulators
-            let filtered = entries.filter((entry) => /\.app$/.test(entry));
+            const filtered = entries.filter(entry => /\.app$/.test(entry));
             if (filtered.length > 0) {
                 return filtered[0];
             } else {

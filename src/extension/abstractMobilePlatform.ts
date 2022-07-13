@@ -13,10 +13,9 @@ nls.config({
 const localize = nls.loadMessageBundle();
 
 export default abstract class AbstractMobilePlatform<
-Target extends MobileTarget = MobileTarget,
-TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
+    Target extends MobileTarget = MobileTarget,
+    TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>,
 > extends AbstractPlatform {
-
     protected targetManager: TargetManager;
     protected _target?: Target;
 
@@ -28,7 +27,10 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
         return (await this.targetManager.getTargetList(filter)).length;
     }
 
-    public async resolveMobileTarget(targetString: string, additionalFilter?: (el: IMobileTarget) => boolean): Promise<Target | undefined> {
+    public async resolveMobileTarget(
+        targetString: string,
+        additionalFilter?: (el: IMobileTarget) => boolean,
+    ): Promise<Target | undefined> {
         let collectTargetsCalled = false;
 
         let isAnyTarget = false;
@@ -106,14 +108,15 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
     protected async getPreferredTarget(): Promise<Target> {
         if (!this._target) {
             this._target =
-            await this.getTargetFromRunArgs() ||
-            await this.getFirstAvailableOnlineTarget();
+                (await this.getTargetFromRunArgs()) || (await this.getFirstAvailableOnlineTarget());
         }
         return this._target;
     }
 
     protected async getFirstDebuggableTarget(): Promise<IDebuggableMobileTarget> {
-        const targets = (await this.targetManager.getTargetList(target => target.isOnline && !!target.id)) as IDebuggableMobileTarget[];
+        const targets = (await this.targetManager.getTargetList(
+            target => target.isOnline && !!target.id,
+        )) as IDebuggableMobileTarget[];
         const targetsBySpecifiedType = targets.filter(target => {
             switch (this.platformOpts.target) {
                 case TargetType.Emulator:
@@ -142,10 +145,12 @@ TargetManager extends MobileTargetManager<Target> = MobileTargetManager<Target>
             );
             return targets[0];
         } else {
-            throw Error(localize(
-                "IosThereIsNoAnyOnlineDebuggableTarget",
-                "There is no any iOS debuggable online target",
-            ));
+            throw Error(
+                localize(
+                    "IosThereIsNoAnyOnlineDebuggableTarget",
+                    "There is no any iOS debuggable online target",
+                ),
+            );
         }
     }
 

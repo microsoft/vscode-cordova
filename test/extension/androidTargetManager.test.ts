@@ -86,16 +86,26 @@ suite("AndroidTargetManager", function () {
             );
         });
 
-        launchSimulatorStub = Sinon.stub(<any> androidTargetManager, "launchSimulator").callsFake(async (emulatorTarget: IMobileTarget) => {
-            emulatorTarget.isOnline = true;
-            switch (emulatorTarget.name) {
-                case "emulatorName1": emulatorTarget.id = "emulator-5551"; break;
-                case "emulatorName2": emulatorTarget.id = "emulator-5552"; break;
-                case "emulatorName3": emulatorTarget.id = "emulator-5553"; break;
-                case "emulatorName4": emulatorTarget.id = "emulator-5554"; break;
-            }
-            return new AndroidTarget(<IDebuggableMobileTarget> emulatorTarget);
-        });
+        launchSimulatorStub = Sinon.stub(<any>androidTargetManager, "launchSimulator").callsFake(
+            async (emulatorTarget: IMobileTarget) => {
+                emulatorTarget.isOnline = true;
+                switch (emulatorTarget.name) {
+                    case "emulatorName1":
+                        emulatorTarget.id = "emulator-5551";
+                        break;
+                    case "emulatorName2":
+                        emulatorTarget.id = "emulator-5552";
+                        break;
+                    case "emulatorName3":
+                        emulatorTarget.id = "emulator-5553";
+                        break;
+                    case "emulatorName4":
+                        emulatorTarget.id = "emulator-5554";
+                        break;
+                }
+                return new AndroidTarget(<IDebuggableMobileTarget>emulatorTarget);
+            },
+        );
 
         showQuickPickStub = Sinon.stub(window, "showQuickPick").callsFake(
             async (

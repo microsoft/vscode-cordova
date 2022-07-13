@@ -508,7 +508,7 @@ export class CordovaProjectHelper {
     }
 
     public static getEnvArgument(envVars?: any, envFile?: any): any {
-        let env = Object.assign({}, process.env, envVars);
+        const env = Object.assign({}, process.env, envVars);
 
         if (envFile) {
             let buffer = fs.readFileSync(envFile, "utf8");
@@ -540,7 +540,8 @@ export class CordovaProjectHelper {
 
         if (env) {
             // launch config env vars overwrite .env vars
-            for (let key in env) {
+            // eslint-disable-next-line no-restricted-syntax
+            for (const key in env) {
                 if (env.hasOwnProperty(key)) {
                     env[key] = env[key];
                 }

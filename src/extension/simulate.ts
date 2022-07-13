@@ -43,7 +43,11 @@ export class PluginSimulator implements vscode.Disposable {
     private simulatePackage: typeof CordovaSimulate;
     private packageInstallProc: cp.ChildProcess | null = null;
 
-    public async simulate(fsPath: string, simulateOptions: CordovaSimulate.SimulateOptions, projectType: ProjectType): Promise<any> {
+    public async simulate(
+        fsPath: string,
+        simulateOptions: CordovaSimulate.SimulateOptions,
+        projectType: ProjectType,
+    ): Promise<any> {
         await this.launchServer(fsPath, simulateOptions, projectType);
         await this.launchSimHost(simulateOptions.target);
         return await this.launchAppHost(simulateOptions.target);
@@ -56,7 +60,12 @@ export class PluginSimulator implements vscode.Disposable {
 
     public async launchSimHost(target: string): Promise<void> {
         if (!this.simulator) {
-            throw new Error(localize("LaunchingSimHostBeforeStartSimulationServer", "Launching sim host before starting simulation server"));
+            throw new Error(
+                localize(
+                    "LaunchingSimHostBeforeStartSimulationServer",
+                    "Launching sim host before starting simulation server",
+                ),
+            );
         }
         const simulate = await this.getPackage();
         return await simulate.launchBrowser(target, this.simulator.simHostUrl());

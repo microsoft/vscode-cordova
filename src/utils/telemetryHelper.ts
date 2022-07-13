@@ -7,7 +7,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { Telemetry } from "./telemetry";
 import * as nls from "vscode-nls";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export interface ITelemetryPropertyInfo {
@@ -21,6 +24,16 @@ export interface ICommandTelemetryProperties {
 
 export interface IExternalTelemetryProvider {
     sendTelemetry: (event: string, props: Telemetry.ITelemetryProperties, error?: Error) => void;
+}
+
+export interface ISimulateTelemetryProperties {
+    platform?: string;
+    target: string;
+    port: number;
+    simulatePort?: number;
+    livereload?: boolean;
+    livereloadDelay?: number;
+    forcePrepare?: boolean;
 }
 
 interface IDictionary<T> {
@@ -47,7 +60,11 @@ export abstract class TelemetryGeneratorBase {
         return this.addWithPiiEvaluator(baseName, value, () => isPii);
     }
 
-    public addWithPiiEvaluator(baseName: string, value: any, piiEvaluator: { (value: string, name: string): boolean }): TelemetryGeneratorBase {
+    public addWithPiiEvaluator(
+        baseName: string,
+        value: any,
+        piiEvaluator: { (value: string, name: string): boolean },
+    ): TelemetryGeneratorBase {
         // We have 3 cases:
         //     * Object is an array, we add each element as baseNameNNN
         //     * Object is a hash, we add each element as baseName.KEY
@@ -63,24 +80,24 @@ export abstract class TelemetryGeneratorBase {
         } catch (error) {
             // We don't want to crash the functionality if the telemetry fails.
             // This error message will be a javascript error message, so it's not pii
-            this.addString("telemetryGenerationError." + baseName, String(error), () => false);
+            this.addString(`telemetryGenerationError.${baseName}`, String(error), () => false);
         }
 
         return this;
     }
 
     public addError(error: Error): TelemetryGeneratorBase {
-        this.add("error.message" + ++this.errorIndex, error.message, /*isPii*/ true);
-        let errorWithErrorCode: IHasErrorCode = <IHasErrorCode><Record<string, any>>error;
+        this.add(`error.message${++this.errorIndex}`, error.message, true);
+        const errorWithErrorCode: IHasErrorCode = <IHasErrorCode>(<Record<string, any>>error);
         if (errorWithErrorCode.errorCode) {
-            this.add("error.code" + this.errorIndex, errorWithErrorCode.errorCode, /*isPii*/ false);
+            this.add(`error.code${this.errorIndex}`, errorWithErrorCode.errorCode, false);
         }
 
         return this;
     }
 
     public time<T>(name: string, codeToMeasure: { (): Promise<T> }): Promise<T> {
-        let startTime: [number, number] = process.hrtime();
+        const startTime: [number, number] = process.hrtime();
         return codeToMeasure()
             .finally(() => this.finishTime(name, startTime))
             .catch((reason: any) => {
@@ -103,7 +120,7 @@ export abstract class TelemetryGeneratorBase {
 
     public send(): void {
         if (this.currentStep) {
-            this.add("lastStepExecuted", this.currentStep, /*isPii*/ false);
+            this.add("lastStepExecuted", this.currentStep, false);
         }
 
         this.step(null); // Send the last step
@@ -116,35 +133,64 @@ export abstract class TelemetryGeneratorBase {
     protected abstract sendTelemetryEvent(telemetryEvent: Telemetry.TelemetryEvent): void;
 
     private sendCurrentStep(): void {
-        this.add("step", this.currentStep, /*isPii*/ false);
-        let telemetryEvent: Telemetry.TelemetryEvent = new Telemetry.TelemetryEvent(this.componentName);
+        this.add("step", this.currentStep, false);
+        const telemetryEvent: Telemetry.TelemetryEvent = new Telemetry.TelemetryEvent(
+            this.componentName,
+        );
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         TelemetryHelper.addTelemetryEventProperties(telemetryEvent, this.telemetryProperties);
         this.sendTelemetryEvent(telemetryEvent);
     }
 
-    private addArray(baseName: string, array: any[], piiEvaluator: { (value: string, name: string): boolean }): void {
+    private addArray(
+        baseName: string,
+        array: any[],
+        piiEvaluator: { (value: string, name: string): boolean },
+    ): void {
         // Object is an array, we add each element as baseNameNNN
-        let elementIndex: number = 1; // We send telemetry properties in a one-based index
-        array.forEach((element: any) => this.addWithPiiEvaluator(baseName + elementIndex++, element, piiEvaluator));
+        let elementIndex = 1; // We send telemetry properties in a one-based index
+        array.forEach((element: any) =>
+            this.addWithPiiEvaluator(baseName + elementIndex++, element, piiEvaluator),
+        );
     }
 
-    private addHash(baseName: string, hash: IDictionary<any>, piiEvaluator: { (value: string, name: string): boolean }): void {
+    private addHash(
+        baseName: string,
+        hash: IDictionary<any>,
+        piiEvaluator: { (value: string, name: string): boolean },
+    ): void {
         // Object is a hash, we add each element as baseName.KEY
-        Object.keys(hash).forEach((key: string) => this.addWithPiiEvaluator(baseName + "." + key, hash[key], piiEvaluator));
+        Object.keys(hash).forEach((key: string) =>
+            this.addWithPiiEvaluator(`${baseName}.${key}`, hash[key], piiEvaluator),
+        );
     }
 
-    private addString(name: string, value: string, piiEvaluator: { (value: string, name: string): boolean }): void {
-        this.telemetryProperties[name] = TelemetryHelper.telemetryProperty(value, piiEvaluator(value, name));
+    private addString(
+        name: string,
+        value: string,
+        piiEvaluator: { (value: string, name: string): boolean },
+    ): void {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        this.telemetryProperties[name] = TelemetryHelper.telemetryProperty(
+            value,
+            piiEvaluator(value, name),
+        );
     }
 
     private combine(...components: string[]): string {
-        let nonNullComponents: string[] = components.filter((component: string) => component !== null);
+        const nonNullComponents: string[] = components.filter(
+            (component: string) => component !== null,
+        );
         return nonNullComponents.join(".");
     }
 
     private finishTime(name: string, startTime: [number, number]): void {
-        let endTime: [number, number] = process.hrtime(startTime);
-        this.add(this.combine(name, "time"), String(endTime[0] * 1000 + endTime[1] / 1000000), /*isPii*/ false);
+        const endTime: [number, number] = process.hrtime(startTime);
+        this.add(
+            this.combine(name, "time"),
+            String(endTime[0] * 1000 + endTime[1] / 1000000),
+            false,
+        );
     }
 }
 
@@ -155,7 +201,6 @@ export class TelemetryGenerator extends TelemetryGeneratorBase {
 }
 
 export class TelemetryHelper {
-
     public static createTelemetryEvent(eventName: string): Telemetry.TelemetryEvent {
         return new Telemetry.TelemetryEvent(eventName);
     }
@@ -165,33 +210,31 @@ export class TelemetryHelper {
     }
 
     public static determineProjectTypes(projectRoot: string): Promise<ProjectType> {
-        let ionicMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(projectRoot);
-        let meteor = CordovaProjectHelper.exists(path.join(projectRoot, ".meteor"));
-        let mobileFirst = CordovaProjectHelper.exists(path.join(projectRoot, ".project"));
-        let phonegap = CordovaProjectHelper.exists(path.join(projectRoot, "www", "res", ".pgbomit"));
-        let cordova = CordovaProjectHelper.exists(path.join(projectRoot, "config.xml"));
-        return Promise.all([meteor, mobileFirst, phonegap, cordova])
-            .then(([isMeteor, isMobileFirst, isPhonegap, isCordova]) => (
-                new ProjectType(
-                    isMeteor,
-                    isMobileFirst,
-                    isPhonegap,
-                    isCordova,
-                    ionicMajorVersion,
-                )
-            ));
+        const ionicMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(projectRoot);
+        const meteor = CordovaProjectHelper.exists(path.join(projectRoot, ".meteor"));
+        const mobileFirst = CordovaProjectHelper.exists(path.join(projectRoot, ".project"));
+        const phonegap = CordovaProjectHelper.exists(
+            path.join(projectRoot, "www", "res", ".pgbomit"),
+        );
+        const cordova = CordovaProjectHelper.exists(path.join(projectRoot, "config.xml"));
+        return Promise.all([meteor, mobileFirst, phonegap, cordova]).then(
+            ([isMeteor, isMobileFirst, isPhonegap, isCordova]) =>
+                new ProjectType(isMeteor, isMobileFirst, isPhonegap, isCordova, ionicMajorVersion),
+        );
     }
 
     public static prepareProjectTypesTelemetry(projectType: ProjectType): Partial<ProjectType> {
-        let relevantProjectTypes: Partial<ProjectType> = Object.entries(projectType)
-            .reduce((relProjType, [key, val]) => {
+        const relevantProjectTypes: Partial<ProjectType> = Object.entries(projectType).reduce(
+            (relProjType, [key, val]) => {
                 // We should send only relevant project types and skip all the rest.
                 // Relevant types have the true boolean value
                 if (val) {
                     relProjType[key] = val;
                 }
                 return relProjType;
-            }, {});
+            },
+            {},
+        );
 
         if (relevantProjectTypes.ionicMajorVersion) {
             relevantProjectTypes[`isIonic${relevantProjectTypes.ionicMajorVersion}`] = true;
@@ -205,37 +248,60 @@ export class TelemetryHelper {
         return { value: String(propertyValue), isPii: pii || false };
     }
 
-    public static addTelemetryEventProperties(event: Telemetry.TelemetryEvent, properties: ICommandTelemetryProperties): void {
+    public static addTelemetryEventProperties(
+        event: Telemetry.TelemetryEvent,
+        properties: ICommandTelemetryProperties,
+    ): void {
         if (!properties) {
             return;
         }
 
         Object.keys(properties).forEach(function (propertyName: string): void {
-            TelemetryHelper.addTelemetryEventProperty(event, propertyName, properties[propertyName].value, properties[propertyName].isPii);
+            TelemetryHelper.addTelemetryEventProperty(
+                event,
+                propertyName,
+                properties[propertyName].value,
+                properties[propertyName].isPii,
+            );
         });
     }
 
-    public static addTelemetryEventProperty(event: Telemetry.TelemetryEvent, propertyName: string, propertyValue: any, isPii: boolean): void {
+    public static addTelemetryEventProperty(
+        event: Telemetry.TelemetryEvent,
+        propertyName: string,
+        propertyValue: any,
+        isPii: boolean,
+    ): void {
         if (Array.isArray(propertyValue)) {
-            TelemetryHelper.addMultiValuedTelemetryEventProperty(event, propertyName, propertyValue, isPii);
+            TelemetryHelper.addMultiValuedTelemetryEventProperty(
+                event,
+                propertyName,
+                propertyValue,
+                isPii,
+            );
         } else {
             TelemetryHelper.setTelemetryEventProperty(event, propertyName, propertyValue, isPii);
         }
     }
 
-    public static generate<T>(name: string, codeGeneratingTelemetry: { (telemetry: TelemetryGenerator): Promise<T> }): Promise<T> {
-        let generator: TelemetryGenerator = new TelemetryGenerator(name);
-        return generator.time(null, () => codeGeneratingTelemetry(generator)).finally(() => generator.send());
+    public static generate<T>(
+        name: string,
+        codeGeneratingTelemetry: { (telemetry: TelemetryGenerator): Promise<T> },
+    ): Promise<T> {
+        const generator: TelemetryGenerator = new TelemetryGenerator(name);
+        return generator
+            .time(null, () => codeGeneratingTelemetry(generator))
+            .finally(() => generator.send());
     }
 
     public static sendPluginsList(projectRoot: string, pluginsList: string[]): void {
         // Load list of previously sent plugins = previousPlugins
-        let pluginFilePath = path.join(projectRoot, ".vscode", "plugins.json");
+        const pluginFilePath = path.join(projectRoot, ".vscode", "plugins.json");
         let pluginFileJson: any;
 
         if (CordovaProjectHelper.existsSync(pluginFilePath)) {
             try {
-                let pluginFileJsonContents = fs.readFileSync(pluginFilePath, "utf8").toString();
+                const pluginFileJsonContents = fs.readFileSync(pluginFilePath, "utf8").toString();
                 pluginFileJson = JSON.parse(pluginFileJsonContents);
             } catch (error) {
                 console.error(error);
@@ -250,7 +316,7 @@ export class TelemetryHelper {
             pluginFileJson = new Object();
         }
 
-        let newPlugins: string[] = new Array<string>();
+        const newPlugins: string[] = new Array<string>();
         pluginsList.forEach(plugin => {
             if (pluginsFileList.indexOf(plugin) < 0) {
                 newPlugins.push(plugin);
@@ -264,11 +330,15 @@ export class TelemetryHelper {
         }
 
         // Send telemetry event with list of new plugins
-        let pluginDetails: IPluginDetails[] =
-            newPlugins.map(pluginName => CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName))
-                .filter(detail => !!detail);
+        const pluginDetails: IPluginDetails[] = newPlugins
+            .map(pluginName =>
+                CordovaProjectHelper.getInstalledPluginDetails(projectRoot, pluginName),
+            )
+            .filter(detail => !!detail);
 
-        let pluginEvent = new Telemetry.TelemetryEvent("plugins", { plugins: JSON.stringify(pluginDetails) });
+        const pluginEvent = new Telemetry.TelemetryEvent("plugins", {
+            plugins: JSON.stringify(pluginDetails),
+        });
         Telemetry.send(pluginEvent);
 
         // Write out new list of previousPlugins
@@ -276,11 +346,22 @@ export class TelemetryHelper {
         try {
             fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson));
         } catch (err) {
-            throw new Error(err.message + localize("CWDDoesntReferToTheWorkspaceRootDirectory", " It seems that 'cwd' parameter doesn't refer to the workspace root directory. Please make sure that 'cwd' contains the path to the workspace root directory."));
+            throw new Error(
+                err.message +
+                    localize(
+                        "CWDDoesntReferToTheWorkspaceRootDirectory",
+                        " It seems that 'cwd' parameter doesn't refer to the workspace root directory. Please make sure that 'cwd' contains the path to the workspace root directory.",
+                    ),
+            );
         }
     }
 
-    private static setTelemetryEventProperty(event: Telemetry.TelemetryEvent, propertyName: string, propertyValue: string, isPii: boolean): void {
+    private static setTelemetryEventProperty(
+        event: Telemetry.TelemetryEvent,
+        propertyName: string,
+        propertyValue: string,
+        isPii: boolean,
+    ): void {
         if (isPii) {
             event.setPiiProperty(propertyName, String(propertyValue));
         } else {
@@ -288,20 +369,21 @@ export class TelemetryHelper {
         }
     }
 
-    private static addMultiValuedTelemetryEventProperty(event: Telemetry.TelemetryEvent, propertyName: string, propertyValue: string[], isPii: boolean): void {
+    private static addMultiValuedTelemetryEventProperty(
+        event: Telemetry.TelemetryEvent,
+        propertyName: string,
+        propertyValue: string[],
+        isPii: boolean,
+    ): void {
         for (let i: number = 0; i < propertyValue.length; i++) {
-            TelemetryHelper.setTelemetryEventProperty(event, propertyName + i, propertyValue[i], isPii);
+            TelemetryHelper.setTelemetryEventProperty(
+                event,
+                propertyName + i,
+                propertyValue[i],
+                isPii,
+            );
         }
     }
 }
 
-export interface ISimulateTelemetryProperties {
-    platform?: string;
-    target: string;
-    port: number;
-    simulatePort?: number;
-    livereload?: boolean;
-    livereloadDelay?: number;
-    forcePrepare?: boolean;
-}
 /* tslint:enable */

@@ -24,7 +24,9 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
         targetType?: TargetType.Device | TargetType.Emulator,
     ): Promise<void>;
 
-    public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<T | undefined>;
+    public abstract selectAndPrepareTarget(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<T | undefined>;
 
     public async isVirtualTarget(target: string): Promise<boolean> {
         if (target === TargetType.Device) {
@@ -74,6 +76,8 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
                 quickPickOptions,
             );
         }
-        return result ? targetList.find(target => target.name === result || target.id === result) : undefined;
+        return result
+            ? targetList.find(target => target.name === result || target.id === result)
+            : undefined;
     }
 }

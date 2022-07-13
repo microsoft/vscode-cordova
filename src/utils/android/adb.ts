@@ -29,7 +29,10 @@ export enum AndroidAPILevel {
 }
 
 export class AdbHelper {
-    private static readonly PIDOFF_NOT_FOUND_ERROR = localize("pidofNotFound", "/system/bin/sh: pidof: not found");
+    private static readonly PIDOFF_NOT_FOUND_ERROR = localize(
+        "pidofNotFound",
+        "/system/bin/sh: pidof: not found",
+    );
     private static readonly PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
     public static readonly AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
 
@@ -40,8 +43,15 @@ export class AdbHelper {
         this.adbExecutable = this.getAdbPath(projectRoot, logger);
     }
 
-    public async forwardTcpPortForDevToolsAbstractName(targetId: string, tcpPort: string, devToolsAbstractName: string): Promise<void> {
-        await this.execute(targetId, `forward tcp:${tcpPort} localabstract:${devToolsAbstractName}`);
+    public async forwardTcpPortForDevToolsAbstractName(
+        targetId: string,
+        tcpPort: string,
+        devToolsAbstractName: string,
+    ): Promise<void> {
+        await this.execute(
+            targetId,
+            `forward tcp:${tcpPort} localabstract:${devToolsAbstractName}`,
+        );
     }
 
     public async removeForwardTcpPort(targetId: string, tcpPort: string): Promise<void> {
@@ -66,7 +76,10 @@ export class AdbHelper {
             const nameIdx = keys.indexOf("NAME");
             const pidIdx = keys.indexOf("PID");
             for (const line of lines) {
-                const fields = line.trim().split(AdbHelper.PS_FIELDS_SPLITTER_RE).filter(field => !!field);
+                const fields = line
+                    .trim()
+                    .split(AdbHelper.PS_FIELDS_SPLITTER_RE)
+                    .filter(field => !!field);
                 if (fields.length < nameIdx) {
                     continue;
                 }
@@ -77,7 +90,10 @@ export class AdbHelper {
         }
     }
 
-    public async getDevToolsAbstractName(targetId: string, appPackageName: string): Promise<string> {
+    public async getDevToolsAbstractName(
+        targetId: string,
+        appPackageName: string,
+    ): Promise<string> {
         const pid = await this.getPidForPackageName(targetId, appPackageName);
         const getSocketsResult = await this.execute(targetId, "shell cat /proc/net/unix");
         const lines = getSocketsResult.split("\n");
@@ -142,23 +158,26 @@ export class AdbHelper {
     }
 
     public async getAvdNameById(emulatorId: string): Promise<string | null> {
-        return this.childProcess.execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`)
-            // The command returns the name of avd by id of this running emulator.
-            // Return value example:
-            // "
-            // emuName
-            // OK
-            // "
-            .then(output => {
-                if (output) {
-                    // Return the name of avd: emuName
-                    return output.split(/\r?\n|\r/g)[0];
-                } else {
-                    return null;
-                }
-            })
-            // If the command returned an error, it means that we could not find the emulator with the passed id
-            .catch(() => null);
+        return (
+            this.childProcess
+                .execToString(`${this.adbExecutable} -s ${emulatorId} emu avd name`)
+                // The command returns the name of avd by id of this running emulator.
+                // Return value example:
+                // "
+                // emuName
+                // OK
+                // "
+                .then(output => {
+                    if (output) {
+                        // Return the name of avd: emuName
+                        return output.split(/\r?\n|\r/g)[0];
+                    } else {
+                        return null;
+                    }
+                })
+                // If the command returned an error, it means that we could not find the emulator with the passed id
+                .catch(() => null)
+        );
     }
 
     public async getAvdsNames(): Promise<string[]> {

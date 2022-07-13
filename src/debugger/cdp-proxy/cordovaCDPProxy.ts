@@ -1,11 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import {
-    Connection,
-    Server,
-    WebSocketTransport
-} from "vscode-cdp-proxy";
+import { Connection, Server, WebSocketTransport } from "vscode-cdp-proxy";
 import * as semver from "semver";
 import { IncomingMessage } from "http";
 import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
@@ -15,7 +11,10 @@ import { CancellationToken, EventEmitter } from "vscode";
 import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import { ProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
-import { CDPMessageHandlerBase, DispatchDirection } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
+import {
+    CDPMessageHandlerBase,
+    DispatchDirection,
+} from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
 import { ICordovaAttachRequestArgs } from "../requestArgs";
 import { PlatformType } from "../cordovaDebugSession";

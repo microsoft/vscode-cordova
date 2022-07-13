@@ -14,7 +14,7 @@ export default abstract class AbstractPlatform {
 
     constructor(
         protected platformOpts: IGeneralPlatformOptions,
-        protected log: DebugConsoleLogger
+        protected log: DebugConsoleLogger,
     ) {
         this.projectRoot = platformOpts.projectRoot;
         this.runArguments = this.getRunArguments();
@@ -36,7 +36,7 @@ export default abstract class AbstractPlatform {
     ): string | boolean | undefined {
         if (runArguments.length > 0) {
             const optIdx = runArguments.indexOf(optName);
-            let result: any = undefined;
+            let result: any;
 
             if (optIdx > -1) {
                 result = binary ? true : runArguments[optIdx + 1];
@@ -80,7 +80,11 @@ export default abstract class AbstractPlatform {
         return undefined;
     }
 
-    public static removeRunArgument(runArguments: string[], optName: string, binary: boolean): void {
+    public static removeRunArgument(
+        runArguments: string[],
+        optName: string,
+        binary: boolean,
+    ): void {
         let isComplexOpt = false;
         let optIdx = runArguments.indexOf(optName);
         if (optIdx === -1) {
@@ -146,5 +150,4 @@ export default abstract class AbstractPlatform {
     public abstract prepareForAttach(): Promise<IGeneralAttachResult>;
 
     public abstract getRunArguments(): string[];
-
 }

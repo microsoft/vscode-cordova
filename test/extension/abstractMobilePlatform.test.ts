@@ -16,30 +16,29 @@ import { TargetType } from "../../src/debugger/cordovaDebugSession";
 import assert = require("assert");
 
 suite("AbstractMobilePlatform", function () {
-
     let onlineDevice1: IDebuggableMobileTarget = {
         name: "onlineDevice1",
         id: "onlineDevice1",
         isOnline: true,
-        isVirtualTarget: false
+        isVirtualTarget: false,
     };
     let onlineDevice2: IDebuggableMobileTarget = {
         name: "onlineDevice2",
         id: "onlineDevice2",
         isOnline: true,
-        isVirtualTarget: false
+        isVirtualTarget: false,
     };
     let offlineSimulator: IDebuggableMobileTarget = {
         name: "offlineSimulator",
         id: "offlineSimulator",
         isOnline: false,
-        isVirtualTarget: true
+        isVirtualTarget: true,
     };
     let onlineSimulator: IDebuggableMobileTarget = {
         name: "onlineSimulator",
         id: "onlineSimulator",
         isOnline: true,
-        isVirtualTarget: true
+        isVirtualTarget: true,
     };
 
     let collectedTargets: IDebuggableMobileTarget[];
@@ -47,14 +46,19 @@ suite("AbstractMobilePlatform", function () {
     class TestMobileTarget extends MobileTarget {}
 
     class TestMobileTargetManager extends MobileTargetManager<TestMobileTarget> {
-        public async collectTargets(targetType?: TargetType.Emulator | TargetType.Device): Promise<void> {
+        public async collectTargets(
+            targetType?: TargetType.Emulator | TargetType.Device,
+        ): Promise<void> {
             this.targets = collectedTargets;
         }
 
-        public async selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<TestMobileTarget> {
+        public async selectAndPrepareTarget(
+            filter?: (el: IMobileTarget) => boolean,
+        ): Promise<TestMobileTarget> {
             const selectedTarget = await this.selectTarget(filter);
             if (selectedTarget) {
-                return selectedTarget.isVirtualTarget && (!selectedTarget.isOnline || !selectedTarget.id)
+                return selectedTarget.isVirtualTarget &&
+                    (!selectedTarget.isOnline || !selectedTarget.id)
                     ? this.launchSimulator(selectedTarget)
                     : new TestMobileTarget(selectedTarget as IDebuggableMobileTarget);
             }
@@ -74,7 +78,10 @@ suite("AbstractMobilePlatform", function () {
         }
     }
 
-    class TestMobilePlatform extends AbstractMobilePlatform<TestMobileTarget, TestMobileTargetManager> {
+    class TestMobilePlatform extends AbstractMobilePlatform<
+        TestMobileTarget,
+        TestMobileTargetManager
+    > {
         public async getTargetFromRunArgs(): Promise<MobileTarget | undefined> {
             await this.targetManager.collectTargets();
             if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
@@ -85,10 +92,9 @@ suite("AbstractMobilePlatform", function () {
 
                 if (targetId) {
                     const targets = await this.targetManager.getTargetList();
-                    const target = targets.find(target =>
-                            target.id === targetId ||
-                            target.name === targetId
-                        );
+                    const target = targets.find(
+                        target => target.id === targetId || target.name === targetId,
+                    );
                     if (target) {
                         return new TestMobileTarget(target as IDebuggableMobileTarget);
                     }
@@ -99,7 +105,9 @@ suite("AbstractMobilePlatform", function () {
         }
 
         protected async getFirstAvailableOnlineTarget(): Promise<MobileTarget> {
-            return new TestMobileTarget((await this.getFirstDebuggableTarget()) as IDebuggableMobileTarget);
+            return new TestMobileTarget(
+                (await this.getFirstDebuggableTarget()) as IDebuggableMobileTarget,
+            );
         }
 
         public launchApp(): Promise<IGeneralLaunchResult> {
@@ -116,14 +124,11 @@ suite("AbstractMobilePlatform", function () {
     }
 
     const projectRoot = ".\\resources\\testCordovaProject";
-    const workspaceManager = new CordovaWorkspaceManager(
-        new PluginSimulator(),
-        {
-            uri: vscode.Uri.file(projectRoot),
-            name: "testCordovaProject",
-            index: 1
-        }
-    );
+    const workspaceManager = new CordovaWorkspaceManager(new PluginSimulator(), {
+        uri: vscode.Uri.file(projectRoot),
+        name: "testCordovaProject",
+        index: 1,
+    });
     const projectType = new ProjectType(false, false, false, false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const logger = (str: string) => {};
@@ -145,7 +150,6 @@ suite("AbstractMobilePlatform", function () {
     const mobilePlatform = new TestMobilePlatform(platformOptions, logger);
 
     suite("resolveMobileTarget", function () {
-
         beforeEach(function () {
             collectedTargets = [onlineDevice1, onlineDevice2, offlineSimulator, onlineSimulator];
         });
@@ -162,12 +166,20 @@ suite("AbstractMobilePlatform", function () {
 
         test("Should resolve target by name", async function () {
             const target = await mobilePlatform.resolveMobileTarget(offlineSimulator.name);
-            assert.strictEqual(target.name, offlineSimulator.name, "Selected target is not target with passed name");
+            assert.strictEqual(
+                target.name,
+                offlineSimulator.name,
+                "Selected target is not target with passed name",
+            );
         });
 
         test("Should resolve target by id", async function () {
             const target = await mobilePlatform.resolveMobileTarget(offlineSimulator.id);
-            assert.strictEqual(target.id, offlineSimulator.id, "Selected target is not target with passed id");
+            assert.strictEqual(
+                target.id,
+                offlineSimulator.id,
+                "Selected target is not target with passed id",
+            );
         });
     });
 
@@ -188,12 +200,20 @@ suite("AbstractMobilePlatform", function () {
 
         test("Should resolve target by name", async function () {
             const target = await mobilePlatform.resolveMobileTarget(offlineSimulator.name);
-            assert.strictEqual(target.name, offlineSimulator.name, "Selected target is not target with passed name");
+            assert.strictEqual(
+                target.name,
+                offlineSimulator.name,
+                "Selected target is not target with passed name",
+            );
         });
 
         test("Should resolve target by id", async function () {
             const target = await mobilePlatform.resolveMobileTarget(offlineSimulator.id);
-            assert.strictEqual(target.id, offlineSimulator.id, "Selected target is not target with passed id");
+            assert.strictEqual(
+                target.id,
+                offlineSimulator.id,
+                "Selected target is not target with passed id",
+            );
         });
     });
 });

@@ -71,7 +71,9 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
     private childProcess: ChildProcess = new ChildProcess();
     protected targets?: IDebuggableIOSTarget[];
 
-    public async collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void> {
+    public async collectTargets(
+        targetType?: TargetType.Device | TargetType.Emulator,
+    ): Promise<void> {
         this.targets = [];
 
         if (targetType === undefined || targetType === TargetType.Emulator) {
@@ -185,7 +187,9 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
         }
     }
 
-    public async getTargetList(filter?: (el: IMobileTarget) => boolean): Promise<IDebuggableIOSTarget[]> {
+    public async getTargetList(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<IDebuggableIOSTarget[]> {
         return (await super.getTargetList(filter)) as IDebuggableIOSTarget[];
     }
 
@@ -228,9 +232,7 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
         return result?.toString().substring(4);
     }
 
-    protected async launchSimulator(
-        emulatorTarget: IDebuggableIOSTarget,
-    ): Promise<IOSTarget> {
+    protected async launchSimulator(emulatorTarget: IDebuggableIOSTarget): Promise<IOSTarget> {
         return new Promise<IOSTarget>((resolve, reject) => {
             let emulatorLaunchFailed = false;
             const emulatorProcess = this.childProcess.spawn(
@@ -277,7 +279,6 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
                             ),
                         );
                         resolve(new IOSTarget(emulatorTarget));
-
                     } else {
                         reject(
                             new Error(

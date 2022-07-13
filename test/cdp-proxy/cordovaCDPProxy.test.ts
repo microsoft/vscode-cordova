@@ -108,9 +108,14 @@ suite("cordovaCDPProxy", function () {
                 projectType,
                 attachArgs.request,
                 attachArgs.ionicLiveReload,
-                attachArgs.address
+                attachArgs.address,
             );
-            cdpMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, attachArgs, true);
+            cdpMessageHandler = CDPMessageHandlerCreator.create(
+                sourcemapPathTransformer,
+                projectType,
+                attachArgs,
+                true,
+            );
         } else {
             attachArgs.platform = PlatformType.IOS;
 
@@ -120,9 +125,14 @@ suite("cordovaCDPProxy", function () {
                 projectType,
                 attachArgs.request,
                 attachArgs.ionicLiveReload,
-                attachArgs.address
+                attachArgs.address,
             );
-            cdpMessageHandler = CDPMessageHandlerCreator.create(sourcemapPathTransformer, projectType, attachArgs, false);
+            cdpMessageHandler = CDPMessageHandlerCreator.create(
+                sourcemapPathTransformer,
+                projectType,
+                attachArgs,
+                false,
+            );
         }
 
         return {

@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IGeneralAttachResult { }
+export interface IGeneralAttachResult {}
 
 export type IAndroidAttachResult = IGeneralAttachResult;
 
