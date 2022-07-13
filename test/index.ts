@@ -6,7 +6,7 @@ import * as Mocha from "mocha";
 import * as glob from "glob";
 
 export function run(): Promise<void> {
-    const mocha = new Mocha ({
+    const mocha = new Mocha({
         ui: "tdd",
         grep: "smokeTestsContext",
         color: true,

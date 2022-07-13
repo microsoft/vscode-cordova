@@ -8,6 +8,7 @@ import * as nls from "vscode-nls";
 import { OutputChannelLogger } from "../log/outputChannelLogger";
 import { ChildProcess, ISpawnResult } from "../../common/node/childProcess";
 import { IDebuggableMobileTarget } from "../mobileTarget";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -43,7 +44,7 @@ export class AdbHelper {
         await this.execute(targetId, `forward tcp:${tcpPort} localabstract:${devToolsAbstractName}`);
     }
 
-    public async removeforwardTcpPort(targetId: string, tcpPort: string): Promise<void> {
+    public async removeForwardTcpPort(targetId: string, tcpPort: string): Promise<void> {
         await this.execute(targetId, `forward --remove tcp:${tcpPort}`);
     }
 
@@ -161,26 +162,26 @@ export class AdbHelper {
     }
 
     public async getAvdsNames(): Promise<string[]> {
-        const res = await this.childProcess.execToString(
-            "emulator -list-avds",
-        );
+        const res = await this.childProcess.execToString("emulator -list-avds");
         let emulatorsNames: string[] = [];
         if (res) {
             emulatorsNames = res.split(/\r?\n|\r/g);
             const indexOfBlank = emulatorsNames.indexOf("");
-            if (emulatorsNames.indexOf("") >= 0) {
+            if (emulatorsNames.includes("")) {
                 emulatorsNames.splice(indexOfBlank, 1);
             }
         }
         return emulatorsNames;
     }
 
-    public async findOnlineTargetById(targetId: string): Promise<IDebuggableMobileTarget | undefined> {
-        return (await this.getOnlineTargets()).find((target) => target.id === targetId);
+    public async findOnlineTargetById(
+        targetId: string,
+    ): Promise<IDebuggableMobileTarget | undefined> {
+        return (await this.getOnlineTargets()).find(target => target.id === targetId);
     }
 
     public startLogCat(adbParameters: string[]): ISpawnResult {
-        return this.childProcess.spawn(this.adbExecutable.replace(/\"/g, ""), adbParameters);
+        return this.childProcess.spawn(this.adbExecutable.replace(/"/g, ""), adbParameters);
     }
 
     public parseSdkLocation(fileContent: string, logger?: OutputChannelLogger): string | null {
@@ -216,15 +217,15 @@ export class AdbHelper {
     }
 
     public getAdbPath(projectRoot: string, logger?: OutputChannelLogger): string {
-        // Trying to read sdk location from local.properties file and if we succueded then
+        // Trying to read sdk location from local.properties file and if we succeeded then
         // we would run adb from inside it, otherwise we would rely to PATH
         const sdkLocation = this.getSdkLocationFromLocalPropertiesFile(projectRoot, logger);
         return sdkLocation ? `"${path.join(sdkLocation, "platform-tools", "adb")}"` : "adb";
     }
 
     private parseConnectedTargets(input: string): IDebuggableMobileTarget[] {
-        let result: IDebuggableMobileTarget[] = [];
-        let regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
+        const result: IDebuggableMobileTarget[] = [];
+        const regex = new RegExp("^(\\S+)\\t(\\S+)$", "mg");
         let match = regex.exec(input);
         while (match != null) {
             result.push({
@@ -275,7 +276,13 @@ export class AdbHelper {
             fileContent = fs.readFileSync(localPropertiesFilePath).toString();
         } catch (e) {
             if (logger) {
-                logger.log(`${localize("CouldNotReadFrom", "Couldn't read from {0}.", localPropertiesFilePath)}\n${e}\n${e.stack}`);
+                logger.log(
+                    `${localize(
+                        "CouldNotReadFrom",
+                        "Couldn't read from {0}.",
+                        localPropertiesFilePath,
+                    )}\n${e}\n${e.stack}`,
+                );
                 logger.log(
                     localize(
                         "UsingAndroidSDKLocationFromPATH",

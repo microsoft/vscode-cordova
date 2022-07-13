@@ -34,7 +34,11 @@ import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 import { IMobileTarget } from "../utils/mobileTarget";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export enum TargetType {
@@ -65,7 +69,7 @@ export enum PlatformType {
 /**
  * Enum of possible statuses of debug session
  */
- export enum DebugSessionStatus {
+export enum DebugSessionStatus {
     /** The session is active */
     Active,
     /** The session is processing attachment after failed attempt */
@@ -97,7 +101,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
 
     private readonly pwaSessionName: PwaDebugType;
 
-    private istelemetryInitialized: boolean = false;
+    private isTelemetryInitialized: boolean = false;
     private isSettingsInitialized: boolean = false; // used to prevent parameters reinitialization when attach is called from launch function
     private attachedDeferred: DeferredPromise<void> = new DeferredPromise<void>();
 
@@ -131,7 +135,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
 
     constructor(
         private cordovaSession: CordovaSession,
-        private sessionManager: CordovaSessionManager
+        private sessionManager: CordovaSessionManager,
     ) {
         super();
         CordovaDebugSession.CDP_PROXY_PORT = generateRandomPortNumber();
@@ -147,7 +151,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             this.pwaSessionName = PwaDebugType.Chrome; // the name of Chrome debug session created by js-debug extension
         }
         this.onDidTerminateDebugSessionHandler = vscode.debug.onDidTerminateDebugSession(
-            this.handleTerminateDebugSession.bind(this)
+            this.handleTerminateDebugSession.bind(this),
         );
     }
 
@@ -266,7 +270,11 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         }
     }
 
-    protected async disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments, request?: DebugProtocol.Request): Promise<void> {
+    protected async disconnectRequest(
+        response: DebugProtocol.DisconnectResponse,
+        args: DebugProtocol.DisconnectArguments,
+        request?: DebugProtocol.Request,
+    ): Promise<void> {
         await this.cleanUp(args.restart);
         this.debugSessionStatus = DebugSessionStatus.Stopped;
         super.disconnectRequest(response, args, request);
@@ -445,16 +453,16 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             ...generalPlatformOptions
         } as IBrowserPlatformOptions;
 
-        let resolverdPlatform: AbstractPlatform;
+        let resolvedPlatform: AbstractPlatform;
         if (SimulateHelper.isSimulateTarget(target)) {
-            resolverdPlatform = new BrowserPlatform(browserPlatformOptions, this.outputLogger);
+            resolvedPlatform = new BrowserPlatform(browserPlatformOptions, this.outputLogger);
         } else {
             switch (platform) {
                 case PlatformType.Android:
-                    resolverdPlatform = new AndroidPlatform(androidPlatformOptions, this.outputLogger);
+                    resolvedPlatform = new AndroidPlatform(androidPlatformOptions, this.outputLogger);
                     break;
                 case PlatformType.IOS:
-                    resolverdPlatform = new IosPlatform(iosPlatformOptions, this.outputLogger);
+                    resolvedPlatform = new IosPlatform(iosPlatformOptions, this.outputLogger);
                     break;
                 case PlatformType.Serve:
                 // https://github.com/apache/cordova-serve/blob/4ad258947c0e347ad5c0f20d3b48e3125eb24111/src/util.js#L27-L37
@@ -465,18 +473,18 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 case PlatformType.Ubuntu:
                 case PlatformType.Wp8:
                 case PlatformType.Browser:
-                    resolverdPlatform = new BrowserPlatform(browserPlatformOptions, this.outputLogger);
+                    resolvedPlatform = new BrowserPlatform(browserPlatformOptions, this.outputLogger);
                     break;
                 default:
                     throw new Error(localize("UnknownPlatform", "Unknown Platform: {0}", args.platform));
             }
         }
 
-        if (resolverdPlatform instanceof BrowserPlatform) {
-            resolverdPlatform.onBrowserStop(() =>
+        if (resolvedPlatform instanceof BrowserPlatform) {
+            resolvedPlatform.onBrowserStop(() =>
                 this.stop()
             );
-            resolverdPlatform.onСhangeSimulateViewport((viewportData) => {
+            resolvedPlatform.onChangeSimulateViewport((viewportData) => {
                 this.changeSimulateViewport(viewportData).catch(() => {
                     this.outputLogger(
                         localize("ViewportResizingFailed", "Viewport resizing failed. Please try again."),
@@ -485,7 +493,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 });
             });
         }
-        return resolverdPlatform;
+        return resolvedPlatform;
     }
 
     private async changeSimulateViewport(data: simulate.ResizeViewportData): Promise<void> {
@@ -501,7 +509,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     }
 
     private async initializeTelemetry(projectRoot: string): Promise<void> {
-        if (!this.istelemetryInitialized) {
+        if (!this.isTelemetryInitialized) {
             let version = JSON.parse(fs.readFileSync(findFileInFolderHierarchy(__dirname, "package.json"), "utf-8")).version;
             // Enable telemetry, forced on for now.
             try {
@@ -509,7 +517,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             } catch (e) {
                 this.outputLogger(localize("CouldNotInitializeTelemetry", "Could not initialize telemetry. {0}", e.message || e.error || e.data || e));
             }
-            this.istelemetryInitialized = true;
+            this.isTelemetryInitialized = true;
         }
     }
 
@@ -534,6 +542,17 @@ export default class CordovaDebugSession extends LoggingDebugSession {
 
             this.isSettingsInitialized = true;
         }
+        // If there is no a target in debug config, use the first online device
+        const targetDevice = await getFirstOnlineIOSTarget();
+        if (!targetDevice) {
+            throw new Error(
+                localize(
+                    "ThereIsNoAnyOnlineDebuggableDevice",
+                    "The 'target' parameter in the debug configuration is undefined, and there are no any online debuggable targets",
+                ),
+            );
+        }
+        return targetDevice;
     }
 
     private static getTargetType(target: string): string {

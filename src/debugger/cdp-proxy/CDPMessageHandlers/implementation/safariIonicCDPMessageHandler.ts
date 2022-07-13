@@ -5,7 +5,7 @@ import * as semver from "semver";
 import {
     ProcessedCDPMessage,
     DispatchDirection,
-    HandlerOptions
+    HandlerOptions,
 } from "../abstraction/CDPMessageHandlerBase";
 import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
@@ -18,7 +18,7 @@ export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: ProjectType,
-        options: HandlerOptions
+        options: HandlerOptions,
     ) {
         super(sourcemapPathTransformer, projectType, options);
         this.Ionic3EvaluateErrorMessage = "process not defined";
@@ -38,7 +38,10 @@ export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
 
     public processDebuggerCDPMessage(event: any): ProcessedCDPMessage {
         const dispatchDirection = DispatchDirection.FORWARD;
-        if (event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL && !this.ionicLiveReload) {
+        if (
+            event.method === CDP_API_NAMES.DEBUGGER_SET_BREAKPOINT_BY_URL &&
+            !this.ionicLiveReload
+        ) {
             event.params = this.fixSourcemapRegexp(event.params);
         }
 
@@ -80,11 +83,10 @@ export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
         }
 
         if (
-            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url
-            && (
-                event.params.url.startsWith(`ionic://${this.applicationServerAddress}`)
-                || event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
-            )
+            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED &&
+            event.params.url &&
+            (event.params.url.startsWith(`ionic://${this.applicationServerAddress}`) ||
+                event.params.url.startsWith(`file://${this.iOSAppPackagePath}`))
         ) {
             event.params = this.fixSourcemapLocation(event.params);
         }
@@ -108,10 +110,12 @@ export class SafariIonicCDPMessageHandler extends SafariCDPMessageHandlerBase {
     }
 
     protected fixSourcemapLocation(reqParams: any): any {
-        const absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(reqParams.url);
+        const absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromHttpBasedUrl(
+            reqParams.url,
+        );
 
         if (absoluteSourcePath) {
-            reqParams.url = "file://" + absoluteSourcePath;
+            reqParams.url = `file://${absoluteSourcePath}`;
         } else if (!(this.ionicLiveReload && this.debugRequestType === "launch")) {
             reqParams.url = "";
         }

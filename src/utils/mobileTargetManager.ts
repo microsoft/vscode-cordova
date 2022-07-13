@@ -20,7 +20,9 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
         true,
     );
 
-    public abstract collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void>;
+    public abstract collectTargets(
+        targetType?: TargetType.Device | TargetType.Emulator,
+    ): Promise<void>;
 
     public abstract selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<T | undefined>;
 
@@ -31,7 +33,13 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
         if (target === TargetType.Emulator) {
             return true;
         }
-        throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
+        throw new Error(
+            localize(
+                "CouldNotRecognizeTargetType",
+                "Could not recognize type of the target {0}",
+                target,
+            ),
+        );
     }
 
     public async getTargetList(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget[]> {
@@ -43,7 +51,9 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
 
     protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<T | undefined>;
 
-    protected abstract startSelection(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget | undefined>;
+    protected abstract startSelection(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<IMobileTarget | undefined>;
 
     protected async selectTarget(
         filter?: (el: IMobileTarget) => boolean,
@@ -59,7 +69,10 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
                     "Select target device for launch application",
                 ),
             };
-            result = await window.showQuickPick(targetList.map(target => target?.name || target?.id), quickPickOptions);
+            result = await window.showQuickPick(
+                targetList.map(target => target?.name || target?.id),
+                quickPickOptions,
+            );
         }
         return result ? targetList.find(target => target.name === result || target.id === result) : undefined;
     }

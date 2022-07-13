@@ -59,7 +59,7 @@ export class ChildProcess {
                     },
                 );
             });
-            resolveRes({ process: process, outcome: outcome });
+            resolveRes({ process, outcome });
         });
     }
 
@@ -84,7 +84,7 @@ export class ChildProcess {
         showStdOutputsOnError: boolean = false,
     ): ISpawnResult {
         const spawnedProcess = this.childProcess.spawn(command, args, options);
-        let outcome: Promise<void> = new Promise((resolve, reject) => {
+        const outcome: Promise<void> = new Promise((resolve, reject) => {
             spawnedProcess.once("error", (error: any) => {
                 reject(error);
             });
@@ -104,7 +104,7 @@ export class ChildProcess {
                 if (code === 0) {
                     resolve();
                 } else {
-                    const commandWithArgs = command + " " + args.join(" ");
+                    const commandWithArgs = `${command} ${args.join(" ")}`;
                     if (showStdOutputsOnError) {
                         let details = "";
                         if (stdoutChunks.length > 0) {
@@ -126,11 +126,11 @@ export class ChildProcess {
             });
         });
         return {
-            spawnedProcess: spawnedProcess,
+            spawnedProcess,
             stdin: spawnedProcess.stdin,
             stdout: spawnedProcess.stdout,
             stderr: spawnedProcess.stderr,
-            outcome: outcome,
+            outcome,
         };
     }
 }

@@ -3,7 +3,7 @@ class testClass {
     constructor(val: number) {
         this.value = val;
     }
-    
+
     public printValue(): void {
         console.info("Debugging typescript: " + this.value);
     }

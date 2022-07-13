@@ -1,16 +1,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { PluginSimulator } from "./simulate";
-import { SimulationInfo } from "../common/simulationInfo";
 import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
+import * as nls from "vscode-nls";
+import { SimulationInfo } from "../common/simulationInfo";
 import { ProjectType } from "../utils/cordovaProjectHelper";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
-import { ProjectsStorage } from "./projectsStorage";
-import * as nls from "vscode-nls";
 import { createAdditionalWorkspaceFolder, onFolderAdded } from "../cordova";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+import { ProjectsStorage } from "./projectsStorage";
+import { PluginSimulator } from "./simulate";
+
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export class CordovaWorkspaceManager implements vscode.Disposable {
@@ -22,16 +26,25 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
         this.pluginSimulator = pluginSimulator;
     }
 
-    public static getWorkspaceManagerByProjectRootPath(projectRootPath: string): CordovaWorkspaceManager {
+    public static getWorkspaceManagerByProjectRootPath(
+        projectRootPath: string,
+    ): CordovaWorkspaceManager {
         let workspaceManager = ProjectsStorage.projectsCache[projectRootPath.toLowerCase()];
         if (!workspaceManager) {
             const workspaceFolder = createAdditionalWorkspaceFolder(projectRootPath);
             if (workspaceFolder) {
                 onFolderAdded(workspaceFolder);
-                workspaceManager = ProjectsStorage.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
+                workspaceManager =
+                    ProjectsStorage.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
             }
             if (!workspaceManager) {
-                throw new Error(localize("CouldntFindWorkspaceManager", "Could not find workspace manager by the project root path {0}", projectRootPath));
+                throw new Error(
+                    localize(
+                        "CouldntFindWorkspaceManager",
+                        "Could not find workspace manager by the project root path {0}",
+                        projectRootPath,
+                    ),
+                );
             }
         }
         return workspaceManager;
@@ -53,11 +66,16 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    public simulate(fsPath: string, simulateOptions: SimulateOptions, projectType: ProjectType): Promise<SimulationInfo> {
-        return this.launchSimulateServer(fsPath, simulateOptions, projectType)
-            .then((simulateInfo: SimulationInfo) => {
+    public simulate(
+        fsPath: string,
+        simulateOptions: SimulateOptions,
+        projectType: ProjectType,
+    ): Promise<SimulationInfo> {
+        return this.launchSimulateServer(fsPath, simulateOptions, projectType).then(
+            (simulateInfo: SimulationInfo) => {
                 return this.launchSimHost(simulateOptions.target).then(() => simulateInfo);
-            });
+            },
+        );
     }
 
     /**
@@ -65,7 +83,11 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
      *
      * Returns info about the running simulate server
      */
-    public launchSimulateServer(fsPath: string, simulateOptions: SimulateOptions, projectType: ProjectType): Promise<SimulationInfo> {
+    public launchSimulateServer(
+        fsPath: string,
+        simulateOptions: SimulateOptions,
+        projectType: ProjectType,
+    ): Promise<SimulationInfo> {
         return this.pluginSimulator.launchServer(fsPath, simulateOptions, projectType);
     }
 

@@ -167,14 +167,14 @@ export class TelemetryHelper {
     public static determineProjectTypes(projectRoot: string): Promise<ProjectType> {
         let ionicMajorVersion = CordovaProjectHelper.determineIonicMajorVersion(projectRoot);
         let meteor = CordovaProjectHelper.exists(path.join(projectRoot, ".meteor"));
-        let mobilefirst = CordovaProjectHelper.exists(path.join(projectRoot, ".project"));
+        let mobileFirst = CordovaProjectHelper.exists(path.join(projectRoot, ".project"));
         let phonegap = CordovaProjectHelper.exists(path.join(projectRoot, "www", "res", ".pgbomit"));
         let cordova = CordovaProjectHelper.exists(path.join(projectRoot, "config.xml"));
-        return Promise.all([meteor, mobilefirst, phonegap, cordova])
-            .then(([isMeteor, isMobilefirst, isPhonegap, isCordova]) => (
+        return Promise.all([meteor, mobileFirst, phonegap, cordova])
+            .then(([isMeteor, isMobileFirst, isPhonegap, isCordova]) => (
                 new ProjectType(
                     isMeteor,
-                    isMobilefirst,
+                    isMobileFirst,
                     isPhonegap,
                     isCordova,
                     ionicMajorVersion,

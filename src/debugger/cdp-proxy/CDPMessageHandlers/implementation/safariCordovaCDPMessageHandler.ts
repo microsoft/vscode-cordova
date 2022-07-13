@@ -5,7 +5,7 @@ import * as semver from "semver";
 import {
     ProcessedCDPMessage,
     DispatchDirection,
-    HandlerOptions
+    HandlerOptions,
 } from "../abstraction/CDPMessageHandlerBase";
 import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHandlerBase";
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
@@ -16,7 +16,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
     constructor(
         sourcemapPathTransformer: SourcemapPathTransformer,
         projectType: ProjectType,
-        options: HandlerOptions
+        options: HandlerOptions,
     ) {
         super(sourcemapPathTransformer, projectType, options);
     }
@@ -27,7 +27,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
         if (options.iOSAppPackagePath) {
             this.iOSAppPackagePath = options.iOSAppPackagePath;
         } else {
-            throw new Error("\".app\" file isn't found");
+            throw new Error('".app" file isn\'t found'); // eslint-disable-line
         }
     }
 
@@ -75,8 +75,9 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
         }
 
         if (
-            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED && event.params.url
-            && event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
+            event.method === CDP_API_NAMES.DEBUGGER_SCRIPT_PARSED &&
+            event.params.url &&
+            event.params.url.startsWith(`file://${this.iOSAppPackagePath}`)
         ) {
             event.params = this.fixSourcemapLocation(event.params);
         }
@@ -86,7 +87,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
         }
 
         if (event.result && event.result.properties) {
-            event.result = { result: event.result.properties};
+            event.result = { result: event.result.properties };
         }
 
         return {
@@ -97,9 +98,11 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
     }
 
     protected fixSourcemapLocation(reqParams: any): any {
-        const absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromFileBasedUrl(reqParams.url);
+        const absoluteSourcePath = this.sourcemapPathTransformer.getClientPathFromFileBasedUrl(
+            reqParams.url,
+        );
 
-        reqParams.url = absoluteSourcePath ? "file://" + absoluteSourcePath : "";
+        reqParams.url = absoluteSourcePath ? `file://${absoluteSourcePath}` : "";
         return reqParams;
     }
 
@@ -108,7 +111,11 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
         const foundStrings = regExp.exec(reqParams.urlRegex);
         if (foundStrings && foundStrings[1]) {
             const uriPart = foundStrings[1].split("\\\\").join("\\/");
-            const fixedRemotePath = (this.iOSAppPackagePath.split("\/").join("\\/")).split(".").join("\\.");
+            const fixedRemotePath = this.iOSAppPackagePath
+                .split("/")
+                .join("\\/")
+                .split(".")
+                .join("\\.");
             reqParams.urlRegex = `file:\\/\\/${fixedRemotePath}\\/www\\/${uriPart}`;
         }
         return reqParams;

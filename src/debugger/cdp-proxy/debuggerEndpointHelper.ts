@@ -3,13 +3,19 @@
 
 import * as URL from "url";
 import * as ipModule from "ip";
+
 const dns = require("dns").promises;
+
 import * as http from "http";
 import * as https from "https";
 import { CancellationToken } from "vscode";
-import { delay } from "../../utils/extensionHelper";
 import * as nls from "vscode-nls";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+import { delay } from "../../utils/extensionHelper";
+
+nls.config({
+    messageFormat: nls.MessageFormat.bundle,
+    bundleFormat: nls.BundleFormat.standalone,
+})();
 const localize = nls.loadMessageBundle();
 
 export class DebuggerEndpointHelper {
@@ -30,14 +36,20 @@ export class DebuggerEndpointHelper {
     public async retryGetWSEndpoint(
         browserURL: string,
         attemptNumber: number,
-        cancellationToken: CancellationToken
+        cancellationToken: CancellationToken,
     ): Promise<string> {
         try {
             return await this.getWSEndpoint(browserURL);
         } catch (err) {
             if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
-
-                const internalError = new Error(localize("CouldNotConnectToTheDebugTarget", "Could not connect to the debug target at {0}: {1}", browserURL, err.message));
+                const internalError = new Error(
+                    localize(
+                        "CouldNotConnectToTheDebugTarget",
+                        "Could not connect to the debug target at {0}: {1}",
+                        browserURL,
+                        err.message,
+                    ),
+                );
 
                 if (cancellationToken.isCancellationRequested) {
                     throw new Error(localize("OperationCancelled", "Operation canceled"));
@@ -57,9 +69,9 @@ export class DebuggerEndpointHelper {
      */
     public async getWSEndpoint(browserURL: string, isSimulate: boolean = false): Promise<string> {
         if (!isSimulate) {
-            const jsonVersion = await this.fetchJson<{ webSocketDebuggerUrl?: string }>(
-                URL.resolve(browserURL, "/json/version")
-            );
+            const jsonVersion = await this.fetchJson<{
+                webSocketDebuggerUrl?: string;
+            }>(URL.resolve(browserURL, "/json/version"));
             if (jsonVersion.webSocketDebuggerUrl) {
                 return jsonVersion.webSocketDebuggerUrl;
             }
@@ -68,13 +80,15 @@ export class DebuggerEndpointHelper {
         // Chrome its top-level debugg on /json/version, while Node does not.
         // Request both and return whichever one got us a string.
         const jsonList = await this.fetchJson<{ webSocketDebuggerUrl: string }[]>(
-            URL.resolve(browserURL, "/json/list")
+            URL.resolve(browserURL, "/json/list"),
         );
         if (jsonList.length) {
             return jsonList[0].webSocketDebuggerUrl;
         }
 
-        throw new Error(localize("CouldNotFindAnyDebuggableTarget", "Could not find any debuggable target"));
+        throw new Error(
+            localize("CouldNotFindAnyDebuggableTarget", "Could not find any debuggable target"),
+        );
     }
 
     /**
@@ -101,7 +115,6 @@ export class DebuggerEndpointHelper {
             }
 
             const request = driver.get(url, requestOptions, response => {
-
                 let data = "";
                 response.setEncoding("utf8");
                 response.on("data", (chunk: string) => (data += chunk));
@@ -122,7 +135,7 @@ export class DebuggerEndpointHelper {
         try {
             const url = new URL.URL(address);
             // replace brackets in ipv6 addresses:
-            ipOrHostname = url.hostname.replace(/^\[|\]$/g, "");
+            ipOrHostname = url.hostname.replace(/^\[|]$/g, "");
         } catch {
             ipOrHostname = address;
         }

@@ -15,16 +15,22 @@ suite("telemetryHelper", function () {
         test("should detect Ionic project", () => {
             const ionicProjectPath = path.join(__dirname, "..", "resources", "testIonicProject");
 
-            sinon.stub(fs, "existsSync").callsFake(p => p === path.join(ionicProjectPath, "package.json"));
-            sinon.stub(fs, "readFileSync").callsFake((path: string, options?: string | { encoding?: string, flag?: string }) => {
-                return JSON.stringify({
-                    dependencies: { "@ionic/angular": "5.0.0" },
-                    devDependencies: { "@ionic-native/core": "5.0.0" },
-                });
-            });
+            sinon
+                .stub(fs, "existsSync")
+                .callsFake(p => p === path.join(ionicProjectPath, "package.json"));
+            sinon
+                .stub(fs, "readFileSync")
+                .callsFake(
+                    (path: string, options?: string | { encoding?: string; flag?: string }) => {
+                        return JSON.stringify({
+                            dependencies: { "@ionic/angular": "5.0.0" },
+                            devDependencies: { "@ionic-native/core": "5.0.0" },
+                        });
+                    },
+                );
 
             return TelemetryHelper.determineProjectTypes(ionicProjectPath)
-                .then((projectType) => {
+                .then(projectType => {
                     assert.strictEqual(projectType.ionicMajorVersion, 5);
                 })
                 .finally(() => {
@@ -39,14 +45,18 @@ suite("telemetryHelper", function () {
             });
 
             test("should detect Cordova and Meteor project", () => {
-                sinon.stub(CordovaProjectHelper, "exists").callsFake((filename: string): Promise<boolean> => {
-                    return Promise.resolve(filename.toString().includes(".meteor") || filename.toString().includes("config.xml"));
-                });
-
-                return TelemetryHelper.determineProjectTypes(testProjectPath)
-                    .then((projectType) => {
-                        assert.ok(projectType.isCordova && projectType.isMeteor);
+                sinon
+                    .stub(CordovaProjectHelper, "exists")
+                    .callsFake((filename: string): Promise<boolean> => {
+                        return Promise.resolve(
+                            filename.toString().includes(".meteor") ||
+                                filename.toString().includes("config.xml"),
+                        );
                     });
+
+                return TelemetryHelper.determineProjectTypes(testProjectPath).then(projectType => {
+                    assert.ok(projectType.isCordova && projectType.isMeteor);
+                });
             });
         });
     });

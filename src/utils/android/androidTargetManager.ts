@@ -3,10 +3,10 @@
 
 import * as nls from "vscode-nls";
 import { MobileTargetManager } from "../mobileTargetManager";
-import { AdbHelper } from "./adb";
 import { ChildProcess } from "../../common/node/childProcess";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { TargetType } from "../../debugger/cordovaDebugSession";
+import { AdbHelper } from "./adb";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -43,24 +43,33 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
         try {
             if (target === TargetType.Device) {
                 return false;
-            } else if (target === TargetType.Emulator || target.match(AdbHelper.AndroidSDKEmulatorPattern)) {
+            } else if (
+                target === TargetType.Emulator ||
+                target.match(AdbHelper.AndroidSDKEmulatorPattern)
+            ) {
                 return true;
-            } else {
-                const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
-                if (onlineTarget) {
-                    return onlineTarget.isVirtualTarget;
-                } else if ((await this.adbHelper.getAvdsNames()).includes(target)) {
-                    return true;
-                } else {
-                    throw Error();
-                }
             }
+            const onlineTarget = await this.adbHelper.findOnlineTargetById(target);
+            if (onlineTarget) {
+                return onlineTarget.isVirtualTarget;
+            } else if ((await this.adbHelper.getAvdsNames()).includes(target)) {
+                return true;
+            }
+            throw Error();
         } catch {
-            throw new Error(localize("CouldNotRecognizeTargetType", "Could not recognize type of the target {0}", target));
+            throw new Error(
+                localize(
+                    "CouldNotRecognizeTargetType",
+                    "Could not recognize type of the target {0}",
+                    target,
+                ),
+            );
         }
     }
 
-    public async selectAndPrepareTarget(filter?: (el: IMobileTarget) => boolean): Promise<AndroidTarget | undefined> {
+    public async selectAndPrepareTarget(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<AndroidTarget | undefined> {
         const selectedTarget = await this.startSelection(filter);
         if (selectedTarget) {
             if (!selectedTarget.isOnline) {
@@ -73,18 +82,22 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
         }
     }
 
-    public async collectTargets(targetType?: TargetType.Device | TargetType.Emulator): Promise<void> {
+    public async collectTargets(
+        targetType?: TargetType.Device | TargetType.Emulator,
+    ): Promise<void> {
         const targetList: IMobileTarget[] = [];
 
         if (!targetType || targetType === TargetType.Emulator) {
             const emulatorsNames: string[] = await this.adbHelper.getAvdsNames();
-            targetList.push(...emulatorsNames.map(name => {
-                return { name, isOnline: false, isVirtualTarget: true };
-            }));
+            targetList.push(
+                ...emulatorsNames.map(name => {
+                    return { name, isOnline: false, isVirtualTarget: true };
+                }),
+            );
         }
 
         const onlineTargets = await this.adbHelper.getOnlineTargets();
-        for (let device of onlineTargets) {
+        for (const device of onlineTargets) {
             if (device.isVirtualTarget && (!targetType || targetType === TargetType.Emulator)) {
                 const avdName = await this.adbHelper.getAvdNameById(device.id);
                 const emulatorTarget = targetList.find(target => target.name === avdName);
@@ -96,14 +109,20 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
                 !device.isVirtualTarget &&
                 (!targetType || targetType === TargetType.Device)
             ) {
-                targetList.push({ id: device.id, isOnline: true, isVirtualTarget: false });
+                targetList.push({
+                    id: device.id,
+                    isOnline: true,
+                    isVirtualTarget: false,
+                });
             }
         }
 
         this.targets = targetList;
     }
 
-    protected async startSelection(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget | undefined> {
+    protected async startSelection(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<IMobileTarget | undefined> {
         return this.selectTarget(filter);
     }
 
@@ -135,24 +154,34 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
             emulatorProcess.spawnedProcess.unref();
 
             const rejectTimeout = setTimeout(() => {
-                cleanup();
-                reject(new Error(`Virtual device launch finished with an exception: ${localize(
-                    "EmulatorStartWarning",
-                    "Could not start the emulator {0} within {1} seconds.",
-                    emulatorTarget.name,
-                    AndroidTargetManager.EMULATOR_START_TIMEOUT,
-                )}`));
+                cleanup(); // eslint-disable-line
+                reject(
+                    new Error(
+                        `Virtual device launch finished with an exception: ${localize(
+                            "EmulatorStartWarning",
+                            "Could not start the emulator {0} within {1} seconds.",
+                            emulatorTarget.name,
+                            AndroidTargetManager.EMULATOR_START_TIMEOUT,
+                        )}`,
+                    ),
+                );
             }, AndroidTargetManager.EMULATOR_START_TIMEOUT * 1000);
 
             const bootCheckInterval = setInterval(async () => {
                 const connectedDevices = await this.adbHelper.getOnlineTargets();
                 for (let i = 0; i < connectedDevices.length; i++) {
-                    const onlineAvdName = await this.adbHelper.getAvdNameById(connectedDevices[i].id);
+                    const onlineAvdName = await this.adbHelper.getAvdNameById(
+                        connectedDevices[i].id,
+                    );
                     if (onlineAvdName === emulatorTarget.name) {
                         emulatorTarget.id = connectedDevices[i].id;
                         emulatorTarget.isOnline = true;
                         this.logger.log(
-                            localize("EmulatorLaunched", "Launched emulator {0}", emulatorTarget.name),
+                            localize(
+                                "EmulatorLaunched",
+                                "Launched emulator {0}",
+                                emulatorTarget.name,
+                            ),
                         );
                         cleanup();
                         resolve(new AndroidTarget(<IDebuggableMobileTarget>emulatorTarget));

@@ -88,7 +88,7 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
                         try {
                             const identifierPieces = device.deviceTypeIdentifier.split(".");
                             simIdentifier = identifierPieces[identifierPieces.length - 1];
-                        } catch { }
+                        } catch {}
 
                         this.targets?.push({
                             id: device.udid,
@@ -96,7 +96,7 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
                             system,
                             isVirtualTarget: true,
                             isOnline: device.state === IOSTargetManager.BOOTED_STATE,
-                            simIdentifier: simIdentifier,
+                            simIdentifier,
                             simDataPath: device.dataPath,
                         });
                     }
@@ -244,7 +244,11 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
             emulatorProcess.spawnedProcess.unref();
             emulatorProcess.outcome.catch(err => {
                 emulatorLaunchFailed = true;
-                reject(new Error(`Error while launching simulator ${emulatorTarget.name}(${emulatorTarget.id} with an exception: ${err}`));
+                reject(
+                    new Error(
+                        `Error while launching simulator ${emulatorTarget.name}(${emulatorTarget.id} with an exception: ${err}`,
+                    ),
+                );
             });
 
             const condition = async () => {
@@ -266,7 +270,11 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
                     if (isBooted) {
                         emulatorTarget.isOnline = true;
                         this.logger.log(
-                            localize("SimulatorLaunched", "Launched simulator {0}", emulatorTarget.name),
+                            localize(
+                                "SimulatorLaunched",
+                                "Launched simulator {0}",
+                                emulatorTarget.name,
+                            ),
                         );
                         resolve(new IOSTarget(emulatorTarget));
 
@@ -278,8 +286,8 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
                                     "Could not start the simulator {0} within {1} seconds.",
                                     emulatorTarget.name,
                                     IOSTargetManager.SIMULATOR_START_TIMEOUT,
-                                )}`
-                            )
+                                )}`,
+                            ),
                         );
                     }
                 },
