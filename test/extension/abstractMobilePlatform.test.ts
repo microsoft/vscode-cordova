@@ -17,7 +17,7 @@ import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../../src/
 import { MobileTargetManager } from "../../src/utils/mobileTargetManager";
 import { DebugConsoleLogger, TargetType } from "../../src/debugger/cordovaDebugSession";
 
-suite.only("AbstractMobilePlatform", function () {
+suite("AbstractMobilePlatform", function () {
     const onlineDevice: IDebuggableMobileTarget = {
         name: "DeviceOnline",
         id: "DeviceOnline",
