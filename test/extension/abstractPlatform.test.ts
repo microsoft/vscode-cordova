@@ -73,7 +73,7 @@ suite("AbstractPlatform", function () {
             });
 
             test("Should return false for the not presented binary argument", function () {
-                getArgumentValueTest(runArguments, notPresentedBooleanArgumentKey, true);
+                getArgumentValueTest(runArguments, notPresentedBooleanArgumentKey, false);
             });
         });
 
@@ -88,23 +88,17 @@ suite("AbstractPlatform", function () {
                 let setValue: string | boolean;
                 let keyIndex = runArguments.indexOf(key);
                 if (typeof value === "boolean") {
-                    if (keyIndex > -1) {
-                        setValue = true;
-                    } else {
-                        setValue = false;
-                    }
+                    setValue = keyIndex > -1;
+                } else if (keyIndex > -1) {
+                    setValue = runArguments[keyIndex + 1];
                 } else {
-                    if (keyIndex > -1) {
-                        setValue = runArguments[keyIndex + 1];
-                    } else {
-                        for (let i = 0; i < runArguments.length; i++) {
-                            if (runArguments[i].includes(key)) {
-                                keyIndex = i;
-                                break;
-                            }
+                    for (const [i, runArgument] of runArguments.entries()) {
+                        if (runArgument.includes(key)) {
+                            keyIndex = i;
+                            break;
                         }
-                        setValue = runArguments[keyIndex].split("=")[1];
                     }
+                    setValue = runArguments[keyIndex].split("=")[1];
                 }
 
                 assert.strictEqual(setValue, value);
@@ -146,24 +140,24 @@ suite("AbstractPlatform", function () {
                 isBinary: boolean,
                 isSeparatedArgument?: boolean,
             ) {
-                const argsLenghtBefore = runArguments.length;
+                const argsLengthBefore = runArguments.length;
                 AbstractPlatform.removeRunArgument(runArguments, key, isBinary);
 
                 const keyIndex = runArguments.indexOf(key);
-                if (isBinary || argsLenghtBefore - runArguments.length === 2) {
+                if (isBinary || argsLengthBefore - runArguments.length === 2) {
                     if (keyIndex > -1) {
                         assert.fail("Binary argument was not removed");
                     }
                 } else if (isSeparatedArgument) {
-                    if (keyIndex > -1 || argsLenghtBefore - runArguments.length !== 2) {
+                    if (keyIndex > -1 || argsLengthBefore - runArguments.length !== 2) {
                         assert.fail("Separated argument was not removed");
                     }
                 } else {
-                    if (argsLenghtBefore - runArguments.length !== 1) {
+                    if (argsLengthBefore - runArguments.length !== 1) {
                         assert.fail("United argument was not removed");
                     }
-                    for (let i = 0; i < runArguments.length; i++) {
-                        if (runArguments[i].includes(key)) {
+                    for (const runArgument of runArguments) {
+                        if (runArgument.includes(key)) {
                             assert.fail("United argument was not removed");
                         }
                     }

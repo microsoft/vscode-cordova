@@ -3,15 +3,15 @@
 
 import * as assert from "assert";
 import * as path from "path";
-import { delay } from "../src/utils/extensionHelper";
 import * as rimraf from "rimraf";
 import * as vscode from "vscode";
-import * as testUtils from "./testUtils";
+import { delay } from "../src/utils/extensionHelper";
 import { CordovaProjectHelper } from "../src/utils/cordovaProjectHelper";
+import * as testUtils from "./testUtils";
 
 suite("extensionContext", () => {
-    let testProjectPath: string = path.resolve(__dirname, "resources", "testCordovaProject");
-    let cordovaTypeDefDir: string =
+    const testProjectPath: string = path.resolve(__dirname, "resources", "testCordovaProject");
+    const cordovaTypeDefDir: string =
         CordovaProjectHelper.getOrCreateTypingsTargetPath(testProjectPath);
 
     suiteTeardown(() => {
@@ -23,10 +23,10 @@ suite("extensionContext", () => {
 
     test("Verify that the commands registered by Cordova extension are loaded", () => {
         return vscode.commands.getCommands(true).then(results => {
-            let cordovaCmdsAvailable = results.filter((commandName: string) => {
-                return commandName.indexOf("cordova.") > -1;
+            const cordovaCommandsAvailable = results.filter((commandName: string) => {
+                return commandName.includes("cordova.");
             });
-            assert.deepStrictEqual(cordovaCmdsAvailable, [
+            assert.deepStrictEqual(cordovaCommandsAvailable, [
                 "cordova.restart",
                 "cordova.prepare",
                 "cordova.build",
@@ -50,7 +50,7 @@ suite("extensionContext", () => {
                     return delay(10000);
                 })
                 .then(_res => {
-                    let androidBuildPath = path.resolve(
+                    const androidBuildPath = path.resolve(
                         testProjectPath,
                         "platforms",
                         "android",

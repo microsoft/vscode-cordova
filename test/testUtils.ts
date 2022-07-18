@@ -10,9 +10,9 @@ import { CordovaProjectHelper } from "../src/utils/cordovaProjectHelper";
 
 export function executeCordovaCommand(cwd: string, command: string): Promise<any> {
     return new Promise((resolve, reject) => {
-        let cordovaCmd = os.platform() === "win32" ? "cordova.cmd" : "cordova";
-        let commandToExecute = cordovaCmd + " " + command;
-        let process = child_process.exec(commandToExecute, { cwd: cwd });
+        const cordovaCmd = os.platform() === "win32" ? "cordova.cmd" : "cordova";
+        const commandToExecute = `${cordovaCmd} ${command}`;
+        const process = child_process.exec(commandToExecute, { cwd });
 
         let stderr = "";
         process.stderr.on("data", (data: Buffer) => {
@@ -39,7 +39,7 @@ export function executeCordovaCommand(cwd: string, command: string): Promise<any
 }
 
 export function createCordovaProject(cwd: string, projectName: string): Promise<any> {
-    let cordovaCommandToRun = "create " + projectName;
+    const cordovaCommandToRun = `create ${projectName}`;
     return executeCordovaCommand(cwd, cordovaCommandToRun);
 }
 
@@ -48,7 +48,7 @@ export function addCordovaComponents(
     projectRoot: string,
     componentsToAdd: string[],
 ): Promise<any> {
-    let cordovaCommandToRun = componentName + " add " + componentsToAdd.join(" ");
+    const cordovaCommandToRun = `${componentName} add ${componentsToAdd.join(" ")}`;
     return executeCordovaCommand(projectRoot, cordovaCommandToRun);
 }
 
@@ -57,19 +57,18 @@ export function removeCordovaComponents(
     projectRoot: string,
     componentsToRemove: string[],
 ): Promise<any> {
-    let cordovaCommandToRun = componentName + " remove " + componentsToRemove.join(" ");
+    const cordovaCommandToRun = `${componentName} remove ${componentsToRemove.join(" ")}`;
     return executeCordovaCommand(projectRoot, cordovaCommandToRun);
 }
 
 export function enumerateListOfTypeDefinitions(projectRoot: string): string[] {
-    let typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot);
+    const typeDefsFolder = CordovaProjectHelper.getCordovaPluginTypeDefsPath(projectRoot);
 
     // look for all the type defs in the typings folder
     if (!CordovaProjectHelper.existsSync(typeDefsFolder)) {
         return [];
-    } else {
-        return fs.readdirSync(typeDefsFolder);
     }
+    return fs.readdirSync(typeDefsFolder);
 }
 
 export function isUrlReachable(url: string): Promise<boolean> {
@@ -83,6 +82,6 @@ export function isUrlReachable(url: string): Promise<boolean> {
     });
 }
 
-export function convertWindowsPathToUnixOne(path: string) {
+export function convertWindowsPathToUnixOne(path: string): string {
     return path.replace(/\\/g, "/");
 }

@@ -22,7 +22,7 @@ async function launchTests() {
             extensionDevelopmentPath,
             extensionTestsPath,
             launchArgs: [testWorkspace],
-            version: "1.53.2",
+            version: "stable",
         });
     } catch (err) {
         console.error(err);

@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
+import assert = require("assert");
 import * as vscode from "vscode";
+import * as nls from "vscode-nls";
+import Sinon = require("sinon");
 import AbstractMobilePlatform from "../../src/extension/abstractMobilePlatform";
 import { CordovaWorkspaceManager } from "../../src/extension/cordovaWorkspaceManager";
 import { IGeneralAttachResult } from "../../src/extension/platformAttachResult";
@@ -12,36 +15,46 @@ import { CordovaProjectHelper, ProjectType } from "../../src/utils/cordovaProjec
 import IonicDevServer from "../../src/utils/ionicDevServer";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../../src/utils/mobileTarget";
 import { MobileTargetManager } from "../../src/utils/mobileTargetManager";
-import { TargetType } from "../../src/debugger/cordovaDebugSession";
-import assert = require("assert");
+import { DebugConsoleLogger, TargetType } from "../../src/debugger/cordovaDebugSession";
 
-suite("AbstractMobilePlatform", function () {
-    let onlineDevice1: IDebuggableMobileTarget = {
-        name: "onlineDevice1",
-        id: "onlineDevice1",
+suite.only("AbstractMobilePlatform", function () {
+    const onlineDevice: IDebuggableMobileTarget = {
+        name: "DeviceOnline",
+        id: "DeviceOnline",
         isOnline: true,
         isVirtualTarget: false,
     };
-    let onlineDevice2: IDebuggableMobileTarget = {
-        name: "onlineDevice2",
-        id: "onlineDevice2",
-        isOnline: true,
+    const offlineDevice: IDebuggableMobileTarget = {
+        name: "DeviceOffline",
+        id: "DeviceOffline",
+        isOnline: false,
         isVirtualTarget: false,
     };
-    let offlineSimulator: IDebuggableMobileTarget = {
-        name: "offlineSimulator",
-        id: "offlineSimulator",
+    const offlineSimulator: IDebuggableMobileTarget = {
+        name: "emulatorOffline",
+        id: "emulatorOffline",
         isOnline: false,
         isVirtualTarget: true,
     };
-    let onlineSimulator: IDebuggableMobileTarget = {
-        name: "onlineSimulator",
-        id: "onlineSimulator",
+    const onlineSimulator: IDebuggableMobileTarget = {
+        name: "emulatorOnline",
+        id: "emulatorOnline",
         isOnline: true,
         isVirtualTarget: true,
     };
 
-    let collectedTargets: IDebuggableMobileTarget[];
+    const collectedTargets: IDebuggableMobileTarget[] = [
+        onlineDevice,
+        offlineDevice,
+        offlineSimulator,
+        onlineSimulator,
+    ];
+
+    nls.config({
+        messageFormat: nls.MessageFormat.bundle,
+        bundleFormat: nls.BundleFormat.standalone,
+    })();
+    const localize = nls.loadMessageBundle();
 
     class TestMobileTarget extends MobileTarget {}
 
@@ -50,6 +63,21 @@ suite("AbstractMobilePlatform", function () {
             targetType?: TargetType.Emulator | TargetType.Device,
         ): Promise<void> {
             this.targets = collectedTargets;
+        }
+
+        public async isVirtualTarget(target: string): Promise<boolean> {
+            if (target === TargetType.Device || target.includes(TargetType.Device)) {
+                return false;
+            } else if (target === TargetType.Emulator || target.includes(TargetType.Emulator)) {
+                return true;
+            }
+            throw new Error(
+                localize(
+                    "CouldNotRecognizeTargetType",
+                    "Could not recognize type of the target {0}",
+                    target,
+                ),
+            );
         }
 
         public async selectAndPrepareTarget(
@@ -73,8 +101,11 @@ suite("AbstractMobilePlatform", function () {
             return new TestMobileTarget(emulatorTarget as IDebuggableMobileTarget);
         }
 
-        protected startSelection(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget> {
-            throw new Error("Method not implemented.");
+        protected async startSelection(
+            filter?: (el: IMobileTarget) => boolean,
+        ): Promise<IMobileTarget> {
+            const selectedTarget = await this.selectTarget(filter);
+            return selectedTarget;
         }
     }
 
@@ -82,6 +113,14 @@ suite("AbstractMobilePlatform", function () {
         TestMobileTarget,
         TestMobileTargetManager
     > {
+        constructor(
+            protected platformOpts: IGeneralPlatformOptions,
+            protected log: DebugConsoleLogger,
+        ) {
+            super(platformOpts, log);
+            this.targetManager = new TestMobileTargetManager();
+        }
+
         public async getTargetFromRunArgs(): Promise<MobileTarget | undefined> {
             await this.targetManager.collectTargets();
             if (this.platformOpts.runArguments && this.platformOpts.runArguments.length > 0) {
@@ -119,7 +158,7 @@ suite("AbstractMobilePlatform", function () {
         }
 
         public getRunArguments(): string[] {
-            throw Error("Not implemented yet");
+            return this.platformOpts.runArguments;
         }
     }
 
@@ -147,13 +186,29 @@ suite("AbstractMobilePlatform", function () {
         port,
     };
 
+    let showQuickPickStub: Sinon.SinonStub;
+
+    suiteSetup(() => {
+        showQuickPickStub = Sinon.stub(vscode.window, "showQuickPick").callsFake(
+            async (
+                items:
+                    | string[]
+                    | Thenable<string[]>
+                    | vscode.QuickPickItem[]
+                    | Thenable<vscode.QuickPickItem[]>,
+            ) => {
+                return items[0];
+            },
+        );
+    });
+
+    suiteTeardown(() => {
+        showQuickPickStub.restore();
+    });
+
     const mobilePlatform = new TestMobilePlatform(platformOptions, logger);
 
     suite("resolveMobileTarget", function () {
-        beforeEach(function () {
-            collectedTargets = [onlineDevice1, onlineDevice2, offlineSimulator, onlineSimulator];
-        });
-
         test(`Should resolve any device for target: ${TargetType.Device}`, async function () {
             const target = await mobilePlatform.resolveMobileTarget(TargetType.Device);
             assert.strictEqual(target.isVirtualTarget, false, "Selected target is not device");
@@ -184,10 +239,6 @@ suite("AbstractMobilePlatform", function () {
     });
 
     suite("getPreferredTarget", function () {
-        beforeEach(function () {
-            collectedTargets = [onlineDevice1, onlineDevice2, offlineSimulator, onlineSimulator];
-        });
-
         test(`Should resolve any device for target: ${TargetType.Device}`, async function () {
             const target = await mobilePlatform.resolveMobileTarget(TargetType.Device);
             assert.strictEqual(target.isVirtualTarget, false, "Selected target is not device");

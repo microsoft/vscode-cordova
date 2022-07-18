@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as nls from "vscode-nls";
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
+import * as nls from "vscode-nls";
 import { DebugConsoleLogger, TargetType, WebviewData } from "../../debugger/cordovaDebugSession";
 import { CordovaIosDeviceLauncher } from "../../debugger/cordovaIosDeviceLauncher";
 import { cordovaRunCommand } from "../../debugger/extension";
@@ -20,6 +20,7 @@ import {
     IOSTarget,
     IOSTargetManager,
 } from "../../utils/ios/iOSTargetManager";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -288,17 +289,16 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         if (this.platformOpts.target.toLowerCase() === TargetType.Device) {
             const packageId = await CordovaIosDeviceLauncher.getBundleIdentifier(this.projectRoot);
             return CordovaIosDeviceLauncher.getPathOnDevice(packageId);
-        } else {
-            const entries = await fs.promises.readdir(
-                path.join(this.projectRoot, "platforms", "ios", "build", "emulator"),
-            );
-            // TODO requires changes in case of implementing debugging on iOS simulators
-            const filtered = entries.filter(entry => /\.app$/.test(entry));
-            if (filtered.length > 0) {
-                return filtered[0];
-            } else {
-                throw new Error(localize("UnableToFindAppFile", "Unable to find .app file"));
-            }
         }
+
+        const entries = await fs.promises.readdir(
+            path.join(this.projectRoot, "platforms", "ios", "build", "emulator"),
+        );
+        // TODO requires changes in case of implementing debugging on iOS simulators
+        const filtered = entries.filter(entry => /\.app$/.test(entry));
+        if (filtered.length > 0) {
+            return filtered[0];
+        }
+        throw new Error(localize("UnableToFindAppFile", "Unable to find .app file"));
     }
 }

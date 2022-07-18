@@ -4,10 +4,10 @@
 import * as path from "path";
 import * as assert from "assert";
 import Sinon = require("sinon");
+import { QuickPickItem, window } from "vscode";
 import { AdbHelper } from "../../src/utils/android/adb";
 import { AndroidTarget, AndroidTargetManager } from "../../src/utils/android/androidTargetManager";
 import { IDebuggableMobileTarget, IMobileTarget } from "../../src/utils/mobileTarget";
-import { QuickPickItem, window } from "vscode";
 
 suite("AndroidTargetManager", function () {
     const testProjectPath = path.join(__dirname, "..", "resources", "testCordovaProject");
@@ -119,10 +119,10 @@ suite("AndroidTargetManager", function () {
     });
 
     suiteTeardown(() => {
-        getAbdsNamesStub.reset();
-        getOnlineTargetsStub.reset();
-        launchSimulatorStub.reset();
-        showQuickPickStub.reset();
+        getAbdsNamesStub.restore();
+        getOnlineTargetsStub.restore();
+        launchSimulatorStub.restore();
+        showQuickPickStub.restore();
     });
 
     suite("Target identification", function () {

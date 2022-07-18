@@ -1,0 +1,8 @@
+{
+    "reporterEnabled": "spec, mochawesome",
+    "mochawesomeReporterOptions": {
+        "reportDir": "../mochawesome-report",
+        "reportFilename": "Cordova-Test-Report",
+        "quiet": true,
+    }
+}

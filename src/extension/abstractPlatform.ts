@@ -41,18 +41,13 @@ export default abstract class AbstractPlatform {
             if (optIdx > -1) {
                 result = binary ? true : runArguments[optIdx + 1];
             } else {
-                for (let i = 0; i < runArguments.length; i++) {
-                    const arg = runArguments[i];
-                    if (arg.indexOf(optName) > -1) {
+                for (const arg of runArguments) {
+                    if (arg.includes(optName)) {
                         if (binary) {
                             result = true;
                         } else {
                             const tokens = arg.split("=");
-                            if (tokens.length > 1) {
-                                result = tokens[1].trim();
-                            } else {
-                                result = undefined;
-                            }
+                            result = tokens.length > 1 ? tokens[1].trim() : undefined;
                         }
                     }
                 }
@@ -61,10 +56,9 @@ export default abstract class AbstractPlatform {
             // Binary parameters can either exists (e.g. be true) or be absent. You can not pass false binary parameter.
             if (binary) {
                 if (result === undefined) {
-                    return undefined;
-                } else {
-                    return true;
+                    return false;
                 }
+                return true;
             }
 
             if (result) {
@@ -88,8 +82,8 @@ export default abstract class AbstractPlatform {
         let isComplexOpt = false;
         let optIdx = runArguments.indexOf(optName);
         if (optIdx === -1) {
-            for (let i = 0; i < runArguments.length; i++) {
-                if (runArguments[i].includes(optName)) {
+            for (const [i, runArgument] of runArguments.entries()) {
+                if (runArgument.includes(optName)) {
                     optIdx = i;
                     isComplexOpt = true;
                 }
@@ -113,8 +107,8 @@ export default abstract class AbstractPlatform {
         let isComplexOpt = false;
         let optIdx = runArguments.indexOf(optName);
         if (optIdx === -1) {
-            for (let i = 0; i < runArguments.length; i++) {
-                if (runArguments[i].includes(optName)) {
+            for (const [i, runArgument] of runArguments.entries()) {
+                if (runArgument.includes(optName)) {
                     optIdx = i;
                     isComplexOpt = true;
                 }

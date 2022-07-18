@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { ProjectType } from "../utils/cordovaProjectHelper";
-import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
 import * as vscode from "vscode";
+import { ProjectType } from "../utils/cordovaProjectHelper";
 import IonicDevServer from "../utils/ionicDevServer";
+import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
 import { PluginSimulator } from "./simulate";
 
 export interface IGeneralPlatformOptions {

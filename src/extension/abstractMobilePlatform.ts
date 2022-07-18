@@ -4,8 +4,9 @@
 import * as nls from "vscode-nls";
 import { TargetType } from "../debugger/cordovaDebugSession";
 import { MobileTargetManager } from "../utils/mobileTargetManager";
-import AbstractPlatform from "./abstractPlatform";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../utils/mobileTarget";
+import AbstractPlatform from "./abstractPlatform";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -133,6 +134,7 @@ export default abstract class AbstractMobilePlatform<
                     );
             }
         });
+
         if (targetsBySpecifiedType.length) {
             return targetsBySpecifiedType[0];
         } else if (targets.length) {
@@ -144,14 +146,14 @@ export default abstract class AbstractMobilePlatform<
                 ),
             );
             return targets[0];
-        } else {
-            throw Error(
-                localize(
-                    "IosThereIsNoAnyOnlineDebuggableTarget",
-                    "There is no any iOS debuggable online target",
-                ),
-            );
         }
+
+        throw Error(
+            localize(
+                "IosThereIsNoAnyOnlineDebuggableTarget",
+                "There is no any iOS debuggable online target",
+            ),
+        );
     }
 
     protected addTargetToRunArgs(target: Target): void {
