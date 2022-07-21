@@ -100,10 +100,15 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                         ),
                     ),
                 );
-                const device = endpointsList.find(entry => target.id === entry.deviceId);
+                const device = endpointsList.find(entry =>
+                    target.isVirtualTarget
+                        ? entry.deviceId === "SIMULATOR"
+                        : target.id === entry.deviceId,
+                );
+
                 // device.url is of the form 'localhost:port'
                 targetPort = parseInt(device.url.split(":")[1], 10);
-                iOSVersion = device.deviceOSVersion;
+                iOSVersion = target.isVirtualTarget ? target.system : device.deviceOSVersion;
             } catch (e) {
                 throw new Error(
                     localize(
@@ -124,7 +129,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 //     "webSocketDebuggerUrl": "ws://localhost:9223/devtools/page/1",
                 //     "appId": "PID:37819"
                 //  }]
-                const webviewsList: Array<WebviewData> = JSON.parse(
+                const webViewsList: Array<WebviewData> = JSON.parse(
                     await promiseGet(
                         `http://localhost:${targetPort}/json`,
                         localize(
@@ -133,10 +138,10 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                         ),
                     ),
                 );
-                if (webviewsList.length === 0) {
+                if (webViewsList.length === 0) {
                     throw new Error(localize("UnableToFindTargetApp", "Unable to find target app"));
                 }
-                const cordovaWebview = this.getCordovaWebview(webviewsList, iOSAppPackagePath);
+                const cordovaWebview = this.getCordovaWebview(webViewsList, iOSAppPackagePath);
                 if (!cordovaWebview.webSocketDebuggerUrl) {
                     throw new Error(
                         localize("WebsocketDebuggerUrlIsEmpty", "WebSocket Debugger Url is empty"),
@@ -263,10 +268,10 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
     }
 
     private getCordovaWebview(
-        webviewsList: Array<WebviewData>,
+        webViewsList: Array<WebviewData>,
         iOSAppPackagePath: string,
     ): WebviewData {
-        const cordovaWebview = webviewsList.find(webviewData => {
+        const cordovaWebview = webViewsList.find(webviewData => {
             if (webviewData.url.includes(iOSAppPackagePath)) {
                 return true;
             }
@@ -282,7 +287,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             }
             return false;
         });
-        return cordovaWebview || webviewsList[0];
+        return cordovaWebview || webViewsList[0];
     }
 
     private async getIosAppPackagePath() {
