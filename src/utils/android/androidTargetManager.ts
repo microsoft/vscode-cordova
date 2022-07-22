@@ -15,16 +15,16 @@ nls.config({
 const localize = nls.loadMessageBundle();
 
 export class AndroidTarget extends MobileTarget {
-    public static fromInterface(obj: IDebuggableMobileTarget): AndroidTarget {
-        return new AndroidTarget(obj.isOnline, obj.isVirtualTarget, obj.id, obj.name);
-    }
-
-    constructor(isOnline: boolean, isVirtualTarget: boolean, id: string, name?: string) {
-        super(isOnline, isVirtualTarget, id, name || id);
+    constructor(obj: IDebuggableMobileTarget) {
+        const objCopy = Object.assign({}, obj);
+        if (!objCopy.name) {
+            objCopy.name = objCopy.id;
+        }
+        super(objCopy);
     }
 }
 
-export class AndroidTargetManager extends MobileTargetManager {
+export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
     private static readonly EMULATOR_COMMAND = "emulator";
     private static readonly EMULATOR_AVD_START_COMMAND = "-avd";
 
@@ -74,9 +74,10 @@ export class AndroidTargetManager extends MobileTargetManager {
         if (selectedTarget) {
             if (!selectedTarget.isOnline) {
                 return this.launchSimulator(selectedTarget);
-            }
-            if (selectedTarget.id) {
-                return AndroidTarget.fromInterface(<IDebuggableMobileTarget>selectedTarget);
+            } else {
+                if (selectedTarget.id) {
+                    return new AndroidTarget(<IDebuggableMobileTarget>selectedTarget);
+                }
             }
         }
     }
@@ -153,7 +154,8 @@ export class AndroidTargetManager extends MobileTargetManager {
             emulatorProcess.spawnedProcess.unref();
 
             const rejectTimeout = setTimeout(() => {
-                cleanup(); // eslint-disable-line
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                cleanup();
                 reject(
                     new Error(
                         `Virtual device launch finished with an exception: ${localize(
@@ -182,10 +184,9 @@ export class AndroidTargetManager extends MobileTargetManager {
                                 emulatorTarget.name,
                             ),
                         );
-                        cleanup(); // eslint-disable-line
-                        resolve(
-                            AndroidTarget.fromInterface(<IDebuggableMobileTarget>emulatorTarget),
-                        );
+                        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                        cleanup();
+                        resolve(new AndroidTarget(<IDebuggableMobileTarget>emulatorTarget));
                         break;
                     }
                 }

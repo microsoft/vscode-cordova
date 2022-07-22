@@ -24,7 +24,7 @@ export interface IPluginDetails {
 export class ProjectType {
     constructor(
         public isMeteor: boolean,
-        public isMobilefirst: boolean,
+        public isMobileFirst: boolean,
         public isPhonegap: boolean,
         public isCordova: boolean,
         public ionicMajorVersion?: number,
@@ -507,12 +507,11 @@ export class CordovaProjectHelper {
         return CordovaProjectHelper.isIonicCliVersionGte(fsPath, "3.0.0", command);
     }
 
-    public static getEnvArgument(launchArgs): any {
-        const args = { ...launchArgs };
-        const env = process.env;
+    public static getEnvArgument(envVars?: any, envFile?: any): any {
+        const env = Object.assign({}, process.env, envVars);
 
-        if (args.envFile) {
-            let buffer = fs.readFileSync(args.envFile, "utf8");
+        if (envFile) {
+            let buffer = fs.readFileSync(envFile, "utf8");
 
             // Strip BOM
             if (buffer && buffer[0] === "\uFEFF") {
@@ -539,12 +538,12 @@ export class CordovaProjectHelper {
             });
         }
 
-        if (args.env) {
+        if (env) {
             // launch config env vars overwrite .env vars
-            // eslint-disable-next-line
-            for (const key in args.env) {
-                if (args.env.hasOwnProperty(key)) {
-                    env[key] = args.env[key];
+            // eslint-disable-next-line no-restricted-syntax
+            for (const key in env) {
+                if (env.hasOwnProperty(key)) {
+                    env[key] = env[key];
                 }
             }
         }

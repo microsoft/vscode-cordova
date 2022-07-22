@@ -10,6 +10,15 @@ export function run(): Promise<void> {
         ui: "tdd",
         grep: "smokeTestsContext",
         color: true,
+        reporter: "mocha-multi-reporters",
+        reporterOptions: {
+            reporterEnabled: "spec, mochawesome",
+            mochawesomeReporterOptions: {
+                reportDir: `${path.resolve(__dirname, "..")}/mochawesome-report`,
+                reportFilename: "Cordova-Test-Report",
+                quiet: true,
+            },
+        },
         timeout: 150000,
     });
 

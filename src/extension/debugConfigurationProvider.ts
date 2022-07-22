@@ -214,7 +214,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         {
             label: "Simulate iOS in browser",
             description: localize(
-                "SimulateCordovaiOSAppInBrowser",
+                "SimulateCordovaIOSAppInBrowser",
                 "Simulate Cordova iOS application in browser",
             ),
         },
@@ -227,6 +227,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         },
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async provideDebugConfigurations(
         folder: vscode.WorkspaceFolder | undefined,
         token?: vscode.CancellationToken,

@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import { DebugProtocol } from "vscode-debugprotocol";
+import { PlatformType } from "./cordovaDebugSession";
 import { ISourceMapPathOverrides } from "./jsDebugConfigAdapter";
 
 export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestArguments {
@@ -12,7 +13,7 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     address?: string;
     trace?: string;
     timeout?: number;
-    platform: string;
+    platform: PlatformType;
     target?: string;
     envFile?: string;
     env?: any;

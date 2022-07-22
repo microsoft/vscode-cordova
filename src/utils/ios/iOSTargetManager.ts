@@ -6,7 +6,7 @@ import * as semver from "semver";
 import { QuickPickOptions, window } from "vscode";
 import { ChildProcess } from "../../common/node/childProcess";
 import { waitUntil } from "../../common/node/promise";
-import { IDebuggableMobileTarget, MobileTarget } from "../mobileTarget";
+import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { MobileTargetManager } from "../mobileTargetManager";
 import { TargetType } from "../../debugger/cordovaDebugSession";
 
@@ -30,31 +30,11 @@ export class IOSTarget extends MobileTarget implements IDebuggableIOSTarget {
     protected _simIdentifier?: string;
     protected _simDataPath?: string;
 
-    public static fromInterface(obj: IDebuggableIOSTarget): IOSTarget {
-        return new IOSTarget(
-            obj.isOnline,
-            obj.isVirtualTarget,
-            obj.id,
-            obj.name,
-            obj.system,
-            obj.simIdentifier,
-            obj.simDataPath,
-        );
-    }
-
-    constructor(
-        isOnline: boolean,
-        isVirtualTarget: boolean,
-        id: string,
-        name: string,
-        system: string,
-        simIdentifier?: string,
-        simDataPath?: string,
-    ) {
-        super(isOnline, isVirtualTarget, id, name);
-        this._system = system;
-        this._simIdentifier = simIdentifier;
-        this._simDataPath = simDataPath;
+    constructor(obj: IDebuggableIOSTarget) {
+        super(obj);
+        this._system = obj.system;
+        this._simIdentifier = obj.simIdentifier;
+        this._simDataPath = obj.simDataPath;
     }
 
     get system(): string {
@@ -78,7 +58,7 @@ export class IOSTarget extends MobileTarget implements IDebuggableIOSTarget {
     }
 }
 
-export class IOSTargetManager extends MobileTargetManager {
+export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
     private static readonly XCRUN_COMMAND = "xcrun";
     private static readonly SIMCTL_COMMAND = "simctl";
     private static readonly BOOT_COMMAND = "boot";
@@ -90,12 +70,6 @@ export class IOSTargetManager extends MobileTargetManager {
 
     private childProcess: ChildProcess = new ChildProcess();
     protected targets?: IDebuggableIOSTarget[];
-
-    public async getTargetList(
-        filter?: (el: IDebuggableIOSTarget) => boolean,
-    ): Promise<IDebuggableIOSTarget[]> {
-        return (await super.getTargetList(filter)) as IDebuggableIOSTarget[];
-    }
 
     public async collectTargets(
         targetType?: TargetType.Device | TargetType.Emulator,
@@ -181,23 +155,9 @@ export class IOSTargetManager extends MobileTargetManager {
         if (selectedTarget) {
             return !selectedTarget.isOnline && selectedTarget.isVirtualTarget
                 ? this.launchSimulator(selectedTarget)
-                : IOSTarget.fromInterface(selectedTarget);
+                : new IOSTarget(selectedTarget);
         }
         return undefined;
-    }
-
-    public async getOnlineTargets(): Promise<IOSTarget[]> {
-        const onlineTargets = (await this.getTargetList(
-            target => target.isOnline,
-        )) as IDebuggableIOSTarget[];
-        return onlineTargets.map(target => IOSTarget.fromInterface(target));
-    }
-
-    public async getOnlineSimulators(): Promise<IOSTarget[]> {
-        const onlineTargets = (await this.getTargetList(
-            target => target.isOnline && target.isVirtualTarget,
-        )) as IDebuggableIOSTarget[];
-        return onlineTargets.map(target => IOSTarget.fromInterface(target));
     }
 
     public async isVirtualTarget(targetString: string): Promise<boolean> {
@@ -225,6 +185,12 @@ export class IOSTargetManager extends MobileTargetManager {
                 ),
             );
         }
+    }
+
+    public async getTargetList(
+        filter?: (el: IMobileTarget) => boolean,
+    ): Promise<IDebuggableIOSTarget[]> {
+        return (await super.getTargetList(filter)) as IDebuggableIOSTarget[];
     }
 
     protected async startSelection(
@@ -266,10 +232,8 @@ export class IOSTargetManager extends MobileTargetManager {
         return result?.toString().substring(4);
     }
 
-    protected async launchSimulator(
-        emulatorTarget: IDebuggableIOSTarget,
-    ): Promise<IOSTarget | undefined> {
-        return new Promise<IOSTarget | undefined>((resolve, reject) => {
+    protected async launchSimulator(emulatorTarget: IDebuggableIOSTarget): Promise<IOSTarget> {
+        return new Promise<IOSTarget>((resolve, reject) => {
             let emulatorLaunchFailed = false;
             const emulatorProcess = this.childProcess.spawn(
                 IOSTargetManager.XCRUN_COMMAND,
@@ -314,7 +278,7 @@ export class IOSTargetManager extends MobileTargetManager {
                                 emulatorTarget.name,
                             ),
                         );
-                        resolve(IOSTarget.fromInterface(emulatorTarget));
+                        resolve(new IOSTarget(emulatorTarget));
                     } else {
                         reject(
                             new Error(

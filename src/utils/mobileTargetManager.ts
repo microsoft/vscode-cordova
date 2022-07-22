@@ -4,8 +4,8 @@
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
 import { TargetType } from "../debugger/cordovaDebugSession";
-import { IMobileTarget, MobileTarget } from "./mobileTarget";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
+import { IMobileTarget, MobileTarget } from "./mobileTarget";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -13,7 +13,7 @@ nls.config({
 })();
 const localize = nls.loadMessageBundle();
 
-export abstract class MobileTargetManager {
+export abstract class MobileTargetManager<T extends MobileTarget> {
     protected targets?: IMobileTarget[];
 
     protected logger: OutputChannelLogger = OutputChannelLogger.getChannel(
@@ -27,13 +27,13 @@ export abstract class MobileTargetManager {
 
     public abstract selectAndPrepareTarget(
         filter?: (el: IMobileTarget) => boolean,
-    ): Promise<MobileTarget | undefined>;
+    ): Promise<T | undefined>;
 
     public async isVirtualTarget(target: string): Promise<boolean> {
-        if (target.includes("device")) {
+        if (target === TargetType.Device) {
             return false;
         }
-        if (target.includes("emulator")) {
+        if (target === TargetType.Emulator) {
             return true;
         }
         throw new Error(
@@ -52,9 +52,7 @@ export abstract class MobileTargetManager {
         return filter ? this.targets.filter(filter) : this.targets;
     }
 
-    protected abstract launchSimulator(
-        emulatorTarget: IMobileTarget,
-    ): Promise<MobileTarget | undefined>;
+    protected abstract launchSimulator(emulatorTarget: IMobileTarget): Promise<T | undefined>;
 
     protected abstract startSelection(
         filter?: (el: IMobileTarget) => boolean,

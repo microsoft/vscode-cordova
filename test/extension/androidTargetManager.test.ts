@@ -4,10 +4,10 @@
 import * as path from "path";
 import * as assert from "assert";
 import Sinon = require("sinon");
+import { QuickPickItem, window } from "vscode";
 import { AdbHelper } from "../../src/utils/android/adb";
 import { AndroidTarget, AndroidTargetManager } from "../../src/utils/android/androidTargetManager";
 import { IDebuggableMobileTarget, IMobileTarget } from "../../src/utils/mobileTarget";
-import { QuickPickItem, window } from "vscode";
 
 suite("AndroidTargetManager", function () {
     const testProjectPath = path.join(__dirname, "..", "resources", "testCordovaProject");
@@ -103,7 +103,7 @@ suite("AndroidTargetManager", function () {
                         emulatorTarget.id = "emulator-5554";
                         break;
                 }
-                return AndroidTarget.fromInterface(<IDebuggableMobileTarget>emulatorTarget);
+                return new AndroidTarget(<IDebuggableMobileTarget>emulatorTarget);
             },
         );
 
@@ -119,10 +119,10 @@ suite("AndroidTargetManager", function () {
     });
 
     suiteTeardown(() => {
-        getAbdsNamesStub.reset();
-        getOnlineTargetsStub.reset();
-        launchSimulatorStub.reset();
-        showQuickPickStub.reset();
+        getAbdsNamesStub.restore();
+        getOnlineTargetsStub.restore();
+        launchSimulatorStub.restore();
+        showQuickPickStub.restore();
     });
 
     suite("Target identification", function () {
@@ -169,9 +169,9 @@ suite("AndroidTargetManager", function () {
             );
             await checkTargetTargetTypeCheck(async () =>
                 assert.strictEqual(
-                    await androidTargetManager.isVirtualTarget("emulaor-1234"),
+                    await androidTargetManager.isVirtualTarget("emulator-1234"),
                     false,
-                    "Misrecognized emulator id: emulaor-1234",
+                    "Misrecognized emulator id: emulator-1234",
                 ),
             );
             await checkTargetTargetTypeCheck(async () =>
@@ -183,7 +183,7 @@ suite("AndroidTargetManager", function () {
             );
             await checkTargetTargetTypeCheck(async () =>
                 assert.strictEqual(
-                    await androidTargetManager.isVirtualTarget("emulaor1234"),
+                    await androidTargetManager.isVirtualTarget("emulator1234"),
                     false,
                     "Misrecognized emulator id: emulator1234",
                 ),
@@ -227,7 +227,7 @@ suite("AndroidTargetManager", function () {
     });
 
     suite("Target selection", function () {
-        async function checkTargetSeletionResult(
+        async function checkTargetSelectionResult(
             filter: (target: IMobileTarget) => boolean = () => true,
             selectionListCheck: (options: string[]) => boolean = () => true,
             resultCheck: (target: AndroidTarget) => boolean = () => true,
@@ -251,12 +251,12 @@ suite("AndroidTargetManager", function () {
         });
 
         test("Should show all targets in case filter has not been defined", async function () {
-            await checkTargetSeletionResult(undefined, options => options.length === 6);
+            await checkTargetSelectionResult(undefined, options => options.length === 6);
         });
 
         test("Should show targets by filter", async function () {
             const onlineTargetsFilter = (target: IMobileTarget) => target.isOnline;
-            await checkTargetSeletionResult(
+            await checkTargetSelectionResult(
                 onlineTargetsFilter,
                 options =>
                     options.length ===
@@ -275,7 +275,7 @@ suite("AndroidTargetManager", function () {
             const specificNameTargetFilter = (target: IMobileTarget) =>
                 target.name === onlineEmulator1.name;
 
-            await checkTargetSeletionResult(
+            await checkTargetSelectionResult(
                 specificNameTargetFilter,
                 undefined,
                 target => target.id === onlineEmulator1.id,
@@ -290,7 +290,7 @@ suite("AndroidTargetManager", function () {
         test("Should launch the selected emulator in case it's offline", async function () {
             const specificNameTargetFilter = (target: IMobileTarget) =>
                 target.name === offlineEmulator1.name;
-            await checkTargetSeletionResult(
+            await checkTargetSelectionResult(
                 specificNameTargetFilter,
                 undefined,
                 target => target.isOnline && !!target.id,

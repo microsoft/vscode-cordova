@@ -4,9 +4,8 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as url from "url";
-import { ICordovaAttachRequestArgs } from "../requestArgs";
-import { PlatformType } from "../cordovaDebugSession";
 import { CordovaProjectHelper, ProjectType } from "../../utils/cordovaProjectHelper";
+import { PlatformType } from "../cordovaDebugSession";
 
 export class SourcemapPathTransformer {
     private _cordovaRoot: string;
@@ -16,13 +15,20 @@ export class SourcemapPathTransformer {
     private _ionicLiveReload: boolean;
     private _debugRequestType: string;
 
-    constructor(args: ICordovaAttachRequestArgs, projectTypes: ProjectType) {
-        this._cordovaRoot = args.cwd;
-        this._platform = args.platform.toLowerCase();
-        this._webRoot = args.address || this._cordovaRoot;
-        this._ionicLiveReload = args.ionicLiveReload || false;
-        this._projectTypes = projectTypes;
-        this._debugRequestType = args.request;
+    constructor(
+        cwd: string,
+        platform: PlatformType,
+        projectType: ProjectType,
+        debugRequestType: string,
+        ionicLiveReload: boolean = false,
+        address?: string,
+    ) {
+        this._cordovaRoot = cwd;
+        this._platform = platform;
+        this._webRoot = address || this._cordovaRoot;
+        this._ionicLiveReload = ionicLiveReload;
+        this._projectTypes = projectType;
+        this._debugRequestType = debugRequestType;
     }
 
     public getClientPathFromFileBasedUrlWithAndroidAsset(sourceUrl: string): string | null {
@@ -90,7 +96,7 @@ export class SourcemapPathTransformer {
             const relativePath = path.relative(wwwRoot, defaultPath);
             const mergesPath = path.join(this._cordovaRoot, "merges", this._platform, relativePath);
             if (fs.existsSync(mergesPath)) {
-                // This file is overriden by a merge: Use that one
+                // This file is overridden by a merge: Use that one
                 return mergesPath;
             }
         }

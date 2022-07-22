@@ -3,11 +3,11 @@
 
 import * as path from "path";
 import * as fs from "fs";
-import * as sinon from "sinon";
-import { CordovaProjectHelper } from "../../src/utils/cordovaProjectHelper";
 import * as assert from "assert";
+import Sinon = require("sinon");
+import { CordovaProjectHelper } from "../../src/utils/cordovaProjectHelper";
 
-suite("сordovaProjectHelper", function () {
+suite("cordovaProjectHelper", function () {
     const testProjectPath = path.join(__dirname, "..", "resources", "testCordovaProject");
 
     suite("isCordovaProject", function () {
@@ -39,17 +39,15 @@ suite("сordovaProjectHelper", function () {
             devDep: Record<string, string>,
             existsSyncFake: (path: fs.PathLike) => boolean,
         ) {
-            sinon.stub(fs, "existsSync").callsFake(existsSyncFake);
-            sinon
-                .stub(fs, "readFileSync")
-                .callsFake(
-                    (path: string, options?: string | { encoding?: string; flag?: string }) => {
-                        return JSON.stringify({
-                            dependencies: dep,
-                            devDependencies: devDep,
-                        });
-                    },
-                );
+            Sinon.stub(fs, "existsSync").callsFake(existsSyncFake);
+            Sinon.stub(fs, "readFileSync").callsFake(
+                (path: string, options?: string | { encoding?: string; flag?: string }) => {
+                    return JSON.stringify({
+                        dependencies: dep,
+                        devDependencies: devDep,
+                    });
+                },
+            );
 
             const processedMajorVersion =
                 CordovaProjectHelper.determineIonicMajorVersion(ionicProjectPath);
@@ -106,7 +104,7 @@ suite("сordovaProjectHelper", function () {
 
     suite("getEnvArgument", function () {
         function checkEnvData(envData: any, envFileData: any = {}) {
-            let launchArgs: any = {
+            const launchArgs: any = {
                 cwd: testProjectPath,
                 platform: "android",
                 ionicLiveReload: false,
@@ -115,7 +113,7 @@ suite("сordovaProjectHelper", function () {
                 env: envData,
             };
 
-            let envRef = Object.assign({}, process.env);
+            const envRef = Object.assign({}, process.env);
             if (Object.keys(envFileData).length > 0) {
                 launchArgs.envFile = path.join(testProjectPath, ".env");
                 Object.assign(envRef, envFileData);
@@ -125,7 +123,7 @@ suite("сordovaProjectHelper", function () {
             try {
                 const envProcessed = Object.assign(
                     {},
-                    CordovaProjectHelper.getEnvArgument(launchArgs),
+                    CordovaProjectHelper.getEnvArgument(launchArgs.env, launchArgs.envFile),
                 );
                 assert.deepStrictEqual(envProcessed, envRef);
             } finally {
@@ -139,14 +137,12 @@ suite("сordovaProjectHelper", function () {
             }
         }
 
-        function checkEnvDataFromFile(env: any, envFile: any, envStrRepres: string) {
-            sinon
-                .stub(fs, "readFileSync")
-                .callsFake(
-                    (path: string, options?: string | { encoding?: string; flag?: string }) => {
-                        return envStrRepres;
-                    },
-                );
+        function checkEnvDataFromFile(env: any, envFile: any, envStrRepresent: string) {
+            Sinon.stub(fs, "readFileSync").callsFake(
+                (path: string, options?: string | { encoding?: string; flag?: string }) => {
+                    return envStrRepresent;
+                },
+            );
 
             checkEnvData(env, envFile);
 

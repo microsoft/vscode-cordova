@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as path from "path";
-import * as vscode from "vscode";
 import * as assert from "assert";
+import * as vscode from "vscode";
 import { Connection, Server, WebSocketTransport } from "vscode-cdp-proxy";
 import { convertWindowsPathToUnixOne } from "../testUtils";
 import { generateRandomPortNumber, delay } from "../../src/utils/extensionHelper";
@@ -16,8 +16,9 @@ import { CDP_API_NAMES } from "../../src/debugger/cdp-proxy/CDPMessageHandlers/C
 import { SourcemapPathTransformer } from "../../src/debugger/cdp-proxy/sourcemapPathTransformer";
 import { LogLevel } from "../../src/utils/log/logHelper";
 import { DebuggerEndpointHelper } from "../../src/debugger/cdp-proxy/debuggerEndpointHelper";
+import { PlatformType } from "../../src/debugger/cordovaDebugSession";
 
-interface ICDPProxyInternalEntities {
+interface ICdpProxyInternalEntities {
     attachArgs: ICordovaAttachRequestArgs;
     projectType: ProjectType;
     sourcemapPathTransformer: SourcemapPathTransformer;
@@ -36,10 +37,10 @@ suite("cordovaCDPProxy", function () {
             : path.join(__dirname, "..", "resources", "testCordovaProject");
 
     let proxy: CordovaCDPProxy;
-    let cancellationTokenSource: vscode.CancellationTokenSource =
+    const cancellationTokenSource: vscode.CancellationTokenSource =
         new vscode.CancellationTokenSource();
 
-    let wsTargetPort = generateRandomPortNumber();
+    const wsTargetPort = generateRandomPortNumber();
     let wsTargetServer: Server | null;
 
     let targetConnection: Connection | null;
@@ -60,7 +61,7 @@ suite("cordovaCDPProxy", function () {
         }
         await proxy.stopServer();
         if (wsTargetServer) {
-            await wsTargetServer.dispose();
+            wsTargetServer.dispose();
             wsTargetServer = null;
         }
     }
@@ -68,22 +69,20 @@ suite("cordovaCDPProxy", function () {
     function prepareCDPProxyInternalEntities(
         debugType: "ionic" | "cordova" | "simulate",
         cdpHandlerType: "chrome" | "safari",
-    ): ICDPProxyInternalEntities {
-        let attachArgs: ICordovaAttachRequestArgs;
-        let projectType: ProjectType;
+    ): ICdpProxyInternalEntities {
         let sourcemapPathTransformer: SourcemapPathTransformer;
         let cdpMessageHandler: CDPMessageHandlerBase;
 
-        projectType = new ProjectType(
+        const projectType: ProjectType = new ProjectType(
             false, // isMeteor
-            false, // isMobilefirst
+            false, // isMobileFirst
             false, // isPhonegap
             true, // isCordova
         );
 
-        attachArgs = {
+        const attachArgs: ICordovaAttachRequestArgs = {
             cwd: path.resolve(__dirname, "..", "resources", "testCordovaProject"),
-            platform: "android",
+            platform: PlatformType.Android,
             ionicLiveReload: false,
             request: "attach",
             port: 9222,
@@ -101,7 +100,14 @@ suite("cordovaCDPProxy", function () {
         }
 
         if (cdpHandlerType === "chrome") {
-            sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+            sourcemapPathTransformer = new SourcemapPathTransformer(
+                attachArgs.cwd,
+                attachArgs.platform,
+                projectType,
+                attachArgs.request,
+                attachArgs.ionicLiveReload,
+                attachArgs.address,
+            );
             cdpMessageHandler = CDPMessageHandlerCreator.create(
                 sourcemapPathTransformer,
                 projectType,
@@ -109,9 +115,16 @@ suite("cordovaCDPProxy", function () {
                 true,
             );
         } else {
-            attachArgs.platform = "ios";
+            attachArgs.platform = PlatformType.IOS;
 
-            sourcemapPathTransformer = new SourcemapPathTransformer(attachArgs, projectType);
+            sourcemapPathTransformer = new SourcemapPathTransformer(
+                attachArgs.cwd,
+                attachArgs.platform,
+                projectType,
+                attachArgs.request,
+                attachArgs.ionicLiveReload,
+                attachArgs.address,
+            );
             cdpMessageHandler = CDPMessageHandlerCreator.create(
                 sourcemapPathTransformer,
                 projectType,
@@ -129,7 +142,7 @@ suite("cordovaCDPProxy", function () {
     }
 
     suiteSetup(async () => {
-        let cdpProxyInternalEntities = prepareCDPProxyInternalEntities("cordova", "chrome");
+        const cdpProxyInternalEntities = prepareCDPProxyInternalEntities("cordova", "chrome");
         proxy = new CordovaCDPProxy(
             cdpProxyHostAddress,
             cdpProxyPort,
@@ -156,6 +169,7 @@ suite("cordovaCDPProxy", function () {
 
         // Due to the time limit, sooner or later this cycle will end
         while (!targetConnection) {
+            // eslint-disable-next-line no-await-in-loop
             await delay(1000);
         }
     });
@@ -168,7 +182,7 @@ suite("cordovaCDPProxy", function () {
         suite("ChromeCDPMessageHandler", () => {
             suite("Pure Cordova", () => {
                 suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                    const cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
                         "cordova",
                         "chrome",
                     );
@@ -209,7 +223,7 @@ suite("cordovaCDPProxy", function () {
 
                 suite("Simulate", () => {
                     suiteSetup(() => {
-                        let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                        const cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
                             "simulate",
                             "chrome",
                         );
@@ -224,7 +238,7 @@ suite("cordovaCDPProxy", function () {
                             params: {
                                 url: `file://${
                                     process.platform === "win32"
-                                        ? "/" + testProjectPath
+                                        ? `/${testProjectPath}`
                                         : testProjectPath
                                 }/www/js/index.js`,
                             },
@@ -252,7 +266,7 @@ suite("cordovaCDPProxy", function () {
 
             suite("Ionic", () => {
                 suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                    const cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
                         "ionic",
                         "chrome",
                     );
@@ -267,7 +281,7 @@ suite("cordovaCDPProxy", function () {
                         params: {
                             url: `file://${
                                 process.platform === "win32"
-                                    ? "/" + testProjectPath
+                                    ? `/${testProjectPath}`
                                     : testProjectPath
                             }/www/main.js`,
                         },
@@ -306,13 +320,13 @@ suite("cordovaCDPProxy", function () {
                     let testUrlRegex;
                     if (process.platform === "win32") {
                         const testPathRegex = `${testProjectPath.replace(
-                            /([\/\.])/g,
+                            /([./])/g,
                             "\\$1",
                         )}\\\\[wW][wW][wW]\\\\[mM][aA][iI][nN]\\.[jJ][sS]`;
                         testUrlRegex = `[fF][iI][lL][eE]:\\/\\/${testPathRegex}|${testPathRegex}`;
                     } else {
                         const testPathRegex = `${testProjectPath}/www/main.js`.replace(
-                            /([\/\.])/g,
+                            /([./])/g,
                             "\\$1",
                         );
                         testUrlRegex = `file:\\/\\/${testPathRegex}|${testPathRegex}`;
@@ -341,7 +355,7 @@ suite("cordovaCDPProxy", function () {
             suite("Ionic", () => {
                 const targetPageId = "page-7";
                 suiteSetup(() => {
-                    let cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
+                    const cdpProxyInternalEntities = prepareCDPProxyInternalEntities(
                         "ionic",
                         "safari",
                     );

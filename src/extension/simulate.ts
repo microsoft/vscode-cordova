@@ -22,7 +22,7 @@ const localize = nls.loadMessageBundle();
 
 export enum SimulateTargets {
     Default = "default",
-    Сhrome = "chrome",
+    Chrome = "chrome",
     Chromium = "chromium",
     Edge = "edge",
     Firefox = "firefox",
@@ -43,36 +43,32 @@ export class PluginSimulator implements vscode.Disposable {
     private simulatePackage: typeof CordovaSimulate;
     private packageInstallProc: cp.ChildProcess | null = null;
 
-    public simulate(
+    public async simulate(
         fsPath: string,
         simulateOptions: CordovaSimulate.SimulateOptions,
         projectType: ProjectType,
     ): Promise<any> {
-        return this.launchServer(fsPath, simulateOptions, projectType)
-            .then(() => this.launchSimHost(simulateOptions.target))
-            .then(() => this.launchAppHost(simulateOptions.target));
+        await this.launchServer(fsPath, simulateOptions, projectType);
+        await this.launchSimHost(simulateOptions.target);
+        return await this.launchAppHost(simulateOptions.target);
     }
 
-    public launchAppHost(target: string): Promise<void> {
-        return this.getPackage().then(simulate => {
-            return simulate.launchBrowser(target, this.simulationInfo.appHostUrl);
-        });
+    public async launchAppHost(target: string): Promise<void> {
+        const simulate = await this.getPackage();
+        return await simulate.launchBrowser(target, this.simulationInfo.appHostUrl);
     }
 
-    public launchSimHost(target: string): Promise<void> {
+    public async launchSimHost(target: string): Promise<void> {
         if (!this.simulator) {
-            return Promise.reject(
-                new Error(
-                    localize(
-                        "LaunchingSimHostBeforeStartSimulationServer",
-                        "Launching sim host before starting simulation server",
-                    ),
+            throw new Error(
+                localize(
+                    "LaunchingSimHostBeforeStartSimulationServer",
+                    "Launching sim host before starting simulation server",
                 ),
             );
         }
-        return this.getPackage().then(simulate => {
-            return simulate.launchBrowser(target, this.simulator.simHostUrl());
-        });
+        const simulate = await this.getPackage();
+        return await simulate.launchBrowser(target, this.simulator.simHostUrl());
     }
 
     public launchServer(

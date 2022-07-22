@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as Net from "net";
 import * as vscode from "vscode";
-import { CordovaDebugSession } from "../debugger/cordovaDebugSession";
+import * as Net from "net";
+import CordovaDebugSession from "../debugger/cordovaDebugSession";
 import { CordovaSession, CordovaSessionStatus } from "../debugger/debugSessionWrapper";
 
 export class CordovaSessionManager implements vscode.DebugAdapterDescriptorFactory {
