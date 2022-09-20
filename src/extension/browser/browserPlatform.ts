@@ -1,24 +1,22 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as nls from "vscode-nls";
 import * as fs from "fs";
 import * as path from "path";
-import * as execa from "execa";
+import * as child_process from "child_process";
+import * as nls from "vscode-nls";
 import * as vscode from "vscode";
 import * as io from "socket.io-client";
-import * as child_process from "child_process";
-import * as browserHelper from "vscode-js-debug-browsers";
+import simulate = require("cordova-simulate");
+import { EventEmitter } from "vscode";
 import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import AbstractPlatform from "../abstractPlatform";
 import { IBrowserPlatformOptions } from "../platformOptions";
 import { IBrowserAttachResult } from "../platformAttachResult";
-import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchResult } from "../platformLaunchResult";
-import { IBrowserFinder } from "vscode-js-debug-browsers";
-import { EventEmitter } from "vscode";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -87,45 +85,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         this.runArguments = this.getRunArguments();
 
         // Launch Chrome
-        let browserFinder: IBrowserFinder;
-        switch (this.platformOpts.target) {
-            case TargetType.Edge:
-                browserFinder = new browserHelper.EdgeBrowserFinder(
-                    process.env,
-                    fs.promises,
-                    execa,
-                );
-                break;
-            case TargetType.Chrome:
-            default:
-                browserFinder = new browserHelper.ChromeBrowserFinder(
-                    process.env,
-                    fs.promises,
-                    execa,
-                );
-        }
-        const browserPath = (await browserFinder.findAll())[0];
-        if (browserPath) {
-            this.browserProc = child_process.spawn(browserPath.path, this.runArguments, {
-                detached: true,
-                stdio: ["ignore"],
-            });
-            this.browserProc.unref();
-            this.browserProc.on("error", err => {
-                const errMsg = localize("BrowserError", "Browser error: {0}", err.message);
-                this.log(errMsg, true);
-                this.browserStopEventEmitter.fire(err);
-            });
-            this.browserProc.once("exit", (code: number) => {
-                const exitMessage = localize(
-                    "BrowserExit",
-                    "Browser has been closed with exit code: {0}",
-                    code,
-                );
-                this.log(exitMessage);
-                this.browserStopEventEmitter.fire();
-            });
-        }
+        this.launchDebugBrowser(this.platformOpts.target, this.runArguments.toString());
 
         return { devServerPort };
     }
@@ -281,6 +241,36 @@ export default class BrowserPlatform extends AbstractPlatform {
         result.spaurlrewrites = browserOption.spaUrlRewrites;
         result.lang = vscode.env.language;
 
+        return result;
+    }
+
+    private launchDebugBrowser(target: string, runArg: string) {
+        let args;
+        // let urlAdded = false;
+        const browser = `${target} ${runArg.toString().replace(/,/g, " ")}`;
+
+        switch (process.platform) {
+            case "darwin":
+                args = ["open"];
+                if (target === "chrome") {
+                    args.push("-n");
+                }
+                args.push("-a", browser);
+                break;
+            case "win32":
+                // if (target === "edge") {
+                //     runArg += `:${url}`;
+                //     urlAdded = true;
+                // }
+                args = ['cmd /c start ""', browser];
+                break;
+            case "linux":
+                args = [browser];
+                break;
+        }
+
+        const command = args.join(" ");
+        const result = child_process.execFile(command);
         return result;
     }
 }

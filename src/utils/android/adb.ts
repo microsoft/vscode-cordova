@@ -33,7 +33,7 @@ export class AdbHelper {
         "pidofNotFound",
         "/system/bin/sh: pidof: not found",
     );
-    private static readonly PS_FIELDS_SPLITTER_RE = /\s+(?:[RSIDZTW<NL]\s+)?/;
+    private static readonly PS_FIELDS_SPLITTER_RE = /\s+(?:[<DILNR-TWZ]\s+)?/;
     public static readonly AndroidSDKEmulatorPattern = /^emulator-\d{1,5}$/;
 
     private childProcess: ChildProcess = new ChildProcess();
@@ -61,7 +61,7 @@ export class AdbHelper {
     public async getPidForPackageName(targetId: string, appPackageName: string): Promise<string> {
         try {
             const pid = await this.execute(targetId, `shell pidof ${appPackageName}`);
-            if (pid && /^[0-9]+$/.test(pid.trim())) {
+            if (pid && /^\d+$/.test(pid.trim())) {
                 return pid.trim();
             }
             throw Error(AdbHelper.PIDOFF_NOT_FOUND_ERROR);
@@ -97,12 +97,12 @@ export class AdbHelper {
         const pid = await this.getPidForPackageName(targetId, appPackageName);
         const getSocketsResult = await this.execute(targetId, "shell cat /proc/net/unix");
         const lines = getSocketsResult.split("\n");
-        const keys = lines.shift().split(/[\s\r]+/);
+        const keys = lines.shift().split(/\s+/);
         const flagsIdx = keys.indexOf("Flags");
         const stIdx = keys.indexOf("St");
         const pathIdx = keys.indexOf("Path");
         for (const line of lines) {
-            const fields = line.split(/[\s\r]+/);
+            const fields = line.split(/\s+/);
             if (fields.length < 8) {
                 continue;
             }
@@ -115,7 +115,7 @@ export class AdbHelper {
             if (pathField.length < 1 || pathField[0] !== "@") {
                 continue;
             }
-            if (pathField.indexOf("_devtools_remote") === -1) {
+            if (!pathField.includes("_devtools_remote")) {
                 continue;
             }
 
@@ -171,9 +171,8 @@ export class AdbHelper {
                     if (output) {
                         // Return the name of avd: emuName
                         return output.split(/\r?\n|\r/g)[0];
-                    } else {
-                        return null;
                     }
+                    return null;
                 })
                 // If the command returned an error, it means that we could not find the emulator with the passed id
                 .catch(() => null)

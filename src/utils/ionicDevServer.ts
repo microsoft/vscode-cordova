@@ -1,14 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as nls from "vscode-nls";
 import * as os from "os";
 import * as child_process from "child_process";
+import * as nls from "vscode-nls";
+import { EventEmitter } from "vscode";
 import AbstractPlatform from "../extension/abstractPlatform";
-import { CordovaProjectHelper } from "./cordovaProjectHelper";
 import { cordovaStartCommand, killChildProcess } from "../debugger/extension";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
-import { EventEmitter } from "vscode";
+import { CordovaProjectHelper } from "./cordovaProjectHelper";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -33,7 +34,7 @@ export default class IonicDevServer {
 
     private static readonly ERROR_REGEX: RegExp = /error:.*/i;
     private static readonly ANSI_REGEX: RegExp =
-        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+        /[\u001b\u009b][#();?[]*(?:\d{1,4}(?:;\d{0,4})*)?[\d<=>A-ORZcf-nqry]/g;
 
     public ionicDevServerUrls: string[] | undefined;
     private ionicLivereloadProcess: child_process.ChildProcess;
@@ -157,14 +158,14 @@ export default class IonicDevServer {
             this.ionicLivereloadProcess.on("exit", () => {
                 this.ionicLivereloadProcess = null;
 
-                let exitMessage: string = "The Ionic live reload server exited unexpectedly";
+                let exitMessage = "The Ionic live reload server exited unexpectedly";
                 const errorMsg = this.getServerErrorMessage(output.serverErr);
 
                 if (errorMsg) {
                     // The Ionic live reload server has an error; check if it is related to the devServerAddress to give a better message
                     if (
-                        errorMsg.indexOf("getaddrinfo ENOTFOUND") !== -1 ||
-                        errorMsg.indexOf("listen EADDRNOTAVAIL") !== -1
+                        errorMsg.includes("getaddrinfo ENOTFOUND") ||
+                        errorMsg.includes("listen EADDRNOTAVAIL")
                     ) {
                         exitMessage +=
                             os.EOL +
@@ -295,8 +296,7 @@ export default class IonicDevServer {
         // watch ready
         // dev server running: http://localhost:8100/
 
-        const SERVER_URL_RE =
-            /(dev server running|Running dev server|Local):.*(http:\/\/.[^\s]*)/gim;
+        const SERVER_URL_RE = /(dev server running|running dev server|local):.*(http:\/\/.\S*)/gim;
         const localServerMatchResult = SERVER_URL_RE.exec(output.serverOut);
         if (!this.serverReady && localServerMatchResult) {
             resolve(IonicDevServerStatus.ServerReady);
@@ -305,7 +305,7 @@ export default class IonicDevServer {
         if (this.serverReady && !this.appReady) {
             if (isServe || regexp.test(output.serverOut)) {
                 const serverUrls = [localServerMatchResult[2]];
-                const externalUrls = /External:\s(.*)$/im.exec(output.serverOut);
+                const externalUrls = /external:\s(.*)$/im.exec(output.serverOut);
                 if (externalUrls) {
                     const urls = externalUrls[1].split(", ").map(x => x.trim());
                     serverUrls.push(...urls);
@@ -399,12 +399,12 @@ To get the list of addresses run "ionic cordova run PLATFORM --livereload" (wher
         // "build succeeded"
 
         const isIosDevice: boolean =
-            runArguments.indexOf("ios") !== -1 && runArguments.indexOf("--device") !== -1;
+            runArguments.includes("ios") && runArguments.includes("--device");
         const isIosSimulator: boolean =
-            runArguments.indexOf("ios") !== -1 && runArguments.indexOf("emulate") !== -1;
-        const iosDeviceAppReadyRegex: RegExp = /created bundle at path|\(lldb\)\W+run\r?\nsuccess/i;
-        const iosSimulatorAppReadyRegex: RegExp = /build succeeded/i;
-        const appReadyRegex: RegExp = /launch success|run successful/i;
+            runArguments.includes("ios") && runArguments.includes("emulate");
+        const iosDeviceAppReadyRegex = /created bundle at path|\(lldb\)\W+run\r?\nsuccess/i;
+        const iosSimulatorAppReadyRegex = /build succeeded/i;
+        const appReadyRegex = /launch success|run successful/i;
 
         if (isIosDevice) {
             return iosDeviceAppReadyRegex;

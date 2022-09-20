@@ -74,10 +74,9 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
         if (selectedTarget) {
             if (!selectedTarget.isOnline) {
                 return this.launchSimulator(selectedTarget);
-            } else {
-                if (selectedTarget.id) {
-                    return new AndroidTarget(<IDebuggableMobileTarget>selectedTarget);
-                }
+            }
+            if (selectedTarget.id) {
+                return new AndroidTarget(<IDebuggableMobileTarget>selectedTarget);
             }
         }
     }
