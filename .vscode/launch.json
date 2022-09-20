@@ -24,8 +24,9 @@
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outFiles": ["${workspaceFolder}/test/**/*.js"],
-      "preLaunchTask": "gulp: prepare-integration-tests"
+      "outFiles": [
+        "${workspaceFolder}/test/**/*.js"
+      ]
     }
   ]
 }

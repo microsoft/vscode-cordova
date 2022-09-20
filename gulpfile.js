@@ -353,8 +353,6 @@ gulp.task("clean", () => {
     const pathsToDelete = [
         "src/**/*.js",
         "src/**/*.js.map",
-        "test/**/*.js",
-        "test/**/*.js.map",
         "out/",
         "dist",
         "!test/resources/sampleReactNativeProject/**/*.js",
