@@ -524,45 +524,35 @@ const translationExport = gulp.series(buildTask, function runTranslationExport()
 });
 
 // Imports localization from raw localized MLCP strings to VS Code .i18n.json files
-gulp.task(
-    "translations-import",
-    gulp.series(done => {
-        var options = minimist(process.argv.slice(2), {
-            string: "location",
-            default: {
-                location: "../vscode-translations-import",
-            },
-        });
-        es.merge(
-            defaultLanguages.map(language => {
-                let id = language.transifexId || language.id;
-                log(
+const translationImport = gulp.series(done => {
+    var options = minimist(process.argv.slice(2), {
+        string: "location",
+        default: {
+            location: "../vscode-translations-import",
+        },
+    });
+    es.merge(
+        defaultLanguages.map(language => {
+            let id = language.transifexId || language.id;
+            log(path.join(options.location, id, "vscode-extensions", `${fullExtensionName}.xlf`));
+            return gulp
+                .src(
                     path.join(
                         options.location,
                         id,
                         "vscode-extensions",
                         `${fullExtensionName}.xlf`,
                     ),
-                );
-                return gulp
-                    .src(
-                        path.join(
-                            options.location,
-                            id,
-                            "vscode-extensions",
-                            `${fullExtensionName}.xlf`,
-                        ),
-                    )
-                    .pipe(nls.prepareJsonFiles())
-                    .pipe(gulp.dest(path.join("./i18n", language.folderName)));
-            }),
-        ).pipe(
-            es.wait(() => {
-                done();
-            }),
-        );
-    }, addi18n),
-);
+                )
+                .pipe(nls.prepareJsonFiles())
+                .pipe(gulp.dest(path.join("./i18n", language.folderName)));
+        }),
+    ).pipe(
+        es.wait(() => {
+            done();
+        }),
+    );
+}, addi18n);
 
 module.exports = {
     "format:prettier": () => runPrettier(true),
@@ -587,5 +577,6 @@ module.exports = {
     package: package,
     release: release,
     "add-i18n": addi18n,
-    "translation-export": translationExport,
+    "translations-export": translationExport,
+    "translations-import": translationImport,
 };
