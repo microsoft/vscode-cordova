@@ -350,20 +350,6 @@ const webpackBundle = async () => {
     return runWebpack({ packages });
 };
 
-// gulp.task("clean", () => {
-//     const pathsToDelete = [
-//         "src/**/*.js",
-//         "src/**/*.js.map",
-//         "out/",
-//         "dist",
-//         "!test/resources/sampleReactNativeProject/**/*.js",
-//         ".vscode-test/",
-//         "nls.*.json",
-//         "!test/smoke/**/*",
-//     ];
-//     return del(pathsToDelete, { force: true });
-// });
-
 const clean = () => {
     const pathsToDelete = [
         "src/**/*.js",
@@ -387,26 +373,11 @@ const buildTask = gulp.series(lint, function runBuild(done) {
     });
 });
 
-// gulp.task(
-//     "build-src",
-//     gulp.series(lint, function runBuild(done) {
-//         build(true, true).once("finish", () => {
-//             done();
-//         });
-//     }),
-// );
-
 const buildSrc = gulp.series(lint, function runBuild(done) {
     build(true, true).once("finish", () => {
         done();
     });
 });
-
-// gulp.task("build-dev", function runDevBuild(done) {
-//     build(true, false).once("finish", () => {
-//         done();
-//     });
-// });
 
 const buildDev = function runDevBuild(done) {
     build(true, false).once("finish", () => {
@@ -414,21 +385,15 @@ const buildDev = function runDevBuild(done) {
     });
 };
 
-// gulp.task("quick-build", gulp.series("build-dev"));
-
 const quickBuild = gulp.series(buildDev);
 
-gulp.task(
-    "watch",
-    gulp.series(buildTask, function runWatch() {
-        log("Watching build sources...");
-        return gulp.watch(sources, gulp.series(buildTask));
-    }),
-);
+const watch = gulp.series(buildTask, function runWatch() {
+    log("Watching build sources...");
+    return gulp.watch(sources, gulp.series(buildTask));
+});
 
-gulp.task("prod-build", gulp.series(clean, webpackBundle, generateSrcLocBundle));
-
-gulp.task("default", gulp.series("prod-build"));
+const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
+const defaultTask = gulp.series(prodBuild);
 
 gulp.task("test", gulp.series(buildTask, lint, test));
 
@@ -620,4 +585,7 @@ module.exports = {
     "build-src": buildSrc,
     "build-dev": buildDev,
     "quick-build": quickBuild,
+    watch: watch,
+    "prod-build": prodBuild,
+    default: defaultTask,
 };
