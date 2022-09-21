@@ -381,8 +381,14 @@ const clean = () => {
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
+const buildTask = gulp.series(lint, function runBuild(done) {
+    build(true, true).once("finish", () => {
+        done();
+    });
+});
+
 // gulp.task(
-//     "build",
+//     "build-src",
 //     gulp.series(lint, function runBuild(done) {
 //         build(true, true).once("finish", () => {
 //             done();
@@ -390,28 +396,27 @@ const clean = () => {
 //     }),
 // );
 
-const buildTask = gulp.series(lint, function runBuild(done) {
+const buildSrc = gulp.series(lint, function runBuild(done) {
     build(true, true).once("finish", () => {
         done();
     });
 });
 
-gulp.task(
-    "build-src",
-    gulp.series(lint, function runBuild(done) {
-        build(true, true).once("finish", () => {
-            done();
-        });
-    }),
-);
+// gulp.task("build-dev", function runDevBuild(done) {
+//     build(true, false).once("finish", () => {
+//         done();
+//     });
+// });
 
-gulp.task("build-dev", function runDevBuild(done) {
+const buildDev = function runDevBuild(done) {
     build(true, false).once("finish", () => {
         done();
     });
-});
+};
 
-gulp.task("quick-build", gulp.series("build-dev"));
+// gulp.task("quick-build", gulp.series("build-dev"));
+
+const quickBuild = gulp.series(buildDev);
 
 gulp.task(
     "watch",
@@ -431,7 +436,7 @@ gulp.task("test-no-build", test);
 
 gulp.task(
     "test:coverage",
-    gulp.series("quick-build", async function () {
+    gulp.series(quickBuild, async function () {
         await test(true);
     }),
 );
@@ -612,4 +617,7 @@ module.exports = {
     "webpack-bundle": webpackBundle,
     clean: clean,
     build: buildTask,
+    "build-src": buildSrc,
+    "build-dev": buildDev,
+    "quick-build": quickBuild,
 };
