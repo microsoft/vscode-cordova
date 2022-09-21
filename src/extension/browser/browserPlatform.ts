@@ -266,6 +266,7 @@ export default class BrowserPlatform extends AbstractPlatform {
                 args.push("-a", browser);
                 break;
             case "win32":
+                // eslint-disable-next-line @typescript-eslint/quotes
                 args = ['cmd /c start ""', browser];
                 break;
             case "linux":

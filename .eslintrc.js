@@ -42,7 +42,7 @@ module.exports = {
         "semi": "off",
         "no-void": "off",
         "no-promise-executor-return": "warn",
-        "@typescript-eslint/quotes": ["warn", "double"],
+        "@typescript-eslint/quotes": ["error", "double"],
         "@typescript-eslint/await-thenable": "warn",
         "@typescript-eslint/dot-notation": "warn",
         "@typescript-eslint/explicit-function-return-type": "off",
