@@ -74,7 +74,12 @@ export default class BrowserPlatform extends AbstractPlatform {
                 this.platformOpts.projectType,
             );
             await this.connectSimulateDebugHost(simulateInfo);
-            await this.platformOpts.pluginSimulator.launchSimHost(this.platformOpts.target);
+
+            // Launch simulate host in browser
+            this.launchDebugBrowser(
+                this.platformOpts.target,
+                `${this.runArguments.toString()} ${simulateInfo.simHostUrl}`,
+            );
             this.platformOpts.simulatePort = CordovaProjectHelper.getPortFromURL(
                 simulateInfo.appHostUrl,
             );
@@ -82,10 +87,11 @@ export default class BrowserPlatform extends AbstractPlatform {
             devServerPort = this.IonicDevServer.getDevServerPort();
         }
 
-        this.runArguments = this.getRunArguments();
-
-        // Launch Chrome
-        this.launchDebugBrowser(this.platformOpts.target, this.runArguments.toString());
+        // Launch app host in browser
+        this.launchDebugBrowser(
+            this.platformOpts.target,
+            `${this.runArguments.toString()} ${this.platformOpts.url}`,
+        );
 
         return { devServerPort };
     }
@@ -246,8 +252,10 @@ export default class BrowserPlatform extends AbstractPlatform {
 
     private launchDebugBrowser(target: string, runArg: string) {
         let args;
-        // let urlAdded = false;
-        const browser = `${target} ${runArg.toString().replace(/,/g, " ")}`;
+        let browser = `${target} ${runArg.toString().replace(/,/g, " ")}`;
+        if (process.platform === "darwin") {
+            browser = `"Google Chrome" --args ${runArg.toString().replace(/,/g, " ")}`;
+        }
 
         switch (process.platform) {
             case "darwin":
@@ -258,10 +266,6 @@ export default class BrowserPlatform extends AbstractPlatform {
                 args.push("-a", browser);
                 break;
             case "win32":
-                // if (target === "edge") {
-                //     runArg += `:${url}`;
-                //     urlAdded = true;
-                // }
                 args = ['cmd /c start ""', browser];
                 break;
             case "linux":
@@ -270,7 +274,6 @@ export default class BrowserPlatform extends AbstractPlatform {
         }
 
         const command = args.join(" ");
-        const result = child_process.execFile(command);
-        return result;
+        child_process.exec(command);
     }
 }
