@@ -350,7 +350,21 @@ const webpackBundle = async () => {
     return runWebpack({ packages });
 };
 
-gulp.task("clean", () => {
+// gulp.task("clean", () => {
+//     const pathsToDelete = [
+//         "src/**/*.js",
+//         "src/**/*.js.map",
+//         "out/",
+//         "dist",
+//         "!test/resources/sampleReactNativeProject/**/*.js",
+//         ".vscode-test/",
+//         "nls.*.json",
+//         "!test/smoke/**/*",
+//     ];
+//     return del(pathsToDelete, { force: true });
+// });
+
+const clean = () => {
     const pathsToDelete = [
         "src/**/*.js",
         "src/**/*.js.map",
@@ -362,19 +376,25 @@ gulp.task("clean", () => {
         "!test/smoke/**/*",
     ];
     return del(pathsToDelete, { force: true });
-});
+};
 
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
-gulp.task(
-    "build",
-    gulp.series(lint, function runBuild(done) {
-        build(true, true).once("finish", () => {
-            done();
-        });
-    }),
-);
+// gulp.task(
+//     "build",
+//     gulp.series(lint, function runBuild(done) {
+//         build(true, true).once("finish", () => {
+//             done();
+//         });
+//     }),
+// );
+
+const buildTask = gulp.series(lint, function runBuild(done) {
+    build(true, true).once("finish", () => {
+        done();
+    });
+});
 
 gulp.task(
     "build-src",
@@ -395,17 +415,17 @@ gulp.task("quick-build", gulp.series("build-dev"));
 
 gulp.task(
     "watch",
-    gulp.series("build", function runWatch() {
+    gulp.series(buildTask, function runWatch() {
         log("Watching build sources...");
-        return gulp.watch(sources, gulp.series("build"));
+        return gulp.watch(sources, gulp.series(buildTask));
     }),
 );
 
-gulp.task("prod-build", gulp.series("clean", webpackBundle, generateSrcLocBundle));
+gulp.task("prod-build", gulp.series(clean, webpackBundle, generateSrcLocBundle));
 
 gulp.task("default", gulp.series("prod-build"));
 
-gulp.task("test", gulp.series("build", lint, test));
+gulp.task("test", gulp.series(buildTask, lint, test));
 
 gulp.task("test-no-build", test);
 
@@ -418,8 +438,8 @@ gulp.task(
 
 gulp.task(
     "watch-build-test",
-    gulp.series("build", "test", function runWatch() {
-        return gulp.watch(sources, gulp.series("build", "test"));
+    gulp.series(buildTask, "test", function runWatch() {
+        return gulp.watch(sources, gulp.series(buildTask, "test"));
     }),
 );
 
@@ -533,7 +553,7 @@ gulp.task("add-i18n", () => {
 // Creates MLCP readable .xliff file and saves it locally
 gulp.task(
     "translations-export",
-    gulp.series("build", function runTranslationExport() {
+    gulp.series(buildTask, function runTranslationExport() {
         return gulp
             .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
             .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
@@ -590,4 +610,6 @@ module.exports = {
     "lint:eslint": () => runEslint({ fix: false }),
     lint: lint,
     "webpack-bundle": webpackBundle,
+    clean: clean,
+    build: buildTask,
 };
