@@ -515,15 +515,13 @@ const addi18n = () => {
 };
 
 // Creates MLCP readable .xliff file and saves it locally
-gulp.task(
-    "translations-export",
-    gulp.series(buildTask, function runTranslationExport() {
-        return gulp
-            .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
-            .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
-            .pipe(gulp.dest(path.join("..", `${translationProjectName}-localization-export`)));
-    }),
-);
+
+const translationExport = gulp.series(buildTask, function runTranslationExport() {
+    return gulp
+        .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
+        .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
+        .pipe(gulp.dest(path.join("..", `${translationProjectName}-localization-export`)));
+});
 
 // Imports localization from raw localized MLCP strings to VS Code .i18n.json files
 gulp.task(
@@ -589,4 +587,5 @@ module.exports = {
     package: package,
     release: release,
     "add-i18n": addi18n,
+    "translation-export": translationExport,
 };
