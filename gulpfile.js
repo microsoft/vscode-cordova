@@ -507,12 +507,12 @@ const release = function prepareLicenses() {
 };
 
 // Creates package.i18n.json files for all languages from {workspaceRoot}/i18n folder into project root
-gulp.task("add-i18n", () => {
+const addi18n = () => {
     return gulp
         .src(["package.nls.json"])
         .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
         .pipe(gulp.dest("."));
-});
+};
 
 // Creates MLCP readable .xliff file and saves it locally
 gulp.task(
@@ -563,7 +563,7 @@ gulp.task(
                 done();
             }),
         );
-    }, "add-i18n"),
+    }, addi18n),
 );
 
 module.exports = {
@@ -588,4 +588,5 @@ module.exports = {
     "watch-build-test": watchBuildTest,
     package: package,
     release: release,
+    "add-i18n": addi18n,
 };
