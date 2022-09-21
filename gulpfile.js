@@ -399,15 +399,19 @@ const runTest = gulp.series(buildTask, lint, test);
 
 const testNoBuild = test;
 
+const testCoverage = gulp.series(quickBuild, async function () {
+    await test(true);
+});
+
 const watchBuildTest = gulp.series(buildTask, runTest, function runWatch() {
     return gulp.watch(sources, gulp.series(buildTask, runTest));
 });
 
-gulp.task("package", callback => {
+const package = callback => {
     const command = path.join(__dirname, "node_modules", ".bin", "vsce");
     const args = ["package"];
     executeCommand(command, args, callback);
-});
+};
 
 function readJson(file) {
     const contents = fs.readFileSync(path.join(__dirname, file), "utf-8").toString();
@@ -435,7 +439,7 @@ const getVersionNumber = () => {
     ].join(".");
 };
 
-gulp.task("release", function prepareLicenses() {
+const release = function prepareLicenses() {
     const backupFiles = [
         "LICENSE.txt",
         "ThirdPartyNotices.txt",
@@ -500,7 +504,7 @@ gulp.task("release", function prepareLicenses() {
                 );
             });
         });
-});
+};
 
 // Creates package.i18n.json files for all languages from {workspaceRoot}/i18n folder into project root
 gulp.task("add-i18n", () => {
@@ -582,4 +586,6 @@ module.exports = {
     "test-no-build": testNoBuild,
     "test:coverage": testCoverage,
     "watch-build-test": watchBuildTest,
+    package: package,
+    release: release,
 };
