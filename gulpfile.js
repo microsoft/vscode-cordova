@@ -329,16 +329,17 @@ const runEslint = async options_ => {
     });
 };
 
-gulp.task("format:prettier", () => runPrettier(true));
-gulp.task("format:eslint", () => runEslint({ fix: true }));
-gulp.task("format", gulp.series("format:prettier", "format:eslint"));
+const format = gulp.series(
+    () => runPrettier(true),
+    () => runEslint({ fix: true }),
+);
 
-gulp.task("lint:prettier", () => runPrettier(false));
-gulp.task("lint:eslint", () => runEslint({ fix: false }));
-gulp.task("lint", gulp.series("lint:prettier", "lint:eslint"));
+const lint = gulp.series(
+    () => runPrettier(false),
+    () => runEslint({ fix: false }),
+);
 
-/** Run webpack to bundle the extension output files */
-gulp.task("webpack-bundle", async () => {
+const webpackBundle = async () => {
     const packages = [
         {
             entry: `${buildDir}/cordova.ts`,
@@ -347,7 +348,7 @@ gulp.task("webpack-bundle", async () => {
         },
     ];
     return runWebpack({ packages });
-});
+};
 
 gulp.task("clean", () => {
     const pathsToDelete = [
@@ -368,7 +369,7 @@ gulp.task("clean", () => {
 // be an issue on Windows platforms)
 gulp.task(
     "build",
-    gulp.series("lint", function runBuild(done) {
+    gulp.series(lint, function runBuild(done) {
         build(true, true).once("finish", () => {
             done();
         });
@@ -377,7 +378,7 @@ gulp.task(
 
 gulp.task(
     "build-src",
-    gulp.series("lint", function runBuild(done) {
+    gulp.series(lint, function runBuild(done) {
         build(true, true).once("finish", () => {
             done();
         });
@@ -400,11 +401,11 @@ gulp.task(
     }),
 );
 
-gulp.task("prod-build", gulp.series("clean", "webpack-bundle", generateSrcLocBundle));
+gulp.task("prod-build", gulp.series("clean", webpackBundle, generateSrcLocBundle));
 
 gulp.task("default", gulp.series("prod-build"));
 
-gulp.task("test", gulp.series("build", "lint", test));
+gulp.task("test", gulp.series("build", lint, test));
 
 gulp.task("test-no-build", test);
 
@@ -580,3 +581,13 @@ gulp.task(
         );
     }, "add-i18n"),
 );
+
+module.exports = {
+    "format:prettier": () => runPrettier(true),
+    "format:eslint": () => runEslint({ fix: true }),
+    format: format,
+    "lint:prettier": () => runPrettier(false),
+    "lint:eslint": () => runEslint({ fix: false }),
+    lint: lint,
+    "webpack-bundle": webpackBundle,
+};
