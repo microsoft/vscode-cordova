@@ -395,23 +395,13 @@ const watch = gulp.series(buildTask, function runWatch() {
 const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
 const defaultTask = gulp.series(prodBuild);
 
-gulp.task("test", gulp.series(buildTask, lint, test));
+const runTest = gulp.series(buildTask, lint, test);
 
-gulp.task("test-no-build", test);
+const testNoBuild = test;
 
-gulp.task(
-    "test:coverage",
-    gulp.series(quickBuild, async function () {
-        await test(true);
-    }),
-);
-
-gulp.task(
-    "watch-build-test",
-    gulp.series(buildTask, "test", function runWatch() {
-        return gulp.watch(sources, gulp.series(buildTask, "test"));
-    }),
-);
+const watchBuildTest = gulp.series(buildTask, runTest, function runWatch() {
+    return gulp.watch(sources, gulp.series(buildTask, runTest));
+});
 
 gulp.task("package", callback => {
     const command = path.join(__dirname, "node_modules", ".bin", "vsce");
@@ -588,4 +578,8 @@ module.exports = {
     watch: watch,
     "prod-build": prodBuild,
     default: defaultTask,
+    test: test,
+    "test-no-build": testNoBuild,
+    "test:coverage": testCoverage,
+    "watch-build-test": watchBuildTest,
 };
