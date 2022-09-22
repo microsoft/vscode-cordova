@@ -329,16 +329,17 @@ const runEslint = async options_ => {
     });
 };
 
-gulp.task("format:prettier", () => runPrettier(true));
-gulp.task("format:eslint", () => runEslint({ fix: true }));
-gulp.task("format", gulp.series("format:prettier", "format:eslint"));
+const format = gulp.series(
+    () => runPrettier(true),
+    () => runEslint({ fix: true }),
+);
 
-gulp.task("lint:prettier", () => runPrettier(false));
-gulp.task("lint:eslint", () => runEslint({ fix: false }));
-gulp.task("lint", gulp.series("lint:prettier", "lint:eslint"));
+const lint = gulp.series(
+    () => runPrettier(false),
+    () => runEslint({ fix: false }),
+);
 
-/** Run webpack to bundle the extension output files */
-gulp.task("webpack-bundle", async () => {
+const webpackBundle = async () => {
     const packages = [
         {
             entry: `${buildDir}/cordova.ts`,
@@ -347,9 +348,9 @@ gulp.task("webpack-bundle", async () => {
         },
     ];
     return runWebpack({ packages });
-});
+};
 
-gulp.task("clean", () => {
+const clean = () => {
     const pathsToDelete = [
         "src/**/*.js",
         "src/**/*.js.map",
@@ -361,72 +362,56 @@ gulp.task("clean", () => {
         "!test/smoke/**/*",
     ];
     return del(pathsToDelete, { force: true });
-});
+};
 
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
-gulp.task(
-    "build",
-    gulp.series("lint", function runBuild(done) {
-        build(true, true).once("finish", () => {
-            done();
-        });
-    }),
-);
-
-gulp.task(
-    "build-src",
-    gulp.series("lint", function runBuild(done) {
-        build(true, true).once("finish", () => {
-            done();
-        });
-    }),
-);
-
-gulp.task("build-dev", function runDevBuild(done) {
-    build(true, false).once("finish", () => {
+const buildTask = gulp.series(lint, function runBuild(done) {
+    build(true, true).once("finish", () => {
         done();
     });
 });
 
-gulp.task("quick-build", gulp.series("build-dev"));
+const buildSrc = gulp.series(lint, function runBuild(done) {
+    build(true, true).once("finish", () => {
+        done();
+    });
+});
 
-gulp.task(
-    "watch",
-    gulp.series("build", function runWatch() {
-        log("Watching build sources...");
-        return gulp.watch(sources, gulp.series("build"));
-    }),
-);
+const buildDev = function runDevBuild(done) {
+    build(true, false).once("finish", () => {
+        done();
+    });
+};
 
-gulp.task("prod-build", gulp.series("clean", "webpack-bundle", generateSrcLocBundle));
+const quickBuild = gulp.series(buildDev);
 
-gulp.task("default", gulp.series("prod-build"));
+const watch = gulp.series(buildTask, function runWatch() {
+    log("Watching build sources...");
+    return gulp.watch(sources, gulp.series(buildTask));
+});
 
-gulp.task("test", gulp.series("build", "lint", test));
+const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
+const defaultTask = gulp.series(prodBuild);
 
-gulp.task("test-no-build", test);
+const runTest = gulp.series(buildTask, lint, test);
 
-gulp.task(
-    "test:coverage",
-    gulp.series("quick-build", async function () {
-        await test(true);
-    }),
-);
+const testNoBuild = test;
 
-gulp.task(
-    "watch-build-test",
-    gulp.series("build", "test", function runWatch() {
-        return gulp.watch(sources, gulp.series("build", "test"));
-    }),
-);
+const testCoverage = gulp.series(quickBuild, async function () {
+    await test(true);
+});
 
-gulp.task("package", callback => {
+const watchBuildTest = gulp.series(buildTask, runTest, function runWatch() {
+    return gulp.watch(sources, gulp.series(buildTask, runTest));
+});
+
+const package = callback => {
     const command = path.join(__dirname, "node_modules", ".bin", "vsce");
     const args = ["package"];
     executeCommand(command, args, callback);
-});
+};
 
 function readJson(file) {
     const contents = fs.readFileSync(path.join(__dirname, file), "utf-8").toString();
@@ -454,7 +439,7 @@ const getVersionNumber = () => {
     ].join(".");
 };
 
-gulp.task("release", function prepareLicenses() {
+const release = function prepareLicenses() {
     const backupFiles = [
         "LICENSE.txt",
         "ThirdPartyNotices.txt",
@@ -519,64 +504,79 @@ gulp.task("release", function prepareLicenses() {
                 );
             });
         });
-});
+};
 
 // Creates package.i18n.json files for all languages from {workspaceRoot}/i18n folder into project root
-gulp.task("add-i18n", () => {
+const addi18n = () => {
     return gulp
         .src(["package.nls.json"])
         .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
         .pipe(gulp.dest("."));
-});
+};
 
 // Creates MLCP readable .xliff file and saves it locally
-gulp.task(
-    "translations-export",
-    gulp.series("build", function runTranslationExport() {
-        return gulp
-            .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
-            .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
-            .pipe(gulp.dest(path.join("..", `${translationProjectName}-localization-export`)));
-    }),
-);
+
+const translationExport = gulp.series(buildTask, function runTranslationExport() {
+    return gulp
+        .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
+        .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
+        .pipe(gulp.dest(path.join("..", `${translationProjectName}-localization-export`)));
+});
 
 // Imports localization from raw localized MLCP strings to VS Code .i18n.json files
-gulp.task(
-    "translations-import",
-    gulp.series(done => {
-        var options = minimist(process.argv.slice(2), {
-            string: "location",
-            default: {
-                location: "../vscode-translations-import",
-            },
-        });
-        es.merge(
-            defaultLanguages.map(language => {
-                let id = language.transifexId || language.id;
-                log(
+const translationImport = gulp.series(done => {
+    var options = minimist(process.argv.slice(2), {
+        string: "location",
+        default: {
+            location: "../vscode-translations-import",
+        },
+    });
+    es.merge(
+        defaultLanguages.map(language => {
+            let id = language.transifexId || language.id;
+            log(path.join(options.location, id, "vscode-extensions", `${fullExtensionName}.xlf`));
+            return gulp
+                .src(
                     path.join(
                         options.location,
                         id,
                         "vscode-extensions",
                         `${fullExtensionName}.xlf`,
                     ),
-                );
-                return gulp
-                    .src(
-                        path.join(
-                            options.location,
-                            id,
-                            "vscode-extensions",
-                            `${fullExtensionName}.xlf`,
-                        ),
-                    )
-                    .pipe(nls.prepareJsonFiles())
-                    .pipe(gulp.dest(path.join("./i18n", language.folderName)));
-            }),
-        ).pipe(
-            es.wait(() => {
-                done();
-            }),
-        );
-    }, "add-i18n"),
-);
+                )
+                .pipe(nls.prepareJsonFiles())
+                .pipe(gulp.dest(path.join("./i18n", language.folderName)));
+        }),
+    ).pipe(
+        es.wait(() => {
+            done();
+        }),
+    );
+}, addi18n);
+
+module.exports = {
+    "format:prettier": () => runPrettier(true),
+    "format:eslint": () => runEslint({ fix: true }),
+    format: format,
+    "lint:prettier": () => runPrettier(false),
+    "lint:eslint": () => runEslint({ fix: false }),
+    lint: lint,
+    "webpack-bundle": webpackBundle,
+    clean: clean,
+    build: buildTask,
+    "build-src": buildSrc,
+    "build-dev": buildDev,
+    "quick-build": quickBuild,
+    watch: watch,
+    "prod-build": prodBuild,
+    default: defaultTask,
+    test: test,
+    "test-no-build": testNoBuild,
+    "test:coverage": testCoverage,
+    "watch-build-test": watchBuildTest,
+    package: package,
+    release: release,
+    "add-i18n": addi18n,
+    "translations-export": translationExport,
+    "translations-import": translationImport,
+};
