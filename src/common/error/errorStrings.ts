@@ -169,6 +169,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.ReactNativePackageIsNotInstalled]: localize(
         "ReactNativePackageIsNotInstalled",
+        // eslint-disable-next-line @typescript-eslint/quotes
         'Couldn\'t find react-native package in node_modules. Please, run "npm install" inside your project to install it.',
     ),
     [InternalErrorCode.ReactNativeWindowsIsNotInstalled]: localize(
@@ -189,6 +190,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.NotAllSuccessPatternsMatched]: localize(
         "NotAllSuccessPatternsMatched",
+        // eslint-disable-next-line @typescript-eslint/quotes
         'Unknown error: not all success patterns were matched. \n It means that "react-native run-{0}" command failed. \n Please, check the View -> Toggle Output -> React Native, \n View -> Toggle Output -> React Native: Run {1} output windows.',
     ),
     [InternalErrorCode.CouldNotParsePackageVersion]: localize(
@@ -217,6 +219,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.NgrokIsNotInstalledGlobally]: localize(
         "NgrokIsNotInstalledGlobally",
+        // eslint-disable-next-line @typescript-eslint/quotes
         'It seems that "@expo/ngrok{0}" package isn\'t installed globally. This package is required to use Expo tunnels. Please run "npm i -g @expo/ngrok{0}" to install it globally.',
     ),
     [InternalErrorCode.CannotAttachToPackagerCheckPackagerRunningOnPort]: localize(
@@ -281,6 +284,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.WorkspaceIsNotTrusted]: localize(
         "WorkspaceIsNotTrusted",
+        // eslint-disable-next-line @typescript-eslint/quotes
         'The workspace by the project path "{0}" should be trusted to use "{1}"',
     ),
     [InternalErrorCode.DebuggingWontWorkReloadJSAndReconnect]: localize(
@@ -321,6 +325,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.IOSCouldNotFoundDeviceForDirectDebugging]: localize(
         "CannotAttachtoiOSDeviceDirectly",
+        // eslint-disable-next-line @typescript-eslint/quotes
         'Unable to find iOS target device/simulator. Please check that "Settings > Safari > Advanced > Web Inspector = ON" or try specifying a different "port" parameter in launch.json. Also, please make sure that \'target\' property in your debug scenario is defined correctly.',
     ),
     [InternalErrorCode.FailedToStartAndroidEmulator]: localize(
