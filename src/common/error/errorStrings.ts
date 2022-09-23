@@ -36,7 +36,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.PackagerStartFailed]: localize(
         "PackagerStartFailed",
-        "Error while executing React Native Packager.",
+        "Error while executing Cordova Packager.",
     ),
     [InternalErrorCode.IOSDeployNotFound]: localize(
         "IOSDeployNotFound",
@@ -92,7 +92,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.CouldNotFindProjectVersion]: localize(
         "CouldNotFindProjectVersion",
-        "Couldn't find React Native version in the current workspace or folder",
+        "Couldn't find Cordova version in the current workspace or folder",
     ),
     [InternalErrorCode.ProjectVersionNotReadable]: localize(
         "ProjectVersionNotReadable",
@@ -104,7 +104,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.ExtensionActivationFailed]: localize(
         "ExtensionActivationFailed",
-        "Failed to activate the React Native Tools extension",
+        "Failed to activate the Cordova Tools extension",
     ),
     [InternalErrorCode.DebuggerStubLauncherFailed]: localize(
         "DebuggerStubLauncherFailed",
@@ -120,7 +120,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.FailedToStopPackagerOnExit]: localize(
         "FailedToStopPackagerOnExit",
-        "Failed to stop the packager while closing React Native Tools",
+        "Failed to stop the packager while closing Cordova Tools",
     ),
     [InternalErrorCode.FailedToRunOnAndroid]: localize(
         "FailedToRunOnAndroid",
@@ -140,15 +140,15 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.FailedToStartPackager]: localize(
         "FailedToStartPackager",
-        "Failed to start the React Native packager",
+        "Failed to start the Cordova packager",
     ),
     [InternalErrorCode.FailedToStopPackager]: localize(
         "FailedToStopPackager",
-        "Failed to stop the React Native packager",
+        "Failed to stop the Cordova packager",
     ),
     [InternalErrorCode.FailedToRestartPackager]: localize(
         "FailedToRestartPackager",
-        "Failed to restart the React Native packager",
+        "Failed to restart the Cordova packager",
     ),
     [InternalErrorCode.DebuggingFailed]: localize("DebuggingFailed", "Cannot debug application"),
     [InternalErrorCode.DebuggingFailedInNodeWrapper]: localize(
@@ -165,16 +165,16 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.CouldNotFindWorkspace]: localize(
         "CouldNotFindWorkspace",
-        "Couldn't find any workspace or React Native project folder",
+        "Couldn't find any workspace or Cordova project folder",
     ),
-    [InternalErrorCode.ReactNativePackageIsNotInstalled]: localize(
-        "ReactNativePackageIsNotInstalled",
+    [InternalErrorCode.CordovaPackageIsNotInstalled]: localize(
+        "CordovaPackageIsNotInstalled",
         // eslint-disable-next-line @typescript-eslint/quotes
-        'Couldn\'t find react-native package in node_modules. Please, run "npm install" inside your project to install it.',
+        'Couldn\'t find Cordova package in node_modules. Please, run "npm install" inside your project to install it.',
     ),
-    [InternalErrorCode.ReactNativeWindowsIsNotInstalled]: localize(
-        "ReactNativeWindowsIsNotInstalled",
-        "It appears you don't have 'react-native-windows' package installed. Please proceed to https://github.com/microsoft/react-native-windows#getting-started for more info.",
+    [InternalErrorCode.CordovaWindowsIsNotInstalled]: localize(
+        "CordovaWindowsIsNotInstalled",
+        "It appears you don't have 'Cordova-windows' package installed. Please proceed to https://github.com/microsoft/Cordova-windows#getting-started for more info.",
     ),
     [InternalErrorCode.PackagerRunningInDifferentPort]: localize(
         "PackagerRunningInDifferentPort",
@@ -186,12 +186,12 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.ErrorNoPipeFound]: localize(
         "ErrorNoPipeFound",
-        "Unable to set up communication with VSCode react-native extension. Is this a react-native project, and have you made sure that the react-native npm package is installed at the root?",
+        "Unable to set up communication with VSCode Cordova extension. Is this a Cordova project, and have you made sure that the Cordova npm package is installed at the root?",
     ),
     [InternalErrorCode.NotAllSuccessPatternsMatched]: localize(
         "NotAllSuccessPatternsMatched",
         // eslint-disable-next-line @typescript-eslint/quotes
-        'Unknown error: not all success patterns were matched. \n It means that "react-native run-{0}" command failed. \n Please, check the View -> Toggle Output -> React Native, \n View -> Toggle Output -> React Native: Run {1} output windows.',
+        'Unknown error: not all success patterns were matched. \n It means that "Cordova run-{0}" command failed. \n Please, check the View -> Toggle Output -> Cordova, \n View -> Toggle Output -> Cordova: Run {1} output windows.',
     ),
     [InternalErrorCode.CouldNotParsePackageVersion]: localize(
         "CouldNotParsePackageVersion",
@@ -211,7 +211,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.RNVersionNotSupportedByExponent]: localize(
         "RNVersionNotSupportedByExponent",
-        "React Native version not supported by Expo. Major versions supported: {0}",
+        "Cordova version not supported by Expo. Major versions supported: {0}",
     ),
     [InternalErrorCode.UserCancelledExpoLogin]: localize(
         "UserCancelledExpoLogin",
@@ -230,9 +230,9 @@ export const ERROR_STRINGS = {
         "AnotherDebuggerConnectedToPackager",
         "Another debugger is already connected to packager. Please close it before trying to debug with VSCode.",
     ),
-    [InternalErrorCode.NotInReactNativeFolderError]: localize(
-        "NotInReactNativeFolderError",
-        "Seems to be that you are trying to debug from within directory that is not a React Native project root. \n If so, please, follow these instructions: https://github.com/microsoft/vscode-react-native#customization",
+    [InternalErrorCode.NotInCordovaFolderError]: localize(
+        "NotInCordovaFolderError",
+        "Seems to be that you are trying to debug from within directory that is not a Cordova project root. \n If so, please, follow these instructions: https://github.com/microsoft/vscode-Cordova#customization",
     ),
     [InternalErrorCode.SourcesStoragePathIsNullOrEmpty]: localize(
         "SourcesStoragePathIsNullOrEmpty",
@@ -240,7 +240,7 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.AndroidCouldNotInstallTheAppOnAnyAvailibleDevice]: localize(
         "AndroidCouldNotInstallTheAppOnAnyAvailibleDevice",
-        "Could not install the app on any available device. Make sure you have a correctly \n configured device or emulator running. See https://facebook.github.io/react-native/docs/android-setup.html.",
+        "Could not install the app on any available device. Make sure you have a correctly \n configured device or emulator running. See https://facebook.github.io/Cordova/docs/android-setup.html.",
     ),
     [InternalErrorCode.AndroidShellCommandTimedOut]: localize(
         "AndroidShellCommandTimedOut",
@@ -272,12 +272,12 @@ export const ERROR_STRINGS = {
     ),
     [InternalErrorCode.WinRunCommandFailed]: localize(
         "WinRunCommandFailed",
-        "{0}\nPlease check the 'React Native: Run Windows' output channel for details",
+        "{0}\nPlease check the 'Cordova: Run Windows' output channel for details",
     ),
-    [InternalErrorCode.ReactDevtoolsIsNotInstalled]: localize(
-        "ReactDevtoolsIsNotInstalled",
-        "React Devtools is not installed. Run `npm install -g react-devtools` command in your terminal to install it.",
-    ),
+    // [InternalErrorCode.ReactDevtoolsIsNotInstalled]: localize(
+    //     "ReactDevtoolsIsNotInstalled",
+    //     "React Devtools is not installed. Run `npm install -g react-devtools` command in your terminal to install it.",
+    // ),
     [InternalErrorCode.CancellationTokenTriggered]: localize(
         "CancellationTokenTriggered",
         "Operation canceled",
@@ -291,25 +291,25 @@ export const ERROR_STRINGS = {
         "DebuggingWontWorkReloadJSAndReconnect",
         "{0}. Debugging won't work: Try reloading the JS from inside the app, or Reconnect the VS Code debugger",
     ),
-    [InternalErrorCode.ReconnectionToPackagerFailedCheckForErrorsOrRestartReactNative]: localize(
-        "ReconnectionToPackagerFailedCheckForErrorsOrRestartReactNative",
-        "Reconnection to the proxy (Packager) failed. Please check the output window for Packager errors, if any. If failure persists, please restart the React Native debugger.",
+    [InternalErrorCode.ReconnectionToPackagerFailedCheckForErrorsOrRestartCordova]: localize(
+        "ReconnectionToPackagerFailedCheckForErrorsOrRestartCordova",
+        "Reconnection to the proxy (Packager) failed. Please check the output window for Packager errors, if any. If failure persists, please restart the Cordova debugger.",
     ),
-    [InternalErrorCode.FailedToProcessMessageFromReactNativeApp]: localize(
-        "FailedToProcessMessageFromReactNativeApp",
-        "Failed to process message from the React Native app. Message:\n{0}",
+    [InternalErrorCode.FailedToProcessMessageFromCordovaApp]: localize(
+        "FailedToProcessMessageFromCordovaApp",
+        "Failed to process message from the Cordova app. Message:\n{0}",
     ),
     [InternalErrorCode.FailedToPrepareJSRuntimeEnvironment]: localize(
         "FailedToPrepareJSRuntimeEnvironment",
         "Failed to prepare the JavaScript runtime environment. Message:\n{0}",
     ),
-    [InternalErrorCode.FailedToSendMessageToTheReactNativeApp]: localize(
-        "FailedToSendMessageToTheReactNativeApp",
-        "Failed to send message to the React Native app. Message:\n{0}",
+    [InternalErrorCode.FailedToSendMessageToTheCordovaApp]: localize(
+        "FailedToSendMessageToTheCordovaApp",
+        "Failed to send message to the Cordova app. Message:\n{0}",
     ),
-    [InternalErrorCode.ReactNativeWorkerProcessThrownAnError]: localize(
-        "ReactNativeWorkerProcessThrownAnError",
-        "React Native worker process thrown an error",
+    [InternalErrorCode.CordovaWorkerProcessThrownAnError]: localize(
+        "CordovaWorkerProcessThrownAnError",
+        "Cordova worker process thrown an error",
     ),
     [InternalErrorCode.CouldntImportScriptAt]: localize(
         "CouldntImportScriptAt",
@@ -352,9 +352,9 @@ export const ERROR_STRINGS = {
         "CouldNotRecognizeTargetType",
         "Could not recognize type of the target {0}",
     ),
-    [InternalErrorCode.ReactNativemacOSIsNotInstalled]: localize(
-        "ReactNativemacOSIsNotInstalled",
-        "It appears you don't have 'react-native-macos' package installed. Please proceed to https://microsoft.github.io/react-native-windows/docs/rnm-getting-started for more info.",
+    [InternalErrorCode.CordovamacOSIsNotInstalled]: localize(
+        "CordovamacOSIsNotInstalled",
+        "It appears you don't have 'Cordova-macos' package installed. Please proceed to https://microsoft.github.io/Cordova-windows/docs/rnm-getting-started for more info.",
     ),
     [InternalErrorCode.AndroidCouldNotStartLogCatMonitor]: localize(
         "ErrorWhileStartMonitoringLogCat",
