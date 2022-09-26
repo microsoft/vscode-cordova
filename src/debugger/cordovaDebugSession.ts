@@ -49,6 +49,8 @@ import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 import { IMobileTarget } from "../utils/mobileTarget";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -581,9 +583,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                     );
                     break;
                 default:
-                    throw new Error(
-                        localize("UnknownPlatform", "Unknown Platform: {0}", args.platform),
-                    );
+                    throw ErrorHelper.getInternalError(InternalErrorCode.UnknownPlatform, args.platform);
             }
         }
 
