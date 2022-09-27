@@ -329,15 +329,28 @@ const runEslint = async options_ => {
     });
 };
 
-const format = gulp.series(
-    () => runPrettier(true),
-    () => runEslint({ fix: true }),
-);
+function runPrettierForFormat(cb) {
+    runPrettier(true);
+    cb();
+}
 
-const lint = gulp.series(
-    () => runPrettier(false),
-    () => runEslint({ fix: false }),
-);
+function runEsLintForFormat(cb) {
+    runEslint({ fix: false });
+    cb();
+}
+const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
+
+function runPrettierForLint(cb) {
+    runPrettier(false);
+    cb();
+}
+
+function runEslintForLint(cb) {
+    runEslint({ fix: false });
+    cb();
+}
+
+const lint = gulp.series(runPrettierForLint, runEslintForLint);
 
 const webpackBundle = async () => {
     const packages = [
@@ -373,7 +386,7 @@ const buildTask = gulp.series(lint, function runBuild(done) {
     });
 });
 
-const buildSrc = gulp.series(lint, function runBuild(done) {
+const gbuildSrc = gulp.series(lint, function runBuild(done) {
     build(true, true).once("finish", () => {
         done();
     });
