@@ -73,7 +73,7 @@ const options = minimist(process.argv.slice(2), knownOptions);
 let lintSources = [srcPath, testPath].map(tsFolder => tsFolder + "/**/*.ts");
 lintSources = lintSources.concat([
     "!src/typings/**",
-    "!test/resources/sampleReactNativeProject/**",
+    "!test/resources/testCordovaProject/**",
     "!test/smoke/**",
     "!/SmokeTestLogs/**",
 ]);
@@ -369,7 +369,7 @@ const clean = () => {
         "src/**/*.js.map",
         "out/",
         "dist",
-        "!test/resources/sampleReactNativeProject/**/*.js",
+        "!test/resources/testCordovaProject/**/*.js",
         ".vscode-test/",
         "nls.*.json",
         "!test/smoke/**/*",
@@ -459,7 +459,7 @@ const release = function prepareLicenses() {
         "package.json",
         "package-lock.json",
     ];
-    const backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-react-native"));
+    const backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-cordova"));
     if (!fs.existsSync(backupFolder)) {
         fs.mkdirSync(backupFolder);
     }
