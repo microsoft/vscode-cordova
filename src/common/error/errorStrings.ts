@@ -279,10 +279,10 @@ export const ERROR_STRINGS = {
     //     "ReactDevtoolsIsNotInstalled",
     //     "React Devtools is not installed. Run `npm install -g react-devtools` command in your terminal to install it.",
     // ),
-    // [InternalErrorCode.CancellationTokenTriggered]: localize(
-    //     "CancellationTokenTriggered",
-    //     "Operation canceled",
-    // ),
+    [InternalErrorCode.CancellationTokenTriggered]: localize(
+        "CancellationTokenTriggered",
+        "Operation canceled",
+    ),
     // [InternalErrorCode.WorkspaceIsNotTrusted]: localize(
     //     "WorkspaceIsNotTrusted",
     //     // eslint-disable-next-line @typescript-eslint/quotes
@@ -320,10 +320,10 @@ export const ERROR_STRINGS = {
     //     "RNMessageWithMethodExecuteApplicationScriptDoesntHaveURLProperty",
     //     "RNMessage with method 'executeApplicationScript' doesn't have 'url' property",
     // ),
-    // [InternalErrorCode.CouldNotConnectToDebugTarget]: localize(
-    //     "CouldNotConnectToDebugTarget",
-    //     "Could not connect to the debug target at {0}: {1}",
-    // ),
+    [InternalErrorCode.CouldNotConnectToDebugTarget]: localize(
+        "CouldNotConnectToDebugTarget",
+        "Could not connect to the debug target at {0}: {1}",
+    ),
     // [InternalErrorCode.IOSCouldNotFoundDeviceForDirectDebugging]: localize(
     //     "CannotAttachtoiOSDeviceDirectly",
     //     // eslint-disable-next-line @typescript-eslint/quotes

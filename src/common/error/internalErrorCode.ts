@@ -78,7 +78,7 @@ export enum InternalErrorCode {
     // CouldNotParsePackageVersion = 713,
     // PackageNotFound = 714,
     // ReactDevtoolsIsNotInstalled = 715,
-    // CancellationTokenTriggered = 716,
+    CancellationTokenTriggered = 716,
     // UnknownError = 717,
     // WorkspaceIsNotTrusted = 718,
     // UserInputCanceled = 719,
@@ -132,7 +132,7 @@ export enum InternalErrorCode {
     // CouldNotDirectDebugWithoutHermesEngine = 1411,
 
     // CDP Proxy errors
-    // CouldNotConnectToDebugTarget = 1501,
+    CouldNotConnectToDebugTarget = 1501,
 
     // Network Inspector errors
     // CouldNotStartNetworkInspector = 1601,
