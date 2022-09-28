@@ -583,7 +583,10 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                     );
                     break;
                 default:
-                    throw ErrorHelper.getInternalError(InternalErrorCode.UnknownPlatform, args.platform);
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.UnknownPlatform,
+                        args.platform,
+                    );
             }
         }
 

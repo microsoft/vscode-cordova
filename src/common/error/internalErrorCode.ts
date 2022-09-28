@@ -25,7 +25,6 @@ export enum InternalErrorCode {
     // Platform error
     UnknownPlatform = 201,
 
-
     // Device Deployer errors
     // IOSDeployNotFound = 201,
 

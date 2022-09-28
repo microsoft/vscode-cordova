@@ -22,10 +22,7 @@ export const ERROR_STRINGS = {
         "CommandFailed",
         "Error while executing command '{0}'.\nDetails: {1}",
     ),
-    [InternalErrorCode.UnknownPlatform]: localize(
-        "UnknownPlatform",
-        "Unknown Platform: {0}",
-    ),
+    [InternalErrorCode.UnknownPlatform]: localize("UnknownPlatform", "Unknown Platform: {0}"),
     // [InternalErrorCode.DebuggingCommandFailed]: localize(
     //     "DebuggingCommandFailed",
     //     "Error while executing debugging command '{0}'",
