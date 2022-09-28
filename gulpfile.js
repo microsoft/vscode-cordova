@@ -29,11 +29,9 @@ const isNightly = process.argv.includes("--nightly");
 
 const vscodeVersionForTests = "stable";
 
-const fullExtensionName = isNightly
-    ? "msjsdiag.vscode-react-native-preview"
-    : "msjsdiag.vscode-react-native";
+const fullExtensionName = isNightly ? "msjsdiag.vscode-cordova-preview" : "msjsdiag.vscode-cordova";
 
-const extensionName = isNightly ? "vscode-react-native-preview" : "vscode-react-native";
+const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 
 const buildDir = "src";
 
