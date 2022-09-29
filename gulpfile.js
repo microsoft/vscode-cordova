@@ -384,7 +384,7 @@ const buildTask = gulp.series(lint, function runBuild(done) {
     });
 });
 
-const gbuildSrc = gulp.series(lint, function runBuild(done) {
+const buildSrc = gulp.series(lint, function runBuild(done) {
     build(true, true).once("finish", () => {
         done();
     });
