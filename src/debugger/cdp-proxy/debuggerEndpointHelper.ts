@@ -18,7 +18,6 @@ nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export class DebuggerEndpointHelper {
     private localv4: Buffer;
