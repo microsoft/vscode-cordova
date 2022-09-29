@@ -14,6 +14,8 @@ import { ChildProcess } from "../common/node/childProcess";
 import { IOSTarget } from "../utils/ios/iOSTargetManager";
 import { isDirectory } from "../common/utils";
 import { PlistBuddy } from "../utils/ios/PlistBuddy";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
+import { ErrorHelper } from "../common/error/errorHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -42,9 +44,7 @@ export class CordovaIosDeviceLauncher {
             .then((files: string[]) => {
                 const xcodeprojfiles = files.filter((file: string) => /\.xcodeproj$/.test(file));
                 if (xcodeprojfiles.length === 0) {
-                    throw new Error(
-                        localize("UnableToFindXCodeProjFile", "Unable to find xcodeproj file"),
-                    );
+                    throw ErrorHelper.getInternalError(InternalErrorCode.UnableToFindXCodeProjFile);
                 }
                 const xcodeprojfile = xcodeprojfiles[0];
                 const projectName = /^(.*)\.xcodeproj/.exec(xcodeprojfile)[1];
@@ -112,8 +112,9 @@ export class CordovaIosDeviceLauncher {
                     iOSTarget.id,
                 );
                 if (!webInspectorSocketPath) {
-                    throw new Error(
-                        `Couldn't find a web inspector socket for the simulator udid ${iOSTarget.id}`,
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.CouldNotFindWebInspectorSocketOniOSSimulator,
+                        iOSTarget.id,
                     );
                 }
 
@@ -147,11 +148,8 @@ export class CordovaIosDeviceLauncher {
             )
             .catch(function (err: any): any {
                 if (err.code === "ENOENT") {
-                    throw new Error(
-                        localize(
-                            "UnableToStartiDeviceInstaller",
-                            "Unable to find ideviceinstaller.",
-                        ),
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.UnableToStartiDeviceInstaller,
                     );
                 }
                 throw err;
@@ -160,11 +158,8 @@ export class CordovaIosDeviceLauncher {
                 // First find the path of the app on the device
                 const filename: string = stdout.trim();
                 if (!/^\/tmp\/\d+\.ideviceinstaller$/.test(filename)) {
-                    throw new Error(
-                        localize(
-                            "UnableToListInstalledApplicationsOnDevice",
-                            "Unable to list installed applications on device",
-                        ),
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.UnableToListInstalledApplicationsOnDevice,
                     );
                 }
 
@@ -177,11 +172,8 @@ export class CordovaIosDeviceLauncher {
                     }
                 }
 
-                throw new Error(
-                    localize(
-                        "ApplicationNotInstalledOnTheDevice",
-                        "Application not installed on the device",
-                    ),
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.ApplicationNotInstalledOnTheDevice,
                 );
             });
     }
@@ -201,8 +193,9 @@ export class CordovaIosDeviceLauncher {
     ): Promise<string> {
         const appsContainer = path.join(deviceDataPath, "Containers", "Bundle", "Application");
         if (!fs.existsSync(appsContainer)) {
-            throw new Error(
-                `Could not detect installed apps on the simulator: the path ${appsContainer} doesn't exist`,
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.ApplicationPathNotExistingOniOSSimulator,
+                appsContainer,
             );
         }
 
@@ -233,12 +226,7 @@ export class CordovaIosDeviceLauncher {
             } catch {}
         }
 
-        throw new Error(
-            localize(
-                "ApplicationNotInstalledOnTheSimulator",
-                "Application not installed on the simulator",
-            ),
-        );
+        throw ErrorHelper.getInternalError(InternalErrorCode.ApplicationNotInstalledOnTheSimulator);
     }
 
     private static getBundleIdentifierFromPbxproj(xcodeprojFilePath: string): Promise<string> {
@@ -335,12 +323,9 @@ export class CordovaIosDeviceLauncher {
                 return /^(\d+\.\d+)(?:\.\d+)?$/gm.exec(stdout.trim())[1];
             })
             .catch(err => {
-                throw new Error(
-                    localize(
-                        "UnableToGetDeviceOSVersion",
-                        "Unable to get device OS version. Details: {0}",
-                        err.message,
-                    ),
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.UnableToGetDeviceOSVersion,
+                    err.message,
                 );
             });
 

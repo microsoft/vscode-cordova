@@ -88,9 +88,7 @@ export class DebuggerEndpointHelper {
             return jsonList[0].webSocketDebuggerUrl;
         }
 
-        throw new Error(
-            localize("CouldNotFindAnyDebuggableTarget", "Could not find any debuggable target"),
-        );
+        throw ErrorHelper.getInternalError(InternalErrorCode.CouldNotFindAnyDebuggableTarget);
     }
 
     /**

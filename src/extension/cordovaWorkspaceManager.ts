@@ -10,12 +10,13 @@ import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { createAdditionalWorkspaceFolder, onFolderAdded } from "../cordova";
 import { ProjectsStorage } from "./projectsStorage";
 import { PluginSimulator } from "./simulate";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export class CordovaWorkspaceManager implements vscode.Disposable {
     public pluginSimulator: PluginSimulator;
@@ -38,12 +39,9 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
                     ProjectsStorage.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
             }
             if (!workspaceManager) {
-                throw new Error(
-                    localize(
-                        "CouldntFindWorkspaceManager",
-                        "Could not find workspace manager by the project root path {0}",
-                        projectRootPath,
-                    ),
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.CouldNotFindWorkspaceManager,
+                    projectRootPath,
                 );
             }
         }

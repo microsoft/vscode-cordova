@@ -182,12 +182,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     ): Promise<void> {
         try {
             if (isNullOrUndefined(launchArgs.cwd)) {
-                throw new Error(
-                    localize(
-                        "CwdUndefined",
-                        "Launch argument 'cwd' is undefined, please add it to your launch.json. Example: 'cwd': '${workspaceFolder}' to point to your current working directory.",
-                    ),
-                );
+                throw ErrorHelper.getInternalError(InternalErrorCode.CwdUndefined);
             }
             await this.initializeTelemetry(launchArgs.cwd);
             await this.initializeSettings(launchArgs);
@@ -451,16 +446,13 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 },
             );
             if (!childDebugSessionStarted) {
-                throw new Error(
-                    localize("CannotStartChildDebugSession", "Cannot start child debug session"),
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.CouldNotStartChildDebugSession,
                 );
             }
         } else {
-            throw new Error(
-                localize(
-                    "CannotConnectToDebuggerWorkerProxyOffline",
-                    "Cannot connect to debugger worker: Chrome debugger proxy is offline",
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.CouldNotConnectToDebuggerWorkerProxyOffline,
             );
         }
     }
