@@ -20,6 +20,8 @@ import {
     IOSTarget,
     IOSTargetManager,
 } from "../../utils/ios/iOSTargetManager";
+import { ErrorHelper } from "../../common/error/errorHelper";
+import { InternalErrorCode } from "../../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -110,11 +112,8 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 targetPort = parseInt(device.url.split(":")[1], 10);
                 iOSVersion = target.isVirtualTarget ? target.system : device.deviceOSVersion;
             } catch (e) {
-                throw new Error(
-                    localize(
-                        "UnableToFindiOSTargetDeviceOrSimulator",
-                        "Unable to find iOS target device/simulator. Please check that `Settings > Safari > Advanced > Web Inspector = ON` or try specifying a different `port` parameter in launch.json",
-                    ),
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.UnableToFindiOSTargetDeviceOrSimulator,
                 );
             }
 
@@ -139,12 +138,12 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                     ),
                 );
                 if (webViewsList.length === 0) {
-                    throw new Error(localize("UnableToFindTargetApp", "Unable to find target app"));
+                    throw ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
                 }
                 const cordovaWebview = this.getCordovaWebview(webViewsList, iOSAppPackagePath);
                 if (!cordovaWebview.webSocketDebuggerUrl) {
-                    throw new Error(
-                        localize("WebsocketDebuggerUrlIsEmpty", "WebSocket Debugger Url is empty"),
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.WebsocketDebuggerUrlIsEmpty,
                     );
                 }
                 webSocketDebuggerUrl = cordovaWebview.webSocketDebuggerUrl;
@@ -154,7 +153,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                     );
                 }
             } catch (e) {
-                throw new Error(localize("UnableToFindTargetApp", "Unable to find target app"));
+                throw ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
             }
 
             if (devServerAddress) {
@@ -170,7 +169,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             this.platformOpts.attachAttempts,
             1,
             this.platformOpts.attachDelay,
-            localize("UnableToFindWebview", "Unable to find Webview"),
+            ErrorHelper.getInternalError(InternalErrorCode.UnableToFindWebview).message,
             this.platformOpts.cancellationTokenSource.token,
         );
     }
@@ -304,6 +303,6 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         if (filtered.length > 0) {
             return filtered[0];
         }
-        throw new Error(localize("UnableToFindAppFile", "Unable to find .app file"));
+        throw ErrorHelper.getInternalError(InternalErrorCode.CouldNotFindiOSAppFile);
     }
 }

@@ -6,8 +6,24 @@ export enum InternalErrorCode {
     CommandFailed = 101,
     CommandFailedWithDetails = 102,
 
-    // Platform error
+    // Platform& Simulate error
     UnknownPlatform = 201,
+    CouldNotFindWebInspectorSocketOniOSSimulator = 202,
+    UnableToStartiDeviceInstaller = 203,
+    UnableToListInstalledApplicationsOnDevice = 204,
+    ApplicationNotInstalledOnTheDevice = 205,
+    ApplicationNotInstalledOnTheSimulator = 206,
+    ApplicationPathNotExistingOniOSSimulator = 207,
+    UnableToGetDeviceOSVersion = 208,
+    LaunchSimHostBeforeStartSimulationServer = 209,
+    CouldntFindPlatformInProject = 210,
+    ErrorStartingTheSimulation = 211,
+    ErrorRunningAndroid = 212,
+    ServingToTheBrowserIsSupportedForIonicProjects = 213,
+    UnableToFindiOSTargetDeviceOrSimulator = 214,
+    UnableToFindTargetApp = 215,
+    PlatformSelectionWasCancelled = 216,
+    CouldNotFindAnyPlatformInstalled = 217,
 
     // User input errors
     ExpectedArrayValue = 301,
@@ -18,17 +34,13 @@ export enum InternalErrorCode {
     CouldNotStartChildDebugSession = 402,
     CouldNotConnectToDebuggerWorkerProxyOffline = 403,
     CouldNotFindAnyDebuggableTarget = 404,
+    WebsocketDebuggerUrlIsEmpty = 405,
+    UnableToFindLocalAbstractName = 406,
+    UnableToFindWebview = 407,
 
     // Miscellaneous errors
     CancellationTokenTriggered = 501,
     UnableToFindXCodeProjFile = 502,
-    CouldNotFindWebInspectorSocketOniOSSimulator = 503,
-    UnableToStartiDeviceInstaller = 504,
-    UnableToListInstalledApplicationsOnDevice = 505,
-    ApplicationNotInstalledOnTheDevice = 506,
-    ApplicationNotInstalledOnTheSimulator = 507,
-    ApplicationPathNotExistingOniOSSimulator = 508,
-    UnableToGetDeviceOSVersion = 509,
-    CouldNotFindiOSAppFile = 510,
-    CouldNotFindWorkspaceManager = 511,
+    CouldNotFindiOSAppFile = 503,
+    CouldNotFindWorkspaceManager = 504,
 }

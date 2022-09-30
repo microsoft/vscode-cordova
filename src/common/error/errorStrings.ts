@@ -82,5 +82,53 @@ export const ERROR_STRINGS = {
         "CouldNotFindWorkspaceManager",
         "Could not find workspace manager by the project root path: {0}",
     ),
+    [InternalErrorCode.LaunchSimHostBeforeStartSimulationServer]: localize(
+        "LaunchSimHostBeforeStartSimulationServer",
+        "Please launch sim host before starting simulation server",
+    ),
+    [InternalErrorCode.CouldntFindPlatformInProject]: localize(
+        "CouldntFindPlatformInProject",
+        "Couldn't find platform {0} in project, please install it using {1} platform add {2}",
+    ),
+    [InternalErrorCode.ErrorStartingTheSimulation]: localize(
+        "ErrorStartingTheSimulation",
+        "Error starting the simulation",
+    ),
+    [InternalErrorCode.ErrorRunningAndroid]: localize(
+        "ErrorRunningAndroid",
+        "Error running android",
+    ),
+    [InternalErrorCode.ServingToTheBrowserIsSupportedForIonicProjects]: localize(
+        "ServingToTheBrowserIsSupportedForIonicProjects",
+        "Serving to the browser is currently only supported for Ionic projects",
+    ),
+    [InternalErrorCode.UnableToFindiOSTargetDeviceOrSimulator]: localize(
+        "UnableToFindiOSTargetDeviceOrSimulator",
+        "Unable to find iOS target device/simulator. Please check that `Settings > Safari > Advanced > Web Inspector = ON` or try specifying a different `port` parameter in launch.json",
+    ),
+    [InternalErrorCode.UnableToFindTargetApp]: localize(
+        "UnableToFindTargetApp",
+        "Unable to find target app",
+    ),
+    [InternalErrorCode.WebsocketDebuggerUrlIsEmpty]: localize(
+        "WebsocketDebuggerUrlIsEmpty",
+        "WebSocket Debugger Url is empty",
+    ),
+    [InternalErrorCode.PlatformSelectionWasCancelled]: localize(
+        "PlatformSelectionWasCancelled",
+        "Platform selection was canceled. Please select target platform to continue",
+    ),
+    [InternalErrorCode.CouldNotFindAnyPlatformInstalled]: localize(
+        "CouldNotFindAnyPlatformInstalled",
+        "Could not find any platforms installed",
+    ),
+    [InternalErrorCode.UnableToFindLocalAbstractName]: localize(
+        "UnableToFindLocalAbstractName",
+        "Unable to find 'localabstract' name of Cordova app",
+    ),
+    [InternalErrorCode.UnableToFindWebview]: localize(
+        "UnableToFindWebview",
+        "Unable to find Webview",
+    ),
     [InternalErrorCode.UnknownPlatform]: localize("UnknownPlatform", "Unknown platform: {0}"),
 };

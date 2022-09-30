@@ -13,6 +13,8 @@ import { PlatformType } from "../debugger/cordovaDebugSession";
 import customRequire from "../common/customRequire";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 import { findFileInFolderHierarchy } from "../utils/extensionHelper";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -60,11 +62,8 @@ export class PluginSimulator implements vscode.Disposable {
 
     public async launchSimHost(target: string): Promise<void> {
         if (!this.simulator) {
-            throw new Error(
-                localize(
-                    "LaunchingSimHostBeforeStartSimulationServer",
-                    "Launching sim host before starting simulation server",
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.LaunchSimHostBeforeStartSimulationServer,
             );
         }
         const simulate = await this.getPackage();
@@ -115,21 +114,18 @@ export class PluginSimulator implements vscode.Disposable {
                         command = `ionic${isIonicCliVersionGte3 ? " cordova" : ""}`;
                     }
 
-                    throw new Error(
-                        localize(
-                            "CouldntFindPlatformInProject",
-                            "Couldn't find platform {0} in project, please install it using '{1} platform add {2}'",
-                            platform,
-                            command,
-                            platform,
-                        ),
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.CouldntFindPlatformInProject,
+                        platform,
+                        command,
+                        platform,
                     );
                 }
 
                 return this.simulator.startSimulation().then(() => {
                     if (!this.simulator.isRunning()) {
-                        throw new Error(
-                            localize("ErrorStartingTheSimulation", "Error starting the simulation"),
+                        throw ErrorHelper.getInternalError(
+                            InternalErrorCode.ErrorStartingTheSimulation,
                         );
                     }
 
