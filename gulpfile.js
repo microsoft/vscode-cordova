@@ -29,11 +29,9 @@ const isNightly = process.argv.includes("--nightly");
 
 const vscodeVersionForTests = "stable";
 
-const fullExtensionName = isNightly
-    ? "msjsdiag.vscode-react-native-preview"
-    : "msjsdiag.vscode-react-native";
+const fullExtensionName = isNightly ? "msjsdiag.vscode-cordova-preview" : "msjsdiag.vscode-cordova";
 
-const extensionName = isNightly ? "vscode-react-native-preview" : "vscode-react-native";
+const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 
 const buildDir = "src";
 
@@ -73,7 +71,7 @@ const options = minimist(process.argv.slice(2), knownOptions);
 let lintSources = [srcPath, testPath].map(tsFolder => tsFolder + "/**/*.ts");
 lintSources = lintSources.concat([
     "!src/typings/**",
-    "!test/resources/sampleReactNativeProject/**",
+    "!test/resources/testCordovaProject/**",
     "!test/smoke/**",
     "!/SmokeTestLogs/**",
 ]);
@@ -329,15 +327,28 @@ const runEslint = async options_ => {
     });
 };
 
-const format = gulp.series(
-    () => runPrettier(true),
-    () => runEslint({ fix: true }),
-);
+function runPrettierForFormat(cb) {
+    runPrettier(true);
+    cb();
+}
 
-const lint = gulp.series(
-    () => runPrettier(false),
-    () => runEslint({ fix: false }),
-);
+function runEsLintForFormat(cb) {
+    runEslint({ fix: false });
+    cb();
+}
+const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
+
+function runPrettierForLint(cb) {
+    runPrettier(false);
+    cb();
+}
+
+function runEslintForLint(cb) {
+    runEslint({ fix: false });
+    cb();
+}
+
+const lint = gulp.series(runPrettierForLint, runEslintForLint);
 
 const webpackBundle = async () => {
     const packages = [
@@ -356,7 +367,7 @@ const clean = () => {
         "src/**/*.js.map",
         "out/",
         "dist",
-        "!test/resources/sampleReactNativeProject/**/*.js",
+        "!test/resources/testCordovaProject/**/*.js",
         ".vscode-test/",
         "nls.*.json",
         "!test/smoke/**/*",
@@ -446,7 +457,7 @@ const release = function prepareLicenses() {
         "package.json",
         "package-lock.json",
     ];
-    const backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-react-native"));
+    const backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-cordova"));
     if (!fs.existsSync(backupFolder)) {
         fs.mkdirSync(backupFolder);
     }
