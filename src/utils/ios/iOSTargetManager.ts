@@ -9,6 +9,8 @@ import { waitUntil } from "../../common/node/promise";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { MobileTargetManager } from "../mobileTargetManager";
 import { TargetType } from "../../debugger/cordovaDebugSession";
+import { ErrorHelper } from "../../common/error/errorHelper";
+import { InternalErrorCode } from "../../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -177,12 +179,9 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
             }
             throw Error("There is no any target with specified target string");
         } catch {
-            throw new Error(
-                localize(
-                    "CouldNotRecognizeTargetType",
-                    "Could not recognize type of the target {0}",
-                    targetString,
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.CouldNotRecognizeTargetType,
+                targetString,
             );
         }
     }
@@ -255,7 +254,7 @@ export class IOSTargetManager extends MobileTargetManager<IOSTarget> {
 
             const condition = async () => {
                 if (emulatorLaunchFailed)
-                    throw new Error("iOS simulator launch failed unexpectedly");
+                    throw ErrorHelper.getInternalError(InternalErrorCode.iOSSimulatorLaunchFailed);
                 await this.collectTargets(TargetType.Emulator);
                 const onlineTarget = (await this.getTargetList()).find(
                     target => target.id === emulatorTarget.id && target.isOnline,

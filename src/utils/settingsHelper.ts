@@ -4,12 +4,13 @@
 import * as os from "os";
 import * as path from "path";
 import * as nls from "vscode-nls";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export function settingsHome(): string {
     switch (os.platform()) {
@@ -19,6 +20,6 @@ export function settingsHome(): string {
         case "linux":
             return path.join(process.env.HOME, ".vscode-cordova");
         default:
-            throw new Error(localize("UnexpectedPlatform", "Unexpected Platform"));
+            throw ErrorHelper.getInternalError(InternalErrorCode.UnexpectedPlatform);
     }
 }

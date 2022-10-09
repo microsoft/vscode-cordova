@@ -7,6 +7,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { Telemetry } from "./telemetry";
 import * as nls from "vscode-nls";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -346,12 +348,9 @@ export class TelemetryHelper {
         try {
             fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson));
         } catch (err) {
-            throw new Error(
-                err.message +
-                    localize(
-                        "CWDDoesntReferToTheWorkspaceRootDirectory",
-                        " It seems that 'cwd' parameter doesn't refer to the workspace root directory. Please make sure that 'cwd' contains the path to the workspace root directory.",
-                    ),
+            throw ErrorHelper.getNestedError(
+                err.message,
+                InternalErrorCode.CWDCouldNotReferToTheWorkspaceRootDirectory,
             );
         }
     }

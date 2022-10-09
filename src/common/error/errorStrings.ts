@@ -130,5 +130,42 @@ export const ERROR_STRINGS = {
         "UnableToFindWebview",
         "Unable to find Webview",
     ),
+    [InternalErrorCode.UnableToDetermineTheIonicDevServerAddress]: localize(
+        "UnableToDetermineTheIonicDevServerAddress",
+        "Unable to determine the Ionic dev server address, please try re-launching the debugger",
+    ),
+    [InternalErrorCode.CouldNotRecognizeTargetType]: localize(
+        "CouldNotRecognizeTargetType",
+        "Could not recognize type of the target {0}",
+    ),
+    [InternalErrorCode.InvalidVersionString]: localize(
+        "InvalidVersionString",
+        "Invalid version string: {0}",
+    ),
+    [InternalErrorCode.NvsHomeNotFoundMessage]: localize(
+        "NvsHomeNotFoundMessage",
+        "Attribute runtimeVersion requires Node.js version manager 'nvs'",
+    ),
+    [InternalErrorCode.NvmWindowsNotFoundMessage]: localize(
+        "NvmWindowsNotFoundMessage",
+        "Attribute runtimeVersion requires Node.js version manager nvm-windows or nvs",
+    ),
+    [InternalErrorCode.NvmHomeNotFoundMessage]: localize(
+        "NvmHomeNotFoundMessage",
+        "Attribute runtimeVersion requires Node.js version manager nvm or nvs",
+    ),
+    [InternalErrorCode.RuntimeVersionNotFoundMessage]: localize(
+        "RuntimeVersionNotFoundMessage",
+        "Node.js version {0} not installed for {1}",
+    ),
+    [InternalErrorCode.CWDCouldNotReferToTheWorkspaceRootDirectory]: localize(
+        "CWDCouldNotReferToTheWorkspaceRootDirectory",
+        "Cwd parameter could not refer to the workspace root directory. Please make sure that cwd contains the path to the workspace root directory",
+    ),
+    [InternalErrorCode.iOSSimulatorLaunchFailed]: localize(
+        "iOSSimulatorLaunchFailed",
+        "iOS simulator launch failed unexpectedly",
+    ),
+    [InternalErrorCode.UnexpectedPlatform]: localize("UnexpectedPlatform", "Unexpected Platform"),
     [InternalErrorCode.UnknownPlatform]: localize("UnknownPlatform", "Unknown platform: {0}"),
 };

@@ -5,6 +5,10 @@ export enum InternalErrorCode {
     // Command error
     CommandFailed = 101,
     CommandFailedWithDetails = 102,
+    NvsHomeNotFoundMessage = 103,
+    NvmWindowsNotFoundMessage = 104,
+    NvmHomeNotFoundMessage = 105,
+    RuntimeVersionNotFoundMessage = 106,
 
     // Platform& Simulate error
     UnknownPlatform = 201,
@@ -24,10 +28,15 @@ export enum InternalErrorCode {
     UnableToFindTargetApp = 215,
     PlatformSelectionWasCancelled = 216,
     CouldNotFindAnyPlatformInstalled = 217,
+    CouldNotRecognizeTargetType = 218,
+    UnexpectedPlatform = 219,
+    iOSSimulatorLaunchFailed = 220,
 
     // User input errors
     ExpectedArrayValue = 301,
     CwdUndefined = 302,
+    InvalidVersionString = 303,
+    CWDCouldNotReferToTheWorkspaceRootDirectory = 304,
 
     // Debug errors
     CouldNotConnectToDebugTarget = 401,
@@ -37,6 +46,7 @@ export enum InternalErrorCode {
     WebsocketDebuggerUrlIsEmpty = 405,
     UnableToFindLocalAbstractName = 406,
     UnableToFindWebview = 407,
+    UnableToDetermineTheIonicDevServerAddress = 408,
 
     // Miscellaneous errors
     CancellationTokenTriggered = 501,

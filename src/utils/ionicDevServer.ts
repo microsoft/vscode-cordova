@@ -9,6 +9,8 @@ import { CordovaProjectHelper } from "./cordovaProjectHelper";
 import { cordovaStartCommand, killChildProcess } from "../debugger/extension";
 import { DebugConsoleLogger } from "../debugger/cordovaDebugSession";
 import { EventEmitter } from "vscode";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -208,11 +210,8 @@ export default class IonicDevServer {
         });
 
         if (!ionicDevServerUrls || !ionicDevServerUrls.length) {
-            throw new Error(
-                localize(
-                    "UnableToDetermineTheIonicDevServerAddress",
-                    "Unable to determine the Ionic dev server address, please try re-launching the debugger",
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.UnableToDetermineTheIonicDevServerAddress,
             );
         }
 
