@@ -382,6 +382,44 @@ export class TelemetryHelper {
             );
         }
     }
+
+    public static addTelemetryEventErrorProperty(
+        event: Telemetry.TelemetryEvent,
+        error: Error,
+        errorDescription?: string,
+        errorPropPrefix: string = "",
+    ): void {
+        const errorWithErrorCode: IHasErrorCode = <IHasErrorCode>(<Record<string, any>>error);
+        if (errorWithErrorCode.errorCode) {
+            this.addTelemetryEventProperty(
+                event,
+                `${errorPropPrefix}error.code`,
+                errorWithErrorCode.errorCode,
+                false,
+            );
+            if (errorDescription) {
+                this.addTelemetryEventProperty(
+                    event,
+                    `${errorPropPrefix}error.message`,
+                    errorDescription,
+                    false,
+                );
+            }
+        } else {
+            this.addTelemetryEventProperty(
+                event,
+                `${errorPropPrefix}error.code`,
+                InternalErrorCode.UnknownError,
+                false,
+            );
+        }
+    }
+
+    public static sendErrorEvent(eventName: string, error: Error, errorDescription?: string): void {
+        const event = TelemetryHelper.createTelemetryEvent(eventName);
+        TelemetryHelper.addTelemetryEventErrorProperty(event, error, errorDescription, "");
+        Telemetry.send(event);
+    }
 }
 
 /* tslint:enable */

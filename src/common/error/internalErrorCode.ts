@@ -53,4 +53,5 @@ export enum InternalErrorCode {
     UnableToFindXCodeProjFile = 502,
     CouldNotFindiOSAppFile = 503,
     CouldNotFindWorkspaceManager = 504,
+    UnknownError = 505,
 }

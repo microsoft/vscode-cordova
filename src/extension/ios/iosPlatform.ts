@@ -22,6 +22,7 @@ import {
 } from "../../utils/ios/iOSTargetManager";
 import { ErrorHelper } from "../../common/error/errorHelper";
 import { InternalErrorCode } from "../../common/error/internalErrorCode";
+import { TelemetryHelper } from "../../utils/telemetryHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -112,9 +113,11 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                 targetPort = parseInt(device.url.split(":")[1], 10);
                 iOSVersion = target.isVirtualTarget ? target.system : device.deviceOSVersion;
             } catch (e) {
-                throw ErrorHelper.getInternalError(
+                const error = ErrorHelper.getInternalError(
                     InternalErrorCode.UnableToFindiOSTargetDeviceOrSimulator,
                 );
+                TelemetryHelper.sendErrorEvent("UnableToFindiOSTargetDeviceOrSimulator", error);
+                throw error;
             }
 
             try {
@@ -138,13 +141,17 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                     ),
                 );
                 if (webViewsList.length === 0) {
-                    throw ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
+                    const error = ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
+                    TelemetryHelper.sendErrorEvent("UnableToFindTargetApp", error);
+                    throw error;
                 }
                 const cordovaWebview = this.getCordovaWebview(webViewsList, iOSAppPackagePath);
                 if (!cordovaWebview.webSocketDebuggerUrl) {
-                    throw ErrorHelper.getInternalError(
+                    const error = ErrorHelper.getInternalError(
                         InternalErrorCode.WebsocketDebuggerUrlIsEmpty,
                     );
+                    TelemetryHelper.sendErrorEvent("WebsocketDebuggerUrlIsEmpty", error);
+                    throw error;
                 }
                 webSocketDebuggerUrl = cordovaWebview.webSocketDebuggerUrl;
                 if (this.IonicDevServer.ionicDevServerUrls) {
@@ -153,7 +160,9 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                     );
                 }
             } catch (e) {
-                throw ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
+                const error = ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
+                TelemetryHelper.sendErrorEvent("UnableToFindTargetApp", error);
+                throw error;
             }
 
             if (devServerAddress) {
@@ -303,6 +312,8 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         if (filtered.length > 0) {
             return filtered[0];
         }
-        throw ErrorHelper.getInternalError(InternalErrorCode.CouldNotFindiOSAppFile);
+        const error = ErrorHelper.getInternalError(InternalErrorCode.CouldNotFindiOSAppFile);
+        TelemetryHelper.sendErrorEvent("CouldNotFindiOSAppFile", error);
+        throw error;
     }
 }

@@ -15,6 +15,7 @@ import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 import { findFileInFolderHierarchy } from "../utils/extensionHelper";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
+import { TelemetryHelper } from "../utils/telemetryHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -62,9 +63,11 @@ export class PluginSimulator implements vscode.Disposable {
 
     public async launchSimHost(target: string): Promise<void> {
         if (!this.simulator) {
-            throw ErrorHelper.getInternalError(
+            const error = ErrorHelper.getInternalError(
                 InternalErrorCode.LaunchSimHostBeforeStartSimulationServer,
             );
+            TelemetryHelper.sendErrorEvent("LaunchSimHostBeforeStartSimulationServer", error);
+            throw error;
         }
         const simulate = await this.getPackage();
         return await simulate.launchBrowser(target, this.simulator.simHostUrl());
@@ -114,19 +117,23 @@ export class PluginSimulator implements vscode.Disposable {
                         command = `ionic${isIonicCliVersionGte3 ? " cordova" : ""}`;
                     }
 
-                    throw ErrorHelper.getInternalError(
+                    const error = ErrorHelper.getInternalError(
                         InternalErrorCode.CouldntFindPlatformInProject,
                         platform,
                         command,
                         platform,
                     );
+                    TelemetryHelper.sendErrorEvent("CouldntFindPlatformInProject", error);
+                    throw error;
                 }
 
                 return this.simulator.startSimulation().then(() => {
                     if (!this.simulator.isRunning()) {
-                        throw ErrorHelper.getInternalError(
+                        const error = ErrorHelper.getInternalError(
                             InternalErrorCode.ErrorStartingTheSimulation,
                         );
+                        TelemetryHelper.sendErrorEvent("ErrorStartingTheSimulation", error);
+                        throw error;
                     }
 
                     this.simulationInfo = {

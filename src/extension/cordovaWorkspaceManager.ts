@@ -12,6 +12,7 @@ import { ProjectsStorage } from "./projectsStorage";
 import { PluginSimulator } from "./simulate";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
+import { TelemetryHelper } from "../utils/telemetryHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -39,10 +40,12 @@ export class CordovaWorkspaceManager implements vscode.Disposable {
                     ProjectsStorage.projectsCache[workspaceFolder.uri.fsPath.toLowerCase()];
             }
             if (!workspaceManager) {
-                throw ErrorHelper.getInternalError(
+                const error = ErrorHelper.getInternalError(
                     InternalErrorCode.CouldNotFindWorkspaceManager,
                     projectRootPath,
                 );
+                TelemetryHelper.sendErrorEvent("CouldNotFindWorkspaceManager", error);
+                throw error;
             }
         }
         return workspaceManager;

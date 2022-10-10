@@ -19,6 +19,7 @@ import { IAndroidAttachResult } from "../platformAttachResult";
 import { IAndroidLaunchResult } from "../platformLaunchResult";
 import { ErrorHelper } from "../../common/error/errorHelper";
 import { InternalErrorCode } from "../../common/error/internalErrorCode";
+import { TelemetryHelper } from "../../utils/telemetryHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -84,7 +85,9 @@ export default class AndroidPlatform extends AbstractMobilePlatform<
         // strings with error content to detect failed process
         const errorMatch = /(ERROR.*)/.test(runOutput) || /error:.*/i.test(stderr);
         if (errorMatch) {
-            throw ErrorHelper.getInternalError(InternalErrorCode.ErrorRunningAndroid);
+            const error = ErrorHelper.getInternalError(InternalErrorCode.ErrorRunningAndroid);
+            TelemetryHelper.sendErrorEvent("ErrorRunningAndroid", error);
+            throw error;
         }
         return {};
     }
