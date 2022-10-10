@@ -56,7 +56,6 @@ suite("AbstractMobilePlatform", function () {
         messageFormat: nls.MessageFormat.bundle,
         bundleFormat: nls.BundleFormat.standalone,
     })();
-    const localize = nls.loadMessageBundle();
 
     class TestMobileTarget extends MobileTarget {}
 
