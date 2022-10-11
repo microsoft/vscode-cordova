@@ -141,7 +141,9 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
                     ),
                 );
                 if (webViewsList.length === 0) {
-                    const error = ErrorHelper.getInternalError(InternalErrorCode.UnableToFindTargetApp);
+                    const error = ErrorHelper.getInternalError(
+                        InternalErrorCode.UnableToFindTargetApp,
+                    );
                     TelemetryHelper.sendErrorEvent("UnableToFindTargetApp", error);
                     throw error;
                 }
