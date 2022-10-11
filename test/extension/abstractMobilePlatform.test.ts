@@ -16,6 +16,8 @@ import IonicDevServer from "../../src/utils/ionicDevServer";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../../src/utils/mobileTarget";
 import { MobileTargetManager } from "../../src/utils/mobileTargetManager";
 import { DebugConsoleLogger, TargetType } from "../../src/debugger/cordovaDebugSession";
+import { ErrorHelper } from "../../src/common/error/errorHelper";
+import { InternalErrorCode } from "../../src/common/error/internalErrorCode";
 
 suite("AbstractMobilePlatform", function () {
     const onlineDevice: IDebuggableMobileTarget = {
@@ -54,7 +56,6 @@ suite("AbstractMobilePlatform", function () {
         messageFormat: nls.MessageFormat.bundle,
         bundleFormat: nls.BundleFormat.standalone,
     })();
-    const localize = nls.loadMessageBundle();
 
     class TestMobileTarget extends MobileTarget {}
 
@@ -71,12 +72,9 @@ suite("AbstractMobilePlatform", function () {
             } else if (target === TargetType.Emulator || target.includes(TargetType.Emulator)) {
                 return true;
             }
-            throw new Error(
-                localize(
-                    "CouldNotRecognizeTargetType",
-                    "Could not recognize type of the target {0}",
-                    target,
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.CouldNotRecognizeTargetType,
+                target,
             );
         }
 

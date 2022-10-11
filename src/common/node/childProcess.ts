@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as nodeChildProcess from "child_process";
+import { ErrorHelper } from "../error/errorHelper";
+import { InternalErrorCode } from "../error/internalErrorCode";
 
 export interface IExecResult {
     process: nodeChildProcess.ChildProcess;
@@ -52,7 +54,13 @@ export class ChildProcess {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     (error: Error, stdout: string, stderr: string) => {
                         if (error) {
-                            reject(error);
+                            reject(
+                                ErrorHelper.getNestedError(
+                                    error,
+                                    InternalErrorCode.CommandFailed,
+                                    command,
+                                ),
+                            );
                         } else {
                             resolve(stdout);
                         }
@@ -118,9 +126,21 @@ export class ChildProcess {
                         if (details === "") {
                             details = "STDOUT and STDERR are empty!";
                         }
-                        reject(`Command '${commandWithArgs}' failed with details: ${details}`);
+                        reject(
+                            ErrorHelper.getInternalError(
+                                InternalErrorCode.CommandFailedWithDetails,
+                                commandWithArgs,
+                                details,
+                            ),
+                        );
                     } else {
-                        reject(`Command '${commandWithArgs}' failed with code: ${code}`);
+                        reject(
+                            ErrorHelper.getInternalError(
+                                InternalErrorCode.CommandFailed,
+                                commandWithArgs,
+                                code,
+                            ),
+                        );
                     }
                 }
             });

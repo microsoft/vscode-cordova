@@ -49,6 +49,8 @@ import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
 import { IMobileTarget } from "../utils/mobileTarget";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -180,12 +182,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     ): Promise<void> {
         try {
             if (isNullOrUndefined(launchArgs.cwd)) {
-                throw new Error(
-                    localize(
-                        "CwdUndefined",
-                        "Launch argument 'cwd' is undefined, please add it to your launch.json. Example: 'cwd': '${workspaceFolder}' to point to your current working directory.",
-                    ),
-                );
+                throw ErrorHelper.getInternalError(InternalErrorCode.CwdUndefined);
             }
             await this.initializeTelemetry(launchArgs.cwd);
             await this.initializeSettings(launchArgs);
@@ -449,16 +446,13 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 },
             );
             if (!childDebugSessionStarted) {
-                throw new Error(
-                    localize("CannotStartChildDebugSession", "Cannot start child debug session"),
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.CouldNotStartChildDebugSession,
                 );
             }
         } else {
-            throw new Error(
-                localize(
-                    "CannotConnectToDebuggerWorkerProxyOffline",
-                    "Cannot connect to debugger worker: Chrome debugger proxy is offline",
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.CouldNotConnectToDebuggerWorkerProxyOffline,
             );
         }
     }
@@ -581,8 +575,9 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                     );
                     break;
                 default:
-                    throw new Error(
-                        localize("UnknownPlatform", "Unknown Platform: {0}", args.platform),
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.UnknownPlatform,
+                        args.platform,
                     );
             }
         }

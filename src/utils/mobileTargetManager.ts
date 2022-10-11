@@ -6,6 +6,8 @@ import { QuickPickOptions, window } from "vscode";
 import { TargetType } from "../debugger/cordovaDebugSession";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
 import { IMobileTarget, MobileTarget } from "./mobileTarget";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -36,13 +38,7 @@ export abstract class MobileTargetManager<T extends MobileTarget> {
         if (target === TargetType.Emulator) {
             return true;
         }
-        throw new Error(
-            localize(
-                "CouldNotRecognizeTargetType",
-                "Could not recognize type of the target {0}",
-                target,
-            ),
-        );
+        throw ErrorHelper.getInternalError(InternalErrorCode.CouldNotRecognizeTargetType, target);
     }
 
     public async getTargetList(filter?: (el: IMobileTarget) => boolean): Promise<IMobileTarget[]> {

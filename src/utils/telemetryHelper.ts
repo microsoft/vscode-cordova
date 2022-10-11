@@ -7,11 +7,12 @@ import * as fs from "fs";
 import * as path from "path";
 import { Telemetry } from "./telemetry";
 import * as nls from "vscode-nls";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export interface ITelemetryPropertyInfo {
     value: any;
@@ -346,12 +347,9 @@ export class TelemetryHelper {
         try {
             fs.writeFileSync(pluginFilePath, JSON.stringify(pluginFileJson));
         } catch (err) {
-            throw new Error(
-                err.message +
-                    localize(
-                        "CWDDoesntReferToTheWorkspaceRootDirectory",
-                        " It seems that 'cwd' parameter doesn't refer to the workspace root directory. Please make sure that 'cwd' contains the path to the workspace root directory.",
-                    ),
+            throw ErrorHelper.getNestedError(
+                err.message,
+                InternalErrorCode.CWDCouldNotReferToTheWorkspaceRootDirectory,
             );
         }
     }
@@ -383,6 +381,44 @@ export class TelemetryHelper {
                 isPii,
             );
         }
+    }
+
+    public static addTelemetryEventErrorProperty(
+        event: Telemetry.TelemetryEvent,
+        error: Error,
+        errorDescription?: string,
+        errorPropPrefix: string = "",
+    ): void {
+        const errorWithErrorCode: IHasErrorCode = <IHasErrorCode>(<Record<string, any>>error);
+        if (errorWithErrorCode.errorCode) {
+            this.addTelemetryEventProperty(
+                event,
+                `${errorPropPrefix}error.code`,
+                errorWithErrorCode.errorCode,
+                false,
+            );
+            if (errorDescription) {
+                this.addTelemetryEventProperty(
+                    event,
+                    `${errorPropPrefix}error.message`,
+                    errorDescription,
+                    false,
+                );
+            }
+        } else {
+            this.addTelemetryEventProperty(
+                event,
+                `${errorPropPrefix}error.code`,
+                InternalErrorCode.UnknownError,
+                false,
+            );
+        }
+    }
+
+    public static sendErrorEvent(eventName: string, error: Error, errorDescription?: string): void {
+        const event = TelemetryHelper.createTelemetryEvent(eventName);
+        TelemetryHelper.addTelemetryEventErrorProperty(event, error, errorDescription, "");
+        Telemetry.send(event);
     }
 }
 

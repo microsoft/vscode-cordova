@@ -11,6 +11,8 @@ import { SafariCDPMessageHandlerBase } from "../abstraction/safariCDPMessageHand
 import { SourcemapPathTransformer } from "../../sourcemapPathTransformer";
 import { ProjectType } from "../../../../utils/cordovaProjectHelper";
 import { CDP_API_NAMES } from "../CDPAPINames";
+import { ErrorHelper } from "../../../../common/error/errorHelper";
+import { InternalErrorCode } from "../../../../common/error/internalErrorCode";
 
 export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase {
     constructor(
@@ -27,7 +29,7 @@ export class SafariCordovaCDPMessageHandler extends SafariCDPMessageHandlerBase 
         if (options.iOSAppPackagePath) {
             this.iOSAppPackagePath = options.iOSAppPackagePath;
         } else {
-            throw new Error('".app" file isn\'t found'); // eslint-disable-line
+            throw ErrorHelper.getInternalError(InternalErrorCode.CouldNotFindiOSAppFile);
         }
     }
 

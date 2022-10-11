@@ -4,13 +4,14 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as nls from "vscode-nls";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 import { ICordovaAttachRequestArgs, ICordovaLaunchRequestArgs } from "../debugger/requestArgs";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export class NodeVersionHelper {
     private static nvsStandardArchName(arch: string): string {
@@ -46,7 +47,10 @@ export class NodeVersionHelper {
 
         const match = versionRegex.exec(versionString);
         if (!match) {
-            throw new Error(`Invalid version string: ${versionString}`);
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.InvalidVersionString,
+                versionString,
+            );
         }
 
         const nvsFormat = !!(match[2] || match[8]);
@@ -89,12 +93,7 @@ export class NodeVersionHelper {
                 }
                 versionManagerName = "nvs";
             } else {
-                throw new Error(
-                    localize(
-                        "nvsHomeNotFoundMessage",
-                        "Attribute 'runtimeVersion' requires Node.js version manager 'nvs'.",
-                    ),
-                );
+                throw ErrorHelper.getInternalError(InternalErrorCode.NvsHomeNotFoundMessage);
             }
         }
 
@@ -103,12 +102,7 @@ export class NodeVersionHelper {
             if (process.platform === "win32") {
                 const nvmHome = process.env.NVM_HOME;
                 if (!nvmHome) {
-                    throw new Error(
-                        localize(
-                            "nvmWindowsNotFoundMessage",
-                            "Attribute 'runtimeVersion' requires Node.js version manager 'nvm-windows' or 'nvs'.",
-                        ),
-                    );
+                    throw ErrorHelper.getInternalError(InternalErrorCode.NvmWindowsNotFoundMessage);
                 }
                 bin = path.join(nvmHome, `v${config.runtimeVersion}`);
                 versionManagerName = "nvm-windows";
@@ -123,12 +117,7 @@ export class NodeVersionHelper {
                     }
                 }
                 if (!nvmHome) {
-                    throw new Error(
-                        localize(
-                            "nvmHomeNotFoundMessage",
-                            "Attribute 'runtimeVersion' requires Node.js version manager 'nvm' or 'nvs'.",
-                        ),
-                    );
+                    throw ErrorHelper.getInternalError(InternalErrorCode.NvmHomeNotFoundMessage);
                 }
                 bin = path.join(nvmHome, "versions", "node", `v${config.runtimeVersion}`, "bin");
                 versionManagerName = "nvm";
@@ -145,13 +134,10 @@ export class NodeVersionHelper {
                 process.env.PATH = `${bin}:${process.env.PATH}`;
             }
         } else {
-            throw new Error(
-                localize(
-                    "runtimeVersionNotFoundMessage",
-                    "Node.js version '{0}' not installed for '{1}'.",
-                    config.runtimeVersion,
-                    versionManagerName,
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.RuntimeVersionNotFoundMessage,
+                config.runtimeVersion,
+                versionManagerName,
             );
         }
     }

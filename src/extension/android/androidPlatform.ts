@@ -17,6 +17,10 @@ import AbstractPlatform from "../abstractPlatform";
 import IonicDevServer from "../../utils/ionicDevServer";
 import { IAndroidAttachResult } from "../platformAttachResult";
 import { IAndroidLaunchResult } from "../platformLaunchResult";
+import { ErrorHelper } from "../../common/error/errorHelper";
+import { InternalErrorCode } from "../../common/error/internalErrorCode";
+import { TelemetryHelper } from "../../utils/telemetryHelper";
+
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -81,7 +85,9 @@ export default class AndroidPlatform extends AbstractMobilePlatform<
         // strings with error content to detect failed process
         const errorMatch = /(ERROR.*)/.test(runOutput) || /error:.*/i.test(stderr);
         if (errorMatch) {
-            throw new Error(localize("ErrorRunningAndroid", "Error running android"));
+            const error = ErrorHelper.getInternalError(InternalErrorCode.ErrorRunningAndroid);
+            TelemetryHelper.sendErrorEvent("ErrorRunningAndroid", error);
+            throw error;
         }
         return {};
     }
@@ -100,10 +106,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform<
             5,
             1,
             5000,
-            localize(
-                "UnableToFindLocalAbstractName",
-                "Unable to find 'localabstract' name of Cordova app",
-            ),
+            ErrorHelper.getInternalError(InternalErrorCode.UnableToFindLocalAbstractName).message,
             this.platformOpts.cancellationTokenSource.token,
         );
 

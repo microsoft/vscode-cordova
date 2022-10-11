@@ -17,6 +17,8 @@ const localize = nls.loadMessageBundle();
 import { TelemetryHelper } from "./telemetryHelper";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
 import { CordovaProjectHelper } from "./cordovaProjectHelper";
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 export class CordovaCommandHelper {
     private static CORDOVA_CMD_NAME: string = os.platform() === "win32" ? "cordova.cmd" : "cordova";
@@ -225,11 +227,8 @@ export class CordovaCommandHelper {
                     // eslint-disable-next-line
                     return window.showQuickPick(platforms).then(platform => {
                         if (!platform) {
-                            throw new Error(
-                                localize(
-                                    "PlatformSelectionWasCancelled",
-                                    "Platform selection was canceled. Please select target platform to continue!",
-                                ),
+                            throw ErrorHelper.getInternalError(
+                                InternalErrorCode.PlatformSelectionWasCancelled,
                             );
                         }
 
@@ -243,7 +242,9 @@ export class CordovaCommandHelper {
                     // eslint-disable-next-line
                     return resolve(platforms[0]);
                 }
-                throw new Error(localize("NoAnyPlatformInstalled", "No any platforms installed"));
+                throw ErrorHelper.getInternalError(
+                    InternalErrorCode.CouldNotFindAnyPlatformInstalled,
+                );
             }
 
             return resolve(""); // eslint-disable-line

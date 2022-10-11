@@ -10,13 +10,14 @@ import * as http from "http";
 import * as https from "https";
 import { CancellationToken } from "vscode";
 import * as nls from "vscode-nls";
+import { InternalErrorCode } from "../../common/error/internalErrorCode";
 import { delay } from "../../utils/extensionHelper";
+import { ErrorHelper } from "../../common/error/errorHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export class DebuggerEndpointHelper {
     private localv4: Buffer;
@@ -42,17 +43,17 @@ export class DebuggerEndpointHelper {
             return await this.getWSEndpoint(browserURL);
         } catch (err) {
             if (attemptNumber < 1 || cancellationToken.isCancellationRequested) {
-                const internalError = new Error(
-                    localize(
-                        "CouldNotConnectToTheDebugTarget",
-                        "Could not connect to the debug target at {0}: {1}",
-                        browserURL,
-                        err.message,
-                    ),
+                const internalError = ErrorHelper.getInternalError(
+                    InternalErrorCode.CouldNotConnectToDebugTarget,
+                    browserURL,
+                    err.message,
                 );
 
                 if (cancellationToken.isCancellationRequested) {
-                    throw new Error(localize("OperationCancelled", "Operation canceled"));
+                    throw ErrorHelper.getNestedError(
+                        internalError,
+                        InternalErrorCode.CancellationTokenTriggered,
+                    );
                 }
 
                 throw internalError;
@@ -86,9 +87,7 @@ export class DebuggerEndpointHelper {
             return jsonList[0].webSocketDebuggerUrl;
         }
 
-        throw new Error(
-            localize("CouldNotFindAnyDebuggableTarget", "Could not find any debuggable target"),
-        );
+        throw ErrorHelper.getInternalError(InternalErrorCode.CouldNotFindAnyDebuggableTarget);
     }
 
     /**
