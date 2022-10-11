@@ -22,6 +22,8 @@ const cp = require("child_process");
 const executeCommand = GulpExtras.executeCommand;
 const tsProject = ts.createProject("tsconfig.json");
 
+const getFormatter = require("./gulp_scripts/formatter");
+
 /**
  * Whether we're running a nightly build.
  */
@@ -271,84 +273,84 @@ async function test(inspectCodeCoverage = false) {
     }
 }
 
-const runPrettier = async fix => {
-    const child = cp.fork(
-        "./node_modules/@mixer/parallel-prettier/dist/index.js",
-        [
-            fix ? "--write" : "--list-different",
-            "test/**/*.ts",
-            "gulpfile.js",
-            "*.md",
-            "!CHANGELOG.md",
-            "!src/**/*.d.ts",
-            "src/**/*.ts",
-            "!test/resources",
-        ],
-        {
-            stdio: "inherit",
-        },
-    );
-    await new Promise((resolve, reject) => {
-        child.on("exit", code => {
-            // console.log(code);
-            code ? reject(`Prettier exited with code ${code}`) : resolve();
-        });
-    });
-};
+// const runPrettier = async fix => {
+//     const child = cp.fork(
+//         "./node_modules/@mixer/parallel-prettier/dist/index.js",
+//         [
+//             fix ? "--write" : "--list-different",
+//             "test/**/*.ts",
+//             "gulpfile.js",
+//             "*.md",
+//             "!CHANGELOG.md",
+//             "!src/**/*.d.ts",
+//             "src/**/*.ts",
+//             "!test/resources",
+//         ],
+//         {
+//             stdio: "inherit",
+//         },
+//     );
+//     await new Promise((resolve, reject) => {
+//         child.on("exit", code => {
+//             // console.log(code);
+//             code ? reject(`Prettier exited with code ${code}`) : resolve();
+//         });
+//     });
+// };
 
-/**
- * @typedef {{color: boolean, fix: boolean}} OptionsT
- */
+// /**
+//  * @typedef {{color: boolean, fix: boolean}} OptionsT
+//  */
 
-/**
- * @param {OptionsT} options_
- */
-const runEslint = async options_ => {
-    /** @type {OptionsT} */
-    const options = Object.assign({ color: true, fix: false }, options_);
+// /**
+//  * @param {OptionsT} options_
+//  */
+// const runEslint = async options_ => {
+//     /** @type {OptionsT} */
+//     const options = Object.assign({ color: true, fix: false }, options_);
 
-    const files = ["src/**/*.ts"];
+//     const files = ["src/**/*.ts"];
 
-    const args = [
-        ...(options.color ? ["--color"] : ["--no-color"]),
-        ...(options.fix ? ["--fix"] : []),
-        ...files,
-    ];
+//     const args = [
+//         ...(options.color ? ["--color"] : ["--no-color"]),
+//         ...(options.fix ? ["--fix"] : []),
+//         ...files,
+//     ];
 
-    const child = cp.fork("./node_modules/eslint/bin/eslint.js", args, {
-        stdio: "inherit",
-        cwd: __dirname,
-    });
+//     const child = cp.fork("./node_modules/eslint/bin/eslint.js", args, {
+//         stdio: "inherit",
+//         cwd: __dirname,
+//     });
 
-    await new Promise((resolve, reject) => {
-        child.on("exit", code => {
-            code ? reject(`Eslint exited with code ${code}`) : resolve();
-        });
-    });
-};
+//     await new Promise((resolve, reject) => {
+//         child.on("exit", code => {
+//             code ? reject(`Eslint exited with code ${code}`) : resolve();
+//         });
+//     });
+// };
 
-function runPrettierForFormat(cb) {
-    runPrettier(true);
-    cb();
-}
+// function runPrettierForFormat(cb) {
+//     runPrettier(true);
+//     cb();
+// }
 
-function runEsLintForFormat(cb) {
-    runEslint({ fix: false });
-    cb();
-}
-const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
+// function runEsLintForFormat(cb) {
+//     runEslint({ fix: false });
+//     cb();
+// }
+// const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
 
-function runPrettierForLint(cb) {
-    runPrettier(false);
-    cb();
-}
+// function runPrettierForLint(cb) {
+//     runPrettier(false);
+//     cb();
+// }
 
-function runEslintForLint(cb) {
-    runEslint({ fix: false });
-    cb();
-}
+// function runEslintForLint(cb) {
+//     runEslint({ fix: false });
+//     cb();
+// }
 
-const lint = gulp.series(runPrettierForLint, runEslintForLint);
+// const lint = gulp.series(runPrettierForLint, runEslintForLint);
 
 const webpackBundle = async () => {
     const packages = [
@@ -378,13 +380,13 @@ const clean = () => {
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
-const buildTask = gulp.series(lint, function runBuild(done) {
+const buildTask = gulp.series(getFormatter.lint, function runBuild(done) {
     build(true, true).once("finish", () => {
         done();
     });
 });
 
-const buildSrc = gulp.series(lint, function runBuild(done) {
+const buildSrc = gulp.series(getFormatter.lint, function runBuild(done) {
     build(true, true).once("finish", () => {
         done();
     });
@@ -406,7 +408,7 @@ const watch = gulp.series(buildTask, function runWatch() {
 const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
 const defaultTask = gulp.series(prodBuild);
 
-const runTest = gulp.series(buildTask, lint, test);
+const runTest = gulp.series(buildTask, getFormatter.lint, test);
 
 const testNoBuild = test;
 
@@ -566,12 +568,12 @@ const translationImport = gulp.series(done => {
 }, addi18n);
 
 module.exports = {
-    "format:prettier": () => runPrettier(true),
-    "format:eslint": () => runEslint({ fix: true }),
-    format: format,
-    "lint:prettier": () => runPrettier(false),
-    "lint:eslint": () => runEslint({ fix: false }),
-    lint: lint,
+    "format:prettier": getFormatter.runPrettierForFormat,
+    "format:eslint": getFormatter.runEsLintForFormat,
+    format: getFormatter.format,
+    "lint:prettier": getFormatter.runPrettierForLint,
+    "lint:eslint": getFormatter.runEslintForLint,
+    lint: getFormatter.lint,
     "webpack-bundle": webpackBundle,
     clean: clean,
     build: buildTask,
