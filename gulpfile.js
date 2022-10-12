@@ -27,7 +27,7 @@ global.appRoot = path.resolve(__dirname);
 const getFormatter = require("./gulp_scripts/formatter");
 const getWebpackBundle = require("./gulp_scripts/webpackBundle");
 const getCleaner = require("./gulp_scripts/cleaner");
-// const getBuilder = require("./gulp_scripts/builder");
+const getBuilder = require("./gulp_scripts/builder");
 // const getTester = require("./gulp_scripts/tester");
 // const getWatcher = require("./gulp_scripts/watcher");
 // const getPacker = require("./gulp_scripts/packager");
@@ -48,23 +48,23 @@ const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 const buildDir = "src";
 
 const translationProjectName = "vscode-extensions";
-const defaultLanguages = [
-    { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
-    { id: "zh-cn", folderName: "chs", transifexId: "zh-hans" },
-    { id: "ja", folderName: "jpn" },
-    { id: "ko", folderName: "kor" },
-    { id: "de", folderName: "deu" },
-    { id: "fr", folderName: "fra" },
-    { id: "es", folderName: "esn" },
-    { id: "ru", folderName: "rus" },
-    { id: "it", folderName: "ita" },
+// const defaultLanguages = [
+//     { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
+//     { id: "zh-cn", folderName: "chs", transifexId: "zh-hans" },
+//     { id: "ja", folderName: "jpn" },
+//     { id: "ko", folderName: "kor" },
+//     { id: "de", folderName: "deu" },
+//     { id: "fr", folderName: "fra" },
+//     { id: "es", folderName: "esn" },
+//     { id: "ru", folderName: "rus" },
+//     { id: "it", folderName: "ita" },
 
-    // These language-pack languages are included for VS but excluded from the vscode package
-    { id: "cs", folderName: "csy" },
-    { id: "tr", folderName: "trk" },
-    { id: "pt-br", folderName: "ptb", transifexId: "pt-BR" },
-    { id: "pl", folderName: "plk" },
-];
+//     // These language-pack languages are included for VS but excluded from the vscode package
+//     { id: "cs", folderName: "csy" },
+//     { id: "tr", folderName: "trk" },
+//     { id: "pt-br", folderName: "ptb", transifexId: "pt-BR" },
+//     { id: "pl", folderName: "plk" },
+// ];
 
 const srcPath = "src";
 const testPath = "test";
@@ -73,12 +73,12 @@ const distSrcDir = `${distDir}/src`;
 
 const sources = [srcPath, testPath].map(tsFolder => tsFolder + "/**/*.ts");
 
-const knownOptions = {
-    string: "env",
-    default: { env: "production" },
-};
+// const knownOptions = {
+//     string: "env",
+//     default: { env: "production" },
+// };
 
-const options = minimist(process.argv.slice(2), knownOptions);
+// const options = minimist(process.argv.slice(2), knownOptions);
 
 let lintSources = [srcPath, testPath].map(tsFolder => tsFolder + "/**/*.ts");
 lintSources = lintSources.concat([
@@ -88,60 +88,60 @@ lintSources = lintSources.concat([
     "!/SmokeTestLogs/**",
 ]);
 
-// Generates ./dist/nls.bundle.<language_id>.json from files in ./i18n/** *//<src_path>/<filename>.i18n.json
-// Localized strings are read from these files at runtime.
-const generateSrcLocBundle = () => {
-    // Transpile the TS to JS, and let vscode-nls-dev scan the files for calls to localize.
-    return tsProject
-        .src()
-        .pipe(sourcemaps.init())
-        .pipe(tsProject())
-        .js.pipe(nls.createMetaDataFiles())
-        .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
-        .pipe(nls.bundleMetaDataFiles(fullExtensionName, "dist"))
-        .pipe(nls.bundleLanguageFiles())
-        .pipe(
-            filter([
-                "**/nls.bundle.*.json",
-                "**/nls.metadata.header.json",
-                "**/nls.metadata.json",
-                "!src/**",
-            ]),
-        )
-        .pipe(gulp.dest("dist"));
-};
+// // Generates ./dist/nls.bundle.<language_id>.json from files in ./i18n/** *//<src_path>/<filename>.i18n.json
+// // Localized strings are read from these files at runtime.
+// const generateSrcLocBundle = () => {
+//     // Transpile the TS to JS, and let vscode-nls-dev scan the files for calls to localize.
+//     return tsProject
+//         .src()
+//         .pipe(sourcemaps.init())
+//         .pipe(tsProject())
+//         .js.pipe(nls.createMetaDataFiles())
+//         .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
+//         .pipe(nls.bundleMetaDataFiles(fullExtensionName, "dist"))
+//         .pipe(nls.bundleLanguageFiles())
+//         .pipe(
+//             filter([
+//                 "**/nls.bundle.*.json",
+//                 "**/nls.metadata.header.json",
+//                 "**/nls.metadata.json",
+//                 "!src/**",
+//             ]),
+//         )
+//         .pipe(gulp.dest("dist"));
+// };
 
-function build(failOnError, buildNls) {
-    const isProd = options.env === "production";
-    const preprocessorContext = isProd ? { PROD: true } : { DEBUG: true };
-    let gotError = false;
-    log(`Building with preprocessor context: ${JSON.stringify(preprocessorContext)}`);
-    const tsResult = tsProject
-        .src()
-        .pipe(preprocess({ context: preprocessorContext })) //To set environment variables in-line
-        .pipe(sourcemaps.init())
-        .pipe(tsProject());
+// function build(failOnError, buildNls) {
+//     const isProd = options.env === "production";
+//     const preprocessorContext = isProd ? { PROD: true } : { DEBUG: true };
+//     let gotError = false;
+//     log(`Building with preprocessor context: ${JSON.stringify(preprocessorContext)}`);
+//     const tsResult = tsProject
+//         .src()
+//         .pipe(preprocess({ context: preprocessorContext })) //To set environment variables in-line
+//         .pipe(sourcemaps.init())
+//         .pipe(tsProject());
 
-    return tsResult.js
-        .pipe(buildNls ? nls.rewriteLocalizeCalls() : es.through())
-        .pipe(
-            buildNls
-                ? nls.createAdditionalLanguageFiles(defaultLanguages, "i18n", ".")
-                : es.through(),
-        )
-        .pipe(buildNls ? nls.bundleMetaDataFiles(fullExtensionName, ".") : es.through())
-        .pipe(buildNls ? nls.bundleLanguageFiles() : es.through())
-        .pipe(sourcemaps.write(".", { includeContent: false, sourceRoot: "." }))
-        .pipe(gulp.dest(file => file.cwd))
-        .once("error", () => {
-            gotError = true;
-        })
-        .once("finish", () => {
-            if (failOnError && gotError) {
-                process.exit(1);
-            }
-        });
-}
+//     return tsResult.js
+//         .pipe(buildNls ? nls.rewriteLocalizeCalls() : es.through())
+//         .pipe(
+//             buildNls
+//                 ? nls.createAdditionalLanguageFiles(defaultLanguages, "i18n", ".")
+//                 : es.through(),
+//         )
+//         .pipe(buildNls ? nls.bundleMetaDataFiles(fullExtensionName, ".") : es.through())
+//         .pipe(buildNls ? nls.bundleLanguageFiles() : es.through())
+//         .pipe(sourcemaps.write(".", { includeContent: false, sourceRoot: "." }))
+//         .pipe(gulp.dest(file => file.cwd))
+//         .once("error", () => {
+//             gotError = true;
+//         })
+//         .once("finish", () => {
+//             if (failOnError && gotError) {
+//                 process.exit(1);
+//             }
+//         });
+// }
 
 async function test(inspectCodeCoverage = false) {
     // Check if arguments were passed
@@ -186,48 +186,48 @@ async function test(inspectCodeCoverage = false) {
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
-const buildTask = gulp.series(getFormatter.lint, function runBuild(done) {
-    build(true, true).once("finish", () => {
-        done();
-    });
-});
+// const buildTask = gulp.series(getFormatter.lint, function runBuild(done) {
+//     build(true, true).once("finish", () => {
+//         done();
+//     });
+// });
 
-const buildSrc = gulp.series(getFormatter.lint, function runBuild(done) {
-    build(true, true).once("finish", () => {
-        done();
-    });
-});
+// const buildSrc = gulp.series(getFormatter.lint, function runBuild(done) {
+//     build(true, true).once("finish", () => {
+//         done();
+//     });
+// });
 
-const buildDev = function runDevBuild(done) {
-    build(true, false).once("finish", () => {
-        done();
-    });
-};
+// const buildDev = function runDevBuild(done) {
+//     build(true, false).once("finish", () => {
+//         done();
+//     });
+// };
 
-const quickBuild = gulp.series(buildDev);
+// const quickBuild = gulp.series(buildDev);
 
-const watch = gulp.series(buildTask, function runWatch() {
+const watch = gulp.series(getBuilder.buildTask, function runWatch() {
     log("Watching build sources...");
-    return gulp.watch(sources, gulp.series(buildTask));
+    return gulp.watch(sources, gulp.series(getBuilder.buildTask));
 });
 
-const prodBuild = gulp.series(
-    getCleaner.clean,
-    getWebpackBundle.webpackBundle,
-    generateSrcLocBundle,
-);
-const defaultTask = gulp.series(prodBuild);
+// const prodBuild = gulp.series(
+//     getCleaner.clean,
+//     getWebpackBundle.webpackBundle,
+//     generateSrcLocBundle,
+// );
+// const defaultTask = gulp.series(prodBuild);
 
-const runTest = gulp.series(buildTask, getFormatter.lint, test);
+const runTest = gulp.series(getBuilder.buildTask, getFormatter.lint, test);
 
 const testNoBuild = test;
 
-const testCoverage = gulp.series(quickBuild, async function () {
+const testCoverage = gulp.series(getBuilder.quickBuild, async function () {
     await test(true);
 });
 
-const watchBuildTest = gulp.series(buildTask, runTest, function runWatch() {
-    return gulp.watch(sources, gulp.series(buildTask, runTest));
+const watchBuildTest = gulp.series(getBuilder.buildTask, runTest, function runWatch() {
+    return gulp.watch(sources, gulp.series(getBuilder.buildTask, runTest));
 });
 
 const package = callback => {
@@ -339,7 +339,7 @@ const addi18n = () => {
 
 // Creates MLCP readable .xliff file and saves it locally
 
-const translationExport = gulp.series(buildTask, function runTranslationExport() {
+const translationExport = gulp.series(getBuilder.buildTask, function runTranslationExport() {
     return gulp
         .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
         .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
@@ -386,13 +386,13 @@ module.exports = {
     lint: getFormatter.lint,
     "webpack-bundle": getWebpackBundle.webpackBundle,
     clean: getCleaner.clean,
-    build: buildTask,
-    "build-src": buildSrc,
-    "build-dev": buildDev,
-    "quick-build": quickBuild,
+    build: getBuilder.buildTask,
+    "build-src": getBuilder.buildSrc,
+    "build-dev": getBuilder.buildDev,
+    "quick-build": getBuilder.quickBuild,
     watch: watch,
-    "prod-build": prodBuild,
-    default: defaultTask,
+    "prod-build": getBuilder.prodBuild,
+    default: getBuilder.defaultTask,
     test: test,
     "test-no-build": testNoBuild,
     "test:coverage": testCoverage,
