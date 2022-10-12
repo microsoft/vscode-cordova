@@ -22,7 +22,10 @@ const cp = require("child_process");
 const executeCommand = GulpExtras.executeCommand;
 const tsProject = ts.createProject("tsconfig.json");
 
+global.appRoot = path.resolve(__dirname);
+
 const getFormatter = require("./gulp_scripts/formatter");
+const getWebpackBundle = require("./gulp_scripts/webpackBundle");
 
 /**
  * Whether we're running a nightly build.
@@ -78,105 +81,105 @@ lintSources = lintSources.concat([
     "!/SmokeTestLogs/**",
 ]);
 
-async function runWebpack({
-    packages = [],
-    devtool = false,
-    compileInPlace = false,
-    mode = process.argv.includes("watch") ? "development" : "production",
-} = options) {
-    let configs = [];
-    for (const { entry, library, filename } of packages) {
-        const config = {
-            mode,
-            target: "node",
-            entry: path.resolve(entry),
-            output: {
-                path: compileInPlace ? path.resolve(path.dirname(entry)) : path.resolve(distDir),
-                filename: filename || path.basename(entry).replace(".js", ".bundle.js"),
-                devtoolModuleFilenameTemplate: "../[resource-path]",
-            },
-            devtool: devtool,
-            resolve: {
-                extensions: [".js", ".ts", ".json"],
-            },
-            module: {
-                rules: [
-                    {
-                        test: /\.ts$/,
-                        exclude: /node_modules/,
-                        use: [
-                            {
-                                // vscode-nls-dev loader:
-                                // * rewrite nls-calls
-                                loader: "vscode-nls-dev/lib/webpack-loader",
-                                options: {
-                                    base: path.join(__dirname),
-                                },
-                            },
-                            {
-                                // configure TypeScript loader:
-                                // * enable sources maps for end-to-end source maps
-                                loader: "ts-loader",
-                                options: {
-                                    compilerOptions: {
-                                        sourceMap: true,
-                                    },
-                                },
-                            },
-                        ],
-                    },
-                ],
-            },
-            optimization: {
-                minimize: true,
-                minimizer: [
-                    new TerserPlugin({
-                        terserOptions: {
-                            format: {
-                                comments: /^\**!|@preserve/i,
-                            },
-                        },
-                        extractComments: false,
-                    }),
-                ],
-            },
-            node: {
-                __dirname: false,
-                __filename: false,
-            },
-            externals: {
-                vscode: "commonjs vscode",
-            },
-        };
+// async function runWebpack({
+//     packages = [],
+//     devtool = false,
+//     compileInPlace = false,
+//     mode = process.argv.includes("watch") ? "development" : "production",
+// } = options) {
+//     let configs = [];
+//     for (const { entry, library, filename } of packages) {
+//         const config = {
+//             mode,
+//             target: "node",
+//             entry: path.resolve(entry),
+//             output: {
+//                 path: compileInPlace ? path.resolve(path.dirname(entry)) : path.resolve(distDir),
+//                 filename: filename || path.basename(entry).replace(".js", ".bundle.js"),
+//                 devtoolModuleFilenameTemplate: "../[resource-path]",
+//             },
+//             devtool: devtool,
+//             resolve: {
+//                 extensions: [".js", ".ts", ".json"],
+//             },
+//             module: {
+//                 rules: [
+//                     {
+//                         test: /\.ts$/,
+//                         exclude: /node_modules/,
+//                         use: [
+//                             {
+//                                 // vscode-nls-dev loader:
+//                                 // * rewrite nls-calls
+//                                 loader: "vscode-nls-dev/lib/webpack-loader",
+//                                 options: {
+//                                     base: path.join(__dirname),
+//                                 },
+//                             },
+//                             {
+//                                 // configure TypeScript loader:
+//                                 // * enable sources maps for end-to-end source maps
+//                                 loader: "ts-loader",
+//                                 options: {
+//                                     compilerOptions: {
+//                                         sourceMap: true,
+//                                     },
+//                                 },
+//                             },
+//                         ],
+//                     },
+//                 ],
+//             },
+//             optimization: {
+//                 minimize: true,
+//                 minimizer: [
+//                     new TerserPlugin({
+//                         terserOptions: {
+//                             format: {
+//                                 comments: /^\**!|@preserve/i,
+//                             },
+//                         },
+//                         extractComments: false,
+//                     }),
+//                 ],
+//             },
+//             node: {
+//                 __dirname: false,
+//                 __filename: false,
+//             },
+//             externals: {
+//                 vscode: "commonjs vscode",
+//             },
+//         };
 
-        if (library) {
-            config.output.libraryTarget = "commonjs2";
-        }
+//         if (library) {
+//             config.output.libraryTarget = "commonjs2";
+//         }
 
-        if (process.argv.includes("--analyze-size")) {
-            config.plugins = [
-                new (require("webpack-bundle-analyzer").BundleAnalyzerPlugin)({
-                    analyzerMode: "static",
-                    reportFilename: path.resolve(distSrcDir, path.basename(entry) + ".html"),
-                }),
-            ];
-        }
+//         if (process.argv.includes("--analyze-size")) {
+//             config.plugins = [
+//                 new (require("webpack-bundle-analyzer").BundleAnalyzerPlugin)({
+//                     analyzerMode: "static",
+//                     reportFilename: path.resolve(distSrcDir, path.basename(entry) + ".html"),
+//                 }),
+//             ];
+//         }
 
-        configs.push(config);
-    }
+//         configs.push(config);
+//     }
 
-    await new Promise((resolve, reject) =>
-        webpack(configs, (err, stats) => {
-            if (err) {
-                reject(err);
-            } else if (stats.hasErrors()) {
-                reject(stats);
-            } else {
-                resolve();
-            }
-        }),
-    );
-}
+//     await new Promise((resolve, reject) =>
+//         webpack(configs, (err, stats) => {
+//             if (err) {
+//                 reject(err);
+//             } else if (stats.hasErrors()) {
+//                 reject(stats);
+//             } else {
+//                 resolve();
+//             }
+//         }),
+//     );
+// }
 
 // Generates ./dist/nls.bundle.<language_id>.json from files in ./i18n/** *//<src_path>/<filename>.i18n.json
 // Localized strings are read from these files at runtime.
@@ -273,95 +276,16 @@ async function test(inspectCodeCoverage = false) {
     }
 }
 
-// const runPrettier = async fix => {
-//     const child = cp.fork(
-//         "./node_modules/@mixer/parallel-prettier/dist/index.js",
-//         [
-//             fix ? "--write" : "--list-different",
-//             "test/**/*.ts",
-//             "gulpfile.js",
-//             "*.md",
-//             "!CHANGELOG.md",
-//             "!src/**/*.d.ts",
-//             "src/**/*.ts",
-//             "!test/resources",
-//         ],
+// const webpackBundle = async () => {
+//     const packages = [
 //         {
-//             stdio: "inherit",
+//             entry: `${buildDir}/cordova.ts`,
+//             filename: "rn-extension.js",
+//             library: true,
 //         },
-//     );
-//     await new Promise((resolve, reject) => {
-//         child.on("exit", code => {
-//             // console.log(code);
-//             code ? reject(`Prettier exited with code ${code}`) : resolve();
-//         });
-//     });
-// };
-
-// /**
-//  * @typedef {{color: boolean, fix: boolean}} OptionsT
-//  */
-
-// /**
-//  * @param {OptionsT} options_
-//  */
-// const runEslint = async options_ => {
-//     /** @type {OptionsT} */
-//     const options = Object.assign({ color: true, fix: false }, options_);
-
-//     const files = ["src/**/*.ts"];
-
-//     const args = [
-//         ...(options.color ? ["--color"] : ["--no-color"]),
-//         ...(options.fix ? ["--fix"] : []),
-//         ...files,
 //     ];
-
-//     const child = cp.fork("./node_modules/eslint/bin/eslint.js", args, {
-//         stdio: "inherit",
-//         cwd: __dirname,
-//     });
-
-//     await new Promise((resolve, reject) => {
-//         child.on("exit", code => {
-//             code ? reject(`Eslint exited with code ${code}`) : resolve();
-//         });
-//     });
+//     return runWebpack({ packages });
 // };
-
-// function runPrettierForFormat(cb) {
-//     runPrettier(true);
-//     cb();
-// }
-
-// function runEsLintForFormat(cb) {
-//     runEslint({ fix: false });
-//     cb();
-// }
-// const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
-
-// function runPrettierForLint(cb) {
-//     runPrettier(false);
-//     cb();
-// }
-
-// function runEslintForLint(cb) {
-//     runEslint({ fix: false });
-//     cb();
-// }
-
-// const lint = gulp.series(runPrettierForLint, runEslintForLint);
-
-const webpackBundle = async () => {
-    const packages = [
-        {
-            entry: `${buildDir}/cordova.ts`,
-            filename: "rn-extension.js",
-            library: true,
-        },
-    ];
-    return runWebpack({ packages });
-};
 
 const clean = () => {
     const pathsToDelete = [
@@ -405,7 +329,7 @@ const watch = gulp.series(buildTask, function runWatch() {
     return gulp.watch(sources, gulp.series(buildTask));
 });
 
-const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
+const prodBuild = gulp.series(clean, getWebpackBundle.webpackBundle, generateSrcLocBundle);
 const defaultTask = gulp.series(prodBuild);
 
 const runTest = gulp.series(buildTask, getFormatter.lint, test);
@@ -574,7 +498,7 @@ module.exports = {
     "lint:prettier": getFormatter.runPrettierForLint,
     "lint:eslint": getFormatter.runEslintForLint,
     lint: getFormatter.lint,
-    "webpack-bundle": webpackBundle,
+    "webpack-bundle": getWebpackBundle.webpackBundle,
     clean: clean,
     build: buildTask,
     "build-src": buildSrc,
