@@ -26,6 +26,13 @@ global.appRoot = path.resolve(__dirname);
 
 const getFormatter = require("./gulp_scripts/formatter");
 const getWebpackBundle = require("./gulp_scripts/webpackBundle");
+const getCleaner = require("./gulp_scripts/cleaner");
+// const getBuilder = require("./gulp_scripts/builder");
+// const getTester = require("./gulp_scripts/tester");
+// const getWatcher = require("./gulp_scripts/watcher");
+// const getPacker = require("./gulp_scripts/packager");
+// const getRelease = require("./gulp_scripts/release");
+// const getTranslator = require("./gulp_scripts/translator");
 
 /**
  * Whether we're running a nightly build.
@@ -80,106 +87,6 @@ lintSources = lintSources.concat([
     "!test/smoke/**",
     "!/SmokeTestLogs/**",
 ]);
-
-// async function runWebpack({
-//     packages = [],
-//     devtool = false,
-//     compileInPlace = false,
-//     mode = process.argv.includes("watch") ? "development" : "production",
-// } = options) {
-//     let configs = [];
-//     for (const { entry, library, filename } of packages) {
-//         const config = {
-//             mode,
-//             target: "node",
-//             entry: path.resolve(entry),
-//             output: {
-//                 path: compileInPlace ? path.resolve(path.dirname(entry)) : path.resolve(distDir),
-//                 filename: filename || path.basename(entry).replace(".js", ".bundle.js"),
-//                 devtoolModuleFilenameTemplate: "../[resource-path]",
-//             },
-//             devtool: devtool,
-//             resolve: {
-//                 extensions: [".js", ".ts", ".json"],
-//             },
-//             module: {
-//                 rules: [
-//                     {
-//                         test: /\.ts$/,
-//                         exclude: /node_modules/,
-//                         use: [
-//                             {
-//                                 // vscode-nls-dev loader:
-//                                 // * rewrite nls-calls
-//                                 loader: "vscode-nls-dev/lib/webpack-loader",
-//                                 options: {
-//                                     base: path.join(__dirname),
-//                                 },
-//                             },
-//                             {
-//                                 // configure TypeScript loader:
-//                                 // * enable sources maps for end-to-end source maps
-//                                 loader: "ts-loader",
-//                                 options: {
-//                                     compilerOptions: {
-//                                         sourceMap: true,
-//                                     },
-//                                 },
-//                             },
-//                         ],
-//                     },
-//                 ],
-//             },
-//             optimization: {
-//                 minimize: true,
-//                 minimizer: [
-//                     new TerserPlugin({
-//                         terserOptions: {
-//                             format: {
-//                                 comments: /^\**!|@preserve/i,
-//                             },
-//                         },
-//                         extractComments: false,
-//                     }),
-//                 ],
-//             },
-//             node: {
-//                 __dirname: false,
-//                 __filename: false,
-//             },
-//             externals: {
-//                 vscode: "commonjs vscode",
-//             },
-//         };
-
-//         if (library) {
-//             config.output.libraryTarget = "commonjs2";
-//         }
-
-//         if (process.argv.includes("--analyze-size")) {
-//             config.plugins = [
-//                 new (require("webpack-bundle-analyzer").BundleAnalyzerPlugin)({
-//                     analyzerMode: "static",
-//                     reportFilename: path.resolve(distSrcDir, path.basename(entry) + ".html"),
-//                 }),
-//             ];
-//         }
-
-//         configs.push(config);
-//     }
-
-//     await new Promise((resolve, reject) =>
-//         webpack(configs, (err, stats) => {
-//             if (err) {
-//                 reject(err);
-//             } else if (stats.hasErrors()) {
-//                 reject(stats);
-//             } else {
-//                 resolve();
-//             }
-//         }),
-//     );
-// }
 
 // Generates ./dist/nls.bundle.<language_id>.json from files in ./i18n/** *//<src_path>/<filename>.i18n.json
 // Localized strings are read from these files at runtime.
@@ -276,31 +183,6 @@ async function test(inspectCodeCoverage = false) {
     }
 }
 
-// const webpackBundle = async () => {
-//     const packages = [
-//         {
-//             entry: `${buildDir}/cordova.ts`,
-//             filename: "rn-extension.js",
-//             library: true,
-//         },
-//     ];
-//     return runWebpack({ packages });
-// };
-
-const clean = () => {
-    const pathsToDelete = [
-        "src/**/*.js",
-        "src/**/*.js.map",
-        "out/",
-        "dist",
-        "!test/resources/testCordovaProject/**/*.js",
-        ".vscode-test/",
-        "nls.*.json",
-        "!test/smoke/**/*",
-    ];
-    return del(pathsToDelete, { force: true });
-};
-
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
@@ -329,7 +211,11 @@ const watch = gulp.series(buildTask, function runWatch() {
     return gulp.watch(sources, gulp.series(buildTask));
 });
 
-const prodBuild = gulp.series(clean, getWebpackBundle.webpackBundle, generateSrcLocBundle);
+const prodBuild = gulp.series(
+    getCleaner.clean,
+    getWebpackBundle.webpackBundle,
+    generateSrcLocBundle,
+);
 const defaultTask = gulp.series(prodBuild);
 
 const runTest = gulp.series(buildTask, getFormatter.lint, test);
@@ -499,7 +385,7 @@ module.exports = {
     "lint:eslint": getFormatter.runEslintForLint,
     lint: getFormatter.lint,
     "webpack-bundle": getWebpackBundle.webpackBundle,
-    clean: clean,
+    clean: getCleaner.clean,
     build: buildTask,
     "build-src": buildSrc,
     "build-dev": buildDev,
