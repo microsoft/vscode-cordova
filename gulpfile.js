@@ -28,8 +28,8 @@ const getFormatter = require("./gulp_scripts/formatter");
 const getWebpackBundle = require("./gulp_scripts/webpackBundle");
 const getCleaner = require("./gulp_scripts/cleaner");
 const getBuilder = require("./gulp_scripts/builder");
-// const getTester = require("./gulp_scripts/tester");
-// const getWatcher = require("./gulp_scripts/watcher");
+const getTester = require("./gulp_scripts/tester");
+const getWatcher = require("./gulp_scripts/watcher");
 // const getPacker = require("./gulp_scripts/packager");
 // const getRelease = require("./gulp_scripts/release");
 // const getTranslator = require("./gulp_scripts/translator");
@@ -48,23 +48,6 @@ const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 const buildDir = "src";
 
 const translationProjectName = "vscode-extensions";
-// const defaultLanguages = [
-//     { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
-//     { id: "zh-cn", folderName: "chs", transifexId: "zh-hans" },
-//     { id: "ja", folderName: "jpn" },
-//     { id: "ko", folderName: "kor" },
-//     { id: "de", folderName: "deu" },
-//     { id: "fr", folderName: "fra" },
-//     { id: "es", folderName: "esn" },
-//     { id: "ru", folderName: "rus" },
-//     { id: "it", folderName: "ita" },
-
-//     // These language-pack languages are included for VS but excluded from the vscode package
-//     { id: "cs", folderName: "csy" },
-//     { id: "tr", folderName: "trk" },
-//     { id: "pt-br", folderName: "ptb", transifexId: "pt-BR" },
-//     { id: "pl", folderName: "plk" },
-// ];
 
 const srcPath = "src";
 const testPath = "test";
@@ -72,13 +55,6 @@ const distDir = "dist";
 const distSrcDir = `${distDir}/src`;
 
 const sources = [srcPath, testPath].map(tsFolder => tsFolder + "/**/*.ts");
-
-// const knownOptions = {
-//     string: "env",
-//     default: { env: "production" },
-// };
-
-// const options = minimist(process.argv.slice(2), knownOptions);
 
 let lintSources = [srcPath, testPath].map(tsFolder => tsFolder + "/**/*.ts");
 lintSources = lintSources.concat([
@@ -88,147 +64,64 @@ lintSources = lintSources.concat([
     "!/SmokeTestLogs/**",
 ]);
 
-// // Generates ./dist/nls.bundle.<language_id>.json from files in ./i18n/** *//<src_path>/<filename>.i18n.json
-// // Localized strings are read from these files at runtime.
-// const generateSrcLocBundle = () => {
-//     // Transpile the TS to JS, and let vscode-nls-dev scan the files for calls to localize.
-//     return tsProject
-//         .src()
-//         .pipe(sourcemaps.init())
-//         .pipe(tsProject())
-//         .js.pipe(nls.createMetaDataFiles())
-//         .pipe(nls.createAdditionalLanguageFiles(defaultLanguages, "i18n"))
-//         .pipe(nls.bundleMetaDataFiles(fullExtensionName, "dist"))
-//         .pipe(nls.bundleLanguageFiles())
-//         .pipe(
-//             filter([
-//                 "**/nls.bundle.*.json",
-//                 "**/nls.metadata.header.json",
-//                 "**/nls.metadata.json",
-//                 "!src/**",
-//             ]),
-//         )
-//         .pipe(gulp.dest("dist"));
-// };
+// async function test(inspectCodeCoverage = false) {
+//     // Check if arguments were passed
+//     if (options.pattern) {
+//         log(`\nTesting cases that match pattern: ${options.pattern}`);
+//     } else {
+//         log(`\nTesting cases that don't match pattern: extensionContext|localizationContext`);
+//     }
 
-// function build(failOnError, buildNls) {
-//     const isProd = options.env === "production";
-//     const preprocessorContext = isProd ? { PROD: true } : { DEBUG: true };
-//     let gotError = false;
-//     log(`Building with preprocessor context: ${JSON.stringify(preprocessorContext)}`);
-//     const tsResult = tsProject
-//         .src()
-//         .pipe(preprocess({ context: preprocessorContext })) //To set environment variables in-line
-//         .pipe(sourcemaps.init())
-//         .pipe(tsProject());
+//     try {
+//         // The folder containing the Extension Manifest package.json
+//         // Passed to `--extensionDevelopmentPath`
+//         const extensionDevelopmentPath = __dirname;
 
-//     return tsResult.js
-//         .pipe(buildNls ? nls.rewriteLocalizeCalls() : es.through())
-//         .pipe(
-//             buildNls
-//                 ? nls.createAdditionalLanguageFiles(defaultLanguages, "i18n", ".")
-//                 : es.through(),
-//         )
-//         .pipe(buildNls ? nls.bundleMetaDataFiles(fullExtensionName, ".") : es.through())
-//         .pipe(buildNls ? nls.bundleLanguageFiles() : es.through())
-//         .pipe(sourcemaps.write(".", { includeContent: false, sourceRoot: "." }))
-//         .pipe(gulp.dest(file => file.cwd))
-//         .once("error", () => {
-//             gotError = true;
-//         })
-//         .once("finish", () => {
-//             if (failOnError && gotError) {
-//                 process.exit(1);
-//             }
-//         });
+//         // The path to the extension test runner script
+//         // Passed to --extensionTestsPath
+//         const extensionTestsPath = path.resolve(__dirname, "test", "index");
+//         console.log(extensionTestsPath);
+//         // Download VS Code, unzip it and run the integration test
+
+//         const testOptions = {
+//             extensionDevelopmentPath,
+//             extensionTestsPath,
+//             version: vscodeVersionForTests,
+//         };
+
+//         // Activate inspection of code coverage with unit tests
+//         if (inspectCodeCoverage) {
+//             testOptions.extensionTestsEnv = {
+//                 COVERAGE: "true",
+//             };
+//         }
+
+//         await vscodeTest.runTests(testOptions);
+//     } catch (err) {
+//         console.error(err);
+//         console.error("Failed to run tests");
+//         process.exit(1);
+//     }
 // }
-
-async function test(inspectCodeCoverage = false) {
-    // Check if arguments were passed
-    if (options.pattern) {
-        log(`\nTesting cases that match pattern: ${options.pattern}`);
-    } else {
-        log(`\nTesting cases that don't match pattern: extensionContext|localizationContext`);
-    }
-
-    try {
-        // The folder containing the Extension Manifest package.json
-        // Passed to `--extensionDevelopmentPath`
-        const extensionDevelopmentPath = __dirname;
-
-        // The path to the extension test runner script
-        // Passed to --extensionTestsPath
-        const extensionTestsPath = path.resolve(__dirname, "test", "index");
-        console.log(extensionTestsPath);
-        // Download VS Code, unzip it and run the integration test
-
-        const testOptions = {
-            extensionDevelopmentPath,
-            extensionTestsPath,
-            version: vscodeVersionForTests,
-        };
-
-        // Activate inspection of code coverage with unit tests
-        if (inspectCodeCoverage) {
-            testOptions.extensionTestsEnv = {
-                COVERAGE: "true",
-            };
-        }
-
-        await vscodeTest.runTests(testOptions);
-    } catch (err) {
-        console.error(err);
-        console.error("Failed to run tests");
-        process.exit(1);
-    }
-}
-
-// TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
-// We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
-// be an issue on Windows platforms)
-// const buildTask = gulp.series(getFormatter.lint, function runBuild(done) {
-//     build(true, true).once("finish", () => {
-//         done();
-//     });
-// });
-
-// const buildSrc = gulp.series(getFormatter.lint, function runBuild(done) {
-//     build(true, true).once("finish", () => {
-//         done();
-//     });
-// });
-
-// const buildDev = function runDevBuild(done) {
-//     build(true, false).once("finish", () => {
-//         done();
-//     });
-// };
 
 // const quickBuild = gulp.series(buildDev);
 
-const watch = gulp.series(getBuilder.buildTask, function runWatch() {
-    log("Watching build sources...");
-    return gulp.watch(sources, gulp.series(getBuilder.buildTask));
-});
+// const watch = gulp.series(getBuilder.buildTask, function runWatch() {
+//     log("Watching build sources...");
+//     return gulp.watch(sources, gulp.series(getBuilder.buildTask));
+// });
 
-// const prodBuild = gulp.series(
-//     getCleaner.clean,
-//     getWebpackBundle.webpackBundle,
-//     generateSrcLocBundle,
-// );
-// const defaultTask = gulp.series(prodBuild);
+// const runTest = gulp.series(getBuilder.buildTask, getFormatter.lint, test);
 
-const runTest = gulp.series(getBuilder.buildTask, getFormatter.lint, test);
+// const testNoBuild = test;
 
-const testNoBuild = test;
+// const testCoverage = gulp.series(getBuilder.quickBuild, async function () {
+//     await test(true);
+// });
 
-const testCoverage = gulp.series(getBuilder.quickBuild, async function () {
-    await test(true);
-});
-
-const watchBuildTest = gulp.series(getBuilder.buildTask, runTest, function runWatch() {
-    return gulp.watch(sources, gulp.series(getBuilder.buildTask, runTest));
-});
+// const watchBuildTest = gulp.series(getBuilder.buildTask, runTest, function runWatch() {
+//     return gulp.watch(sources, gulp.series(getBuilder.buildTask, runTest));
+// });
 
 const package = callback => {
     const command = path.join(__dirname, "node_modules", ".bin", "vsce");
@@ -292,7 +185,7 @@ const release = function prepareLicenses() {
         })
         .then(() => {
             let packageJson = readJson("package.json");
-            packageJson.main = "./dist/rn-extension";
+            packageJson.main = "./dist/cordova";
             if (isNightly) {
                 log("Performing nightly release...");
                 packageJson.version = getVersionNumber();
@@ -390,13 +283,13 @@ module.exports = {
     "build-src": getBuilder.buildSrc,
     "build-dev": getBuilder.buildDev,
     "quick-build": getBuilder.quickBuild,
-    watch: watch,
+    watch: getWatcher.watch,
     "prod-build": getBuilder.prodBuild,
     default: getBuilder.defaultTask,
-    test: test,
-    "test-no-build": testNoBuild,
-    "test:coverage": testCoverage,
-    "watch-build-test": watchBuildTest,
+    test: getTester.test,
+    "test-no-build": getTester.testNoBuild,
+    "test:coverage": getTester.testCoverage,
+    "watch-build-test": getWatcher.watchBuildTest,
     package: package,
     release: release,
     "add-i18n": addi18n,
