@@ -7,6 +7,8 @@ import { ChildProcess } from "../../common/node/childProcess";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { TargetType } from "../../debugger/cordovaDebugSession";
 import { AdbHelper } from "./adb";
+import { ErrorHelper } from "../../common/error/errorHelper";
+import { InternalErrorCode } from "../../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -57,12 +59,9 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
             }
             throw Error();
         } catch {
-            throw new Error(
-                localize(
-                    "CouldNotRecognizeTargetType",
-                    "Could not recognize type of the target {0}",
-                    target,
-                ),
+            throw ErrorHelper.getInternalError(
+                InternalErrorCode.CouldNotRecognizeTargetType,
+                target,
             );
         }
     }

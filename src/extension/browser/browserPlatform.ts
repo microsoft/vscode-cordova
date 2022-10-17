@@ -16,12 +16,13 @@ import { IBrowserPlatformOptions } from "../platformOptions";
 import { IBrowserAttachResult } from "../platformAttachResult";
 import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchResult } from "../platformLaunchResult";
+import { ErrorHelper } from "../../common/error/errorHelper";
+import { InternalErrorCode } from "../../common/error/internalErrorCode";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize = nls.loadMessageBundle();
 
 export default class BrowserPlatform extends AbstractPlatform {
     public static readonly CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
@@ -53,12 +54,12 @@ export default class BrowserPlatform extends AbstractPlatform {
         if (this.platformOpts.platform === PlatformType.Serve) {
             // Currently, "ionic serve" is only supported for Ionic projects
             if (!this.platformOpts.projectType.isIonic) {
-                const errorMessage = localize(
-                    "ServingToTheBrowserIsSupportedForIonicProjects",
-                    "Serving to the browser is currently only supported for Ionic projects",
+                const errorMessage = ErrorHelper.getInternalError(
+                    InternalErrorCode.ServingToTheBrowserIsSupportedForIonicProjects,
                 );
-                this.log(errorMessage, true);
-                throw new Error(errorMessage);
+
+                this.log(errorMessage.message, true);
+                throw errorMessage;
             }
             const serveRunArgs = this.getServeRunArguments();
             const devServersUrls = await this.IonicDevServer.startIonicDevServer(
