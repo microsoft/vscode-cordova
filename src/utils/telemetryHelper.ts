@@ -2,14 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 /* tslint:disable:no-use-before-declare */
+import { CordovaProjectHelper, IPluginDetails, ProjectType } from "./cordovaProjectHelper";
 import * as fs from "fs";
 import * as path from "path";
-import * as nls from "vscode-nls";
 import { Telemetry } from "./telemetry";
-import { CordovaProjectHelper, IPluginDetails, ProjectType } from "./cordovaProjectHelper";
+import * as nls from "vscode-nls";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
-
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
@@ -320,7 +319,7 @@ export class TelemetryHelper {
 
         const newPlugins: string[] = new Array<string>();
         pluginsList.forEach(plugin => {
-            if (!pluginsFileList.includes(plugin)) {
+            if (pluginsFileList.indexOf(plugin) < 0) {
                 newPlugins.push(plugin);
                 pluginsFileList.push(plugin);
             }
@@ -374,7 +373,7 @@ export class TelemetryHelper {
         propertyValue: string[],
         isPii: boolean,
     ): void {
-        for (let i = 0; i < propertyValue.length; i++) {
+        for (let i: number = 0; i < propertyValue.length; i++) {
             TelemetryHelper.setTelemetryEventProperty(
                 event,
                 propertyName + i,
