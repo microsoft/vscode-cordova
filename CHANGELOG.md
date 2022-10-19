@@ -1,8 +1,13 @@
 ## 2.6.0
-* Added husky pre-commit to verify code format [#790](https://github.com/microsoft/vscode-cordova/issues/790)
+* Added error code for Telemetry events [#788](https://github.com/microsoft/vscode-cordova/pull/788)
 * Fixed bug Cordova iOS debugger is not working on some high version iOS devices [#779](https://github.com/microsoft/vscode-cordova/issues/779)
-* Fixed bug Could not find the task 'gulp: prepare-integration-tests' [#783](https://github.com/microsoft/vscode-cordova/issues/783)
-* Fixed bug Do not delete Cordova project file in test resource when execute gulp clean [#784](https://github.com/microsoft/vscode-cordova/issues/784)
+* Refactored Cordova debug session [#749](https://github.com/microsoft/vscode-cordova/pull/749)
+* Internal Changes
+  * Fixed bug Do not delete Cordova project file in test resource when execute gulp clean [#784](https://github.com/microsoft/vscode-cordova/issues/784)
+  * Added husky pre-commit to verify code format [#790](https://github.com/microsoft/vscode-cordova/issues/790)
+  Fixed bug Could not find the task 'gulp: prepare-integration-tests' [#783](https://github.com/microsoft/vscode-cordova/issues/783)
+  * Fixed bug Do not delete Cordova project file in test resource when execute gulp clean [#784](https://github.com/microsoft/vscode-cordova/issues/784)
+  * Replaced tasks in gulpfile with exports [#781](https://github.com/microsoft/vscode-cordova/issues/781)
 
 ## 2.5.0
 * Added support for iOS simulators [#758](https://github.com/microsoft/vscode-cordova/pull/758)
