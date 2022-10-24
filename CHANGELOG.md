@@ -1,5 +1,5 @@
 ## 2.6.1
-* Prepare for 2.6.1: fix debugger blocker caused by package module issue [#802](https://github.com/microsoft/vscode-cordova/pull/802)
+* Fix debugger blocker caused by package module issue [#802](https://github.com/microsoft/vscode-cordova/pull/802)
 
 ## 2.6.0
 * Added error code for Telemetry events [#788](https://github.com/microsoft/vscode-cordova/pull/788)
