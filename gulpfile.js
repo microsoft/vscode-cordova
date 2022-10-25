@@ -35,6 +35,18 @@ const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 
 const buildDir = "src";
 
+global.appRoot = path.resolve(__dirname);
+
+const getFormatter = require("./gulp_scripts/formatter");
+const getWebpackBundle = require("./gulp_scripts/webpackBundle");
+const getCleaner = require("./gulp_scripts/cleaner");
+const getBuilder = require("./gulp_scripts/builder");
+const getTester = require("./gulp_scripts/tester");
+const getWatcher = require("./gulp_scripts/watcher");
+const getPacker = require("./gulp_scripts/packager");
+const getRelease = require("./gulp_scripts/release");
+const getTranslator = require("./gulp_scripts/translator");
+
 const translationProjectName = "vscode-extensions";
 const defaultLanguages = [
     { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
@@ -271,84 +283,84 @@ async function test(inspectCodeCoverage = false) {
     }
 }
 
-const runPrettier = async fix => {
-    const child = cp.fork(
-        "./node_modules/@mixer/parallel-prettier/dist/index.js",
-        [
-            fix ? "--write" : "--list-different",
-            "test/**/*.ts",
-            "gulpfile.js",
-            "*.md",
-            "!CHANGELOG.md",
-            "!src/**/*.d.ts",
-            "src/**/*.ts",
-            "!test/resources",
-        ],
-        {
-            stdio: "inherit",
-        },
-    );
-    await new Promise((resolve, reject) => {
-        child.on("exit", code => {
-            // console.log(code);
-            code ? reject(`Prettier exited with code ${code}`) : resolve();
-        });
-    });
-};
+// const runPrettier = async fix => {
+//     const child = cp.fork(
+//         "./node_modules/@mixer/parallel-prettier/dist/index.js",
+//         [
+//             fix ? "--write" : "--list-different",
+//             "test/**/*.ts",
+//             "gulpfile.js",
+//             "*.md",
+//             "!CHANGELOG.md",
+//             "!src/**/*.d.ts",
+//             "src/**/*.ts",
+//             "!test/resources",
+//         ],
+//         {
+//             stdio: "inherit",
+//         },
+//     );
+//     await new Promise((resolve, reject) => {
+//         child.on("exit", code => {
+//             // console.log(code);
+//             code ? reject(`Prettier exited with code ${code}`) : resolve();
+//         });
+//     });
+// };
 
-/**
- * @typedef {{color: boolean, fix: boolean}} OptionsT
- */
+// /**
+//  * @typedef {{color: boolean, fix: boolean}} OptionsT
+//  */
 
-/**
- * @param {OptionsT} options_
- */
-const runEslint = async options_ => {
-    /** @type {OptionsT} */
-    const options = Object.assign({ color: true, fix: false }, options_);
+// /**
+//  * @param {OptionsT} options_
+//  */
+// const runEslint = async options_ => {
+//     /** @type {OptionsT} */
+//     const options = Object.assign({ color: true, fix: false }, options_);
 
-    const files = ["src/**/*.ts"];
+//     const files = ["src/**/*.ts"];
 
-    const args = [
-        ...(options.color ? ["--color"] : ["--no-color"]),
-        ...(options.fix ? ["--fix"] : []),
-        ...files,
-    ];
+//     const args = [
+//         ...(options.color ? ["--color"] : ["--no-color"]),
+//         ...(options.fix ? ["--fix"] : []),
+//         ...files,
+//     ];
 
-    const child = cp.fork("./node_modules/eslint/bin/eslint.js", args, {
-        stdio: "inherit",
-        cwd: __dirname,
-    });
+//     const child = cp.fork("./node_modules/eslint/bin/eslint.js", args, {
+//         stdio: "inherit",
+//         cwd: __dirname,
+//     });
 
-    await new Promise((resolve, reject) => {
-        child.on("exit", code => {
-            code ? reject(`Eslint exited with code ${code}`) : resolve();
-        });
-    });
-};
+//     await new Promise((resolve, reject) => {
+//         child.on("exit", code => {
+//             code ? reject(`Eslint exited with code ${code}`) : resolve();
+//         });
+//     });
+// };
 
-function runPrettierForFormat(cb) {
-    runPrettier(true);
-    cb();
-}
+// function runPrettierForFormat(cb) {
+//     runPrettier(true);
+//     cb();
+// }
 
-function runEsLintForFormat(cb) {
-    runEslint({ fix: false });
-    cb();
-}
-const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
+// function runEsLintForFormat(cb) {
+//     runEslint({ fix: false });
+//     cb();
+// }
+// const format = gulp.series(runPrettierForFormat, runEsLintForFormat);
 
-function runPrettierForLint(cb) {
-    runPrettier(false);
-    cb();
-}
+// function runPrettierForLint(cb) {
+//     runPrettier(false);
+//     cb();
+// }
 
-function runEslintForLint(cb) {
-    runEslint({ fix: false });
-    cb();
-}
+// function runEslintForLint(cb) {
+//     runEslint({ fix: false });
+//     cb();
+// }
 
-const lint = gulp.series(runPrettierForLint, runEslintForLint);
+// const lint = gulp.series(runPrettierForLint, runEslintForLint);
 
 const webpackBundle = async () => {
     const packages = [
@@ -361,60 +373,60 @@ const webpackBundle = async () => {
     return runWebpack({ packages });
 };
 
-const clean = () => {
-    const pathsToDelete = [
-        "src/**/*.js",
-        "src/**/*.js.map",
-        "out/",
-        "dist",
-        "!test/resources/testCordovaProject/**/*.js",
-        ".vscode-test/",
-        "nls.*.json",
-        "!test/smoke/**/*",
-    ];
-    return del(pathsToDelete, { force: true });
-};
+// const clean = () => {
+//     const pathsToDelete = [
+//         "src/**/*.js",
+//         "src/**/*.js.map",
+//         "out/",
+//         "dist",
+//         "!test/resources/testCordovaProject/**/*.js",
+//         ".vscode-test/",
+//         "nls.*.json",
+//         "!test/smoke/**/*",
+//     ];
+//     return del(pathsToDelete, { force: true });
+// };
 
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to
 // be an issue on Windows platforms)
-const buildTask = gulp.series(lint, function runBuild(done) {
-    build(true, true).once("finish", () => {
-        done();
-    });
-});
+// const buildTask = gulp.series(getFormatter.lint, function runBuild(done) {
+//     build(true, true).once("finish", () => {
+//         done();
+//     });
+// });
 
-const buildSrc = gulp.series(lint, function runBuild(done) {
-    build(true, true).once("finish", () => {
-        done();
-    });
-});
+// const buildSrc = gulp.series(getFormatter.lint, function runBuild(done) {
+//     build(true, true).once("finish", () => {
+//         done();
+//     });
+// });
 
-const buildDev = function runDevBuild(done) {
-    build(true, false).once("finish", () => {
-        done();
-    });
-};
+// const buildDev = function runDevBuild(done) {
+//     build(true, false).once("finish", () => {
+//         done();
+//     });
+// };
 
-const quickBuild = gulp.series(buildDev);
+// const quickBuild = gulp.series(buildDev);
 
-const watch = gulp.series(buildTask, function runWatch() {
-    log("Watching build sources...");
-    return gulp.watch(sources, gulp.series(buildTask));
-});
+// const watch = gulp.series(buildTask, function runWatch() {
+//     log("Watching build sources...");
+//     return gulp.watch(sources, gulp.series(buildTask));
+// });
 
-const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
-const defaultTask = gulp.series(prodBuild);
+// const prodBuild = gulp.series(clean, webpackBundle, generateSrcLocBundle);
+// const defaultTask = gulp.series(prodBuild);
 
-const runTest = gulp.series(buildTask, lint, test);
+const runTest = gulp.series(getBuilder.buildTask, getFormatter.lint, test);
 
 const testNoBuild = test;
 
-const testCoverage = gulp.series(quickBuild, async function () {
+const testCoverage = gulp.series(getBuilder.quickBuild, async function () {
     await test(true);
 });
 
-const watchBuildTest = gulp.series(buildTask, runTest, function runWatch() {
+const watchBuildTest = gulp.series(getBuilder.buildTask, runTest, function runWatch() {
     return gulp.watch(sources, gulp.series(buildTask, runTest));
 });
 
@@ -527,7 +539,7 @@ const addi18n = () => {
 
 // Creates MLCP readable .xliff file and saves it locally
 
-const translationExport = gulp.series(buildTask, function runTranslationExport() {
+const translationExport = gulp.series(getBuilder.buildTask, function runTranslationExport() {
     return gulp
         .src(["package.nls.json", "nls.metadata.header.json", "nls.metadata.json"])
         .pipe(nls.createXlfFiles(translationProjectName, fullExtensionName))
@@ -566,21 +578,21 @@ const translationImport = gulp.series(done => {
 }, addi18n);
 
 module.exports = {
-    "format:prettier": () => runPrettier(true),
-    "format:eslint": () => runEslint({ fix: true }),
-    format: format,
-    "lint:prettier": () => runPrettier(false),
-    "lint:eslint": () => runEslint({ fix: false }),
-    lint: lint,
-    "webpack-bundle": webpackBundle,
-    clean: clean,
-    build: buildTask,
-    "build-src": buildSrc,
-    "build-dev": buildDev,
-    "quick-build": quickBuild,
-    watch: watch,
-    "prod-build": prodBuild,
-    default: defaultTask,
+    "format:prettier": getFormatter.runPrettierForFormat,
+    "format:eslint": getFormatter.runEsLintForFormat,
+    format: getFormatter.format,
+    "lint:prettier": getFormatter.runPrettierForLint,
+    "lint:eslint": getFormatter.runEslintForLint,
+    lint: getFormatter.lint,
+    "webpack-bundle": getWebpackBundle.webpackBundle,
+    clean: getCleaner.clean,
+    build: getBuilder.buildTask,
+    "build-src": getBuilder.buildSrc,
+    "build-dev": getBuilder.buildDev,
+    "quick-build": getBuilder.quickBuild,
+    watch: getWatcher.watch,
+    "prod-build": getBuilder.prodBuild,
+    default: getBuilder.defaultTask,
     test: test,
     "test-no-build": testNoBuild,
     "test:coverage": testCoverage,
