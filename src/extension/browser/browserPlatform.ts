@@ -253,25 +253,28 @@ export default class BrowserPlatform extends AbstractPlatform {
 
     private launchDebugBrowser(target: string, runArg: string) {
         let args;
-        let browser = `${target} ${runArg.toString().replace(/,/g, " ")}`;
-        if (process.platform === "darwin") {
-            browser = `"Google Chrome" --args ${runArg.toString().replace(/,/g, " ")}`;
-        }
 
         switch (process.platform) {
             case "darwin":
+                const darwinBrowser = `"Google Chrome" --args ${runArg
+                    .toString()
+                    .replace(/,/g, " ")}`;
                 args = ["open"];
                 if (target === "chrome") {
                     args.push("-n");
                 }
-                args.push("-a", browser);
+                args.push("-a", darwinBrowser);
                 break;
             case "win32":
+                const winBrowser = `${target} ${runArg.toString().replace(/,/g, " ")}`;
                 // eslint-disable-next-line @typescript-eslint/quotes
-                args = ['cmd /c start ""', browser];
+                args = ['cmd /c start ""', winBrowser];
                 break;
             case "linux":
-                args = [browser];
+                const linuxBrowser = `"google-chrome" --args ${runArg
+                    .toString()
+                    .replace(/,/g, " ")}`;
+                args = [linuxBrowser];
                 break;
         }
 
