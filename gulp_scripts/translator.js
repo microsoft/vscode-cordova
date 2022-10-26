@@ -12,11 +12,9 @@ const getBuilder = require(appRoot + "/gulp_scripts/builder");
  */
 const isNightly = process.argv.includes("--nightly");
 
-const fullExtensionName = isNightly
-    ? "msjsdiag.vscode-cordova-preview"
-    : "msjsdiag.vscode-cordova-native";
+const fullExtensionName = isNightly ? "msjsdiag.vscode-cordova-preview" : "msjsdiag.vscode-cordova";
 
-const translationProjectName = "vscode-extensions";
+const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 
 const defaultLanguages = [
     { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },

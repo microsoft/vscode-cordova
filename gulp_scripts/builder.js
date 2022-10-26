@@ -19,11 +19,10 @@ const knownOptions = {
 };
 const options = minimist(process.argv.slice(2), knownOptions);
 const isNightly = process.argv.includes("--nightly");
-const fullExtensionName = isNightly
-    ? "msjsdiag.vscode-react-native-preview"
-    : "msjsdiag.vscode-react-native";
 
-const extensionName = isNightly ? "vscode-react-native-preview" : "vscode-react-native";
+const fullExtensionName = isNightly ? "msjsdiag.vscode-cordova-preview" : "msjsdiag.vscode-cordova";
+
+const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 
 // TODO: The file property should point to the generated source (this implementation adds an extra folder to the path)
 // We should also make sure that we always generate urls in all the path properties (We shouldn"t have \\s. This seems to

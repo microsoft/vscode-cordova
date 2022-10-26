@@ -6,7 +6,7 @@ const fs = require("fs");
 const GulpExtras = require("../tools/gulp-extras");
 
 const isNightly = process.argv.includes("--nightly");
-const extensionName = isNightly ? "vscode-cordova-preview" : "cordova";
+const extensionName = isNightly ? "vscode-cordova-preview" : "vscode-cordova";
 const executeCommand = GulpExtras.executeCommand;
 
 function release(cb) {
