@@ -22,6 +22,18 @@ const cp = require("child_process");
 const executeCommand = GulpExtras.executeCommand;
 const tsProject = ts.createProject("tsconfig.json");
 
+global.appRoot = path.resolve(__dirname);
+
+const getFormatter = require("./gulp_scripts/formatter");
+const getWebpackBundle = require("./gulp_scripts/webpackBundle");
+const getCleaner = require("./gulp_scripts/cleaner");
+const getBuilder = require("./gulp_scripts/builder");
+const getTester = require("./gulp_scripts/tester");
+const getWatcher = require("./gulp_scripts/watcher");
+const getPacker = require("./gulp_scripts/packager");
+const getRelease = require("./gulp_scripts/release");
+const getTranslator = require("./gulp_scripts/translator");
+
 /**
  * Whether we're running a nightly build.
  */
@@ -283,6 +295,7 @@ const runPrettier = async fix => {
             "!src/**/*.d.ts",
             "src/**/*.ts",
             "!test/resources",
+            "!test/resources/**/**/*.d.ts",
         ],
         {
             stdio: "inherit",
@@ -566,8 +579,8 @@ const translationImport = gulp.series(done => {
 }, addi18n);
 
 module.exports = {
-    "format:prettier": () => runPrettier(true),
-    "format:eslint": () => runEslint({ fix: true }),
+    "format:prettier": getFormatter.runPrettierForFormat,
+    "format:eslint": getFormatter.runEsLintForFormat,
     format: format,
     "lint:prettier": () => runPrettier(false),
     "lint:eslint": () => runEslint({ fix: false }),
