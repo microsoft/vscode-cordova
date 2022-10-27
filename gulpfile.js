@@ -581,9 +581,9 @@ const translationImport = gulp.series(done => {
 module.exports = {
     "format:prettier": getFormatter.runPrettierForFormat,
     "format:eslint": getFormatter.runEsLintForFormat,
-    format: format,
-    "lint:prettier": () => runPrettier(false),
-    "lint:eslint": () => runEslint({ fix: false }),
+    format: getFormatter.format,
+    "lint:prettier": getFormatter.runPrettierForLint,
+    "lint:eslint": getFormatter.runEslintForLint,
     lint: lint,
     "webpack-bundle": webpackBundle,
     clean: clean,
