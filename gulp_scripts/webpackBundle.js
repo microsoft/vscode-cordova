@@ -8,8 +8,8 @@ const distSrcDir = `${distDir}/src`;
 const webpackBundle = async () => {
     const packages = [
         {
-            entry: `${srcPath}/cordova.ts`,
-            filename: "rn-extension.js",
+            entry: `${srcPath}/cordova-extension.ts`,
+            filename: "cordova-extension.js",
             library: true,
         },
     ];
