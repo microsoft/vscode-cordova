@@ -7,19 +7,19 @@ import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
 import * as semver from "semver";
 import * as nls from "vscode-nls";
-import { CordovaProjectHelper } from "./utils/cordovaProjectHelper";
-import { CordovaCommandHelper } from "./utils/cordovaCommandHelper";
-import { Telemetry } from "./utils/telemetry";
-import { TelemetryHelper } from "./utils/telemetryHelper";
-import { TsdHelper } from "./utils/tsdHelper";
-import { IonicCompletionProvider } from "./extension/completionProviders";
-import { CordovaSessionManager } from "./extension/cordovaSessionManager";
-import { ProjectsStorage } from "./extension/projectsStorage";
-import { PluginSimulator } from "./extension/simulate";
-import { CordovaDebugConfigProvider } from "./extension/debugConfigurationProvider";
-import { CordovaWorkspaceManager } from "./extension/cordovaWorkspaceManager";
-import customRequire from "./common/customRequire";
-import { findFileInFolderHierarchy } from "./utils/extensionHelper";
+import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
+import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
+import { Telemetry } from "../utils/telemetry";
+import { TelemetryHelper } from "../utils/telemetryHelper";
+import { TsdHelper } from "../utils/tsdHelper";
+import { IonicCompletionProvider } from "./completionProviders";
+import { CordovaSessionManager } from "./cordovaSessionManager";
+import { ProjectsStorage } from "./projectsStorage";
+import { PluginSimulator } from "./simulate";
+import { CordovaDebugConfigProvider } from "./debugConfigurationProvider";
+import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
+import customRequire from "../common/customRequire";
+import { findFileInFolderHierarchy } from "../utils/extensionHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
