@@ -8,6 +8,7 @@ test/resources/testCordovaProject/.vscode/
 test/resources/testCordovaProject/platforms/
 test/resources/testCordovaProject/plugins/
 test/resources/testCordovaProject/typings/
+test/resources/testCordovaProject/
 .vscode-test/
 nls.*.json
 
