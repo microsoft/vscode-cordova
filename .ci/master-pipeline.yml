@@ -11,7 +11,7 @@ jobs:
   - job: Linux
     pool:
       vmImage: ubuntu-latest
-    timeoutInMinutes: 20
+    timeoutInMinutes: 40
     steps:
       - checkout: self
         clean: true
@@ -20,7 +20,7 @@ jobs:
   - job: Windows
     pool:
       vmImage: windows-latest
-    timeoutInMinutes: 20
+    timeoutInMinutes: 40
     steps:
       - checkout: self
         clean: true
@@ -60,7 +60,7 @@ jobs:
   - job: macOS
     pool:
       vmImage: macOS-latest
-    timeoutInMinutes: 20
+    timeoutInMinutes: 40
     steps:
       - checkout: self
         clean: true
