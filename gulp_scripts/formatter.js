@@ -15,6 +15,7 @@ const runPrettier = async fix => {
             "src/**/*.ts",
             "!test/resources",
             "!test/resources/**/**/*.d.ts",
+            "!test/resources/**/**",
         ],
         {
             stdio: "inherit",
