@@ -1,6 +1,9 @@
 trigger:
   - master
 
+variables:
+  Codeql.Enabled: true
+
 pr:
   - none
 
