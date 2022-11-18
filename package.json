@@ -46,7 +46,7 @@
 	"extensionKind": [
 		"workspace"
 	],
-	"main": "./src/cordova",
+	"main": "./src/extension/cordova-extension",
 	"contributes": {
 		"commands": [
 			{
