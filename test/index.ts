@@ -12,7 +12,10 @@ export function run(): Promise<void> {
         color: true,
         reporter: "mocha-multi-reporters",
         reporterOptions: {
-            reporterEnabled: "spec, mochawesome",
+            reporterEnabled: "spec, mocha-junit-reporter, mochawesome",
+            mochaJunitReporterReporterOptions: {
+                mochaFile: path.join(__dirname, "ExtensionTests.xml"),
+            },
             mochawesomeReporterOptions: {
                 reportDir: `${path.resolve(__dirname, "..")}/mochawesome-report`,
                 reportFilename: "Cordova-Test-Report",
