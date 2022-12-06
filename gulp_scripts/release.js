@@ -21,7 +21,7 @@ function prepareLicenses() {
         "package.json",
         "package-lock.json",
     ];
-    const backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-react-native"));
+    const backupFolder = path.resolve(path.join(os.tmpdir(), "vscode-cordova"));
     if (!fs.existsSync(backupFolder)) {
         fs.mkdirSync(backupFolder);
     }
@@ -44,9 +44,9 @@ function prepareLicenses() {
         })
         .then(() => {
             let packageJson = readJson("/package.json");
-            packageJson.main = "/dist/rn-extension";
+            packageJson.main = "/dist/cordova-extension";
             if (isNightly) {
-                log("Performing gul release...");
+                log("Performing gulp release...");
                 packageJson.version = getVersionNumber();
                 packageJson.name = extensionName;
                 packageJson.preview = true;

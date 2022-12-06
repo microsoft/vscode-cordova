@@ -8,6 +8,6 @@ export class Hash {
      * Creates a hash code from a string.
      */
     public static hashCode(s: string): string {
-        return crypto.createHash("md5").update(s).digest("hex");
+        return crypto.createHash("sha256").update(s).digest("hex");
     }
 }

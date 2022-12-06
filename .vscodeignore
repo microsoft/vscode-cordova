@@ -24,3 +24,5 @@ debugger/**
 .npmignore
 OSSREADME.json
 CONTRIBUTING.md
+
+mochawesome-report/**
