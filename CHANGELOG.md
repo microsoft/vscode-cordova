@@ -1,3 +1,12 @@
+## 2.6.2
+* Improve unit test and test report [#818](https://github.com/microsoft/vscode-cordova/issues/818)
+* Simplify gulfile.js by moving the scripts to separate files per function [#794](https://github.com/microsoft/vscode-cordova/issues/794)
+* Update vscode marketplace badge [#830](https://github.com/microsoft/vscode-cordova/pull/830)
+* Internal changes:
+  * Update .gitignore file and gulp format task ignore list [#804](https://github.com/microsoft/vscode-cordova/issues/804)
+  * Enable CodeQL for ADO pipeline [#812](https://github.com/microsoft/vscode-cordova/pull/812)
+  * Add lgtm.yml config file [#823](https://github.com/microsoft/vscode-cordova/pull/823)
+
 ## 2.6.1
 * Fix debugger blocker caused by package module issue [#802](https://github.com/microsoft/vscode-cordova/pull/802)
 
