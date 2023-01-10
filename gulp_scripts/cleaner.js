@@ -6,7 +6,7 @@ const clean = () => {
         "src/**/*.js.map",
         "out/",
         "dist",
-        "!test/resources/testCordovaProject/**/*.js",
+        "!test/resources/sampleReactNativeProject/**/*.js",
         ".vscode-test/",
         "src/**/*nls.*.json",
         "!test/smoke/**/*",

@@ -186,7 +186,7 @@ module.exports = {
                 cases: {
                     camelCase: true, // pascalCase: true,
                 },
-                ignore: [/cordova-extension\.ts/],
+                ignore: [/rn-extension\.ts/],
             },
         ],
         "unicorn/no-array-reduce": "warn",
