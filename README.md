@@ -2,6 +2,9 @@
 
 [![Build Status](https://dev.azure.com/vscode-webdiag-extensions/VS%20Code%20WebDiag%20extensions/_apis/build/status/vscode-cordova%20%5Bmaster%5D?branchName=master)](https://dev.azure.com/vscode-webdiag-extensions/VS%20Code%20WebDiag%20extensions/_build/latest?definitionId=62&branchName=master)
 
+![Stable version](https://vsmarketplacebadges.dev/version-short/msjsdiag.cordova-tools.svg)
+![VS Marketplace rating](https://vsmarketplacebadges.dev/rating-star/msjsdiag.cordova-tools.svg)
+
 Debug your code, find commands in the Command Palette, and use IntelliSense to browse objects, functions, and parameters in plugin APIs. This extension works with any Cordova-based project.
 
 ![Choose Cordova debugger](images/overview.png)
