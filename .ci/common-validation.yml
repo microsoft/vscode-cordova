@@ -35,3 +35,11 @@ steps:
     displayName: "Build and run hostless tests"
     env:
       DISPLAY: ":99.0"
+
+  - task: PublishTestResults@2
+    displayName: "Publish Extension Test Results"
+    inputs:
+      testResultsFiles: test/ExtensionTests.xml
+      failTaskOnFailedTests: true
+      testRunTitle: "[Extension Context] $(Agent.OS) Cordova tools unit tests - Attempt №$(System.JobAttempt)"
+    condition: always()
