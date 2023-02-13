@@ -13,6 +13,7 @@ test/resources/testCordovaProject/package-lock.json
 test/resources/testCordovaProject/package.json
 .vscode-test/
 nls.*.json
+test/ExtensionTests.xml
 
 # Compiled files
 src/**/*.js
