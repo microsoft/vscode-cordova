@@ -731,5 +731,8 @@
 		"vscode-nls-dev": "^4.0.0",
 		"webpack": "^5.31.2",
 		"webpack-bundle-analyzer": "^4.4.0"
-	}
+	},
+	"extensionDependencies": [
+		"ms-vscode.js-debug"
+	]
 }
