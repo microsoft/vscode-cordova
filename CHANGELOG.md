@@ -1,3 +1,12 @@
+## 2.6.3
+* Add vscode-js-debug dependency in package.json [#851](https://github.com/microsoft/vscode-cordova/pull/851)
+* Check updates for all package modules in extension [#858](https://github.com/microsoft/vscode-cordova/pull/858)
+* Internal changes:
+  * Update gulp clean list [#838](https://github.com/microsoft/vscode-cordova/pull/838)
+  * Fix node ECONNRESET error in MacOS [#844](https://github.com/microsoft/vscode-cordova/pull/844)
+  * Add junit test report and publish test result to pipeline build run [#848](https://github.com/microsoft/vscode-cordova/pull/848)
+  * Cleanup and update 3rd party notices file [#855](https://github.com/microsoft/vscode-cordova/pull/855)
+
 ## 2.6.2
 * Improve unit test and test report [#818](https://github.com/microsoft/vscode-cordova/issues/818)
 * Simplify gulfile.js by moving the scripts to separate files per function [#794](https://github.com/microsoft/vscode-cordova/issues/794)
