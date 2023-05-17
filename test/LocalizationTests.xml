@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="0.501" tests="2" failures="0">
-  <testsuite name="Root Suite" timestamp="2023-05-09T11:57:49" tests="0" time="0.000" failures="0">
+<testsuites name="Mocha Tests" time="0.120" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2023-05-17T12:20:43" tests="0" time="0.000" failures="0">
   </testsuite>
-  <testsuite name="localizationTest" timestamp="2023-05-09T11:57:49" tests="0" file="d:\vscode-cordova\test\localization\localization.test.js" time="0.000" failures="0">
+  <testsuite name="localizationTest" timestamp="2023-05-17T12:20:43" tests="0" file="d:\vscode-cordova\test\localization\localization.test.js" time="0.000" failures="0">
   </testsuite>
-  <testsuite name="localizationContext" timestamp="2023-05-09T11:57:49" tests="2" file="d:\vscode-cordova\test\localization\localization.test.js" time="0.273" failures="0">
-    <testcase name="localizationTest localizationContext localize should show correct message on ZH-CN for CommandFailed error" time="0.001" classname="localize should show correct message on ZH-CN for CommandFailed error">
+  <testsuite name="localizationContext" timestamp="2023-05-17T12:20:43" tests="2" file="d:\vscode-cordova\test\localization\localization.test.js" time="0.025" failures="0">
+    <testcase name="localizationTest localizationContext localize should show correct message on ZH-CN for CommandFailed error" time="0.000" classname="localize should show correct message on ZH-CN for CommandFailed error">
     </testcase>
     <testcase name="localizationTest localizationContext localize should show correct message on ZH-CN for unknownPlatform error" time="0.000" classname="localize should show correct message on ZH-CN for unknownPlatform error">
     </testcase>
