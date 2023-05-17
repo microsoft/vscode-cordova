@@ -36,6 +36,11 @@ steps:
     env:
       DISPLAY: ":99.0"
 
+  - bash: npm run test-localization --verbose
+    displayName: "Run localization tests"
+    env:
+      DISPLAY: ":99.0"
+  
   - task: PublishTestResults@2
     displayName: "Publish Extension Test Results"
     inputs:
