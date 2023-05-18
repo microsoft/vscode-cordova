@@ -24,18 +24,6 @@ steps:
     env:
       DISPLAY: ":99.0"
 
-  - task: BatchScript@1
-    displayName: "Run script prepareBuild.bat"
-    inputs:
-      filename: prepareBuild.bat
-      modifyEnvironment: true
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
-
-  - bash: gulp
-    displayName: "Build and run hostless tests"
-    env:
-      DISPLAY: ":99.0"
-
   - bash: npm run test-localization --verbose
     displayName: "Run localization tests"
     env:
@@ -49,10 +37,22 @@ steps:
       testRunTitle: "[Extension Context] $(Agent.OS) Cordova tools unit tests - Attempt №$(System.JobAttempt)"
     condition: always()
 
-- task: PublishTestResults@2
-  displayName: "Publish Localization Test Results"
-  inputs:
+  - task: PublishTestResults@2
+    displayName: "Publish Localization Test Results"
+    inputs:
       testResultsFiles: test/LocalizationTests.xml
       failTaskOnFailedTests: true
       testRunTitle: "[Localization Context] $(Agent.OS) React Native unit tests - Attempt №$(System.JobAttempt)"
-  condition: always()
+    condition: always()
+
+  - task: BatchScript@1
+    displayName: "Run script prepareBuild.bat"
+    inputs:
+      filename: prepareBuild.bat
+      modifyEnvironment: true
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
+  - bash: gulp
+    displayName: "Build and run hostless tests"
+    env:
+      DISPLAY: ":99.0"
