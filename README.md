@@ -229,14 +229,10 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ## Known Issues
 
-### Why can't I debug my app on iOS Simulator?
+### Error `Debugger can't detect any webview`
 
-Due to recent changes in macOS we cannot connect to simulators to enable debugging of Cordova apps. We hope to re-introduce this functionality as soon as macOS provides a mechanism that allows the extension to connect to apps running in simulator. You can read more about the issue [here](https://github.com/google/ios-webkit-debug-proxy/issues/250).
-
-### Error `'Debugger' domain was not foundError processing "<attach/launch>": 'Debugger' domain was not found: [object Object]`
-
-Due to recent changes in iOS we cannot connect to Ionic and Cordova applications which are using WKWebView for content rendering. This caused by changes in Webkit protocol in iOS version above 12.2. As soon as the [ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy) version with the corresponding compatibility fix will be released, this issue should be resolved.
-You can read more about the issue [here](https://github.com/microsoft/vscode-cordova/issues/564).
+We used [ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy) for the iOS debugging. For the tool limitation, the iOS debugging is not working on some new iOS version both on real device and simulator(as known 14.4+). The debugger should work well if ios-webkit-debug-proxy fix this issue and release new version.
+You can find more reference in some open issues [here](https://github.com/microsoft/vscode-cordova/issues/).
 
 ### Error `'Cannot connect to runtime process, timeout after {0} ms - (reason: {1}).', '{_timeout}', '{_error}'` occured while running debug scenarios
 
