@@ -8,7 +8,7 @@ import * as glob from "glob";
 export function run(): Promise<void> {
     const mocha = new Mocha({
         ui: "tdd",
-        grep: new RegExp("(debuggerContext|localizationContext)"),
+        grep: new RegExp("(smokeTestsContext|localizationContext)"),
         color: true,
         reporter: "mocha-multi-reporters",
         reporterOptions: {
