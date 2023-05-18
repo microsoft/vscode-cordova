@@ -12,7 +12,7 @@ suite("localizationTest", function () {
             "IncorrectCommand",
         );
         const unknownPlatform = ErrorHelper.getInternalError(InternalErrorCode.UnknownPlatform);
-        test("localize should show correct message on ZH-CN for CommandFailed error", (done: Mocha.Done) => {
+        test("localization should show correct message on ZH-CN for CommandFailed error", (done: Mocha.Done) => {
             assert.strictEqual(
                 commandFailedErrorChs.message,
                 "执行命令 IncorrectCommand 时出错 (error code 101)",
@@ -20,7 +20,7 @@ suite("localizationTest", function () {
             done();
         });
 
-        test("localize should show correct message on ZH-CN for unknownPlatform error", (done: Mocha.Done) => {
+        test("localization should show correct message on ZH-CN for unknownPlatform error", (done: Mocha.Done) => {
             assert.strictEqual(unknownPlatform.message, "未知平台: {0} (error code 201)");
             done();
         });
