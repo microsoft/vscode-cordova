@@ -14,6 +14,7 @@ test/resources/testCordovaProject/package.json
 .vscode-test/
 nls.*.json
 test/ExtensionTests.xml
+test/LocalizationTests.xml
 
 # Compiled files
 src/**/*.js

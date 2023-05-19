@@ -641,6 +641,7 @@
 	"scripts": {
 		"build": "gulp build",
 		"test": "node ./test/runTest.js",
+		"test-localization": "node ./test/localization/runTest.js",
 		"vscode:prepublish": "gulp",
 		"prepare": "husky install"
 	},
