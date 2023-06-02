@@ -42,7 +42,7 @@ steps:
     inputs:
       testResultsFiles: test/LocalizationTests.xml
       failTaskOnFailedTests: true
-      testRunTitle: "[Localization Context] $(Agent.OS) React Native unit tests - Attempt №$(System.JobAttempt)"
+      testRunTitle: "[Localization Context] $(Agent.OS) Cordova unit tests - Attempt №$(System.JobAttempt)"
     condition: always()
 
   - task: BatchScript@1
