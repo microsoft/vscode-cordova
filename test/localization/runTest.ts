@@ -9,19 +9,17 @@ async function launchTests() {
     try {
         // The folder containing the Extension Manifest package.json
         // Passed to `--extensionDevelopmentPath`
-        const extensionDevelopmentPath = path.resolve(__dirname, "..");
+        const extensionDevelopmentPath = path.resolve(__dirname, "..", "..");
 
         // The path to the extension test runner script
         // Passed to --extensionTestsPath
         const extensionTestsPath = path.resolve(__dirname, "index");
-
-        const testWorkspace = path.resolve(__dirname, "resources", "testCordovaProject");
-
+        console.log(extensionTestsPath);
         // Download VS Code, unzip it and run the integration test
         await runTests({
             extensionDevelopmentPath,
             extensionTestsPath,
-            launchArgs: [testWorkspace],
+            launchArgs: ["--locale", "zh-cn"],
             version: "stable",
         });
     } catch (err) {
@@ -29,6 +27,7 @@ async function launchTests() {
         console.error("Failed to run tests");
         process.exit(1);
     }
+    process.exit();
 }
 
 launchTests();

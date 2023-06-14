@@ -1,8 +1,8 @@
 steps:
   - task: NodeTool@0
-    displayName: "Use Node 14.x"
+    displayName: "Use Node 16.x"
     inputs:
-      versionSpec: 14.x
+      versionSpec: 16.x
 
   - bash: npm install gulp cordova @vscode/vsce -g --force
     displayName: "npm install gulp cordova @vscode/vsce -g"
@@ -23,6 +23,27 @@ steps:
     displayName: "Run host tests"
     env:
       DISPLAY: ":99.0"
+
+  - bash: npm run test-localization --verbose
+    displayName: "Run localization tests"
+    env:
+      DISPLAY: ":99.0"
+
+  - task: PublishTestResults@2
+    displayName: "Publish Extension Test Results"
+    inputs:
+      testResultsFiles: test/ExtensionTests.xml
+      failTaskOnFailedTests: true
+      testRunTitle: "[Extension Context] $(Agent.OS) Cordova tools unit tests - Attempt №$(System.JobAttempt)"
+    condition: always()
+
+  - task: PublishTestResults@2
+    displayName: "Publish Localization Test Results"
+    inputs:
+      testResultsFiles: test/LocalizationTests.xml
+      failTaskOnFailedTests: true
+      testRunTitle: "[Localization Context] $(Agent.OS) Cordova unit tests - Attempt №$(System.JobAttempt)"
+    condition: always()
 
   - task: BatchScript@1
     displayName: "Run script prepareBuild.bat"
