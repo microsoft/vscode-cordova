@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as path from "path";
+import * as fs from "fs";
 import * as cp from "child_process";
 import * as CordovaSimulate from "cordova-simulate";
 import * as vscode from "vscode";
@@ -80,13 +81,17 @@ export class PluginSimulator implements vscode.Disposable {
     ): Promise<SimulationInfo> {
         const uri = vscode.Uri.file(fsPath);
         const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
-        simulateOptions.dir = workspaceFolder.uri.fsPath;
-        if (!simulateOptions.simulationpath) {
-            simulateOptions.simulationpath = path.join(
-                workspaceFolder.uri.fsPath,
-                ".vscode",
-                "simulate",
-            );
+        const checkPath = path.join(workspaceFolder.uri.fsPath, ".vscode", "simulate");
+        if (fs.existsSync(checkPath)) {
+            simulateOptions.dir = workspaceFolder.uri.fsPath;
+            if (!simulateOptions.simulationpath) {
+                simulateOptions.simulationpath = checkPath;
+            }
+        } else {
+            simulateOptions.dir = fsPath;
+            if (!simulateOptions.simulationpath) {
+                simulateOptions.simulationpath = path.join(fsPath, ".vscode", "simulate");
+            }
         }
 
         return this.getPackage()
@@ -101,9 +106,7 @@ export class PluginSimulator implements vscode.Disposable {
                 simulateOptions.telemetry = simulateTelemetryWrapper;
 
                 this.simulator = new this.simulatePackage.Simulator(simulateOptions);
-                const platforms = CordovaProjectHelper.getInstalledPlatforms(
-                    workspaceFolder.uri.fsPath,
-                );
+                const platforms = CordovaProjectHelper.getInstalledPlatforms(simulateOptions.dir);
 
                 const platform = simulateOptions.platform;
                 const isPlatformMissing = platform && !platforms.includes(platform);
