@@ -12,14 +12,14 @@ import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { Telemetry } from "../utils/telemetry";
 import { TelemetryHelper } from "../utils/telemetryHelper";
 import { TsdHelper } from "../utils/tsdHelper";
+import customRequire from "../common/customRequire";
+import { findFileInFolderHierarchy } from "../utils/extensionHelper";
 import { IonicCompletionProvider } from "./completionProviders";
 import { CordovaSessionManager } from "./cordovaSessionManager";
 import { ProjectsStorage } from "./projectsStorage";
 import { PluginSimulator } from "./simulate";
 import { CordovaDebugConfigProvider } from "./debugConfigurationProvider";
 import { CordovaWorkspaceManager } from "./cordovaWorkspaceManager";
-import customRequire from "../common/customRequire";
-import { findFileInFolderHierarchy } from "../utils/extensionHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -121,8 +121,8 @@ export function onFolderAdded(folder: vscode.WorkspaceFolder): void {
     if (!CordovaProjectHelper.isCordovaProject(workspaceRoot)) {
         vscode.window.showWarningMessage(
             localize(
-                "ExtensionRequiresWorkspaceRootToBeCordovaProjectRoot",
-                "VS Code Cordova Tools extension requires the workspace root to be your Cordova project's root. The project '{0}' won't be available for debugging.",
+                "NoCordovaProjectInWorkspaceRootAndNeedToUpdateCwdArgument",
+                "No Cordova project found in workspace root: '{0}'. If project is in subfolder, please make sure the 'cwd' argument in launch.json is updated to the project root.",
                 workspaceRoot,
             ),
         );
