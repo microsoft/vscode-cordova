@@ -670,7 +670,7 @@
 		"gulp-mocha": "^8.0.0",
 		"ip": "^1.1.5",
 		"plist": "^3.0.5",
-		"semver": "^6.3.0",
+		"semver": "^7.5.2",
 		"socket.io-client": "2.4.0",
 		"uuid": "^9.0.0",
 		"vscode-cdp-proxy": "^0.2.0",
