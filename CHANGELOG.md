@@ -1,3 +1,12 @@
+## 2.6.4
+* Customize project root in subfolder for cordova-simulate options [#887](https://github.com/microsoft/vscode-cordova/pull/887)
+* Add localization for new strings [#867](https://github.com/microsoft/vscode-cordova/pull/867)
+* Update Documentation: Add new known issue on iOS debugging [#863](https://github.com/microsoft/vscode-cordova/pull/863)
+* Internal changes:
+  * Fix security vulnerabilities
+  * Add localization unit tests and related pipeline task [#861](https://github.com/microsoft/vscode-cordova/pull/861)
+  * Update vscode marketpace badge service [#871](https://github.com/microsoft/vscode-cordova/pull/871)
+
 ## 2.6.3
 * Add vscode-js-debug dependency in package.json [#851](https://github.com/microsoft/vscode-cordova/pull/851)
 * Check updates for all package modules in extension [#858](https://github.com/microsoft/vscode-cordova/pull/858)
