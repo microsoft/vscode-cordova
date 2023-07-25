@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
+import * as fs from "fs";
+import * as path from "path";
+import * as nls from "vscode-nls";
+import * as elementtree from "elementtree";
 import { AdbHelper } from "../../utils/android/adb";
 import { IAndroidPlatformOptions } from "../platformOptions";
 import AbstractMobilePlatform from "../abstractMobilePlatform";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import { cordovaRunCommand } from "../../debugger/extension";
 import { DebugConsoleLogger } from "../../debugger/cordovaDebugSession";
-import * as nls from "vscode-nls";
 import { AndroidTarget, AndroidTargetManager } from "../../utils/android/androidTargetManager";
 import { retryAsync } from "../../utils/extensionHelper";
-import * as fs from "fs";
-import * as path from "path";
-import * as elementtree from "elementtree";
 import AbstractPlatform from "../abstractPlatform";
 import IonicDevServer from "../../utils/ionicDevServer";
 import { IAndroidAttachResult } from "../platformAttachResult";

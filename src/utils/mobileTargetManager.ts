@@ -4,10 +4,10 @@
 import * as nls from "vscode-nls";
 import { QuickPickOptions, window } from "vscode";
 import { TargetType } from "../debugger/cordovaDebugSession";
-import { OutputChannelLogger } from "./log/outputChannelLogger";
-import { IMobileTarget, MobileTarget } from "./mobileTarget";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
+import { OutputChannelLogger } from "./log/outputChannelLogger";
+import { IMobileTarget, MobileTarget } from "./mobileTarget";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,

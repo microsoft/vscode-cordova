@@ -7,12 +7,12 @@ import * as nls from "vscode-nls";
 import { SimulationInfo } from "../common/simulationInfo";
 import { ProjectType } from "../utils/cordovaProjectHelper";
 import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
-import { createAdditionalWorkspaceFolder, onFolderAdded } from "./cordova-extension";
-import { ProjectsStorage } from "./projectsStorage";
-import { PluginSimulator } from "./simulate";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
 import { TelemetryHelper } from "../utils/telemetryHelper";
+import { createAdditionalWorkspaceFolder, onFolderAdded } from "./cordova-extension";
+import { ProjectsStorage } from "./projectsStorage";
+import { PluginSimulator } from "./simulate";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,

@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as fs from "fs";
-import * as nls from "vscode-nls";
-import * as vscode from "vscode";
 import * as path from "path";
+import * as vscode from "vscode";
+import * as nls from "vscode-nls";
 import {
     ErrorDestination,
     logger,
@@ -13,9 +13,7 @@ import {
     OutputEvent,
 } from "vscode-debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
-import { CordovaSessionManager } from "../extension/cordovaSessionManager";
-import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
-import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
+import simulate = require("cordova-simulate");
 import {
     findFileInFolderHierarchy,
     generateRandomPortNumber,
@@ -37,13 +35,10 @@ import {
 } from "../extension/platformOptions";
 import { settingsHome } from "../utils/settingsHelper";
 import BrowserPlatform from "../extension/browser/browserPlatform";
-import simulate = require("cordova-simulate");
+import { CordovaSessionManager } from "../extension/cordovaSessionManager";
 import AndroidPlatform from "../extension/android/androidPlatform";
 import IosPlatform from "../extension/ios/iosPlatform";
-import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 import { DeferredPromise } from "../common/node/promise";
-import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
-import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
 import IonicDevServer from "../utils/ionicDevServer";
 import AbstractMobilePlatform from "../extension/abstractMobilePlatform";
 import { LaunchScenariosManager } from "../utils/launchScenariosManager";
@@ -51,6 +46,11 @@ import { IMobileTarget } from "../utils/mobileTarget";
 import { OutputChannelLogger } from "../utils/log/outputChannelLogger";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
+import { JsDebugConfigAdapter } from "./jsDebugConfigAdapter";
+import { SourcemapPathTransformer } from "./cdp-proxy/sourcemapPathTransformer";
+import { ICordovaLaunchRequestArgs, ICordovaAttachRequestArgs } from "./requestArgs";
+import { CordovaSession, CordovaSessionStatus } from "./debugSessionWrapper";
+import { CordovaCDPProxy } from "./cdp-proxy/cordovaCDPProxy";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -530,9 +530,18 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             attachDelay: args.attachDelay || 1000,
             ...generalPlatformOptions,
         } as IIosPlatformOptions;
+
+        let userDataPath;
+        if (target == TargetType.Chrome) {
+            userDataPath = path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR);
+        } else if (target == TargetType.Edge) {
+            userDataPath = path.join(settingsHome(), BrowserPlatform.EDGE_DATA_DIR);
+        } else {
+            userDataPath = "";
+        }
+
         const browserPlatformOptions = {
-            userDataDir:
-                args.userDataDir || path.join(settingsHome(), BrowserPlatform.CHROME_DATA_DIR),
+            userDataDir: args.userDataDir || userDataPath,
             pluginSimulator: this.workspaceManager.pluginSimulator,
             platform,
             url,
