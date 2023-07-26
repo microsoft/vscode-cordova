@@ -1,23 +1,23 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
+import { IncomingMessage } from "http";
 import { Connection, Server, WebSocketTransport } from "vscode-cdp-proxy";
 import * as semver from "semver";
-import { IncomingMessage } from "http";
-import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
-import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
-import { LogLevel } from "../../utils/log/logHelper";
 import { CancellationToken, EventEmitter } from "vscode";
-import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
+import { OutputChannelLogger } from "../../utils/log/outputChannelLogger";
+import { LogLevel } from "../../utils/log/logHelper";
 import { ProjectType } from "../../utils/cordovaProjectHelper";
 import { SimulateHelper } from "../../utils/simulateHelper";
+import { ICordovaAttachRequestArgs } from "../requestArgs";
+import { PlatformType } from "../cordovaDebugSession";
+import { DebuggerEndpointHelper } from "./debuggerEndpointHelper";
+import { SourcemapPathTransformer } from "./sourcemapPathTransformer";
 import {
     CDPMessageHandlerBase,
     DispatchDirection,
 } from "./CDPMessageHandlers/abstraction/CDPMessageHandlerBase";
 import { CDPMessageHandlerCreator } from "./CDPMessageHandlers/CDPMessageHandlerCreator";
-import { ICordovaAttachRequestArgs } from "../requestArgs";
-import { PlatformType } from "../cordovaDebugSession";
 
 export class CordovaCDPProxy {
     private readonly PROXY_LOG_TAGS = {

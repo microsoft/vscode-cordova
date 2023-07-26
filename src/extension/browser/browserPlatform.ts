@@ -1,24 +1,24 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import * as nls from "vscode-nls";
 import * as fs from "fs";
 import * as path from "path";
+import * as child_process from "child_process";
+import * as nls from "vscode-nls";
 import * as execa from "execa";
 import * as vscode from "vscode";
 import * as io from "socket.io-client";
-import * as child_process from "child_process";
 import * as browserHelper from "vscode-js-debug-browsers";
+import simulate = require("cordova-simulate");
+import { IBrowserFinder } from "vscode-js-debug-browsers";
+import { EventEmitter } from "vscode";
 import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
 import AbstractPlatform from "../abstractPlatform";
 import { IBrowserPlatformOptions } from "../platformOptions";
 import { IBrowserAttachResult } from "../platformAttachResult";
-import simulate = require("cordova-simulate");
 import { SimulationInfo } from "../../common/simulationInfo";
 import { IBrowserLaunchResult } from "../platformLaunchResult";
-import { IBrowserFinder } from "vscode-js-debug-browsers";
-import { EventEmitter } from "vscode";
 import { ErrorHelper } from "../../common/error/errorHelper";
 import { InternalErrorCode } from "../../common/error/internalErrorCode";
 
@@ -30,7 +30,8 @@ nls.config({
 const localize = nls.loadMessageBundle();
 
 export default class BrowserPlatform extends AbstractPlatform {
-    public static readonly CHROME_DATA_DIR = "chrome_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
+    public static readonly CHROME_DATA_DIR = "chrome_sandbox_dir";
+    public static readonly EDGE_DATA_DIR = "edge_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
 
     private simulateDebugHost: SocketIOClient.Socket;
     private browserProc: child_process.ChildProcess;

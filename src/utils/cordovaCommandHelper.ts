@@ -14,11 +14,11 @@ nls.config({
 })();
 const localize = nls.loadMessageBundle();
 
+import { ErrorHelper } from "../common/error/errorHelper";
+import { InternalErrorCode } from "../common/error/internalErrorCode";
 import { TelemetryHelper } from "./telemetryHelper";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
 import { CordovaProjectHelper } from "./cordovaProjectHelper";
-import { ErrorHelper } from "../common/error/errorHelper";
-import { InternalErrorCode } from "../common/error/internalErrorCode";
 
 export class CordovaCommandHelper {
     private static CORDOVA_CMD_NAME: string = os.platform() === "win32" ? "cordova.cmd" : "cordova";
