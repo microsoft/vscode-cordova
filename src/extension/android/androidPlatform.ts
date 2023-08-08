@@ -197,6 +197,11 @@ export default class AndroidPlatform extends AbstractMobilePlatform<
 
         const parsedFile = elementtree.XML(manifestContents.toString());
         const packageKey = "package";
-        return parsedFile.attrib[packageKey];
+        if (parsedFile.attrib[packageKey]) {
+            return parsedFile.attrib[packageKey];
+        } else {
+            // Package key is removed from AndroidManifest.xml from cordova-android@12.0.0+
+            return CordovaProjectHelper.getCordovaPackageName(this.projectRoot);
+        }
     }
 }
