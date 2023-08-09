@@ -12,7 +12,7 @@ export function run(): Promise<void> {
         color: true,
         reporter: "mocha-multi-reporters",
         reporterOptions: {
-            reporterEnabled: "spec, mocha-junit-reporter, mochawesome",
+            reporterEnabled: "mocha-junit-reporter, mochawesome",
             mochaJunitReporterReporterOptions: {
                 mochaFile: path.join(__dirname, "ExtensionTests.xml"),
             },
