@@ -307,7 +307,7 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
         }
 
         const entries = await fs.promises.readdir(
-            path.join(this.projectRoot, "platforms", "ios", "build", "emulator"),
+            path.join(this.projectRoot, "platforms", "ios", "build", "Debug-iphonesimulator"),
         );
         // TODO requires changes in case of implementing debugging on iOS simulators
         const filtered = entries.filter(entry => /\.app$/.test(entry));
