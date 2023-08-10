@@ -8,6 +8,7 @@ import { URL } from "url";
 import * as os from "os";
 import * as semver from "semver";
 import * as nls from "vscode-nls";
+import { findFileInFolderHierarchy } from "./extensionHelper";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -579,5 +580,12 @@ export class CordovaProjectHelper {
         highVersionEdge: string,
     ): boolean {
         return semver.ltr(lowVersionEdge, version) && semver.gtr(highVersionEdge, version);
+    }
+
+    public static getCordovaPackageName(projectRoot: string): string {
+        const packageName = JSON.parse(
+            fs.readFileSync(findFileInFolderHierarchy(projectRoot, "package.json"), "utf-8"),
+        ).name;
+        return packageName;
     }
 }
