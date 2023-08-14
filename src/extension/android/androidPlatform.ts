@@ -181,6 +181,7 @@ export default class AndroidPlatform extends AbstractMobilePlatform<
 
     private async getAppPackageName(): Promise<string> {
         let manifestContents: Buffer;
+
         try {
             manifestContents = await fs.promises.readFile(
                 path.join(this.projectRoot, AndroidPlatform.ANDROID_MANIFEST_PATH),
@@ -197,6 +198,26 @@ export default class AndroidPlatform extends AbstractMobilePlatform<
 
         const parsedFile = elementtree.XML(manifestContents.toString());
         const packageKey = "package";
-        return parsedFile.attrib[packageKey];
+        if (parsedFile.attrib[packageKey]) {
+            return parsedFile.attrib[packageKey];
+        }
+        // Package key is removed from AndroidManifest.xml from cordova-android@12.0.0+
+        let cordovaConfigContents: Buffer;
+        try {
+            cordovaConfigContents = await fs.promises.readFile(
+                path.join(this.projectRoot, "config.xml"),
+            );
+        } catch (error) {
+            throw error;
+        }
+        const parsedConfigFile = elementtree.XML(cordovaConfigContents.toString());
+        const packageIdKey = "id";
+        if (parsedConfigFile.attrib[packageIdKey]) {
+            return parsedConfigFile.attrib[packageIdKey];
+        }
+        throw localize(
+            "NoPackageNameFound",
+            "Cannot find project package name from AndroidManifest.xml and config.xml",
+        );
     }
 }
