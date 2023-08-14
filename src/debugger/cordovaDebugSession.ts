@@ -383,7 +383,24 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                     target => target.isVirtualTarget === resultTarget.isVirtualTarget,
                 );
                 if (targetsCount > 1) {
-                    const launchScenariosManager = new LaunchScenariosManager(args.cwd);
+                    let launchScenariosManager;
+                    const uri = vscode.Uri.file(args.cwd);
+                    const workspaceFolder = <vscode.WorkspaceFolder>(
+                        vscode.workspace.getWorkspaceFolder(uri)
+                    );
+                    const launchPath = path.resolve(
+                        workspaceFolder.uri.fsPath,
+                        ".vscode",
+                        "launch.json",
+                    );
+                    if (fs.existsSync(launchPath)) {
+                        launchScenariosManager = new LaunchScenariosManager(
+                            workspaceFolder.uri.fsPath,
+                        );
+                    } else {
+                        launchScenariosManager = new LaunchScenariosManager(args.cwd);
+                    }
+
                     launchScenariosManager.updateLaunchScenario(args, {
                         target:
                             args.platform === PlatformType.Android
@@ -425,17 +442,17 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             const attachArguments =
                 this.pwaSessionName === PwaDebugType.Chrome
                     ? this.jsDebugConfigAdapter.createChromeDebuggingConfig(
-                          attachArgs,
-                          CordovaDebugSession.CDP_PROXY_PORT,
-                          this.pwaSessionName,
-                          this.cordovaSession.getSessionId(),
-                      )
+                        attachArgs,
+                        CordovaDebugSession.CDP_PROXY_PORT,
+                        this.pwaSessionName,
+                        this.cordovaSession.getSessionId(),
+                    )
                     : this.jsDebugConfigAdapter.createSafariDebuggingConfig(
-                          attachArgs,
-                          CordovaDebugSession.CDP_PROXY_PORT,
-                          this.pwaSessionName,
-                          this.cordovaSession.getSessionId(),
-                      );
+                        attachArgs,
+                        CordovaDebugSession.CDP_PROXY_PORT,
+                        this.pwaSessionName,
+                        this.cordovaSession.getSessionId(),
+                    );
 
             const childDebugSessionStarted = await vscode.debug.startDebugging(
                 this.workspaceManager.workspaceRoot,
@@ -460,7 +477,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
     private handleTerminateDebugSession(debugSession: vscode.DebugSession) {
         if (
             debugSession.configuration.cordovaDebugSessionId ===
-                this.cordovaSession.getVSCodeDebugSession().id &&
+            this.cordovaSession.getVSCodeDebugSession().id &&
             debugSession.type === this.pwaSessionName &&
             this.debugSessionStatus !== DebugSessionStatus.Reattaching
         ) {
