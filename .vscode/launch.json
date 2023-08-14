@@ -13,6 +13,19 @@
             "preLaunchTask": "gulp: build-src"
         },
         {
+            "name": "Quick Launch Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceRoot}"
+            ],
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/src/**/*.js"
+            ]
+        },
+        {
             "name": "Launch Tests",
             "type": "extensionHost",
             "request": "launch",
