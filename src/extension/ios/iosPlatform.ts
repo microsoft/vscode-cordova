@@ -306,9 +306,24 @@ export default class IosPlatform extends AbstractMobilePlatform<IOSTarget, IOSTa
             return CordovaIosDeviceLauncher.getPathOnDevice(packageId);
         }
 
-        const entries = await fs.promises.readdir(
-            path.join(this.projectRoot, "platforms", "ios", "build", "emulator"),
+        let entries;
+        const simulatorBuildPath = path.join(
+            this.projectRoot,
+            "platforms",
+            "ios",
+            "build",
+            "Debug-iphonesimulator",
         );
+        if (fs.existsSync(simulatorBuildPath)) {
+            entries = await fs.promises.readdir(
+                path.join(this.projectRoot, "platforms", "ios", "build", "Debug-iphonesimulator"),
+            );
+        } else {
+            entries = await fs.promises.readdir(
+                path.join(this.projectRoot, "platforms", "ios", "build", "emulator"),
+            );
+        }
+
         // TODO requires changes in case of implementing debugging on iOS simulators
         const filtered = entries.filter(entry => /\.app$/.test(entry));
         if (filtered.length > 0) {
