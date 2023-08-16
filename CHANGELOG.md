@@ -4,7 +4,7 @@
 * Updated application build path for iOS [#907](https://github.com/microsoft/vscode-cordova/pull/907)
 * Internal changes:
   * Fix security vulnerabilities
-  * Better unit testing coerage [#900](https://github.com/microsoft/vscode-cordova/pull/900)
+  * Better unit testing coverage [#900](https://github.com/microsoft/vscode-cordova/pull/900)
   * Removed redundant testing reports [#903](https://github.com/microsoft/vscode-cordova/issues/903)
 
 ## 2.6.4
