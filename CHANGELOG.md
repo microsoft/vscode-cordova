@@ -1,3 +1,12 @@
+## 2.6.5
+* Refactored user data directory creating logic for browsers [#897](https://github.com/microsoft/vscode-cordova/pull/897)
+* Fixed "Unable to find 'localabstract' name" issue [#904](https://github.com/microsoft/vscode-cordova/issues/904)
+* Updated application build path for iOS [#907](https://github.com/microsoft/vscode-cordova/pull/907)
+* Internal changes:
+  * Fix security vulnerabilities
+  * Better unit testing coverage [#900](https://github.com/microsoft/vscode-cordova/pull/900)
+  * Removed redundant testing reports [#903](https://github.com/microsoft/vscode-cordova/issues/903)
+
 ## 2.6.4
 * Customize project root in subfolder for cordova-simulate options [#887](https://github.com/microsoft/vscode-cordova/pull/887)
 * Add localization for new strings [#867](https://github.com/microsoft/vscode-cordova/pull/867)
