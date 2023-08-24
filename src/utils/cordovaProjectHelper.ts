@@ -549,6 +549,16 @@ export class CordovaProjectHelper {
             }
         }
 
+        if (envVars) {
+            // eslint-disable-next-line no-restricted-syntax
+            for (const key in envVars) {
+                // Update process env if the custom key is not existing
+                if (!process.env.hasOwnProperty(key) || process.env[key] != envVars[key]) {
+                    process.env[key] = envVars[key];
+                }
+            }
+        }
+
         return env;
     }
 
