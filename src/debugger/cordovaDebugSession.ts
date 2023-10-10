@@ -11,7 +11,7 @@ import {
     Logger,
     LoggingDebugSession,
     OutputEvent,
-} from "vscode-debugadapter";
+} from "@vscode/debugadapter";
 import { DebugProtocol } from "vscode-debugprotocol";
 import simulate = require("cordova-simulate");
 import {

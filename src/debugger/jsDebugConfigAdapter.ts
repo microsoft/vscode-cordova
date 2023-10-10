@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { logger } from "vscode-debugadapter";
+import { logger } from "@vscode/debugadapter";
 import * as nls from "vscode-nls";
 import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
 import { ICordovaAttachRequestArgs } from "./requestArgs";
