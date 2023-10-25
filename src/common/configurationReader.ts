@@ -4,6 +4,8 @@
 import { InternalErrorCode } from "./error/internalErrorCode";
 import { ErrorHelper } from "./error/errorHelper";
 
+const parseString = require("xml2js").parseString;
+
 export class ConfigurationReader {
     public static readArray(value: any): Array<any> {
         if (this.isArray(value)) {
@@ -14,5 +16,14 @@ export class ConfigurationReader {
 
     private static isArray(value: any): boolean {
         return Array.isArray(value);
+    }
+
+    public static parseXmlToJson(value: any): any {
+        let jsonContent;
+        parseString(value, function (err, result) {
+            jsonContent = result;
+        });
+
+        return jsonContent;
     }
 }

@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
-import { logger } from "@vscode/debugadapter";
+import * as fs from "fs";
+import * as path from "path";
 import * as nls from "vscode-nls";
+import { logger } from "@vscode/debugadapter";
 import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
+import { ConfigurationHelper } from "../common/configurationHelper";
 import { ICordovaAttachRequestArgs } from "./requestArgs";
 
 nls.config({
@@ -42,6 +45,10 @@ export class JsDebugConfigAdapter {
     ): any {
         const extraArgs: any = {};
         if (!attachArgs.simulatePort) {
+            const xmlContent = fs.readFileSync(path.join(attachArgs.cwd, "config.xml"), "utf-8");
+            const isWebviewLoader =
+                ConfigurationHelper.getAndroidInsecureFileModeStatus(xmlContent);
+            console.log(isWebviewLoader);
             extraArgs.pathMapping = {
                 "/android_asset/www": `${attachArgs.cwd}/www`,
             };
