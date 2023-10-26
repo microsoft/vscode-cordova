@@ -48,12 +48,19 @@ export class JsDebugConfigAdapter {
             const xmlContent = fs.readFileSync(path.join(attachArgs.cwd, "config.xml"), "utf-8");
             const isWebviewLoader =
                 ConfigurationHelper.getAndroidInsecureFileModeStatus(xmlContent);
-            console.log(isWebviewLoader);
-            extraArgs.pathMapping = {
-                "/android_asset/www": `${attachArgs.cwd}/www`,
-            };
-            extraArgs.url = "file:///";
-            extraArgs.urlFilter = "*";
+            if (isWebviewLoader) {
+                extraArgs.pathMapping = {
+                    "localhost/**": `${attachArgs.cwd}/**`,
+                };
+                extraArgs.url = "https://";
+                extraArgs.urlFilter = "*";
+            } else {
+                extraArgs.pathMapping = {
+                    "android_asset/www": `${attachArgs.cwd}/www`,
+                };
+                extraArgs.url = "file:///";
+                extraArgs.urlFilter = "*";
+            }
         }
 
         return Object.assign({}, this.getExistingExtraArgs(attachArgs), extraArgs, {

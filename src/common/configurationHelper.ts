@@ -12,11 +12,11 @@ export class ConfigurationHelper {
             for (let i = 0; i < preferenceList.length; i++) {
                 const preference = JSON.stringify(preferenceList[i]);
                 if (preference.includes("AndroidInsecureFileModeEnabled")) {
-                    return !!preference.includes("true");
+                    return !!preference.includes("false");
                 }
-                return false;
+                return true;
             }
         }
-        return false;
+        return true;
     }
 }
