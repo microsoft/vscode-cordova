@@ -1,4 +1,10 @@
-## 2.6.5
+## 2.6.6
+* Fixed "env" variables not working any more [#914](https://github.com/microsoft/vscode-cordova/pull/914)
+* Update environment variable for current process [#915](https://github.com/microsoft/vscode-cordova/issues/915)
+* [CodeQL] Fix CodeQL analysis alert: Do not use eval or the Function constructor [#917](https://github.com/microsoft/vscode-cordova/pull/917)
+* Internal changes:
+  * Update vscode-debugadapter to @vscode/debugadapter [#919](https://github.com/microsoft/vscode-cordova/pull/919)
+
 * Refactored user data directory creating logic for browsers [#897](https://github.com/microsoft/vscode-cordova/pull/897)
 * Fixed "Unable to find 'localabstract' name" issue [#904](https://github.com/microsoft/vscode-cordova/issues/904)
 * Updated application build path for iOS [#907](https://github.com/microsoft/vscode-cordova/pull/907)
