@@ -5,6 +5,7 @@
 * Internal changes:
   * Update vscode-debugadapter to @vscode/debugadapter [#919](https://github.com/microsoft/vscode-cordova/pull/919)
 
+## 2.6.5
 * Refactored user data directory creating logic for browsers [#897](https://github.com/microsoft/vscode-cordova/pull/897)
 * Fixed "Unable to find 'localabstract' name" issue [#904](https://github.com/microsoft/vscode-cordova/issues/904)
 * Updated application build path for iOS [#907](https://github.com/microsoft/vscode-cordova/pull/907)
