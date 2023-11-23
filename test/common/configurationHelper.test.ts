@@ -7,7 +7,7 @@ import * as path from "path";
 import { ConfigurationHelper } from "../../src/common/configurationHelper";
 
 suite("configurationHelper", function () {
-    test.only("should get AndroidInsecureFileMode value correctly", (done: Mocha.Done) => {
+    test("should get AndroidInsecureFileMode value correctly", (done: Mocha.Done) => {
         const disableXmlContentPath = path.resolve(
             __dirname,
             "../resources/testAndroidFileModeProject/disableFileModeConfig.xml",
