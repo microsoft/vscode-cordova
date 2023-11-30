@@ -599,6 +599,14 @@ export class CordovaProjectHelper {
         return packageName;
     }
 
+    private static getCordovaAndroidVersionMessage(
+        mainVersion: string,
+        sdkVersion: string,
+        buildToolVersion: string,
+    ): string {
+        return `Your cordova-android version is ${mainVersion}, reqiured target sdk ${sdkVersion} and build-tools ${buildToolVersion}.`;
+    }
+
     public static checkCordovaAndroidVersion(projectRoot: string): string {
         let androidVersion;
         try {
@@ -614,11 +622,11 @@ export class CordovaProjectHelper {
             const mainVersion = androidVersion.split(".")[0];
             switch (mainVersion) {
                 case "12":
-                    return "Your cordova-android version is 12, reqiured target sdk 33 and build-tools 33.0.2.";
+                    return this.getCordovaAndroidVersionMessage("12", "33", "33.0.2");
                 case "11":
-                    return "Your cordova-android version is 11, reqiured target sdk 32 and build-tools 32.0.0.";
+                    return this.getCordovaAndroidVersionMessage("11", "32", "32.0.0");
                 case "10":
-                    return "Your cordova-android version is 10, reqiured target sdk 30 and build-tools 30.0.3.";
+                    return this.getCordovaAndroidVersionMessage("10", "30", "30.0.3");
                 default:
                     return "";
             }
