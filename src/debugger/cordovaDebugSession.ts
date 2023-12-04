@@ -186,6 +186,14 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             }
             await this.initializeTelemetry(launchArgs.cwd);
             await this.initializeSettings(launchArgs);
+
+            if (launchArgs.platform == "android") {
+                const versionInfo = CordovaProjectHelper.checkCordovaAndroidVersion(launchArgs.cwd);
+                if (versionInfo != "") {
+                    this.outputLogger(versionInfo);
+                }
+            }
+
             this.platform = await this.resolvePlatform(launchArgs);
 
             if (this.platform instanceof AbstractMobilePlatform) {

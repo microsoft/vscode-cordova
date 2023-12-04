@@ -598,4 +598,38 @@ export class CordovaProjectHelper {
         ).name;
         return packageName;
     }
+
+    private static getCordovaAndroidVersionMessage(
+        mainVersion: string,
+        sdkVersion: string,
+        buildToolVersion: string,
+    ): string {
+        return `Your cordova-android version is ${mainVersion}, reqiured target sdk ${sdkVersion} and build-tools ${buildToolVersion}.`;
+    }
+
+    public static checkCordovaAndroidVersion(projectRoot: string): string {
+        let androidVersion;
+        try {
+            const devDeps = JSON.parse(
+                fs.readFileSync(findFileInFolderHierarchy(projectRoot, "package.json"), "utf-8"),
+            ).devDependencies;
+            androidVersion = devDeps["cordova-android"].replace("^", "");
+        } catch {
+            return "";
+        }
+
+        if (androidVersion != "") {
+            const mainVersion = androidVersion.split(".")[0];
+            switch (mainVersion) {
+                case "12":
+                    return this.getCordovaAndroidVersionMessage("12", "33", "33.0.2");
+                case "11":
+                    return this.getCordovaAndroidVersionMessage("11", "32", "32.0.0");
+                case "10":
+                    return this.getCordovaAndroidVersionMessage("10", "30", "30.0.3");
+                default:
+                    return "";
+            }
+        }
+    }
 }
