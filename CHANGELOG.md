@@ -1,3 +1,13 @@
+## 2.6.7
+* Improve pwa-chrome configuration settings for cordova-android [#924](https://github.com/microsoft/vscode-cordova/pull/924)
+* Check cordova-android version when launch android debugging [#933](https://github.com/microsoft/vscode-cordova/pull/933)
+* Internal changes:
+  * Bump @babel/traverse from 7.18.5 to 7.23.2 [#921](https://github.com/microsoft/vscode-cordova/pull/921)
+  * Add unit test for AndroidInsecureFileModeEnabled config [#932](https://github.com/microsoft/vscode-cordova/pull/932)
+  * Gulp script failure on Node18 in gulp-typescript package [#936](https://github.com/microsoft/vscode-cordova/pull/936)
+  * Bump vscode-test to 2.3.8 [#937](https://github.com/microsoft/vscode-cordova/pull/937)
+  * Bump eslint package to support typescript 5.0.0+ [#941](https://github.com/microsoft/vscode-cordova/pull/941)
+
 ## 2.6.6
 * Fixed "env" variables not working any more [#914](https://github.com/microsoft/vscode-cordova/pull/914)
 * Update environment variable for current process [#915](https://github.com/microsoft/vscode-cordova/issues/915)
