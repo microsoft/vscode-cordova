@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import * as nls from "vscode-nls";
 import {
     ErrorDestination,
+    InitializedEvent,
     logger,
     Logger,
     LoggingDebugSession,
@@ -174,6 +175,36 @@ export default class CordovaDebugSession extends LoggingDebugSession {
         );
     }
 
+    protected initializeRequest(
+        response: DebugProtocol.InitializeResponse,
+        args: DebugProtocol.InitializeRequestArguments,
+    ): void {
+        // Support default breakpoints filters for exceptions
+        response.body.exceptionBreakpointFilters = [
+            {
+                filter: "all",
+                label: "Caught Exceptions",
+                default: false,
+                supportsCondition: true,
+                description: "Breaks on all throw errors, even if they're caught later.",
+                // eslint-disable-next-line @typescript-eslint/quotes
+                conditionDescription: 'error.name == "MyError"',
+            },
+            {
+                filter: "uncaught",
+                label: "Uncaught Exceptions",
+                default: false,
+                supportsCondition: true,
+                description: "Breaks only on errors or promise rejections that are not handled.",
+                // eslint-disable-next-line @typescript-eslint/quotes
+                conditionDescription: 'error.name == "MyError"',
+            },
+        ];
+
+        this.sendResponse(response);
+        this.sendEvent(new InitializedEvent());
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected async launchRequest(
         response: DebugProtocol.LaunchResponse,
@@ -230,7 +261,6 @@ export default class CordovaDebugSession extends LoggingDebugSession {
                 Object.assign(launchArgs, launchResult);
 
                 await this.vsCodeDebugSession.customRequest("attach", launchArgs);
-
                 this.sendResponse(response);
                 this.cordovaSession.setStatus(CordovaSessionStatus.Activated);
             });
