@@ -50,7 +50,7 @@ export class JsDebugConfigAdapter {
                 ConfigurationHelper.getAndroidInsecureFileModeStatus(xmlContent);
             if (isWebviewLoader) {
                 extraArgs.pathMapping = {
-                    "localhost/**": `${attachArgs.cwd}/**`,
+                    [`${attachArgs.hostname}/**`]:`${attachArgs.cwd}/**`,
                 };
                 extraArgs.url = "https://";
                 extraArgs.urlFilter = "*";
