@@ -49,9 +49,15 @@ export class JsDebugConfigAdapter {
             const isWebviewLoader =
                 ConfigurationHelper.getAndroidInsecureFileModeStatus(xmlContent);
             if (isWebviewLoader) {
-                extraArgs.pathMapping = {
-                    "localhost/**": `${attachArgs.cwd}/**`,
-                };
+                if (attachArgs.hostname === "") {
+                    extraArgs.pathMapping = {
+                        "hostname/**": `${attachArgs.cwd}/**`,
+                    };
+                } else {
+                    extraArgs.pathMapping = {
+                        [`${attachArgs.hostname}/**`]: `${attachArgs.cwd}/**`,
+                    };
+                }
                 extraArgs.url = "https://";
                 extraArgs.urlFilter = "*";
             } else {

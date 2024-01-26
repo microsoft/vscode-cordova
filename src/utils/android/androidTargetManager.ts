@@ -6,9 +6,9 @@ import { MobileTargetManager } from "../mobileTargetManager";
 import { ChildProcess } from "../../common/node/childProcess";
 import { IDebuggableMobileTarget, IMobileTarget, MobileTarget } from "../mobileTarget";
 import { TargetType } from "../../debugger/cordovaDebugSession";
-import { AdbHelper } from "./adb";
 import { ErrorHelper } from "../../common/error/errorHelper";
 import { InternalErrorCode } from "../../common/error/internalErrorCode";
+import { AdbHelper } from "./adb";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -73,10 +73,9 @@ export class AndroidTargetManager extends MobileTargetManager<AndroidTarget> {
         if (selectedTarget) {
             if (!selectedTarget.isOnline) {
                 return this.launchSimulator(selectedTarget);
-            } else {
-                if (selectedTarget.id) {
-                    return new AndroidTarget(<IDebuggableMobileTarget>selectedTarget);
-                }
+            }
+            if (selectedTarget.id) {
+                return new AndroidTarget(<IDebuggableMobileTarget>selectedTarget);
             }
         }
     }

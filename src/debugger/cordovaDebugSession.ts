@@ -684,7 +684,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             try {
                 return Telemetry.init("cordova-tools-debug-adapter", version, {
                     isExtensionProcess: false,
-                    projectRoot: projectRoot,
+                    projectRoot,
                 });
             } catch (e) {
                 this.outputLogger(
