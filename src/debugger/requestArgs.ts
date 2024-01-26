@@ -66,6 +66,4 @@ export interface ICordovaLaunchRequestArgs
     runArguments?: string[];
     cordovaExecutable?: string;
     spaUrlRewrites?: boolean;
-
-    attachArgs: ICordovaAttachRequestArgs,
 }
