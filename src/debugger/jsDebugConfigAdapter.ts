@@ -51,7 +51,7 @@ export class JsDebugConfigAdapter {
             if (isWebviewLoader) {
                 if (attachArgs.hostname === "") {
                     extraArgs.pathMapping = {
-                        "hostname/**": `${attachArgs.cwd}/**`,
+                        "localhost/**": `${attachArgs.cwd}/**`,
                     };
                 } else {
                     extraArgs.pathMapping = {
