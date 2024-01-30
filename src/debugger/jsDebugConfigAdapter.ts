@@ -49,7 +49,7 @@ export class JsDebugConfigAdapter {
             const isWebviewLoader =
                 ConfigurationHelper.getAndroidInsecureFileModeStatus(xmlContent);
             if (isWebviewLoader) {
-                if (attachArgs.hostname === "") {
+                if (attachArgs.hostname == "" || attachArgs.hostname == undefined) {
                     extraArgs.pathMapping = {
                         "localhost/**": `${attachArgs.cwd}/**`,
                     };
