@@ -19,6 +19,7 @@ export interface IGeneralPlatformOptions {
     target?: string;
     ionicLiveReload?: boolean;
     runArguments?: string[];
+    chromiumPath?: string
 }
 
 export interface IIosPlatformOptions extends IGeneralPlatformOptions {
@@ -44,4 +45,5 @@ export interface IBrowserPlatformOptions extends IGeneralPlatformOptions {
     simulatePort?: number;
     simulateTempDir?: string;
     spaUrlRewrites?: boolean;
+    chromiumPath?: string
 }

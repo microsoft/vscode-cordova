@@ -51,9 +51,10 @@ export class PluginSimulator implements vscode.Disposable {
         fsPath: string,
         simulateOptions: CordovaSimulate.SimulateOptions,
         projectType: ProjectType,
+        chromiumPath: string
     ): Promise<any> {
         await this.launchServer(fsPath, simulateOptions, projectType);
-        await this.launchSimHost(simulateOptions.target);
+        await this.launchSimHost(simulateOptions.target, chromiumPath);
         return await this.launchAppHost(simulateOptions.target);
     }
 
@@ -62,7 +63,7 @@ export class PluginSimulator implements vscode.Disposable {
         return await simulate.launchBrowser(target, this.simulationInfo.appHostUrl);
     }
 
-    public async launchSimHost(target: string): Promise<void> {
+    public async launchSimHost(target: string, chromiumPath?: string): Promise<void> {
         if (!this.simulator) {
             const error = ErrorHelper.getInternalError(
                 InternalErrorCode.LaunchSimHostBeforeStartSimulationServer,
@@ -71,7 +72,11 @@ export class PluginSimulator implements vscode.Disposable {
             throw error;
         }
         const simulate = await this.getPackage();
-        return await simulate.launchBrowser(target, this.simulator.simHostUrl());
+        const browserPath = target
+        if (process.platform === "win32" && target === SimulateTargets.Chromium) {
+            target = chromiumPath;
+        }
+        return await simulate.launchBrowser(browserPath, this.simulator.simHostUrl());
     }
 
     public launchServer(

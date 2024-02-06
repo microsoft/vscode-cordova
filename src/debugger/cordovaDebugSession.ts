@@ -543,6 +543,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             spaUrlRewrites,
             target,
             ionicLiveReload,
+            chromiumPath
         } = args;
         const [projectType, runArgs, cordovaExecutable] = await Promise.all([
             TelemetryHelper.determineProjectTypes(cwd),
@@ -574,7 +575,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             port,
             target,
             ionicLiveReload,
-            runArguments,
+            runArguments
         };
         const androidPlatformOptions = generalPlatformOptions as IAndroidPlatformOptions;
         const iosPlatformOptions = {
@@ -607,6 +608,7 @@ export default class CordovaDebugSession extends LoggingDebugSession {
             simulatePort,
             simulateTempDir,
             spaUrlRewrites,
+            chromiumPath,
             ...generalPlatformOptions,
         } as IBrowserPlatformOptions;
 

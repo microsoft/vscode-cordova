@@ -481,6 +481,7 @@ function launchSimulateCommand(
             cordovaProjectRoot,
             options,
             projectType,
+            options.chromiumPath
         );
     });
 }

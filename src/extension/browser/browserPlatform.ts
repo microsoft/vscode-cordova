@@ -285,6 +285,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         result.livereloaddelay = browserOption.livereloadDelay;
         result.spaurlrewrites = browserOption.spaUrlRewrites;
         result.lang = vscode.env.language;
+        result.chromiumPath = browserOption.chromiumPath
 
         return result;
     }

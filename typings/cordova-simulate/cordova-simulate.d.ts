@@ -23,6 +23,7 @@ declare module "cordova-simulate" {
             corsproxy?: boolean;
             lang?: string;
             spaurlrewrites?: boolean;
+            chromiumPath?: string;
         }
 
         export interface TelemetryModule {
