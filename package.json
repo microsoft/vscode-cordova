@@ -502,6 +502,10 @@
 								"type": "boolean",
 								"description": "%cordova.properties.launch.spaUrlRewrites%",
 								"default": false
+							},
+							"chromiumPath": {
+								"type": "string",
+								"description": "%cordova.properties.attach.chromiumPath%"
 							}
 						}
 					},
@@ -591,10 +595,6 @@
 									"webpack:///./~/*": "${cwd}/node_modules/*",
 									"./*": "${cwd}/*"
 								}
-							},
-							"chromiumPath": {
-								"type": "string",
-								"description": "%cordova.properties.attach.chromiumPath%"
 							}
 						}
 					}
