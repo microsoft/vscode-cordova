@@ -3,12 +3,10 @@
 
 import * as fs from "fs";
 import * as path from "path";
-
 import * as vscode from "vscode";
 import * as semver from "semver";
 import * as nls from "vscode-nls";
 import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
-
 import { Telemetry } from "../utils/telemetry";
 import { TelemetryHelper } from "../utils/telemetryHelper";
 import { TsdHelper } from "../utils/tsdHelper";
