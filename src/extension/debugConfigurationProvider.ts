@@ -14,8 +14,8 @@ const localize = nls.loadMessageBundle();
 
 export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProvider {
     private debugConfigurations = {
-        "Run Android on emulator": {
-            name: "Run Android on emulator",
+        "Debug Android on emulator": {
+            name: "Debug Android on emulator",
             type: "cordova",
             request: "launch",
             platform: "android",
@@ -34,8 +34,8 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             sourceMaps: true,
             cwd: "${workspaceFolder}",
         },
-        "Run Android on device": {
-            name: "Run Android on device",
+        "Debug Android on device": {
+            name: "Debug Android on device",
             type: "cordova",
             request: "launch",
             platform: "android",
@@ -54,8 +54,8 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             sourceMaps: true,
             cwd: "${workspaceFolder}",
         },
-        "Run iOS on device": {
-            name: "Run iOS on device",
+        "Debug iOS on device - experimental": {
+            name: "Debug iOS on device - experimental",
             type: "cordova",
             request: "launch",
             platform: "ios",
@@ -64,8 +64,8 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             sourceMaps: true,
             cwd: "${workspaceFolder}",
         },
-        "Attach to running iOS on device": {
-            name: "Attach to running iOS on device",
+        "Attach to running iOS on device - experimental": {
+            name: "Attach to running iOS on device - experimental",
             type: "cordova",
             request: "attach",
             platform: "ios",
@@ -74,8 +74,8 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             sourceMaps: true,
             cwd: "${workspaceFolder}",
         },
-        "Run iOS on simulator - experimental": {
-            name: "Run iOS on simulator - experimental",
+        "Debug iOS on simulator - experimental": {
+            name: "Debug iOS on simulator - experimental",
             type: "cordova",
             request: "launch",
             platform: "ios",
@@ -127,8 +127,8 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             sourceMaps: true,
             cwd: "${workspaceFolder}",
         },
-        "Run Browser": {
-            name: "Run Browser",
+        "Debug on Browser": {
+            name: "Debug on Browser",
             type: "cordova",
             request: "launch",
             platform: "browser",
@@ -142,7 +142,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
 
     private pickConfig: ReadonlyArray<vscode.QuickPickItem> = [
         {
-            label: "Run Android on emulator",
+            label: "Debug Android on emulator",
             description: localize(
                 "RunAndDebugCordovaAppOnAndroidEmulator",
                 "Run and debug Cordova app on Android emulator",
@@ -156,7 +156,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             ),
         },
         {
-            label: "Run Android on device",
+            label: "Debug Android on device",
             description: localize(
                 "RunAndDebugCordovaAppOnAndroidDevice",
                 "Run and debug Cordova app on Android device",
@@ -170,7 +170,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             ),
         },
         {
-            label: "Run iOS on simulator - experimental",
+            label: "Debug iOS on simulator - experimental",
             description: localize(
                 "RunAndDebugCordovaAppOniOSSimulator",
                 "Run and debug Cordova app on iOS simulator",
@@ -184,7 +184,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             ),
         },
         {
-            label: "Run iOS on device",
+            label: "Debug iOS on device",
             description: localize(
                 "RunAndDebugCordovaAppOniOSDevice",
                 "Run and debug Cordova app on iOS device",
@@ -219,7 +219,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
             ),
         },
         {
-            label: "Run Browser",
+            label: "Debug on Browser",
             description: localize(
                 "RunAndDebugCordovaAppInBrowser",
                 "Run and debug Cordova application in browser",
@@ -270,7 +270,7 @@ export class CordovaDebugConfigProvider implements vscode.DebugConfigurationProv
         debugConfigPicker.ignoreFocusOut = true;
         debugConfigPicker.title = localize("PickDebugConfigurations", "Pick debug configurations");
         debugConfigPicker.items = this.pickConfig;
-        debugConfigPicker.selectedItems = [this.pickConfig[0]]; // the scenario "Run Android on emulator" is selected by default
+        debugConfigPicker.selectedItems = [this.pickConfig[0]]; // the scenario "Debug Android on emulator" is selected by default
         return debugConfigPicker;
     }
 }
