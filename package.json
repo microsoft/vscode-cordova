@@ -156,10 +156,10 @@
 				"runtime": "node",
 				"configurationSnippets": [
 					{
-						"label": "Cordova: Run Android on device",
+						"label": "Cordova: Debug Android on device",
 						"description": "%cordova.snippets.androidRunOnDevice%",
 						"body": {
-							"name": "Run Android on device",
+							"name": "Debug Android on device",
 							"type": "cordova",
 							"request": "launch",
 							"platform": "android",
@@ -170,10 +170,10 @@
 						}
 					},
 					{
-						"label": "Cordova: Run Android on emulator",
+						"label": "Cordova: Debug Android on emulator",
 						"description": "%cordova.snippets.androidRunOnEmulator%",
 						"body": {
-							"name": "Run Android on emulator",
+							"name": "Debug Android on emulator",
 							"type": "cordova",
 							"request": "launch",
 							"platform": "android",
@@ -184,10 +184,10 @@
 						}
 					},
 					{
-						"label": "Cordova: Run on iOS device",
+						"label": "Cordova: Debug on iOS device - experimental",
 						"description": "%cordova.snippets.iOSRunOnDevice%",
 						"body": {
-							"name": "Run iOS on device",
+							"name": "Debug iOS on device - experimental",
 							"type": "cordova",
 							"request": "launch",
 							"platform": "ios",
@@ -198,10 +198,10 @@
 						}
 					},
 					{
-						"label": "Cordova: Run on iOS simulator - experimental",
+						"label": "Cordova: Debug on iOS simulator - experimental",
 						"description": "%cordova.snippets.iOSRunOnSimulator%",
 						"body": {
-							"name": "Run iOS on simulator - experimental",
+							"name": "Debug iOS on simulator - experimental",
 							"type": "cordova",
 							"request": "launch",
 							"platform": "ios",
@@ -240,10 +240,10 @@
 						}
 					},
 					{
-						"label": "Cordova: Attach to running iOS on device",
+						"label": "Cordova: Attach to running iOS on device - experimental",
 						"description": "%cordova.snippets.iOSAttachOnDevice%",
 						"body": {
-							"name": "Attach to running iOS on device",
+							"name": "Attach to running iOS on device - experimental",
 							"type": "cordova",
 							"request": "attach",
 							"platform": "ios",
@@ -313,10 +313,10 @@
 						}
 					},
 					{
-						"label": "Cordova: Run Browser",
+						"label": "Cordova: Debug on Browser",
 						"description": "%cordova.snippets.simulateBrowser%",
 						"body": {
-							"name": "Run Browser",
+							"name": "Debug on Browser",
 							"type": "cordova",
 							"request": "launch",
 							"platform": "browser",
