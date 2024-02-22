@@ -3,12 +3,10 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { SimulateOptions } from "cordova-simulate";
 import * as vscode from "vscode";
 import * as semver from "semver";
 import * as nls from "vscode-nls";
 import { CordovaProjectHelper } from "../utils/cordovaProjectHelper";
-import { CordovaCommandHelper } from "../utils/cordovaCommandHelper";
 import { Telemetry } from "../utils/telemetry";
 import { TelemetryHelper } from "../utils/telemetryHelper";
 import { TsdHelper } from "../utils/tsdHelper";
@@ -71,7 +69,7 @@ export function activate(context: vscode.ExtensionContext): void {
             vscode.workspace.workspaceFolders;
 
         if (workspaceFolders) {
-            registerCordovaCommands(cordovaFactory);
+            registerCordovaCommands();
             workspaceFolders.forEach((folder: vscode.WorkspaceFolder) => {
                 onFolderAdded(folder);
             });
@@ -443,130 +441,13 @@ function updatePluginTypeDefinitions(cordovaProjectRoot: string): void {
     });
 }
 
-/* Launches a simulate command and records telemetry for it */
-function launchSimulateCommand(
-    cordovaProjectRoot: string,
-    options: SimulateOptions,
-): Promise<void> {
-    return TelemetryHelper.generate("simulateCommand", generator => {
-        return TelemetryHelper.determineProjectTypes(cordovaProjectRoot).then(projectType => {
-            generator.add(
-                "simulateOptions",
-                {
-                    platform: options.platform,
-                    target: options.target,
-                    livereload: options.livereload,
-                    forceprepare: options.forceprepare,
-                    corsproxy: options.corsproxy,
-                },
-                false,
-            );
-            generator.add(
-                "projectType",
-                TelemetryHelper.prepareProjectTypesTelemetry(projectType),
-                false,
-            );
-            // visibleTextEditors is null proof (returns empty array if no editors visible)
-            generator.add(
-                "visibleTextEditorsCount",
-                vscode.window.visibleTextEditors.length,
-                false,
-            );
-            return projectType;
-        });
-    }).then(projectType => {
-        const uri = vscode.Uri.file(cordovaProjectRoot);
-        const workspaceFolder = <vscode.WorkspaceFolder>vscode.workspace.getWorkspaceFolder(uri);
-        return ProjectsStorage.getFolder(workspaceFolder).pluginSimulator.simulate(
-            cordovaProjectRoot,
-            options,
-            projectType,
-        );
+async function registerCordovaCommands() {
+    const commands = await import("./commands/commands");
+    Object.values(commands).forEach(it => {
+        EXTENSION_CONTEXT.subscriptions.push(register(it));
     });
 }
 
-function registerCordovaCommands(cordovaSessionManager: CordovaSessionManager): void {
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("cordova.restart", () =>
-            commandWrapper(CordovaCommandHelper.restartCordovaDebugging, [cordovaSessionManager]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("cordova.prepare", () =>
-            commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["prepare"]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("cordova.build", () =>
-            commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["build"]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("cordova.run", () =>
-            commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["run"]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("ionic.prepare", () =>
-            commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["prepare", true]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("ionic.build", () =>
-            commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["build", true]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("ionic.run", () =>
-            commandWrapper(CordovaCommandHelper.executeCordovaCommand, ["run", true]),
-        ),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("cordova.simulate.android", () => {
-            return selectProject().then(project => {
-                return launchSimulateCommand(project.workspaceRoot.uri.fsPath, {
-                    dir: project.workspaceRoot.uri.fsPath,
-                    target: "chrome",
-                    platform: "android",
-                    lang: vscode.env.language,
-                });
-            });
-        }),
-    );
-    EXTENSION_CONTEXT.subscriptions.push(
-        vscode.commands.registerCommand("cordova.simulate.ios", () => {
-            return selectProject().then(project => {
-                return launchSimulateCommand(project.workspaceRoot.uri.fsPath, {
-                    dir: project.workspaceRoot.uri.fsPath,
-                    target: "chrome",
-                    platform: "ios",
-                    lang: vscode.env.language,
-                });
-            });
-        }),
-    );
-}
-
-function selectProject(): Promise<CordovaWorkspaceManager> {
-    const keys = Object.keys(ProjectsStorage.projectsCache);
-    if (keys.length > 1) {
-        return new Promise((resolve, reject) => {
-            vscode.window.showQuickPick(keys).then(selected => {
-                if (selected) {
-                    resolve(ProjectsStorage.projectsCache[selected]);
-                }
-            }, reject);
-        });
-    } else if (keys.length === 1) {
-        return Promise.resolve(ProjectsStorage.projectsCache[keys[0]]);
-    }
-    return Promise.reject(
-        new Error(localize("NoCordovaProjectIsFound", "No Cordova project is found")),
-    );
-}
-
-function commandWrapper(fn, args) {
-    return selectProject().then(project => {
-        return fn(project.workspaceRoot.uri.fsPath, ...args);
-    });
+function register(it) {
+    return vscode.commands.registerCommand(it.codeName, it.createHandler);
 }
