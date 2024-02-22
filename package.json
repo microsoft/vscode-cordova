@@ -502,6 +502,11 @@
 								"type": "boolean",
 								"description": "%cordova.properties.launch.spaUrlRewrites%",
 								"default": false
+							},
+							"hostname":{
+								"type": "string",
+								"description": "%cordova.properties.launch.hostname%",
+								"default": "localhost"
 							}
 						}
 					},
@@ -591,6 +596,11 @@
 									"webpack:///./~/*": "${cwd}/node_modules/*",
 									"./*": "${cwd}/*"
 								}
+							},
+							"hostname":{
+								"type": "string",
+								"description": "%cordova.properties.launch.hostname%",
+								"default": "localhost"
 							}
 						}
 					}
