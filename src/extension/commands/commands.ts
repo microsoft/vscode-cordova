@@ -10,3 +10,4 @@ export * from "./ionicPrepare";
 export * from "./ionicRun";
 export * from "./simulateAndroid";
 export * from "./simulateIos";
+export * from "./clean";
