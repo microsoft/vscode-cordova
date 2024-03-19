@@ -105,6 +105,12 @@
 					"dark": "./images/sync.svg",
 					"light": "./images/sync-light.svg"
 				}
+			},
+			{
+				"command": "cordova.clean",
+				"title": "Cordova: Clean",
+				"category": "Cordova",
+				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			}
 		],
 		"keybindings": [

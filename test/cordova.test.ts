@@ -33,6 +33,7 @@ suite("extensionContext", () => {
                 "cordova.prepare",
                 "cordova.simulate.android",
                 "cordova.simulate.ios",
+                "cordova.clean",
             ]);
         });
     });
