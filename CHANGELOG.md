@@ -7,7 +7,6 @@
 * Update cordova hostname customization support [#944](https://github.com/microsoft/vscode-cordova/pull/944)
 * Support default breakpoints filters for exceptions [#943](https://github.com/microsoft/vscode-cordova/pull/943)
 
-
 ## 2.6.7
 * Improve pwa-chrome configuration settings for cordova-android [#924](https://github.com/microsoft/vscode-cordova/pull/924)
 * Check cordova-android version when launch android debugging [#933](https://github.com/microsoft/vscode-cordova/pull/933)
