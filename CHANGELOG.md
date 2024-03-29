@@ -1,3 +1,13 @@
+## 2.7.0
+* Add cordova clean command [#957](https://github.com/microsoft/vscode-cordova/pull/957)
+* Rename debug configurations [#950](https://github.com/microsoft/vscode-cordova/pull/950)
+* Update cordova hostname customization support [#944](https://github.com/microsoft/vscode-cordova/pull/944)
+* Support default breakpoints filters for exceptions [#943](https://github.com/microsoft/vscode-cordova/pull/943)
+* Internal changes:
+* Bump es5-ext from 0.10.53 to 0.10.63 [#954](https://github.com/microsoft/vscode-cordova/pull/954)
+* Refactor structures for cordova command palette feature [#953](https://github.com/microsoft/vscode-cordova/pull/953)
+* Bump ip from 1.1.5 to 1.1.9 [#952](https://github.com/microsoft/vscode-cordova/pull/952)
+
 ## 2.6.7
 * Improve pwa-chrome configuration settings for cordova-android [#924](https://github.com/microsoft/vscode-cordova/pull/924)
 * Check cordova-android version when launch android debugging [#933](https://github.com/microsoft/vscode-cordova/pull/933)
