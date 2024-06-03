@@ -115,6 +115,20 @@ The **Run** command triggers `cordova run` and starts your app without debugging
 
 The **Simulate Android in browser** and **Simulate iOS in browser** launch your application in the browser and they are described in the next section.
 
+The full list of commands is:
+
+| Name                                 | Command ID                 | Description                                                                   |
+| ------------------------------------ | -------------------------- | ----------------------------------------------------------------------------- |
+| Cordova: Build                       | `cordova.build`            | Build all platforms in project                                                |
+| Cordova: Prepare                     | `cordova.prepare`          | Copy files into platform for building                                         |
+| Cordova: Run                         | `cordova.run`              | Starts your app without debugging for each platform                           |
+| Cordova: Clean                       | `cordova.clean`            | Cleanup project from build artifacts                                          |
+| Ionic: Build                         | `ionic.build`              | Build web assets and prepare your app for any platform targets                |
+| Ionic: Prepare                       | `ionic.prepare`            | Copies assets to Cordova platforms, preparing them for native builds          |
+| Ionic: Clean                         | `ionic.run`                | Run an Ionic project on a connected device                                    |
+| Cordova: Simulate Android in browser | `cordova.simulate.android` | Simulate and launch android application in the browser using cordova-simulate |
+| Cordova: Simulate iOS in browser     | `cordova.simulate.ios`     | Simulate and launch ios application in the browser using cordova-simulate     |
+
 ## Simulate your app in the browser
 
 The debugging target list includes two additional targets: `Simulate Android in browser` and `Simulate iOS in browser`. If you don't see these targets in your debugging target list, you might have to remove your `.vscode/launch.json` configuration file and regenerate it
@@ -229,10 +243,10 @@ If you don’t wish to send usage data to Microsoft, please follow the instructi
 
 ## Known Issues
 
-### Error `Debugger can't detect any webview`
+### Error `Debugger can't detect any webview` or `Attach application failed on MacOS`
 
-We used [ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy) for the iOS debugging. For the tool limitation, the iOS debugging is not working on some new iOS version both on real device and simulator(as known 14.4+). The debugger should work well if ios-webkit-debug-proxy fix this issue and release new version.
-You can find more reference in some open issues [here](https://github.com/microsoft/vscode-cordova/issues/).
+We used [ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy) for the iOS debugging. For the tool limitation in chrome-devtools, the iOS debugging is not working on some new iOS version both on real device and simulator. If you have this issue in development, we suggest that you can use safari direct debugging on MacOS.
+You can get reference [here](https://github.com/google/ios-webkit-debug-proxy/issues/413).
 
 ### Error `'Cannot connect to runtime process, timeout after {0} ms - (reason: {1}).', '{_timeout}', '{_error}'` occured while running debug scenarios
 
