@@ -28,11 +28,12 @@ suite("extensionContext", () => {
             });
             assert.deepStrictEqual(cordovaCommandsAvailable, [
                 "cordova.restart",
-                "cordova.prepare",
-                "cordova.build",
                 "cordova.run",
+                "cordova.build",
+                "cordova.prepare",
                 "cordova.simulate.android",
                 "cordova.simulate.ios",
+                "cordova.clean",
             ]);
         });
     });

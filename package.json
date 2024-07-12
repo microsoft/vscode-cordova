@@ -7,7 +7,7 @@
 		"ionic",
 		"multi-root ready"
 	],
-	"version": "2.6.7",
+	"version": "2.7.0",
 	"private": true,
 	"publisher": "msjsdiag",
 	"icon": "images/icon.png",
@@ -105,6 +105,12 @@
 					"dark": "./images/sync.svg",
 					"light": "./images/sync-light.svg"
 				}
+			},
+			{
+				"command": "cordova.clean",
+				"title": "Cordova: Clean",
+				"category": "Cordova",
+				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			}
 		],
 		"keybindings": [
@@ -679,7 +685,7 @@
 		"elementtree": "^0.1.6",
 		"execa": "^4.0.0",
 		"gulp-mocha": "^8.0.0",
-		"ip": "^1.1.5",
+		"ip": "^1.1.9",
 		"plist": "^3.0.5",
 		"semver": "^6.3.1",
 		"socket.io-client": "2.4.0",
@@ -723,7 +729,7 @@
 		"event-stream": "3.3.4",
 		"fancy-log": "^1.3.3",
 		"glob": "^7.2.0",
-		"gulp": "^4.0.2",
+		"gulp": "^5.0.0",
 		"gulp-filter": "^6.0.0",
 		"gulp-preprocess": "^4.0.2",
 		"gulp-sourcemaps": "^2.6.5",
