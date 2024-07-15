@@ -146,7 +146,7 @@ export class JsDebugConfigAdapter {
                 request: "launch",
                 runtimeExecutable: `${attachArgs.cwd}/node_modules/.bin/electron`,
                 runtimeArgs: [
-                    `--remote-debugging-port=${cdpProxyPort + 1}`,
+                    `--remote-debugging-port=${attachArgs.electronPort}`,
                     `${attachArgs.cwd}/platforms/electron/www/cdv-electron-main.js`,
                 ],
                 sourceMaps: true,
@@ -159,7 +159,7 @@ export class JsDebugConfigAdapter {
                 name: pwaSessionName,
                 type: "chrome",
                 request: "attach",
-                port: cdpProxyPort + 1,
+                port: attachArgs.electronPort,
                 sourceMaps: true,
                 webRoot: `${attachArgs.cwd}/platforms/electron/www/`,
                 // In a remote workspace the parameter specifies js-debug to attach to the CDP proxy on the
