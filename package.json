@@ -334,10 +334,10 @@
                         }
                     },
                     {
-                        "label": "Cordova: Debug on Electron",
+                        "label": "Cordova: Debug on Electron - experimental",
                         "description": "%cordova.snippets.simulateElectron%",
                         "body": {
-                            "name": "Debug on Electron",
+                            "name": "Debug on Electron - experimental",
                             "type": "cordova",
                             "request": "launch",
                             "platform": "browser",
