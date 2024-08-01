@@ -133,6 +133,55 @@ export class JsDebugConfigAdapter {
         });
     }
 
+    public createElectronDebuggingConfig(
+        attachArgs: ICordovaAttachRequestArgs,
+        cdpProxyPort: number,
+        pwaSessionName: string,
+        sessionId: string,
+    ): any {
+        return [
+            {
+                name: "Electron Main Process",
+                type: "node",
+                request: "launch",
+                runtimeExecutable: `${attachArgs.cwd}/node_modules/.bin/electron`,
+                runtimeArgs: [
+                    `--remote-debugging-port=${attachArgs.electronPort}`,
+                    `${attachArgs.cwd}/platforms/electron/www/cdv-electron-main.js`,
+                ],
+                sourceMaps: true,
+                outFiles: [`${attachArgs.cwd}/platforms/electron/www/**/*.js`],
+                sourceMapPathOverrides: {
+                    "/www/**": `${attachArgs.cwd}/platforms/electron/www/*`,
+                },
+            },
+            {
+                name: pwaSessionName,
+                type: "chrome",
+                request: "attach",
+                port: attachArgs.electronPort,
+                sourceMaps: true,
+                webRoot: `${attachArgs.cwd}/platforms/electron/www/`,
+                // In a remote workspace the parameter specifies js-debug to attach to the CDP proxy on the
+                // remote machine side rather than locally
+                browserAttachLocation: "workspace",
+                // The unique identifier of the debug session. It is used to distinguish Cordova extension's
+                // debug sessions from other ones. So we can save and process only the extension's debug sessions
+                // in vscode.debug API methods "onDidStartDebugSession" and "onDidTerminateDebugSession".
+                cordovaDebugSessionId: sessionId,
+                outFiles: [
+                    `${attachArgs.cwd}/platforms/electron/www/**`,
+                    // Each Cordova platform contains a copy of the js code located in the "www" folder in the project root.
+                    // JS content in platforms may differ from the actual code in the "www" folder which could cause incorrect
+                    // source mapping. So we should exclude the "platforms" folder from relevant output files.
+                    // There is the issue in VS Code https://github.com/microsoft/vscode/issues/104889 relatad to incorrect
+                    // processing of two and more including and excluding glob expressions, so we have to use the braced section.
+                    "!{**/node_modules/**,platforms/**}",
+                ],
+            },
+        ];
+    }
+
     private getExistingExtraArgs(attachArgs: ICordovaAttachRequestArgs): any {
         const existingExtraArgs: any = {};
         if (attachArgs.env) {
