@@ -23,6 +23,7 @@
   "cordova.snippets.simulateAndroid": "Simulate Cordova Android application in browser",
   "cordova.snippets.simulateiOS": "Simulate Cordova iOS application in browser",
   "cordova.snippets.simulateBrowser": "Run and debug Cordova application in browser",
+  "cordova.snippets.simulateElectron": "Run and debug Electron application",
   "cordova.properties.launch.platform": "The target platform to run for (either 'ios' or 'android'; other platforms are not currently supported)",
   "cordova.properties.launch.cwd": "The root of the project",
   "cordova.properties.launch.target": "Either 'device', 'emulator', or identifier for a specific device / emulator. For simulation in the browser, you can use 'chrome' or 'chromium'",

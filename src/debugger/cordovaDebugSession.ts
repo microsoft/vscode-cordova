@@ -64,6 +64,7 @@ export enum TargetType {
     Device = "device",
     Chrome = "chrome",
     Edge = "edge",
+    Electron = "electron",
 }
 
 export enum PwaDebugType {
@@ -477,33 +478,63 @@ export default class CordovaDebugSession extends LoggingDebugSession {
 
     private async establishDebugSession(attachArgs: ICordovaAttachRequestArgs): Promise<void> {
         if (this.cordovaCdpProxy) {
-            const attachArguments =
-                this.pwaSessionName === PwaDebugType.Chrome
-                    ? this.jsDebugConfigAdapter.createChromeDebuggingConfig(
-                          attachArgs,
-                          CordovaDebugSession.CDP_PROXY_PORT,
-                          this.pwaSessionName,
-                          this.cordovaSession.getSessionId(),
-                      )
-                    : this.jsDebugConfigAdapter.createSafariDebuggingConfig(
-                          attachArgs,
-                          CordovaDebugSession.CDP_PROXY_PORT,
-                          this.pwaSessionName,
-                          this.cordovaSession.getSessionId(),
-                      );
-
-            const childDebugSessionStarted = await vscode.debug.startDebugging(
-                this.workspaceManager.workspaceRoot,
-                attachArguments,
-                {
-                    parentSession: this.vsCodeDebugSession,
-                    consoleMode: vscode.DebugConsoleMode.MergeWithParent,
-                },
-            );
-            if (!childDebugSessionStarted) {
-                throw ErrorHelper.getInternalError(
-                    InternalErrorCode.CouldNotStartChildDebugSession,
+            if (attachArgs.target == TargetType.Electron) {
+                const attachArguments = this.jsDebugConfigAdapter.createElectronDebuggingConfig(
+                    attachArgs,
+                    CordovaDebugSession.CDP_PROXY_PORT,
+                    this.pwaSessionName,
+                    this.cordovaSession.getSessionId(),
                 );
+                const childDebugSessionStarted =
+                    (await vscode.debug.startDebugging(
+                        this.workspaceManager.workspaceRoot,
+                        attachArguments[0],
+                        {
+                            parentSession: this.vsCodeDebugSession,
+                            consoleMode: vscode.DebugConsoleMode.MergeWithParent,
+                        },
+                    )) &&
+                    (await vscode.debug.startDebugging(
+                        this.workspaceManager.workspaceRoot,
+                        attachArguments[1],
+                        {
+                            parentSession: this.vsCodeDebugSession,
+                            consoleMode: vscode.DebugConsoleMode.MergeWithParent,
+                        },
+                    ));
+                if (!childDebugSessionStarted) {
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.CouldNotStartChildDebugSession,
+                    );
+                }
+            } else {
+                const attachArguments =
+                    this.pwaSessionName === PwaDebugType.Chrome
+                        ? this.jsDebugConfigAdapter.createChromeDebuggingConfig(
+                              attachArgs,
+                              CordovaDebugSession.CDP_PROXY_PORT,
+                              this.pwaSessionName,
+                              this.cordovaSession.getSessionId(),
+                          )
+                        : this.jsDebugConfigAdapter.createSafariDebuggingConfig(
+                              attachArgs,
+                              CordovaDebugSession.CDP_PROXY_PORT,
+                              this.pwaSessionName,
+                              this.cordovaSession.getSessionId(),
+                          );
+                const childDebugSessionStarted = await vscode.debug.startDebugging(
+                    this.workspaceManager.workspaceRoot,
+                    attachArguments,
+                    {
+                        parentSession: this.vsCodeDebugSession,
+                        consoleMode: vscode.DebugConsoleMode.MergeWithParent,
+                    },
+                );
+                if (!childDebugSessionStarted) {
+                    throw ErrorHelper.getInternalError(
+                        InternalErrorCode.CouldNotStartChildDebugSession,
+                    );
+                }
             }
         } else {
             throw ErrorHelper.getInternalError(
