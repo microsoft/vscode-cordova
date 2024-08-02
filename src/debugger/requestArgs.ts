@@ -31,6 +31,9 @@ export interface ICordovaAttachRequestArgs extends DebugProtocol.AttachRequestAr
     runtimeVersion?: string;
     hostname?: string;
 
+    // Electron debug properties
+    electronPort?: number;
+
     // iOS debug properties
     iOSVersion?: string;
     iOSAppPackagePath?: string;

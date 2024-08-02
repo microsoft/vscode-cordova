@@ -332,6 +332,22 @@
 							"cwd": "^\"\\${workspaceFolder}\"",
 							"sourceMaps": true
 						}
+					},
+					{
+						"label": "Cordova: Debug on Electron - experimental",
+						"description": "%cordova.snippets.simulateElectron%",
+						"body": {
+							"name": "Debug on Electron - Experimental",
+							"type": "cordova",
+							"request": "launch",
+							"platform": "browser",
+							"target": "electron",
+							"simulatePort": 8000,
+							"electronPort": 9223,
+							"livereload": true,
+							"cwd": "^\"\\${workspaceFolder}\"",
+							"sourceMaps": true
+						}
 					}
 				],
 				"configurationAttributes": {
@@ -509,10 +525,15 @@
 								"description": "%cordova.properties.launch.spaUrlRewrites%",
 								"default": false
 							},
-							"hostname":{
+							"hostname": {
 								"type": "string",
 								"description": "%cordova.properties.launch.hostname%",
 								"default": "localhost"
+							},
+							"electronPort": {
+								"type": "number",
+								"description": "%cordova.properties.launch.electronPort%",
+								"default": 9223
 							}
 						}
 					},
@@ -603,7 +624,7 @@
 									"./*": "${cwd}/*"
 								}
 							},
-							"hostname":{
+							"hostname": {
 								"type": "string",
 								"description": "%cordova.properties.launch.hostname%",
 								"default": "localhost"
