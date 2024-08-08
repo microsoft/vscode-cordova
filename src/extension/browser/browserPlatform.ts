@@ -81,7 +81,11 @@ export default class BrowserPlatform extends AbstractPlatform {
                 this.platformOpts.projectType,
             );
             await this.connectSimulateDebugHost(simulateInfo);
-            await this.platformOpts.pluginSimulator.launchSimHost(this.platformOpts.target);
+            await this.platformOpts.pluginSimulator.launchSimHost(
+                this.platformOpts.target == TargetType.Electron
+                    ? TargetType.Chrome
+                    : this.platformOpts.target,
+            );
             this.platformOpts.simulatePort = CordovaProjectHelper.getPortFromURL(
                 simulateInfo.appHostUrl,
             );
@@ -101,6 +105,8 @@ export default class BrowserPlatform extends AbstractPlatform {
                     execa,
                 );
                 break;
+            case TargetType.Electron:
+                return { devServerPort };
             case TargetType.Chrome:
             default:
                 browserFinder = new browserHelper.ChromeBrowserFinder(
