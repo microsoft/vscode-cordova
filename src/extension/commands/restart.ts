@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import { CordovaCommandHelper } from "../../utils/cordovaCommandHelper";
-import { commandWrapper } from "./commandUtil";
 import { CordovaSessionManager } from "../cordovaSessionManager";
+import { commandWrapper } from "./commandUtil";
 
 export class Restart {
     static codeName = "cordova.restart";
