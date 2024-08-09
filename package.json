@@ -769,7 +769,8 @@
 		"typescript": "^3.8.3",
 		"vscode-nls-dev": "^4.0.4",
 		"webpack": "^5.76.0",
-		"webpack-bundle-analyzer": "^4.4.0"
+		"webpack-bundle-analyzer": "^4.4.0",
+		"xcparse": "^0.0.3"
 	},
 	"extensionDependencies": [
 		"ms-vscode.js-debug"
