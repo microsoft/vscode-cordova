@@ -5,6 +5,7 @@ export * from "./restart";
 export * from "./cordovaRun";
 export * from "./cordovaBuild";
 export * from "./cordovaPrepare";
+export * from "./cordovaRequirements";
 export * from "./ionicBuild";
 export * from "./ionicPrepare";
 export * from "./ionicRun";
