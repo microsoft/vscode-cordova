@@ -7,7 +7,6 @@ import * as child_process from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as pl from "plist";
-import * as xcode from "xcode";
 import * as nls from "vscode-nls";
 import { delay } from "../utils/extensionHelper";
 import { ChildProcess } from "../common/node/childProcess";
@@ -16,6 +15,7 @@ import { isDirectory } from "../common/utils";
 import { PlistBuddy } from "../utils/ios/PlistBuddy";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
 import { ErrorHelper } from "../common/error/errorHelper";
+import { XCParseConfiguration } from "../common/xcparseConfiguration";
 
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -231,14 +231,12 @@ export class CordovaIosDeviceLauncher {
 
     private static getBundleIdentifierFromPbxproj(xcodeprojFilePath: string): Promise<string> {
         const pbxprojFilePath = path.join(xcodeprojFilePath, "project.pbxproj");
-        const pbxproj = xcode.project(pbxprojFilePath).parseSync();
-        const target = pbxproj.getFirstTarget();
-        const configListUUID = target.firstTarget.buildConfigurationList;
-        const configListsMap = pbxproj.pbxXCConfigurationList();
-        const targetConfigs = configListsMap[configListUUID].buildConfigurations;
-        const targetConfigUUID = targetConfigs[0].value; // 0 is "Debug, 1 is Release" - usually they have the same associated bundleId, it's highly unlikely someone would change it
-        const allConfigs = pbxproj.pbxXCBuildConfigurationSection();
-        const bundleId = allConfigs[targetConfigUUID].buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
+        const pbxproj = XCParseConfiguration.getPbxprojFileContent(pbxprojFilePath);
+        const firstTarget = XCParseConfiguration.getPBXNativeTarget(pbxproj);
+        const configListUUID = firstTarget.buildConfigurationList;
+        const targetConfigs = pbxproj.objects[configListUUID].buildConfigurations;
+        const targetConfigUUID = targetConfigs[0]; // 0 is "Debug, 1 is Release" - usually they have the same associated bundleId, it's highly unlikely someone would change it
+        const bundleId = pbxproj.objects[targetConfigUUID].buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
         return Promise.resolve(bundleId);
     }
 
