@@ -120,6 +120,7 @@ export default class BrowserPlatform extends AbstractPlatform {
             this.browserProc = child_process.spawn(browserPath.path, this.runArguments, {
                 detached: true,
                 stdio: ["ignore"],
+                shell: true,
             });
             this.browserProc.unref();
             this.browserProc.on("error", err => {

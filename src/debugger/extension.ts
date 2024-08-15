@@ -26,7 +26,7 @@ export function execCommand(
     errorLogger: (message: string) => void,
 ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        const proc = child_process.spawn(command, args, { stdio: "pipe" });
+        const proc = child_process.spawn(command, args, { stdio: "pipe", shell: true });
         let stderr = "";
         let stdout = "";
         proc.stderr.on("data", (data: Buffer) => {
@@ -173,7 +173,7 @@ export function cordovaStartCommand(
         args.push("--no-update-notifier");
     }
 
-    return child_process.spawn(command, args, { cwd: cordovaRootPath, env });
+    return child_process.spawn(command, args, { cwd: cordovaRootPath, env, shell: true });
 }
 
 export function killTree(processId: number): void {
