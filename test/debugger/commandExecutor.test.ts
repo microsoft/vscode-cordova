@@ -23,7 +23,7 @@ suite("commandExecutor", function () {
                 })
                 .catch(err => {
                     console.log(err.message);
-                    assert.strictEqual(err.message, "spawn ber ENOENT");
+                    assert.strictEqual(err.message, "Error running ber test");
                 });
         });
     });
