@@ -117,12 +117,6 @@
 				"title": "Cordova: Clean",
 				"category": "Cordova",
 				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
-			},
-			{
-				"command": "cordova.telemetry",
-				"title": "%cordova.telemetry%",
-				"category": "Cordova",
-				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			}
 		],
 		"keybindings": [
