@@ -34,6 +34,7 @@ suite("extensionContext", () => {
                 "cordova.simulate.android",
                 "cordova.simulate.ios",
                 "cordova.clean",
+                "cordova.requirements",
             ]);
         });
     });
