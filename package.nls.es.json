@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Matriz de nombres de archivo o carpeta, o patrones globales de ruta de acceso, que deben omitirse durante la depuración",
 	"cordova.properties.launch.pathMapping": "Asignación de direcciones URL o rutas de acceso a carpetas locales para resolver scripts en la raíz web de la aplicación como scripts en disco.",
 	"cordova.properties.launch.sourceMapPathOverrides": "Un conjunto de asignaciones para reescribir las ubicaciones de los archivos de origen con lo que el mapa de origen indica a sus ubicaciones en disco.",
+	"cordova.properties.launch.hostname": "El nombre de host a utilizar al servir en el navegador o ejecutar con la recarga en vivo de Ionic habilitada",
+  	"cordova.properties.launch.electronPort": "El puerto a utilizar al depurar una aplicación Electron",
 	"cordova.properties.attach.platform": "Plataforma en la que se va a ejecutar.",
 	"cordova.properties.attach.cwd": "Raíz del proyecto",
 	"cordova.properties.attach.target": "Se usa \"device\", \"emulator\" o un identificador de un dispositivo o emulador específico.",
