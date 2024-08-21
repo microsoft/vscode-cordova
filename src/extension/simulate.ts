@@ -201,6 +201,7 @@ export class PluginSimulator implements vscode.Disposable {
                     ["install", this.CORDOVA_SIMULATE_PACKAGE, "--verbose", "--no-save"],
                     {
                         cwd: path.dirname(findFileInFolderHierarchy(__dirname, "package.json")),
+                        shell: true,
                     },
                 );
 

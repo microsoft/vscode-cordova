@@ -470,6 +470,7 @@ export class CordovaProjectHelper {
                 ...process.env,
                 CI: "Hack to disable Ionic autoupdate prompt",
             },
+            shell: true,
         });
         const parseVersion = /\d+\.\d+\.\d+/.exec(ionicInfo.stdout.toString());
         return parseVersion[0].trim();
