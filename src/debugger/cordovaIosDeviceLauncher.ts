@@ -77,6 +77,7 @@ export class CordovaIosDeviceLauncher {
                 CordovaIosDeviceLauncher.nativeDebuggerProxyInstance = child_process.spawn(
                     "idevicedebugserverproxy",
                     [proxyPort.toString()],
+                    { shell: true },
                 );
                 CordovaIosDeviceLauncher.nativeDebuggerProxyInstance.on(
                     "error",
@@ -124,6 +125,7 @@ export class CordovaIosDeviceLauncher {
             CordovaIosDeviceLauncher.webDebuggerProxyInstance = child_process.spawn(
                 "ios_webkit_debug_proxy",
                 iwdpArgs,
+                { shell: true },
             );
             CordovaIosDeviceLauncher.webDebuggerProxyInstance.on("error", function () {
                 reject(
@@ -275,6 +277,7 @@ export class CordovaIosDeviceLauncher {
             const imagemounter: child_process.ChildProcess = child_process.spawn(
                 "ideviceimagemounter",
                 [path, `${path}.signature`],
+                { shell: true },
             );
             return new Promise((resolve, reject) => {
                 let stdout = "";
@@ -337,13 +340,11 @@ export class CordovaIosDeviceLauncher {
 
         // Attempt to find the developer disk image for the appropriate
         return Promise.all([versionInfo, pathInfo]).then(([version, sdkpath]) => {
-            const find: child_process.ChildProcess = child_process.spawn("find", [
-                sdkpath,
-                "-path",
-                `*${version}*`,
-                "-name",
-                "DeveloperDiskImage.dmg",
-            ]);
+            const find: child_process.ChildProcess = child_process.spawn(
+                "find",
+                [sdkpath, "-path", `*${version}*`, "-name", "DeveloperDiskImage.dmg"],
+                { shell: true },
+            );
             return new Promise<string>((resolve, reject) => {
                 find.stdout.on("data", function (data: any): void {
                     const dataStr: string = data.toString();
