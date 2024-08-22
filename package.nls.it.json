@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Matrice di nomi di file o di cartelle o GLOB di percorso da ignorare durante il debug",
 	"cordova.properties.launch.pathMapping": "Mapping di URL/percorsi di cartelle locali per risolvere gli script nella radice Web dell'app in script su disco",
 	"cordova.properties.launch.sourceMapPathOverrides": "Set di mapping per riscrivere i percorsi dei file di origine dal percorso indicato nel mapping di origine al relativo percorso su disco",
+	"cordova.properties.launch.hostname": "Il nome host da utilizzare quando si serve al browser o si esegue con il live reload di Ionic abilitato",
+  	"cordova.properties.launch.electronPort": "La porta da utilizzare durante il debug di un'app Electron",
 	"cordova.properties.attach.platform": "Piattaforma da usare per l'esecuzione",
 	"cordova.properties.attach.cwd": "Radice del progetto",
 	"cordova.properties.attach.target": "'device', 'emulator' oppure un identificatore di un dispositivo o emulatore specifico",

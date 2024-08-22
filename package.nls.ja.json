@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "デバッグ時にスキップする、ファイルまたはフォルダー名の配列、またはパスの glob",
 	"cordova.properties.launch.pathMapping": "アプリの Web ルート内のスクリプトをディスク上のスクリプトに解決する、URL またはパスからローカル フォルダーへのマッピング",
 	"cordova.properties.launch.sourceMapPathOverrides": "ソース ファイルの場所をソースマップが示している場所からディスク上の場所に書き換えるための一連のマッピング",
+	"cordova.properties.launch.hostname": "ブラウザに提供する際、またはIonicライブリロードが有効な状態で実行する際に使用するホスト名",
+	"cordova.properties.launch.electronPort": "Electronアプリをデバッグするときに使用するポート",
 	"cordova.properties.attach.platform": "実行するプラットフォーム",
 	"cordova.properties.attach.cwd": "プロジェクトのルート",
 	"cordova.properties.attach.target": "'device'、emulator'、または特定のデバイスかエミュレーターの識別子",
