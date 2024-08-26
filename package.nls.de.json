@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Ein Array aus Datei- oder Ordnernamen oder Pfadglobmustern, die beim Debuggen übersprungen werden sollen",
 	"cordova.properties.launch.pathMapping": "Eine Zuordnung von URLs/Pfaden zu lokalen Ordnern zum Auflösen von Skripts in \"app/webroot\" in Skripts auf dem Datenträger",
 	"cordova.properties.launch.sourceMapPathOverrides": "Eine Gruppe von Zuordnungen, mit denen die in der Sourcemap angegebenen Pfade der Quelldateien in entsprechende Pfade auf dem Datenträger umgeschrieben werden",
+	"cordova.properties.launch.hostname": "Der zu verwendende Hostname, wenn auf den Browser zugegriffen oder Ionic Live Reload aktiviert ist",
+  	"cordova.properties.launch.electronPort": "Der zu verwendende Port beim Debuggen einer Electron-App",
 	"cordova.properties.attach.platform": "Die Zielplattform für die Ausführung",
 	"cordova.properties.attach.cwd": "Der Stamm des Projekts",
 	"cordova.properties.attach.target": "Entweder \"device\", \"emulator\" oder ein Bezeichner für ein bestimmtes Gerät oder einen bestimmten Emulator",

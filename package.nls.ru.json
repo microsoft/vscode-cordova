@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Массив имен файлов или папок либо стандартных масок, которые будут пропущены при отладке",
 	"cordova.properties.launch.pathMapping": "Сопоставление URL-адресов или путей с локальными папками для разрешения сценариев в веб-корне приложения в сценарии на диске",
 	"cordova.properties.launch.sourceMapPathOverrides": "Набор сопоставлений для изменения расположения исходных файлов с расположения, указанного в сопоставителе с исходным кодом, на расположение этих файлов на диске",
+	"cordova.properties.launch.hostname": "Имя хоста, используемое при обслуживании браузера или при включенной функции live reload в Ionic",
+  	"cordova.properties.launch.electronPort": "Порт для использования при отладке приложения Electron",
 	"cordova.properties.attach.platform": "Платформа для запуска",
 	"cordova.properties.attach.cwd": "Корень проекта",
 	"cordova.properties.attach.target": "Идентификатор конкретного устройства или эмулятора или значения \"device\" или \"emulator\"",

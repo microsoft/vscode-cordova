@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Hata ayıklama sırasında atlanacak dosya veya klasör adları ya da yol globları dizisi",
 	"cordova.properties.launch.pathMapping": "Uygulama Web kökündeki betikleri diskteki betiklere çözümlemek için URL'lerin/yolların yerel klasörlere eşlemesi",
 	"cordova.properties.launch.sourceMapPathOverrides": "Kaynak dosyalarının konumlarını, kaynak eşlemesinin belirttiği yerden disk üzerindeki konumlarına yeniden yazmak için bir grup eşleme",
+	"cordova.properties.launch.hostname": "Tarayıcıya hizmet verirken veya Ionic canlı yeniden yükleme etkinleştirildiğinde kullanılacak ana bilgisayar adı",
+  	"cordova.properties.launch.electronPort": "Bir Electron uygulaması hata ayıklanırken kullanılacak bağlantı noktası",
 	"cordova.properties.attach.platform": "Üzerinde çalıştırılacak platform",
 	"cordova.properties.attach.cwd": "Projenin kökü",
 	"cordova.properties.attach.target": "'device', 'emulator' ya da belirli bir cihaz veya öykünücünün tanımlayıcısı",

@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Tablica nazw plików lub folderów albo wzorców globalnych ścieżek do pomijania podczas debugowania",
 	"cordova.properties.launch.pathMapping": "Mapowanie adresów URL/ścieżek na foldery lokalne na potrzeby rozpoznawania skryptów w katalogu webroot aplikacji jako skryptów na dysku",
 	"cordova.properties.launch.sourceMapPathOverrides": "Zestaw mapowań do ponownego zapisywania lokalizacji plików źródłowych z mapy źródeł jako ich lokalizacji na dysku",
+	"cordova.properties.launch.hostname": "Nazwa hosta do użycia podczas serwowania do przeglądarki lub uruchamiania z włączonym Ionic live reload",
+  	"cordova.properties.launch.electronPort": "Port do użycia podczas debugowania aplikacji Electron",
 	"cordova.properties.attach.platform": "Platforma docelowa uruchamiania",
 	"cordova.properties.attach.cwd": "Katalog główny projektu",
 	"cordova.properties.attach.target": "Opcja „urządzenie” lub „emulator” albo identyfikator określonego urządzenia lub emulatora",
