@@ -12,3 +12,4 @@ export * from "./ionicRun";
 export * from "./simulateAndroid";
 export * from "./simulateIos";
 export * from "./clean";
+export * from "./telemetry";
