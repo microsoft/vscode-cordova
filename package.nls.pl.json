@@ -2,7 +2,7 @@
 	"cordova.description": "Wskazywanie kodu, debugowanie i zintegrowane polecenia dla Apache Cordova (PhoneGap), z dodatkową obsługą środowiska Ionic.",
 	"cordova.license": "ZOBACZ LICENCJĘ W LICENSE.txt",
 	"cordova.workspaceTrust.description": "Do debugowania kodu i uruchamiania poleceń palety poleceń w tym obszarze roboczym wymagane jest zaufanie.",
-	"cordova.build": "Kordowa: Buduj",
+	"cordova.build": "Cordova: Buduj",
 	"cordova.restart": "Uruchom ponownie debugowanie Cordova",
 	"cordova.run": "Cordova: Biegnij",
 	"cordova.prepare": "Cordova: Przygotuj się",

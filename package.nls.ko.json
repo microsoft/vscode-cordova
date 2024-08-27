@@ -2,7 +2,7 @@
 	"cordova.description": "Ionic 프레임워크에 대한 지원이 추가된 Apache Cordova(PhoneGap)용 코드 힌트, 디버깅 및 통합 명령입니다.",
 	"cordova.license": "LICENSE.txt에서 라이센스를 확인하세요.",
 	"cordova.workspaceTrust.description": "이 작업 영역에서 코드를 디버깅하고 명령 팔레트 명령을 실행하려면 신뢰가 필요합니다.",
-	"cordova.build": "코르도바: 빌드",
+	"cordova.build": "Cordova: 빌드",
 	"cordova.restart": "Cordova 디버깅 다시 시작",
 	"cordova.run": "Cordova: 달리다",
 	"cordova.prepare": "Cordova: 준비",

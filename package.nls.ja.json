@@ -2,7 +2,7 @@
 	"cordova.description": "Apache Cordova (PhoneGap) のコードヒント、デバッグ、および統合コマンド。Ionic フレームワークのサポートが追加されました。",
 	"cordova.license": "LICENSE.txt のライセンスを参照",
 	"cordova.workspaceTrust.description": "このワークスペースでコードをデバッグし、コマンド パレット コマンドを実行するには信頼が必要です。",
-	"cordova.build": "コルドバ: ビルド",
+	"cordova.build": "Cordova: ビルド",
 	"cordova.restart": "Cordova のデバッグを再開する",
 	"cordova.run": "Cordova: 走る",
 	"cordova.prepare": "Cordova: 準備する",
