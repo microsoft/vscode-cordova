@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "Pole s názvy souborů či složek nebo globy cesty, které se mají při ladění přeskočit",
 	"cordova.properties.launch.pathMapping": "Mapování adres URL nebo cest na místní složky, aby se mohl provést překlad názvů skriptů ve webovém kořenu aplikace na skripty na disku",
 	"cordova.properties.launch.sourceMapPathOverrides": "Sada mapování pro přepsání umístění zdrojových souborů z informací ze souboru sourcemap na jejich umístění na disku",
+	"cordova.properties.launch.hostname": "Název hostitele k použití při servírování do prohlížeče nebo při spuštění s povoleným živým reloadem Ionic",
+  	"cordova.properties.launch.electronPort": "Port k použití při ladění aplikace Electron",
 	"cordova.properties.attach.platform": "Platforma, na které se má spustit",
 	"cordova.properties.attach.cwd": "Kořen projektu",
 	"cordova.properties.attach.target": "Hodnota device nebo emulator nebo identifikátor pro specifické zařízení nebo emulátor",

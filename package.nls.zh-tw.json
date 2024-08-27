@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "偵錯時要跳過的大量檔案或資料夾名稱，或路徑 glob",
 	"cordova.properties.launch.pathMapping": "URL/路徑到本機資料夾的對應，可用於將應用程式 Webroot 中的指令碼解析成磁碟上的指令碼",
 	"cordova.properties.launch.sourceMapPathOverrides": "一組對應，可用於將 sourcemap 所述之來源檔案的位置，重新寫入其在磁碟上的位置",
+	"cordova.properties.launch.hostname": "在為瀏覽器提供服務或啟用Ionic實時重新加載時使用的主機名",
+  	"cordova.properties.launch.electronPort": "調試Electron應用程序時使用的端口",
 	"cordova.properties.attach.platform": "執行所在的平台",
 	"cordova.properties.attach.cwd": "專案的根目錄",
 	"cordova.properties.attach.target": "特定裝置或模擬器的 'device'、'emulator' 或識別碼",

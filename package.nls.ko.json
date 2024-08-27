@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "디버그할 때 건너뛸 파일 또는 폴더 이름이나 경로 GLOB의 배열",
 	"cordova.properties.launch.pathMapping": "앱 웹 루트에서 스크립트를 확인하기 위해 로컬 폴더의 URL/경로를 디스크의 스크립트에 매핑",
 	"cordova.properties.launch.sourceMapPathOverrides": "sourcemap의 정보를 활용하여 소스 파일의 위치를 디스크의 위치로 다시 쓰기 위한 매핑 세트",
+	"cordova.properties.launch.hostname": "브라우저에 제공하거나 Ionic 라이브 리로드가 활성화된 상태에서 실행할 때 사용할 호스트 이름",
+  	"cordova.properties.launch.electronPort": "Electron 앱을 디버깅할 때 사용할 포트",
 	"cordova.properties.attach.platform": "실행할 플랫폼",
 	"cordova.properties.attach.cwd": "프로젝트의 루트",
 	"cordova.properties.attach.target": "'디바이스', '에뮬레이터' 또는 특정 디바이스나 에뮬레이터의 식별자",

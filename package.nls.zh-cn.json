@@ -48,6 +48,8 @@
 	"cordova.properties.launch.skipFiles": "文件或文件夹名称，或者路径 glob 的数组，在调试时跳过",
 	"cordova.properties.launch.pathMapping": "本地文件夹的 URL/路径的映射，用于将应用 Web 根目录中的脚本解析为磁盘上的脚本",
 	"cordova.properties.launch.sourceMapPathOverrides": "一组重写源映射中源文件的位置为磁盘上所处位置的映射",
+	"cordova.properties.launch.hostname": "在为浏览器提供服务或启用Ionic实时重新加载时使用的主机名",
+  	"cordova.properties.launch.electronPort": "调试Electron应用程序时使用的端口",
 	"cordova.properties.attach.platform": "要在其上运行的平台",
 	"cordova.properties.attach.cwd": "项目的根",
 	"cordova.properties.attach.target": "“设备”、“仿真器”，或特定设备或仿真器的标识符",
