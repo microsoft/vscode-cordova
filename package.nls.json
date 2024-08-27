@@ -6,6 +6,7 @@
   "cordova.restart": "Restart Cordova debugging",
   "cordova.run": "Cordova: Run",
   "cordova.prepare": "Cordova: Prepare",
+  "cordova.requirements": "Cordova: Requirements",
   "cordova.simulate.android": "Cordova: Simulate Android in browser",
   "cordova.simulate.ios": "Cordova: Simulate iOS in browser",
   "cordova.ionic.build": "Ionic: Build",

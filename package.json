@@ -68,6 +68,12 @@
 				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			},
 			{
+				"command": "cordova.requirements",
+				"title": "%cordova.requirements%",
+				"category": "Cordova",
+				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
+			},
+			{
 				"command": "cordova.simulate.android",
 				"title": "%cordova.simulate.android%",
 				"category": "Cordova",

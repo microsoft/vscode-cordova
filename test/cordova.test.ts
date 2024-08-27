@@ -31,6 +31,7 @@ suite("extensionContext", () => {
                 "cordova.run",
                 "cordova.build",
                 "cordova.prepare",
+                "cordova.requirements",
                 "cordova.simulate.android",
                 "cordova.simulate.ios",
                 "cordova.clean",
