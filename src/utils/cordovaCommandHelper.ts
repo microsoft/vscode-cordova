@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
-
 import * as child_process from "child_process";
 import * as os from "os";
 import { window, WorkspaceConfiguration, workspace, Uri, commands } from "vscode";
@@ -19,6 +18,7 @@ import { InternalErrorCode } from "../common/error/internalErrorCode";
 import { TelemetryHelper } from "./telemetryHelper";
 import { OutputChannelLogger } from "./log/outputChannelLogger";
 import { CordovaProjectHelper } from "./cordovaProjectHelper";
+import { CordovaAndroidEnvironmentHelper } from "./cordovaAndroidEnvironmentHelper";
 
 export class CordovaCommandHelper {
     private static CORDOVA_CMD_NAME: string = os.platform() === "win32" ? "cordova.cmd" : "cordova";
@@ -83,45 +83,67 @@ export class CordovaCommandHelper {
                     });
 
                     const execution = new Promise((resolve, reject) => {
-                        const process = child_process.exec(commandToExecute, {
-                            cwd: projectRoot,
-                            env,
-                        });
+                        let process;
+                        // Workaround for dealing with avdmanager in Android SDK
+                        if (platform === "android") {
+                            process = CordovaAndroidEnvironmentHelper.checkEnvironment(
+                                projectRoot,
+                                env,
+                                logger,
+                            )
+                                .then(() => {
+                                    logger.log(
+                                        localize(
+                                            "FinishedExecuting",
+                                            "########### FINISHED EXECUTING: checkEnvironment ###########",
+                                        ),
+                                    );
+                                    resolve({});
+                                })
+                                .catch(err => {
+                                    logger.append(`Error: ${err.message}`);
+                                    reject(err);
+                                });
+                        } else {
+                            process = child_process.exec(commandToExecute, {
+                                cwd: projectRoot,
+                                env,
+                            });
+                            process.on("error", (err: any) => {
+                                // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
+                                if (err.code === "ENOENT") {
+                                    window.showErrorMessage(
+                                        localize(
+                                            "PackageNotFoundPleaseInstall",
+                                            '{0} not found, please run "npm install –g {1}" to install {2} globally', // eslint-disable-line
+                                            cliDisplayName,
+                                            cliDisplayName.toLowerCase(),
+                                            cliDisplayName,
+                                        ),
+                                    );
+                                }
+                                reject(err);
+                            });
 
-                        process.on("error", (err: any) => {
-                            // ENOENT error will be thrown if no Cordova.cmd or ionic.cmd is found
-                            if (err.code === "ENOENT") {
-                                window.showErrorMessage(
+                            process.stderr.on("data", (data: any) => {
+                                logger.append(data);
+                            });
+
+                            process.stdout.on("data", (data: any) => {
+                                logger.append(data);
+                            });
+
+                            process.stdout.on("close", () => {
+                                logger.log(
                                     localize(
-                                        "PackageNotFoundPleaseInstall",
-                                        '{0} not found, please run "npm install –g {1}" to install {2} globally', // eslint-disable-line
-                                        cliDisplayName,
-                                        cliDisplayName.toLowerCase(),
-                                        cliDisplayName,
+                                        "FinishedExecuting",
+                                        "########### FINISHED EXECUTING: {0} ###########",
+                                        commandToExecute,
                                     ),
                                 );
-                            }
-                            reject(err);
-                        });
-
-                        process.stderr.on("data", (data: any) => {
-                            logger.append(data);
-                        });
-
-                        process.stdout.on("data", (data: any) => {
-                            logger.append(data);
-                        });
-
-                        process.stdout.on("close", () => {
-                            logger.log(
-                                localize(
-                                    "FinishedExecuting",
-                                    "########### FINISHED EXECUTING: {0} ###########",
-                                    commandToExecute,
-                                ),
-                            );
-                            resolve({});
-                        });
+                                resolve({});
+                            });
+                        }
                     });
 
                     return TelemetryHelper.determineProjectTypes(projectRoot)
@@ -217,9 +239,12 @@ export class CordovaCommandHelper {
         platforms = CordovaCommandHelper.filterAvailablePlatforms(platforms);
 
         return new Promise((resolve, reject) => {
-            if (["prepare", "build", "run"].includes(command)) {
+            if (["prepare", "build", "run", "requirements"].includes(command)) {
                 if (platforms.length > 1) {
-                    platforms.unshift("all");
+                    if (!command.includes("requirements")) {
+                        platforms.unshift("all");
+                    }
+
                     // Ionic doesn't support prepare and run command without platform
                     if (useIonic && (command === "prepare" || command === "run")) {
                         platforms.shift();
