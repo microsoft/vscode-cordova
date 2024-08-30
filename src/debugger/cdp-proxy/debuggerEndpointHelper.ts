@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
 import * as URL from "url";
-import * as ipModule from "ip";
 
 const dns = require("dns").promises;
 
@@ -10,6 +9,7 @@ import * as http from "http";
 import * as https from "https";
 import { CancellationToken } from "vscode";
 import * as nls from "vscode-nls";
+import { ipToBuffer } from "../../common/utils";
 import { InternalErrorCode } from "../../common/error/internalErrorCode";
 import { delay } from "../../utils/extensionHelper";
 import { ErrorHelper } from "../../common/error/errorHelper";
@@ -24,8 +24,8 @@ export class DebuggerEndpointHelper {
     private localv6: Buffer;
 
     constructor() {
-        this.localv4 = ipModule.toBuffer("127.0.0.1");
-        this.localv6 = ipModule.toBuffer("::1");
+        this.localv4 = ipToBuffer("127.0.0.1");
+        this.localv6 = ipToBuffer("::1");
     }
 
     /**
@@ -165,7 +165,7 @@ export class DebuggerEndpointHelper {
 
         let buf: Buffer;
         try {
-            buf = ipModule.toBuffer(ipOrLocalhost);
+            buf = ipToBuffer(ipOrLocalhost);
         } catch {
             return false;
         }
