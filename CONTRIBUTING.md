@@ -13,6 +13,7 @@ To avoid conflicts with your existing installation, it is recommended to delete 
 - `cd` to the folder you just cloned
 - Run `npm install -g gulp` and `npm ci`
 - Run `gulp`
+- After completing above steps, run `gulp release` to package extension `.vsix` file. A VSIX package can help you install the latest extension maunally in VS Code extension tab.
 
 ## Debugging
 
