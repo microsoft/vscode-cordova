@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "{0} не найден, выполните команду \"npm install -g {1}\", чтобы установить {2} на глобальном уровне",
 	"FinishedExecuting": "########### Выполнение завершено: {0} ###########",
 	"PlatformSelectionWasCancelled": "Выбор платформы отменен. Чтобы продолжить, выберите целевую платформу.",
-	"NoAnyPlatformInstalled": "Нет установленных платформ."
+	"NoAnyPlatformInstalled": "Нет установленных платформ.",
+	"CordovaSessionPendingWarning": "Приложение Cordova сейчас строится. ",
+	"CannotRestartDebugging": "Невозможно перезапустить отладку приложения Cordova по пути «{0}». Не удалось найти сеанс отладки для приложения."
 }
