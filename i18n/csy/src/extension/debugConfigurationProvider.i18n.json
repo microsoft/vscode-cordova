@@ -14,5 +14,8 @@
 	"SimulateCordovaAndroidAppInBrowser": "Simulovat aplikaci Cordova pro Android v prohlížeči",
 	"SimulateCordovaiOSAppInBrowser": "Simulovat aplikaci Cordova pro iOS v prohlížeči",
 	"RunAndDebugCordovaAppInBrowser": "Spustit a ladit aplikaci Cordova v prohlížeči",
-	"PickDebugConfigurations": "Vybrat konfigurace ladění"
+	"PickDebugConfigurations": "Vybrat konfigurace ladění",
+	"RunAndDebugCordovaAppOniOSSimulator": "Spusťte a ladte aplikaci Cordova na simulátoru iOS",
+	"AttachToRunningCordovaAppOniOSSimulator": "Připojte ke spuštěné aplikaci Cordova na simulátoru iOS",
+	"SimulateCordovaIOSAppInBrowser": "Simulujte aplikaci Cordova iOS v prohlížeči"
 }

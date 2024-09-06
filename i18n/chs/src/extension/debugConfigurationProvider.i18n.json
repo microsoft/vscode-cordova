@@ -14,5 +14,8 @@
 	"SimulateCordovaAndroidAppInBrowser": "在浏览器中模拟 Cordova Android 应用程序",
 	"SimulateCordovaiOSAppInBrowser": "在浏览器中模拟 Cordova iOS 应用程序",
 	"RunAndDebugCordovaAppInBrowser": "在浏览器中运行并调试 Cordova 应用程序",
-	"PickDebugConfigurations": "选择调试配置"
+	"PickDebugConfigurations": "选择调试配置",
+	"RunAndDebugCordovaAppOniOSSimulator": "在 iOS 模拟器上运行和调试 Cordova 应用程序",
+	"AttachToRunningCordovaAppOniOSSimulator": "附加到 iOS 模拟器上运行的 Cordova 应用程序",
+	"SimulateCordovaIOSAppInBrowser": "在浏览器中模拟 Cordova iOS 应用程序"
 }

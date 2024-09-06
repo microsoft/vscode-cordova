@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "Cordova uygulamasının 'localabstract' adı bulunamıyor",
 	"ForwardingDebugPort": "Hata ayıklama bağlantı noktası iletiliyor",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "Uyarı: Ionic canlı yeniden yükleme şu anda yalnızca Ionic 1 projeleri için destekleniyor. Ionic canlı yeniden yükleme olmadan dağıtıma devam ediliyor...",
-	"pidofNotFound": "/system/bin/sh: pidof: bulunamadı"
+	"pidofNotFound": "/system/bin/sh: pidof: bulunamadı",
+	"AttachingToPlatform": "{0}'a bağlanılıyor",
+	"ReattachingToApp": "Uygulamaya ekleme girişimi başarısız oldu, yeniden bağlanmaya çalışılıyor..."
 }

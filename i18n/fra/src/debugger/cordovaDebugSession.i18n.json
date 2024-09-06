@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "Le nom 'localabstract' de l'application Cordova est introuvable",
 	"ForwardingDebugPort": "Réacheminement du port de débogage",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "Avertissement : Le rechargement dynamique Ionic est pris en charge uniquement pour les projets Ionic 1. Poursuite du déploiement sans rechargement dynamique Ionic...",
-	"pidofNotFound": "/system/bin/sh: pidof: introuvable"
+	"pidofNotFound": "/system/bin/sh: pidof: introuvable",
+	"AttachingToPlatform": "Joindre à {0}",
+	"ReattachingToApp": "Échec de la tentative de connexion à l'application. Tentative de connexion à nouveau..."
 }

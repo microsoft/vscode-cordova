@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "O {0} não foi encontrado. Execute \"npm install –g {1}\" para instalar {2} globalmente",
 	"FinishedExecuting": "########### TÉRMINO DA EXECUÇÃO: {0} ###########",
 	"PlatformSelectionWasCancelled": "A seleção de plataforma foi cancelada. Selecione a plataforma de destino para continuar.",
-	"NoAnyPlatformInstalled": "Não há nenhuma plataforma instalada"
+	"NoAnyPlatformInstalled": "Não há nenhuma plataforma instalada",
+	"CordovaSessionPendingWarning": "Um aplicativo Cordova está sendo construído agora. ",
+	"CannotRestartDebugging": "Não é possível reiniciar a depuração de um aplicativo Cordova pelo caminho '{0}'. Não foi possível localizar uma sessão de depuração para o aplicativo."
 }

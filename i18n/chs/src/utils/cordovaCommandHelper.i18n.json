@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "找不到 {0}，请运行 \"npm install –g {1}\" 以全局方式安装 {2}",
 	"FinishedExecuting": "########### 执行完成: {0} ###########",
 	"PlatformSelectionWasCancelled": "平台选择已取消。请选择目标平台以继续！",
-	"NoAnyPlatformInstalled": "未安装任何平台"
+	"NoAnyPlatformInstalled": "未安装任何平台",
+	"CordovaSessionPendingWarning": "Cordova 应用程序正在构建。",
+	"CannotRestartDebugging": "无法通过路径“{0}”重新启动 Cordova 应用程序的调试，找不到该应用程序的调试会话。"
 }

@@ -14,5 +14,8 @@
 	"SimulateCordovaAndroidAppInBrowser": "在瀏覽器中模擬 Cordova Android 應用程式",
 	"SimulateCordovaiOSAppInBrowser": "在瀏覽器中模擬 Cordova iOS 應用程式",
 	"RunAndDebugCordovaAppInBrowser": "在瀏覽器中執行 Cordova 應用程式並對其執行偵錯",
-	"PickDebugConfigurations": "挑選偵錯組態"
+	"PickDebugConfigurations": "挑選偵錯組態",
+	"RunAndDebugCordovaAppOniOSSimulator": "在 iOS 模擬器上運行和調試 Cordova 應用程式",
+	"AttachToRunningCordovaAppOniOSSimulator": "附加到 iOS 模擬器上運行的 Cordova 應用程序",
+	"SimulateCordovaIOSAppInBrowser": "在瀏覽器中模擬 Cordova iOS 應用程序"
 }
