@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "Не удалось найти имя \"localabstract\" для приложения Cordova.",
 	"ForwardingDebugPort": "Перенаправление порта отладки",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "Внимание! Динамическая перезагрузка Ionic сейчас поддерживается только для проектов Ionic 1. Развертывание будет продолжено без динамической перезагрузки Ionic…",
-	"pidofNotFound": "/system/bin/sh: pidof: не найдено."
+	"pidofNotFound": "/system/bin/sh: pidof: не найдено.",
+	"AttachingToPlatform": "Прикрепление к {0}",
+	"ReattachingToApp": "Неудачная попытка подключения к приложению. Попытка повторного подключения..."
 }

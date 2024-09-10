@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "找不到 Cordova 应用的 \"localabstract\" 名称",
 	"ForwardingDebugPort": "正在转发调试端口",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "警告: 当前仅支持 Ionic 1 项目的 Ionic 实时重载。继续部署而无需 Ionic 实时重载…",
-	"pidofNotFound": "/system/bin/sh: pidof: 找不到"
+	"pidofNotFound": "/system/bin/sh: pidof: 找不到",
+	"AttachingToPlatform": "附加到{0}",
+	"ReattachingToApp": "尝试附加到应用程序失败，正在尝试重新附加..."
 }
