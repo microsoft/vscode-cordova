@@ -33,7 +33,7 @@ Supported platforms: `android, ios, electron`
 
 ## Choose the Cordova debug environment
 
-Click the `Run and Debug` icon in the Activity Bar on the side of VS Code, and then click `create a launch.json file` and select Cordova as debugger and then `pick debug configurations`.
+Click the `Run and Debug` icon in the Activity Bar on the side of VS Code, then click `create a launch.json file`, select Cordova as debugger and then `pick debug configurations`.
 
 ![Run and Debug](images/run-and-debug.png)
 
