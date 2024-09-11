@@ -14,5 +14,8 @@
 	"SimulateCordovaAndroidAppInBrowser": "Simula l'applicazione Android Cordova nel browser",
 	"SimulateCordovaiOSAppInBrowser": "Simula l'applicazione iOS Cordova nel browser",
 	"RunAndDebugCordovaAppInBrowser": "Esegui l'applicazione Cordova ed eseguine il debug nel browser",
-	"PickDebugConfigurations": "Seleziona configurazioni di debug"
+	"PickDebugConfigurations": "Seleziona configurazioni di debug",
+	"RunAndDebugCordovaAppOniOSSimulator": "Esegui ed esegui il debug dell'app Cordova sul simulatore iOS",
+	"AttachToRunningCordovaAppOniOSSimulator": "Collega all'esecuzione dell'app Cordova sul simulatore iOS",
+	"SimulateCordovaIOSAppInBrowser": "Simula l'applicazione iOS Cordova nel browser"
 }

@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "{0} introuvable. Exécutez \"npm install -g {1}\" pour installer {2} globalement",
 	"FinishedExecuting": "########### FIN D'EXÉCUTION : {0} ###########",
 	"PlatformSelectionWasCancelled": "La sélection de plateforme a été annulée. Sélectionnez la plateforme cible pour continuer !",
-	"NoAnyPlatformInstalled": "Aucune plateforme installée"
+	"NoAnyPlatformInstalled": "Aucune plateforme installée",
+	"CordovaSessionPendingWarning": "L'application Cordova est en cours de construction.",
+	"CannotRestartDebugging": "Impossible de redémarrer le débogage de l'application Cordova via le chemin « {0} », la session de débogage de l'application est introuvable."
 }

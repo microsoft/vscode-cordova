@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "{0} が見つかりません。\"npm install –g {1}\" を実行して {2} をグローバルにインストールしてください",
 	"FinishedExecuting": "########### 実行完了: {0} ###########",
 	"PlatformSelectionWasCancelled": "プラットフォームの選択が取り消されました。続行するには、ターゲット プラットフォームを選択してください。",
-	"NoAnyPlatformInstalled": "インストールされているプラットフォームはありません"
+	"NoAnyPlatformInstalled": "インストールされているプラットフォームはありません",
+	"CordovaSessionPendingWarning": "現在、Cordova アプリケーションを構築中です。",
+	"CannotRestartDebugging": "パス '{0}' による Cordova アプリケーションのデバッグを再開できません。アプリケーションのデバッグ セッションが見つかりませんでした。"
 }

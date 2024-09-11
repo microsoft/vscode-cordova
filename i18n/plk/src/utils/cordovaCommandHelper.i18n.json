@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "Nie odnaleziono elementu {0}. Uruchom polecenie „npm install –g {1}”, aby zainstalować element {2} globalnie",
 	"FinishedExecuting": "########### ZAKOŃCZONO URUCHAMIANIE: {0} ###########",
 	"PlatformSelectionWasCancelled": "Anulowano wybór platformy. Wybierz platformę docelową, aby kontynuować.",
-	"NoAnyPlatformInstalled": "Brak zainstalowanych platform"
+	"NoAnyPlatformInstalled": "Brak zainstalowanych platform",
+	"CordovaSessionPendingWarning": "Aplikacja Cordova jest obecnie tworzona. ",
+	"CannotRestartDebugging": "Nie można ponownie uruchomić debugowania aplikacji Cordova według ścieżki „{0}”. Nie można znaleźć sesji debugowania dla aplikacji."
 }

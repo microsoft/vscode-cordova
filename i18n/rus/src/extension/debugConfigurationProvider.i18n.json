@@ -14,5 +14,8 @@
 	"SimulateCordovaAndroidAppInBrowser": "Симуляция приложения Cordova для Android в браузере",
 	"SimulateCordovaiOSAppInBrowser": "Симуляция приложения Cordova для iOS в браузере",
 	"RunAndDebugCordovaAppInBrowser": "Запуск и отладка приложения Cordova в браузере",
-	"PickDebugConfigurations": "Выберите конфигурации отладки."
+	"PickDebugConfigurations": "Выберите конфигурации отладки.",
+	"RunAndDebugCordovaAppOniOSSimulator": "Запуск и отладка приложения Cordova на симуляторе iOS",
+	"AttachToRunningCordovaAppOniOSSimulator": "Подключитесь к запуску приложения Cordova на симуляторе iOS.",
+	"SimulateCordovaIOSAppInBrowser": "Имитировать приложение Cordova iOS в браузере"
 }
