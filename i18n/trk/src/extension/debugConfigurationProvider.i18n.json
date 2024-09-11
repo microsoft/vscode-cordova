@@ -14,5 +14,8 @@
 	"SimulateCordovaAndroidAppInBrowser": "Tarayıcıda Cordova Android uygulamasının simülasyonunu yapma",
 	"SimulateCordovaiOSAppInBrowser": "Tarayıcıda Cordova iOS uygulamasının simülasyonunu yapma",
 	"RunAndDebugCordovaAppInBrowser": "Tarayıcıda Cordova uygulaması çalıştırma ve uygulamanın hatalarını ayıklama",
-	"PickDebugConfigurations": "Hata ayıklama yapılandırmalarını seçin"
+	"PickDebugConfigurations": "Hata ayıklama yapılandırmalarını seçin",
+	"RunAndDebugCordovaAppOniOSSimulator": "Cordova uygulamasını iOS simülatöründe çalıştırın ve hata ayıklayın",
+	"AttachToRunningCordovaAppOniOSSimulator": "İOS simülatöründe çalışan Cordova uygulamasına ekleyin",
+	"SimulateCordovaIOSAppInBrowser": "Cordova iOS uygulamasını tarayıcıda simüle edin"
 }

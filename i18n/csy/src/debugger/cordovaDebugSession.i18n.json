@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "Nepovedlo se najít název localabstract aplikace Cordova",
 	"ForwardingDebugPort": "Port pro přesměrování při ladění",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "Upozornění: Živé opakované načítání Ionicu se v současnosti podporuje jenom pro projekty Ionic 1. Nasazení bude pokračovat bez živého opakovaného načítání Ionicu...",
-	"pidofNotFound": "/system/bin/sh: pidof: nenalezeno"
+	"pidofNotFound": "/system/bin/sh: pidof: nenalezeno",
+	"AttachingToPlatform": "Připojování k {0}",
+	"ReattachingToApp": "Pokus o připojení k aplikaci se nezdařil. Pokus o opětovné připojení..."
 }

@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "Cordova 앱의 'localabstract' 이름을 찾을 수 없습니다.",
 	"ForwardingDebugPort": "디버그 포트를 전달하는 중",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "경고: Ionic 라이브 다시 로드는 현재 Ionic 1 프로젝트에서만 지원됩니다. Ionic 라이브 다시 로드 없이 배포를 계속하는 중입니다.",
-	"pidofNotFound": "/system/bin/sh: pidof: 찾을 수 없음"
+	"pidofNotFound": "/system/bin/sh: pidof: 찾을 수 없음",
+	"AttachingToPlatform": "{0}에 연결 중",
+	"ReattachingToApp": "앱 연결 시도에 실패했습니다. 다시 연결하는 중..."
 }

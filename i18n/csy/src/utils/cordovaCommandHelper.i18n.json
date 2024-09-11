@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "{0} se nepovedlo najít. Nainstalujte prosím {2} globálně spuštěním příkazu npm install –g {1}.",
 	"FinishedExecuting": "########### SPOUŠTĚNÍ DOKONČENO: {0} ###########",
 	"PlatformSelectionWasCancelled": "Výběr platformy se zrušil. Pokud chcete pokračovat, vyberte prosím cílovou platformu.",
-	"NoAnyPlatformInstalled": "Žádné nainstalované platformy"
+	"NoAnyPlatformInstalled": "Žádné nainstalované platformy",
+	"CordovaSessionPendingWarning": "Nyní se vytváří aplikace Cordova. ",
+	"CannotRestartDebugging": "Nelze restartovat ladění aplikace Cordova pomocí cesty '{0}', Nelze najít relaci ladění pro aplikaci."
 }

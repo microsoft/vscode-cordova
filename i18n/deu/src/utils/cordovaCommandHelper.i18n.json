@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "\"{0}\" wurde nicht gefunden. Führen Sie \"npm install –g {1}\" aus, um \"{2}\" global zu installieren.",
 	"FinishedExecuting": "########### AUSFÜHRUNG ABGESCHLOSSEN: {0} ###########",
 	"PlatformSelectionWasCancelled": "Die Plattformauswahl wurde abgebrochen. Wählen Sie die Zielplattform aus, um den Vorgang fortzusetzen.",
-	"NoAnyPlatformInstalled": "Keine Plattformen installiert."
+	"NoAnyPlatformInstalled": "Keine Plattformen installiert.",
+	"CordovaSessionPendingWarning": "Eine Cordova-Anwendung wird derzeit erstellt. ",
+	"CannotRestartDebugging": "Das Debuggen einer Cordova-Anwendung über den Pfad „{0}“ kann nicht neu gestartet werden. Es konnte keine Debugging-Sitzung für die Anwendung gefunden werden."
 }
