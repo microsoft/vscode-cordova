@@ -8,5 +8,7 @@
 	"PackageNotFoundPleaseInstall": "{0} bulunamadı; {2} öğesini genel olarak yüklemek için lütfen \"npm install –g {1}\" komutunu çalıştırın",
 	"FinishedExecuting": "########### YÜRÜTME TAMAMLANDI: {0} ###########",
 	"PlatformSelectionWasCancelled": "Platform seçimi iptal edildi. Devam etmek için lütfen hedef platformu seçin!",
-	"NoAnyPlatformInstalled": "Platform yüklenmedi"
+	"NoAnyPlatformInstalled": "Platform yüklenmedi",
+	"CordovaSessionPendingWarning": "Şu anda bir Cordova uygulaması oluşturuluyor. ",
+	"CannotRestartDebugging": "Bir Cordova uygulamasının hata ayıklaması '{0}' yoluyla yeniden başlatılamıyor, Uygulama için bir hata ayıklama oturumu bulunamadı."
 }

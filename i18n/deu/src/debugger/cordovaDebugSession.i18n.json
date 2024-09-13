@@ -44,5 +44,7 @@
 	"UnableToFindLocalAbstractName": "Der Name \"localabstract\" der Cordova-App wurde nicht gefunden.",
 	"ForwardingDebugPort": "Debugport zur Weiterleitung",
 	"IonicLiveReloadIsOnlySupportedForIonic1": "Warnung: Ionic Live Reload wird zurzeit nur für Ionic 1-Projekte unterstützt. Die Bereitstellung wird ohne Ionic Live Reload fortgesetzt...",
-	"pidofNotFound": "\"/system/bin/sh: pidof:\" wurde nicht gefunden."
+	"pidofNotFound": "\"/system/bin/sh: pidof:\" wurde nicht gefunden.",
+	"AttachingToPlatform": "Anhängen an {0}",
+	"ReattachingToApp": "Der Versuch, eine Verbindung zur App herzustellen, ist fehlgeschlagen. Es wird versucht, die Verbindung erneut herzustellen ..."
 }
