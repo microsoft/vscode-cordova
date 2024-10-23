@@ -8,7 +8,12 @@ import { window } from "vscode";
 export class CordovaAndroidEnvironmentHelper {
     public static checkEnvironment(cwd: string, env: any, logger: any): Promise<void> {
         logger.log("Requirements check results for android:");
-        return Promise.all([checkJava(cwd, env), checkAndroidSDK(cwd, env), checkGradle(cwd, env)])
+        return Promise.all([
+            checkJava(cwd, env),
+            checkAndroidSDK(cwd, env),
+            checkGradle(cwd, env),
+            checkPlugman(cwd, env),
+        ])
             .then(() => {
                 logger.log("Environment checks completed.");
             })
@@ -69,6 +74,26 @@ export class CordovaAndroidEnvironmentHelper {
                     logger.log(`Gradle: ${stdout.match(/Gradle (\d+\.\d+(\.\d+)?)/)[1]}`);
                     resolve();
                 });
+            });
+        }
+
+        function checkPlugman(cwd: string, env: any): Promise<void> {
+            return new Promise((resolve, reject) => {
+                child_process.exec(
+                    "npm list -g plugman --depth=0",
+                    {
+                        cwd,
+                        env,
+                    },
+                    (error, stdout, stderr) => {
+                        if (error) {
+                            logger.log(`Plugman not found: ${stderr}`);
+                            return reject(error);
+                        }
+                        logger.log(`Plugman: ${stdout.match(/plugman@(\d+\.\d+\.\d+)/)[1]}`);
+                        resolve();
+                    },
+                );
             });
         }
     }
