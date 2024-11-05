@@ -134,14 +134,38 @@ export class CordovaCommandHelper {
                             });
 
                             process.stdout.on("close", () => {
-                                logger.log(
-                                    localize(
-                                        "FinishedExecuting",
-                                        "########### FINISHED EXECUTING: {0} ###########",
-                                        commandToExecute,
-                                    ),
-                                );
-                                resolve({});
+                                // Workaround for dealing with plugman environment verification
+                                if (command === "requirements") {
+                                    process = child_process.exec("npm list -g plugman --depth=0", {
+                                        cwd: projectRoot,
+                                        env,
+                                    });
+
+                                    process.stdout.on("data", (e: string) => {
+                                        const match = e.match(/\d+\.\d+\.\d+/);
+                                        logger.log(`Plugman: ${match[0]}`);
+                                    });
+
+                                    process.stdout.on("close", () => {
+                                        logger.log(
+                                            localize(
+                                                "FinishedExecuting",
+                                                "########### FINISHED EXECUTING: {0} ###########",
+                                                commandToExecute,
+                                            ),
+                                        );
+                                        resolve({});
+                                    });
+                                } else {
+                                    logger.log(
+                                        localize(
+                                            "FinishedExecuting",
+                                            "########### FINISHED EXECUTING: {0} ###########",
+                                            commandToExecute,
+                                        ),
+                                    );
+                                    resolve({});
+                                }
                             });
                         }
                     });
