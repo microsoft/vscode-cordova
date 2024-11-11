@@ -179,11 +179,15 @@ export function cordovaStartCommand(
 export function killTree(processId: number): void {
     const cmd =
         process.platform === "win32"
-            ? "taskkill.exe /F /T /PID"
+            ? "taskkill.exe"
             : path.join(findFileInFolderHierarchy(__dirname, "scripts"), "terminateProcess.sh");
+    const args =
+        process.platform === "win32"
+            ? ["/F", "/T", "/PID", processId.toString()]
+            : [processId.toString()];
 
     try {
-        child_process.execSync(`${cmd} ${processId}`);
+        child_process.execFileSync(cmd, args);
     } catch (err) {}
 }
 
