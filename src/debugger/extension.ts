@@ -181,7 +181,10 @@ export function killTree(processId: number): void {
         process.platform === "win32"
             ? "taskkill.exe"
             : path.join(findFileInFolderHierarchy(__dirname, "scripts"), "terminateProcess.sh");
-    const args = process.platform === "win32" ? ["/F", "/T", "/PID", processId.toString()] : [processId.toString()];
+    const args =
+        process.platform === "win32"
+            ? ["/F", "/T", "/PID", processId.toString()]
+            : [processId.toString()];
 
     try {
         child_process.execFileSync(cmd, args);
