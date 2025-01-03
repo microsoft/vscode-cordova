@@ -1,0 +1,3 @@
+path_classifiers:
+  exclude:
+    - "mochawesome-report/assets/app.js"
