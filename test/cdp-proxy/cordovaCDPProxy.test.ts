@@ -320,13 +320,13 @@ suite("cordovaCDPProxy", function () {
                     let testUrlRegex;
                     if (process.platform === "win32") {
                         const testPathRegex = `${testProjectPath.replace(
-                            /([./])/g,
+                            /([./\\])/g,
                             "\\$1",
                         )}\\\\[wW][wW][wW]\\\\[mM][aA][iI][nN]\\.[jJ][sS]`;
                         testUrlRegex = `[fF][iI][lL][eE]:\\/\\/${testPathRegex}|${testPathRegex}`;
                     } else {
                         const testPathRegex = `${testProjectPath}/www/main.js`.replace(
-                            /([./])/g,
+                            /([./\\])/g,
                             "\\$1",
                         );
                         testUrlRegex = `file:\\/\\/${testPathRegex}|${testPathRegex}`;
