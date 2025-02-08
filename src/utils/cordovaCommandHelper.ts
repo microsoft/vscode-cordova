@@ -137,10 +137,14 @@ export class CordovaCommandHelper {
                             process.stdout.on("close", () => {
                                 // Workaround for dealing with plugman environment verification
                                 if (command === "requirements") {
-                                    process = child_process.execFile("npm", ["list", "-g", "plugman", "--depth=0"], {
-                                        cwd: projectRoot,
-                                        env,
-                                    });
+                                    process = child_process.execFile(
+                                        "npm",
+                                        ["list", "-g", "plugman", "--depth=0"],
+                                        {
+                                            cwd: projectRoot,
+                                            env,
+                                        },
+                                    );
 
                                     process.stdout.on("data", (e: string) => {
                                         const match = e.match(/\d+\.\d+\.\d+/);
