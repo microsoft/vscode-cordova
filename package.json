@@ -22,7 +22,7 @@
 	"bugs": "https://github.com/Microsoft/vscode-cordova/issues",
 	"license": "%cordova.license%",
 	"engines": {
-		"vscode": "^1.40.0"
+		"vscode": "^1.75.0"
 	},
 	"categories": [
 		"Debuggers",
@@ -32,14 +32,6 @@
 	"activationEvents": [
 		"onDebugResolve:cordova",
 		"onDebugInitialConfigurations",
-		"onCommand:cordova.prepare",
-		"onCommand:cordova.build",
-		"onCommand:cordova.run",
-		"onCommand:ionic.prepare",
-		"onCommand:ionic.build",
-		"onCommand:ionic.run",
-		"onCommand:cordova.simulate.android",
-		"onCommand:cordova.simulate.ios",
 		"workspaceContains:config.xml",
 		"workspaceContains:ionic.config.json"
 	],
