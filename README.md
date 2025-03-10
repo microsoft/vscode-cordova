@@ -146,8 +146,8 @@ The full list of commands is:
 | Ionic: Clean                         | `ionic.run`                | Run an Ionic project on a connected device                                    |
 | Cordova: Simulate Android in browser | `cordova.simulate.android` | Simulate and launch android application in the browser using cordova-simulate |
 | Cordova: Simulate iOS in browser     | `cordova.simulate.ios`     | Simulate and launch ios application in the browser using cordova-simulate     |
-| Cordova: Requirments     | `cordova.requirements`     | Verify cordova required environment in your project |
-| Cordova: Telemetry    | `cordova.telemetry`     | Enable or disable cordova telemetry in your project     |
+| Cordova: Requirments                 | `cordova.requirements`     | Verify cordova required environment in your project                           |
+| Cordova: Telemetry                   | `cordova.telemetry`        | Enable or disable cordova telemetry in your project                           |
 
 ## Simulate your app in the browser
 
