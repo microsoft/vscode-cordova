@@ -9,29 +9,41 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 
 ![Choose Cordova debugger](images/overview.png)
 
-## Install it
+<!-- TABLE OF CONTENTS -->
 
-0. Install [NodeJS](https://nodejs.org)
-1. Open a Terminal (on a Mac) or a Command Prompt (on a Windows computer).
-2. Run `npm install -g cordova`
-3. If you're planning on targeting iOS devices,
+# Table of Contents
 
+- [Cordova Tools Extension](#cordova-tools-extension)
+- [Package extension locally](#package-extension-locally)
+- [Install cordova development and debugging environment](#install-cordova-development-and-debugging-environment)
+- [Choose the Cordova debugging environment](#choose-the-cordova-debugging-environment)
+- [Debug your Cordova-based project](#debug-your-cordova-based-project)
+- [Using Cordova commands in the Command Palette](#using-cordova-commands-in-the-command-palette)
+- [Support for Ionic](#support-for-ionic)
+- [Support for Electron](#support-for-electron)
+- [Using IntelliSense with Plugin APIs](#using-intellisense-with-plugin-apis)
+- [Using IntelliSense with injected Ionic and Angular services](#using-intellisense-with-injected-ionic-and-angular-services)
+- [How to disable telemetry reporting](#how-to-disable-telemetry-reporting)
+  - [Windows](#windows)
+  - [OS X / Linux](#os-x--linux)
+- [Known Issues](#known-issues)
+
+## Package extension locally
+
+You can not only download Cordova Tools in the marketplace, but can also package your extension `.vsix` installation file by yourself locally. Following [this documentation](https://github.com/microsoft/vscode-cordova/blob/master/CONTRIBUTING.md#build-the-project) to package and install your Cordova Tools to get the latest updates.
+
+## Install cordova development and debugging environment
+
+1. Install cordova development environment following [this](https://cordova.apache.org/#getstarted)
+2. If you're planning on targeting iOS devices,
    - Set up your machine by following instructions at [iOS Platform Guide from Apache Cordova](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html)
    - Install [HomeBrew](http://brew.sh/) on your Mac.
    - Open a Terminal and run `brew install ideviceinstaller ios-webkit-debug-proxy`
+3. If you're planning on targeting Android devices, set up your machine by following instructions at [Android Platform Guide from Apache Cordova](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
+4. If you're planning to targeting Electron app, install Electron using `npm install electron`.
+5. Add a platform to your cordova project using command `cordova platform add android`, currently supported platforms are `android, ios, electron`.
 
-4. If you're planning on targeting Android devices, set up your machine by following instructions at [Android Platform Guide from Apache Cordova](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
-5. If you're planning to targeting Electron app, install Electron using `npm install electron`.
-
-## Add a platform to your Cordova project
-
-Open a Terminal or a Command Prompt and run the following command in the root directory of your project
-
-`cordova platform add android`
-
-Supported platforms: `android, ios, electron`
-
-## Choose the Cordova debug environment
+## Choose the Cordova debugging environment
 
 Click the `Run and Debug` icon in the Activity Bar on the side of VS Code, then click `create a launch.json file`, select Cordova as debugger and then `pick debug configurations`.
 
@@ -104,7 +116,7 @@ We won't go into all of the great things that you can do with the Visual Studio 
 > **Troubleshooting tip:**
 > If you press debug button, but nothing happens and you can see only pending spinner for a long time, make sure that Cordova project is opened as a workspace root. If, for instance, you have one parent directory, and your Cordova project is in a subdirectory, it is recommended to use a [multi-root workspace approach](https://code.visualstudio.com/docs/editor/multi-root-workspaces), so that the debugger can find the necessary Cordova files properly.
 
-## Find Cordova commands in the Command Palette
+## Using Cordova commands in the Command Palette
 
 In the Command Palette, type `Cordova` and choose a command.
 
@@ -134,6 +146,8 @@ The full list of commands is:
 | Ionic: Clean                         | `ionic.run`                | Run an Ionic project on a connected device                                    |
 | Cordova: Simulate Android in browser | `cordova.simulate.android` | Simulate and launch android application in the browser using cordova-simulate |
 | Cordova: Simulate iOS in browser     | `cordova.simulate.ios`     | Simulate and launch ios application in the browser using cordova-simulate     |
+| Cordova: Requirments     | `cordova.requirements`     | Verify cordova required environment in your project |
+| Cordova: Telemetry    | `cordova.telemetry`     | Enable or disable cordova telemetry in your project     |
 
 ## Simulate your app in the browser
 
@@ -149,12 +163,6 @@ controls the simulation for the core plugins added to your project. Here are som
 - live reload
 - event firing
 - device screen resizing (while debugging only)
-
-![Cordova Simulate](images/simulate-debugging.png)
-
-> **Note**: If the simulate panel is closed accidentally when you navigate to a new file in your editor, it can be reopened by using `Ctrl+Tab`. This is the same command you use for navigating through your open documents.
-
-Here is a [video demo](https://www.youtube.com/watch?v=LdFT6xxhSbw) of the feature. If you have feature requests or suggestions, please reach out to us [here](https://github.com/Microsoft/vscode-cordova/issues/new).
 
 ## Support for Ionic
 
@@ -175,7 +183,7 @@ Here is a [video demo](https://www.youtube.com/watch?v=LdFT6xxhSbw) of the featu
 
 You can now launch and debug your Electron application using the `Debug on Electron` configuration. This requires Electron to be installed in your project to run its browser. You can install it by running `npm install electron`.
 
-## Use IntelliSense with Plugin APIs
+## Using IntelliSense with Plugin APIs
 
 Intellisense helps you discover objects, functions, and parameters in libraries that your project consumes. Now you can use it for the more popularly used _core_ plugins.
 
@@ -210,7 +218,7 @@ By default, this extension supports the typings for the following plugins. To ad
 - phonegap-plugin-barcodescanner
 - phonegap-plugin-push
 
-## Use IntelliSense with injected Ionic and Angular services
+## Using IntelliSense with injected Ionic and Angular services
 
 While IntelliSense is also available for Ionic and Angular, these frameworks use a dependency injection model for built-in services that VSCode's language service cannot understand by default.
 
