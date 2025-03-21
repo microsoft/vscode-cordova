@@ -7,7 +7,7 @@ To avoid conflicts with your existing installation, it is recommended to delete 
 - **Linux and macOS**: `~/.vscode/extensions/msjsdiag.vscode-cordova-<version>`
 - **Windows**: `C:\Users\<username>\.vscode\extensions\msjsdiag.vscode-cordova-<version>`
 
-### Clone the repository
+### Build the project
 
 - `git clone https://github.com/microsoft/vscode-cordova.git` to any preferrable folder
 - `cd` to the folder you just cloned
