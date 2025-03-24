@@ -12,7 +12,10 @@ import { TelemetryHelper } from "../utils/telemetryHelper";
 import { TsdHelper } from "../utils/tsdHelper";
 import customRequire from "../common/customRequire";
 import { findFileInFolderHierarchy } from "../utils/extensionHelper";
-import { IonicCompletionProvider } from "./completionProviders";
+import {
+    CordovaConfigurationCompletionProvider,
+    IonicCompletionProvider,
+} from "./completionProviders";
 import { CordovaSessionManager } from "./cordovaSessionManager";
 import { ProjectsStorage } from "./projectsStorage";
 import { PluginSimulator } from "./simulate";
@@ -63,6 +66,13 @@ export function activate(context: vscode.ExtensionContext): void {
         const cordovaFactory = new CordovaSessionManager();
         EXTENSION_CONTEXT.subscriptions.push(
             vscode.debug.registerDebugAdapterDescriptorFactory("cordova", cordovaFactory),
+        );
+
+        EXTENSION_CONTEXT.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                CordovaConfigurationCompletionProvider.CORDOVA_CONFIG_SELECTOR,
+                new CordovaConfigurationCompletionProvider(),
+            ),
         );
 
         const workspaceFolders: ReadonlyArray<vscode.WorkspaceFolder> | undefined =

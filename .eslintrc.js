@@ -38,11 +38,11 @@ module.exports = {
     overrides: [],
     rules: {
         // before adding new rules - https://github.com/prettier/eslint-plugin-prettier/issues/65
-        "quotes": "off",
-        "semi": "off",
+        quotes: "off",
+        semi: "off",
         "no-void": "off",
         "no-promise-executor-return": "warn",
-        "@typescript-eslint/quotes": ["error", "double"],
+        "@typescript-eslint/quotes": ["warn", "double"],
         "@typescript-eslint/await-thenable": "warn",
         "@typescript-eslint/dot-notation": "warn",
         "@typescript-eslint/explicit-function-return-type": "off",
