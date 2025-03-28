@@ -84,7 +84,11 @@ export class CordovaConfigurationCompletionProvider implements CompletionItemPro
         }
 
         const linePrefix = document.lineAt(position).text.slice(0, position.character);
-        switch (linePrefix.trim()) {
+        return this.getConfigCompletionItems(linePrefix);
+    }
+
+    public getConfigCompletionItems(inputPrefix: string): CompletionItem[] {
+        switch (inputPrefix.trim()) {
             case "<w":
                 const widgetItem = new vscode.CompletionItem("<widget");
                 widgetItem.insertText = new vscode.SnippetString(
