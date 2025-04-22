@@ -707,6 +707,8 @@
 	"dependencies": {
 		"@mixer/parallel-prettier": "^2.0.2",
 		"@vscode/debugadapter": "^1.63.0",
+		"@vscode/debugprotocol": "^1.68.0",
+		"@vscode/js-debug-browsers": "^1.1.2",
 		"elementtree": "^0.1.6",
 		"execa": "^4.0.0",
 		"gulp-mocha": "^10.0.1",
@@ -717,9 +719,7 @@
 		"socket.io-client": "2.4.0",
 		"uuid": "^9.0.0",
 		"vscode-cdp-proxy": "^0.2.0",
-		"vscode-debugprotocol": "^1.51.0",
 		"vscode-extension-telemetry": "0.4.5",
-		"vscode-js-debug-browsers": "^1.0.4",
 		"vscode-nls": "^4.1.2",
 		"winreg": "0.0.13",
 		"xml2js": "^0.6.2"

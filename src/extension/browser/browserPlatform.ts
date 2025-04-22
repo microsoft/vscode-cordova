@@ -8,9 +8,8 @@ import * as nls from "vscode-nls";
 import * as execa from "execa";
 import * as vscode from "vscode";
 import * as io from "socket.io-client";
-import * as browserHelper from "vscode-js-debug-browsers";
+import * as browserHelper from "@vscode/js-debug-browsers";
 import simulate = require("cordova-simulate");
-import { IBrowserFinder } from "vscode-js-debug-browsers";
 import { EventEmitter } from "vscode";
 import { DebugConsoleLogger, PlatformType, TargetType } from "../../debugger/cordovaDebugSession";
 import { CordovaProjectHelper } from "../../utils/cordovaProjectHelper";
@@ -96,7 +95,7 @@ export default class BrowserPlatform extends AbstractPlatform {
         this.runArguments = this.getRunArguments();
 
         // Launch Chrome
-        let browserFinder: IBrowserFinder;
+        let browserFinder: browserHelper.IBrowserFinder;
         switch (this.platformOpts.target) {
             case TargetType.Edge:
                 browserFinder = new browserHelper.EdgeBrowserFinder(

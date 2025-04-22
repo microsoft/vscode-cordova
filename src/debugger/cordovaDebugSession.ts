@@ -13,7 +13,7 @@ import {
     LoggingDebugSession,
     OutputEvent,
 } from "@vscode/debugadapter";
-import { DebugProtocol } from "vscode-debugprotocol";
+import { DebugProtocol } from "@vscode/debugprotocol";
 import simulate = require("cordova-simulate");
 import {
     findFileInFolderHierarchy,
