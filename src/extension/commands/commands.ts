@@ -13,4 +13,4 @@ export * from "./simulateAndroid";
 export * from "./simulateIos";
 export * from "./clean";
 export * from "./telemetry";
-export * from "./enableNetworkView";
+export * from "./networkView";

@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: ブラウザーで Android をシミュレートする",
 	"cordova.simulate.ios": "Cordova: ブラウザーで iOS をシミュレートする",
 	"cordova.telemetry": "Cordova: テレメトリー",
+	"cordova.networkView": "Cordova: ネットワークビュー",
 	"cordova.ionic.build": "Ionic: ビルド",
 	"cordova.ionic.run": "Ionic: 実行",
 	"cordova.ionic.prepare": "Ionic: 準備",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "「cordova run/build」に渡される実行引数 <platform>' または 'イオンサーブ' コマンド",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "ローカルの Cordova/Ionic 実行可能ファイルへのパス",
 	"cordova.configuration.properties.cordova.env": "プログラムに渡される環境変数",
-	"cordova.configuration.properties.cordova.envFile": "環境変数定義を含むファイルへの絶対パス"
+	"cordova.configuration.properties.cordova.envFile": "環境変数定義を含むファイルへの絶対パス",
+	"cordova.networkView.command.enabled": "ネットワークビューが有効になりました。開発者ツールのネットワークタブでネットワーク要求を見ることができます。",
+	"cordova.networkView.command.disabled": "ネットワークビューが無効になりました。",
+	"cordova.networkView.command.placeholder": "ネットワークビューを有効または無効にします。",
+	"cordova.networkView.command.noOptionSelected": "ネットワークビューのオプションが選択されていません。",
+	"cordova.networkView.command.error.failedToEnable": "ネットワークビューの有効化に失敗しました： {0}"
 }

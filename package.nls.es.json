@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: simula Android en el navegador",
 	"cordova.simulate.ios": "Cordova: simula iOS en el navegador",
 	"cordova.telemetry": "Cordova: Telemetría",
+	"cordova.networkView": "Cordova: Vista de red",
 	"cordova.ionic.build": "Ionic: construir",
 	"cordova.ionic.run": "Ionic: correr",
 	"cordova.ionic.prepare": "Ionic: preparar",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Ejecute los argumentos que se pasarán a 'cordova run/build <platform>' o comando 'servicio iónico'",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Ruta al ejecutable local Cordova/Ionic",
 	"cordova.configuration.properties.cordova.env": "Variables de entorno pasadas al programa.",
-	"cordova.configuration.properties.cordova.envFile": "Ruta absoluta a un archivo que contiene definiciones de variables de entorno"
+	"cordova.configuration.properties.cordova.envFile": "Ruta absoluta a un archivo que contiene definiciones de variables de entorno",
+	"cordova.networkView.command.enabled": "Se ha activado la vista de red. Puede ver las solicitudes de red en la pestaña Red de las Herramientas de desarrollo.",
+	"cordova.networkView.command.disabled": "Se ha desactivado la vista de red.",
+	"cordova.networkView.command.placeholder": "Habilitar o deshabilitar la Vista de Red.",
+	"cordova.networkView.command.noOptionSelected": "No se ha seleccionado ninguna opción para la vista de red.",
+	"cordova.networkView.command.error.failedToEnable": "Fallo al habilitar la vista de red: {0}"
 }

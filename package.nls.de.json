@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: Android im Browser simulieren",
 	"cordova.simulate.ios": "Cordova: iOS im Browser simulieren",
 	"cordova.telemetry": "Cordova: Telemetrie",
+	"cordova.networkView": "Cordova: Netzwerk-Ansicht",
 	"cordova.ionic.build": "Ionic: Bauen",
 	"cordova.ionic.run": "Ionic: Laufen",
 	"cordova.ionic.prepare": "Ionic: Bereiten Sie sich vor",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Führen Sie Argumente aus, die an „cordova run/build“ übergeben werden sollen <platform>' oder 'ionischer Aufschlag'-Befehl",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Pfad zur lokalen ausführbaren Cordova/Ionic-Datei",
 	"cordova.configuration.properties.cordova.env": "An das Programm übergebene Umgebungsvariablen",
-	"cordova.configuration.properties.cordova.envFile": "Absoluter Pfad zu einer Datei, die Umgebungsvariablendefinitionen enthält"
+	"cordova.configuration.properties.cordova.envFile": "Absoluter Pfad zu einer Datei, die Umgebungsvariablendefinitionen enthält",
+	"cordova.networkView.command.enabled": "Die Netzwerkansicht wurde aktiviert. Sie können die Netzwerkanforderungen auf der Registerkarte Netzwerk der Entwicklertools anzeigen.",
+	"cordova.networkView.command.disabled": "Die Netzwerkansicht wurde deaktiviert.",
+	"cordova.networkView.command.placeholder": "Netzwerkansicht aktivieren oder deaktivieren.",
+	"cordova.networkView.command.noOptionSelected": "Keine Option für die Netzwerkansicht ausgewählt.",
+	"cordova.networkView.command.error.failedToEnable": "Die Netzwerkansicht konnte nicht aktiviert werden: {0}"
 }

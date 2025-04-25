@@ -10,7 +10,7 @@
   "cordova.simulate.android": "Cordova: Simulate Android in browser",
   "cordova.simulate.ios": "Cordova: Simulate iOS in browser",
   "cordova.telemetry": "Cordova: Telemetry",
-  "cordova.enableNetworkView": "Cordova: Enable Network View",
+  "cordova.networkView": "Cordova: Network View",
   "cordova.ionic.build": "Ionic: Build",
   "cordova.ionic.run": "Ionic: Run",
   "cordova.ionic.prepare": "Ionic: Prepare",
@@ -78,5 +78,10 @@
   "cordova.configuration.properties.cordova.runArguments": "Run arguments to be passed to 'cordova run/build <platform>' or 'ionic serve' command",
   "cordova.configuration.properties.cordova.cordovaExecutable": "Path to local Cordova/Ionic executable",
   "cordova.configuration.properties.cordova.env": "Environment variables passed to the program",
-  "cordova.configuration.properties.cordova.envFile": "Absolute path to a file containing environment variable definitions"
+  "cordova.configuration.properties.cordova.envFile": "Absolute path to a file containing environment variable definitions",
+  "cordova.networkView.command.enabled": "Network View has been enabled. You can view the network requests in the Network tab of the Developer Tools.",
+  "cordova.networkView.command.disabled": "Network View has been disabled.",
+  "cordova.networkView.command.placeholder": "Enable or disable Network View.",
+  "cordova.networkView.command.noOptionSelected": "No option selected for Network View.",
+  "cordova.networkView.command.error.failedToEnable": "Failed to enable Network View: {0}"
 }

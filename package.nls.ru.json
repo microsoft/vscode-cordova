@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: имитируйте Android в браузере",
 	"cordova.simulate.ios": "Cordova: имитируйте iOS в браузере",
 	"cordova.telemetry": "Cordova: Телеметрия",
+	"cordova.networkView": "Cordova: Просмотр сети",
 	"cordova.ionic.build": "Ionic: Построить",
 	"cordova.ionic.run": "Ionic: Беги",
 	"cordova.ionic.prepare": "Ionic: Приготовьтесь",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Аргументы запуска, которые будут переданы в команду cordova run/build <platform>или команда «ионная подача»",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Путь к локальному исполняемому файлу Cordova/Ionic",
 	"cordova.configuration.properties.cordova.env": "Переменные среды, передаваемые в программу",
-	"cordova.configuration.properties.cordova.envFile": "Абсолютный путь к файлу, содержащему определения переменных среды."
+	"cordova.configuration.properties.cordova.envFile": "Абсолютный путь к файлу, содержащему определения переменных среды.",
+	"cordova.networkView.command.enabled": "Просмотр сети был включен. Вы можете просматривать сетевые запросы на вкладке «Сеть» в Инструментах разработчика.",
+	"cordova.networkView.command.disabled": "Просмотр сети был отключен.",
+	"cordova.networkView.command.placeholder": "Включить или отключить просмотр сети.",
+	"cordova.networkView.command.noOptionSelected": "Не выбрана опция для просмотра сети.",
+	"cordova.networkView.command.error.failedToEnable": "Не удалось включить просмотр сети: {0}"
 }

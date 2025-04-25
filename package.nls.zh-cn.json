@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova：在浏览器中模拟 Android",
 	"cordova.simulate.ios": "Cordova：在浏览器中模拟 iOS",
 	"cordova.telemetry": "Cordova: 遥测",
+	"cordova.networkView": "Cordova: 网络视图",
 	"cordova.ionic.build": "Ionic: 构建",
 	"cordova.ionic.run": "Ionic：运行",
 	"cordova.ionic.prepare": "Ionic：准备",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "运行要传递给“cordova run/build”的参数 <platform>' 或 'ionicserve' 命令",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "本地 Cordova/Ionic 可执行文件的路径",
 	"cordova.configuration.properties.cordova.env": "传递给程序的环境变量",
-	"cordova.configuration.properties.cordova.envFile": "包含环境变量定义的文件的绝对路径"
+	"cordova.configuration.properties.cordova.envFile": "包含环境变量定义的文件的绝对路径",
+	"cordova.networkView.command.enabled": "网络视图已启用。您可以在 “开发工具 ”的 “网络 ”选项卡中查看网络请求。",
+	"cordova.networkView.command.disabled": "网络视图已禁用。",
+	"cordova.networkView.command.placeholder": "启用或禁用网络视图。",
+	"cordova.networkView.command.noOptionSelected": "未选择网络视图选项。",
+	"cordova.networkView.command.error.failedToEnable": "启用网络视图失败： {0}"
 }

@@ -117,8 +117,8 @@
 				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			},
 			{
-				"command": "cordova.enableNetworkView",
-				"title": "%cordova.enableNetworkView%",
+				"command": "cordova.networkView",
+				"title": "%cordova.networkView%",
 				"category": "Cordova",
 				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			}

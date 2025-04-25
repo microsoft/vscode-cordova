@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova : Simuler Android dans le navigateur",
 	"cordova.simulate.ios": "Cordova : Simuler iOS dans le navigateur",
 	"cordova.telemetry": "Cordova: Télémétrie",
+	"cordova.networkView": "Cordova: Vue du réseau",
 	"cordova.ionic.build": "Ionic: Construire",
 	"cordova.ionic.run": "Ionic: Courir",
 	"cordova.ionic.prepare": "Ionic: Préparez-vous",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Arguments d'exécution à transmettre à 'cordova run/build <platform>\" ou commande \" service ionique \"",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Chemin vers l'exécutable local Cordova/Ionic",
 	"cordova.configuration.properties.cordova.env": "Variables d'environnement transmises au programme",
-	"cordova.configuration.properties.cordova.envFile": "Chemin absolu vers un fichier contenant les définitions de variables d'environnement"
+	"cordova.configuration.properties.cordova.envFile": "Chemin absolu vers un fichier contenant les définitions de variables d'environnement",
+	"cordova.networkView.command.enabled": "L'affichage du réseau a été activé. Vous pouvez visualiser les demandes de réseau dans l'onglet Réseau des outils de développement.",
+	"cordova.networkView.command.disabled": "L'affichage du réseau a été désactivé.",
+	"cordova.networkView.command.placeholder": "Activer ou désactiver l'affichage du réseau.",
+	"cordova.networkView.command.noOptionSelected": "Aucune option n'a été sélectionnée pour l'affichage du réseau.",
+	"cordova.networkView.command.error.failedToEnable": "Échec de l'activation de l'affichage réseau : {0}"
 }
