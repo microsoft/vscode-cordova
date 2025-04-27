@@ -36,6 +36,7 @@ suite("extensionContext", () => {
                 "cordova.simulate.ios",
                 "cordova.clean",
                 "cordova.telemetry",
+                "cordova.networkView",
             ]);
         });
     });
