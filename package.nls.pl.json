@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: Symuluj Androida w przeglądarce",
 	"cordova.simulate.ios": "Cordova: Symuluj iOS w przeglądarce",
 	"cordova.telemetry": "Cordova: Telemetria",
+	"cordova.networkView": "Cordova: Widok sieci",
 	"cordova.ionic.build": "Ionic: Zbuduj",
 	"cordova.ionic.run": "Ionic: Biegnij",
 	"cordova.ionic.prepare": "Ionic: Przygotuj się",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Uruchom argumenty, które mają zostać przekazane do „cordova run/build <platform>' lub 'ionic Serw'",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Ścieżka do lokalnego pliku wykonywalnego Cordova/Ionic",
 	"cordova.configuration.properties.cordova.env": "Zmienne środowiskowe przekazywane do programu",
-	"cordova.configuration.properties.cordova.envFile": "Ścieżka bezwzględna do pliku zawierającego definicje zmiennych środowiskowych"
+	"cordova.configuration.properties.cordova.envFile": "Ścieżka bezwzględna do pliku zawierającego definicje zmiennych środowiskowych",
+	"cordova.networkView.command.enabled": "Widok sieci został włączony. Żądania sieciowe można wyświetlić na karcie Sieć w Narzędziach dla programistów.",
+	"cordova.networkView.command.disabled": "Widok sieci został wyłączony.",
+	"cordova.networkView.command.placeholder": "Włącz lub wyłącz Widok sieci.",
+	"cordova.networkView.command.noOptionSelected": "Nie wybrano żadnej opcji dla widoku sieci.",
+	"cordova.networkView.command.error.failedToEnable": "Nie udało się włączyć widoku sieci: {0}"
 }

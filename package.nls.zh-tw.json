@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova：在瀏覽器中模擬 Android",
 	"cordova.simulate.ios": "Cordova：在瀏覽器中模擬 iOS",
 	"cordova.telemetry": "Cordova: 遙測",
+	"cordova.networkView": "Cordova: 網路檢視",
 	"cordova.ionic.build": "Ionic：構建",
 	"cordova.ionic.run": "Ionic：運行",
 	"cordova.ionic.prepare": "Ionic：準備",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "運行要傳遞給“cordova run/build”的參數 <platform>' 或 'ionicserve' 指令",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "本機 Cordova/Ionic 可執行檔的路徑",
 	"cordova.configuration.properties.cordova.env": "傳遞給程式的環境變數",
-	"cordova.configuration.properties.cordova.envFile": "包含環境變數定義的檔案的絕對路徑"
+	"cordova.configuration.properties.cordova.envFile": "包含環境變數定義的檔案的絕對路徑",
+	"cordova.networkView.command.enabled": "網路檢視已啟用。您可以在 Developer Tools 的 Network（網路）標籤中檢視網路請求。",
+	"cordova.networkView.command.disabled": "已停用網路檢視。",
+	"cordova.networkView.command.placeholder": "啟用或停用網路檢視。",
+	"cordova.networkView.command.noOptionSelected": "未選擇網路檢視的選項。",
+	"cordova.networkView.command.error.failedToEnable": "啟用網路檢視失敗： {0}"
 }

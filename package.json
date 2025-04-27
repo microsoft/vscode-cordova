@@ -115,6 +115,12 @@
 				"title": "%cordova.telemetry%",
 				"category": "Cordova",
 				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
+			},
+			{
+				"command": "cordova.networkView",
+				"title": "%cordova.networkView%",
+				"category": "Cordova",
+				"enablement": "!config.security.workspace.trust.enabled || isWorkspaceTrusted"
 			}
 		],
 		"keybindings": [

@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: 브라우저에서 Android 시뮬레이션",
 	"cordova.simulate.ios": "Cordova: 브라우저에서 iOS 시뮬레이션",
 	"cordova.telemetry": "Cordova: 원격 측정",
+	"cordova.networkView": "Cordova: 네트워크 보기",
 	"cordova.ionic.build": "Ionic: 빌드",
 	"cordova.ionic.run": "Ionic: 실행",
 	"cordova.ionic.prepare": "Ionic: 준비",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "'cordova run/build'에 전달될 실행 인수 <platform>' 또는 'ionic Serve' 명령",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "로컬 Cordova/Ionic 실행 파일의 경로",
 	"cordova.configuration.properties.cordova.env": "프로그램에 전달된 환경 변수",
-	"cordova.configuration.properties.cordova.envFile": "환경 변수 정의가 포함된 파일의 절대 경로"
+	"cordova.configuration.properties.cordova.envFile": "환경 변수 정의가 포함된 파일의 절대 경로",
+	"cordova.networkView.command.enabled": "네트워크 보기가 활성화되었습니다. 개발자 도구의 네트워크 탭에서 네트워크 요청을 볼 수 있습니다.",
+	"cordova.networkView.command.disabled": "네트워크 보기가 비활성화되었습니다.",
+	"cordova.networkView.command.placeholder": "네트워크 보기 활성화 또는 비활성화.",
+	"cordova.networkView.command.noOptionSelected": "네트워크 보기에 대해 선택한 옵션이 없습니다.",
+	"cordova.networkView.command.error.failedToEnable": "네트워크 보기를 활성화하지 못했습니다: {0}"
 }

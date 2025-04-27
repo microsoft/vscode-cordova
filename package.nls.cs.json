@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: Simulujte Android v prohlížeči",
 	"cordova.simulate.ios": "Cordova: Simulujte iOS v prohlížeči",
 	"cordova.telemetry": "Cordova: Telemetrie",
+	"cordova.networkView": "Cordova: Zobrazení sítě",
 	"cordova.ionic.build": "Ionic: Sestavte",
 	"cordova.ionic.run": "Ionic: Utíkej",
 	"cordova.ionic.prepare": "Ionic: Připravte se",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Spustit argumenty, které mají být předány 'cordova run/build <platform>' nebo 'iontové servírování'",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Cesta k místnímu spustitelnému souboru Cordova/Ionic",
 	"cordova.configuration.properties.cordova.env": "Proměnné prostředí předané programu",
-	"cordova.configuration.properties.cordova.envFile": "Absolutní cesta k souboru obsahujícímu definice proměnných prostředí"
+	"cordova.configuration.properties.cordova.envFile": "Absolutní cesta k souboru obsahujícímu definice proměnných prostředí",
+	"cordova.networkView.command.enabled": "Zobrazení sítě bylo povoleno. Síťové požadavky můžete zobrazit na kartě Síť v Nástrojích pro vývojáře.",
+	"cordova.networkView.command.disabled": "Zobrazení sítě bylo zakázáno.",
+	"cordova.networkView.command.placeholder": "Povolit nebo zakázat zobrazení sítě.",
+	"cordova.networkView.command.noOptionSelected": "Pro Network View není vybrána žádná možnost.",
+	"cordova.networkView.command.error.failedToEnable": "Nepodařilo se povolit zobrazení sítě: {0}"
 }

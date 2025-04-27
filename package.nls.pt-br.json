@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: Simule Android no navegador",
 	"cordova.simulate.ios": "Cordova: Simule iOS no navegador",
 	"cordova.telemetry": "Cordova: Telemetria",
+	"cordova.networkView": "Cordova: Visualização de rede",
 	"cordova.ionic.build": "Ionic: Construir",
 	"cordova.ionic.run": "Ionic: Corre",
 	"cordova.ionic.prepare": "Ionic: Prepare-se",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Execute argumentos a serem passados ​​para 'cordova run/build <platform>' ou comando 'serviço iônico'",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Caminho para o executável Cordova/Ionic local",
 	"cordova.configuration.properties.cordova.env": "Variáveis ​​de ambiente passadas para o programa",
-	"cordova.configuration.properties.cordova.envFile": "Caminho absoluto para um arquivo que contém definições de variáveis ​​de ambiente"
+	"cordova.configuration.properties.cordova.envFile": "Caminho absoluto para um arquivo que contém definições de variáveis ​​de ambiente",
+	"cordova.networkView.command.enabled": "A visualização de rede foi ativada. Você pode visualizar as solicitações de rede na guia Rede das Ferramentas do desenvolvedor.",
+	"cordova.networkView.command.disabled": "O Modo de exibição de rede foi desativado.",
+	"cordova.networkView.command.placeholder": "Ativar ou desativar a visualização de rede.",
+	"cordova.networkView.command.noOptionSelected": "Nenhuma opção selecionada para o Visualização de rede.",
+	"cordova.networkView.command.error.failedToEnable": "Falha ao ativar o Modo de exibição de rede: {0}"
 }

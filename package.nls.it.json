@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: simula Android nel browser",
 	"cordova.simulate.ios": "Cordova: simula iOS nel browser",
 	"cordova.telemetry": "Cordova: Telemetria",
+	"cordova.networkView": "Cordova: Vista della rete",
 	"cordova.ionic.build": "Ionic: costruire",
 	"cordova.ionic.run": "Ionic: corri",
 	"cordova.ionic.prepare": "Ionic: Preparati",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "Esegui gli argomenti da passare a 'cordova run/build <platform>o il comando \"servizio ionico\".",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Percorso dell'eseguibile Cordova/Ionic locale",
 	"cordova.configuration.properties.cordova.env": "Variabili d'ambiente passate al programma",
-	"cordova.configuration.properties.cordova.envFile": "Percorso assoluto a un file contenente le definizioni delle variabili di ambiente"
+	"cordova.configuration.properties.cordova.envFile": "Percorso assoluto a un file contenente le definizioni delle variabili di ambiente",
+	"cordova.networkView.command.enabled": "La visualizzazione di rete è stata attivata. È possibile visualizzare le richieste di rete nella scheda Rete degli Strumenti per sviluppatori.",
+	"cordova.networkView.command.disabled": "La visualizzazione di rete è stata disattivata.",
+	"cordova.networkView.command.placeholder": "Attivare o disattivare la visualizzazione di rete.",
+	"cordova.networkView.command.noOptionSelected": "Nessuna opzione selezionata per la visualizzazione di rete.",
+	"cordova.networkView.command.error.failedToEnable": "Impossibile abilitare la visualizzazione di rete: {0}"
 }

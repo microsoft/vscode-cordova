@@ -10,6 +10,7 @@
 	"cordova.simulate.android": "Cordova: Tarayıcıda Android'i simüle edin",
 	"cordova.simulate.ios": "Cordova: Tarayıcıda iOS'u simüle edin",
 	"cordova.telemetry": "Cordova: Telemetri",
+	"cordova.networkView": "Cordova: Ağ Görünümü",
 	"cordova.ionic.build": "Ionic: Yapı",
 	"cordova.ionic.run": "Ionic: Çalıştır",
 	"cordova.ionic.prepare": "Ionic: Hazırla",
@@ -77,5 +78,10 @@
 	"cordova.configuration.properties.cordova.runArguments": "'Cordova run/build'e aktarılacak çalıştırma argümanları <platform>' veya 'iyonik servis' komutu",
 	"cordova.configuration.properties.cordova.cordovaExecutable": "Yerel Cordova/Ionic çalıştırılabilir dosyasına giden yol",
 	"cordova.configuration.properties.cordova.env": "Programa aktarılan ortam değişkenleri",
-	"cordova.configuration.properties.cordova.envFile": "Ortam değişkeni tanımlarını içeren bir dosyanın mutlak yolu"
+	"cordova.configuration.properties.cordova.envFile": "Ortam değişkeni tanımlarını içeren bir dosyanın mutlak yolu",
+	"cordova.networkView.command.enabled": "Ağ Görünümü etkinleştirildi. Ağ isteklerini Geliştirici Araçları'nın Ağ sekmesinde görüntüleyebilirsiniz.",
+	"cordova.networkView.command.disabled": "Ağ Görünümü devre dışı bırakıldı.",
+	"cordova.networkView.command.placeholder": "Ağ Görünümü'nü etkinleştirin veya devre dışı bırakın.",
+	"cordova.networkView.command.noOptionSelected": "Ağ Görünümü için seçenek seçilmedi.",
+	"cordova.networkView.command.error.failedToEnable": "Ağ Görünümü etkinleştirilemedi: {0}"
 }
