@@ -9,7 +9,7 @@ export enum InternalErrorCode {
     NvmWindowsNotFoundMessage = 104,
     NvmHomeNotFoundMessage = 105,
     RuntimeVersionNotFoundMessage = 106,
-    FailedToEnableNetworkView = 107,
+    FailedToToggleNetworkView = 107,
 
     // Platform& Simulate error
     UnknownPlatform = 201,

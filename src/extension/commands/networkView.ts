@@ -14,7 +14,7 @@ const localize = nls.loadMessageBundle();
 const logger = OutputChannelLogger.getMainChannel();
 
 export class NetworkView {
-    error = ErrorHelper.getInternalError(InternalErrorCode.FailedToEnableNetworkView);
+    error = ErrorHelper.getInternalError(InternalErrorCode.FailedToToggleNetworkView);
     static codeName = "cordova.networkView";
     static createHandler = async () => {
         try {
@@ -31,11 +31,11 @@ export class NetworkView {
                 // This will enable or disable the NetworkView feature in the JavaScript debugger
                 await config.update(
                     "enableNetworkView",
-                    value === "on",
+                    value === "On",
                     vscode.ConfigurationTarget.Global,
                 );
 
-                if (value === "on") {
+                if (value === "On") {
                     vscode.window.showInformationMessage(
                         localize(
                             "cordova.networkView.command.enabled",
@@ -91,7 +91,7 @@ export class NetworkView {
                     error,
                 ),
             );
-            throw ErrorHelper.getInternalError(InternalErrorCode.FailedToEnableNetworkView);
+            throw ErrorHelper.getInternalError(InternalErrorCode.FailedToToggleNetworkView);
         }
     };
 }
