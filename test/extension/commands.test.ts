@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 
 suite("commandsExecution", function () {
     suite("networkViewCommand", function () {
-        test.only("should update newwork view via api successfully", async () => {
+        test("should update newwork view via api successfully", async () => {
             const config = vscode.workspace.getConfiguration("debug.javascript");
             const currentValue = config.get("enableNetworkView");
 
