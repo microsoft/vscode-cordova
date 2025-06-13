@@ -9,14 +9,14 @@ import * as os from "os";
 import * as path from "path";
 import * as winreg from "winreg";
 import { DeferredPromise } from "../common/node/promise";
-import { settingsHome } from "./settingsHelper";
+import { settingsHome, getWorkspaceTelemetry } from "./settingsHelper";
 
 /**
  * Telemetry module specialized for vscode integration.
  */
 export namespace Telemetry {
     export let appName: string;
-    export let isOptedIn = false;
+    export let isOptedIn: boolean = false;
     export let reporter: ITelemetryReporter;
     export const reporterDictionary: { [key: string]: ITelemetryReporter } = {};
 
@@ -114,7 +114,11 @@ export namespace Telemetry {
                 TelemetryUtils.userId = userId;
                 TelemetryUtils.userType = TelemetryUtils.getUserType();
 
-                isOptedIn = TelemetryUtils.getTelemetryOptInSetting();
+                const telemetryVsSettings = getWorkspaceTelemetry();
+                Telemetry.isOptedIn =
+                    telemetryVsSettings === ""
+                        ? TelemetryUtils.getTelemetryOptInSetting()
+                        : (telemetryVsSettings as boolean);
                 TelemetryUtils.saveSettings();
                 TelemetryUtils.initDeferred.resolve(undefined);
             });
