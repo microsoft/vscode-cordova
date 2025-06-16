@@ -674,7 +674,7 @@
 						"description": "%cordova.configuration.properties.cordova.envFile%",
 						"scope": "resource"
 					},
-					"telemetry.optIn": {
+					"cordova.telemetry.optIn": {
 						"description": "Whether to send usage data to Microsoft",
 						"type": "boolean",
 						"scope": "resource",
