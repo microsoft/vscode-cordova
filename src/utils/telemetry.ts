@@ -16,6 +16,7 @@ import { settingsHome, getWorkspaceTelemetry } from "./settingsHelper";
  */
 export namespace Telemetry {
     export let appName: string;
+    // eslint-disable-next-line prefer-const
     export let isOptedIn: boolean = false;
     export let reporter: ITelemetryReporter;
     export const reporterDictionary: { [key: string]: ITelemetryReporter } = {};
