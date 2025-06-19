@@ -4,6 +4,7 @@
 import * as os from "os";
 import * as path from "path";
 import * as nls from "vscode-nls";
+import * as vscode from "vscode";
 import { ErrorHelper } from "../common/error/errorHelper";
 import { InternalErrorCode } from "../common/error/internalErrorCode";
 
@@ -22,4 +23,11 @@ export function settingsHome(): string {
         default:
             throw ErrorHelper.getInternalError(InternalErrorCode.UnexpectedPlatform);
     }
+}
+export function getWorkspaceTelemetry() {
+    const workspaceConfiguration = vscode.workspace.getConfiguration("telemetry", null);
+    if (workspaceConfiguration.has("optIn")) {
+        return workspaceConfiguration.get("optIn");
+    }
+    return "";
 }
