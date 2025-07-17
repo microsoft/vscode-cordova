@@ -24,8 +24,6 @@ Debug your code, find commands in the Command Palette, and use IntelliSense to b
 - [Using IntelliSense with Plugin APIs](#using-intellisense-with-plugin-apis)
 - [Using IntelliSense with injected Ionic and Angular services](#using-intellisense-with-injected-ionic-and-angular-services)
 - [How to disable telemetry reporting](#how-to-disable-telemetry-reporting)
-  - [Windows](#windows)
-  - [OS X / Linux](#os-x--linux)
 - [Known Issues](#known-issues)
 
 ## Package extension locally
@@ -148,6 +146,7 @@ The full list of commands is:
 | Cordova: Simulate iOS in browser     | `cordova.simulate.ios`     | Simulate and launch ios application in the browser using cordova-simulate     |
 | Cordova: Requirments                 | `cordova.requirements`     | Verify cordova required environment in your project                           |
 | Cordova: Telemetry                   | `cordova.telemetry`        | Enable or disable cordova telemetry in your project                           |
+| Cordova: Network View                | `cordova.networkView`      | Enable or disable vscode network view for web debugging                       |
 
 ## Simulate your app in the browser
 
@@ -222,7 +221,7 @@ By default, this extension supports the typings for the following plugins. To ad
 
 While IntelliSense is also available for Ionic and Angular, these frameworks use a dependency injection model for built-in services that VSCode's language service cannot understand by default.
 
-To properly enable IntelliSense in these scenarios, you will need to use [JSDoc headers](http://usejsdoc.org/about-getting-started.html).
+To properly enable IntelliSense in these scenarios, you will need to use [JSDoc headers](https://jsdoc.app/).
 
 ![IntelliSense for Angular and Ionic services](images/ionic-intellisense.png)
 
@@ -247,17 +246,10 @@ For a list of supported services for IntelliSense, see the `angular.d.ts` and `i
 
 ## How to disable telemetry reporting
 
-VS Code Cordova extension collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://www.visualstudio.com/en-us/dn948229) to learn more.
+VSCode Cordova Extension collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://www.visualstudio.com/en-us/dn948229) to learn more.
 
-If you don’t wish to send usage data to Microsoft, please follow the instructions below to disable its collection.
-
-### Windows
-
-- Edit VSCodeTelemetrySettings.json file at `%appdata%\vscode-cordova` and add "optIn":false.
-
-### OS X / Linux
-
-- Edit VSCodeTelemetrySettings.json file at `~/.vscode-cordova` and add "optIn":false.
+If you don’t wish to send usage data to Microsoft:
+create and add `VSCodeTelemetrySettings.json` file at `~/.vscode-cordova` and add `optIn:false`. Or add `cordova-tools.telemetry.optIn: false` in `~/.vscode/settings.json` file.
 
 ## Known Issues
 
