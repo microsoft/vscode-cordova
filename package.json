@@ -723,7 +723,6 @@
 		"@vscode/js-debug-browsers": "^1.1.2",
 		"elementtree": "^0.1.6",
 		"execa": "^4.0.0",
-		"gulp-mocha": "^10.0.1",
 		"ip-address": "^9.0.5",
 		"net": "^1.0.2",
 		"plist": "^3.0.5",
