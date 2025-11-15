@@ -32,7 +32,7 @@ export default class BrowserPlatform extends AbstractPlatform {
     public static readonly CHROME_DATA_DIR = "chrome_sandbox_dir";
     public static readonly EDGE_DATA_DIR = "edge_sandbox_dir"; // The directory to use for the sandboxed Chrome instance that gets launched to debug the app
 
-    private simulateDebugHost: SocketIOClient.Socket;
+    private simulateDebugHost: io.Socket;
     private browserProc: child_process.ChildProcess;
 
     private browserStopEventEmitter: EventEmitter<Error | undefined> = new EventEmitter();
