@@ -70,35 +70,39 @@ suite("extensionContext", () => {
     });
 
     suite("CordovaSimulateContext", () => {
-        test("Verify that the simulate command launches the simulate server", () => {
+        test("Verify that the simulate command launches the simulate server", async () => {
             // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
             // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
-            return testUtils
-                .addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
-                .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
-                .then(() =>
-                    testUtils.isUrlReachableWithRetry(
-                        "http://localhost:8000/simulator/index.html",
-                        120000,
-                        1500,
-                    ),
-                )
-                .then((simHostStarted: boolean) =>
-                    assert(simHostStarted, "The simulation host is running."),
-                )
-                .then(() =>
-                    testUtils.isUrlReachableWithRetry(
-                        "http://localhost:8000/index.html",
-                        120000,
-                        1500,
-                    ),
-                )
-                .then((appHostStarted: boolean) =>
-                    assert(appHostStarted, "The application host is running."),
-                )
-                .finally(() =>
-                    testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]),
+            try {
+                await testUtils.addCordovaComponents("platform", testProjectPath, [
+                    "android@9.1.0",
+                ]);
+                console.log("Platform added successfully");
+
+                await vscode.commands.executeCommand("cordova.simulate.android");
+                console.log("Simulate command executed");
+
+                // Give the server a moment to start before checking
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                const simHostStarted = await testUtils.isUrlReachableWithRetry(
+                    "http://localhost:8000/simulator/index.html",
+                    120000,
+                    1500,
                 );
+                console.log(`Sim host reachable: ${simHostStarted}`);
+                assert(simHostStarted, "The simulation host is not running.");
+
+                const appHostStarted = await testUtils.isUrlReachableWithRetry(
+                    "http://localhost:8000/index.html",
+                    120000,
+                    1500,
+                );
+                console.log(`App host reachable: ${appHostStarted}`);
+                assert(appHostStarted, "The application host is not running.");
+            } finally {
+                await testUtils.removeCordovaComponents("platform", testProjectPath, ["android"]);
+            }
         });
     });
 });
