@@ -70,9 +70,10 @@ suite("extensionContext", () => {
     });
 
     suite("CordovaSimulateContext", () => {
-        test("Verify that the simulate command launches the simulate server", async () => {
+        test.skip("Verify that the simulate command launches the simulate server", async () => {
             // Remove the explicit Cordova Android version after a release of the 'cordova-serve' package
             // with the fix for the issue https://github.com/apache/cordova-serve/issues/43
+            // SKIPPED: This test requires browser launch which is unreliable in headless CI environments
             try {
                 await testUtils.addCordovaComponents("platform", testProjectPath, [
                     "android@9.1.0",
