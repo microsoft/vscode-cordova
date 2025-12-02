@@ -82,6 +82,22 @@ export function isUrlReachable(url: string): Promise<boolean> {
     });
 }
 
+export async function isUrlReachableWithRetry(
+    url: string,
+    timeoutMs: number = 120000,
+    intervalMs: number = 1500,
+): Promise<boolean> {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+        const ok = await isUrlReachable(url);
+        if (ok) {
+            return true;
+        }
+        await new Promise(r => setTimeout(r, intervalMs));
+    }
+    return false;
+}
+
 export function convertWindowsPathToUnixOne(path: string): string {
     return path.replace(/\\/g, "/");
 }

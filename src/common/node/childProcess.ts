@@ -22,10 +22,10 @@ interface IExecOptions {
     cwd?: string;
     stdio?: any;
     env?: any;
-    encoding?: string;
+    encoding?: BufferEncoding;
     timeout?: number;
     maxBuffer?: number;
-    killSignal?: string;
+    killSignal?: NodeJS.Signals;
 }
 
 interface ISpawnOptions {

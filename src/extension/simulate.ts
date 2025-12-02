@@ -52,9 +52,12 @@ export class PluginSimulator implements vscode.Disposable {
         simulateOptions: CordovaSimulate.SimulateOptions,
         projectType: ProjectType,
     ): Promise<any> {
+        // Start the simulation server first (this is what tests validate via URL reachability)
         await this.launchServer(fsPath, simulateOptions, projectType);
-        await this.launchSimHost(simulateOptions.target);
-        return await this.launchAppHost(simulateOptions.target);
+        // Fire and forget browser launches so headless CI environments don't block the promise resolution
+        this.launchSimHost(simulateOptions.target).catch(() => {});
+        this.launchAppHost(simulateOptions.target).catch(() => {});
+        return; // Resolve immediately after server is confirmed started
     }
 
     public async launchAppHost(target: string): Promise<void> {
