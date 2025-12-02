@@ -76,11 +76,23 @@ suite("extensionContext", () => {
             return testUtils
                 .addCordovaComponents("platform", testProjectPath, ["android@9.1.0"])
                 .then(() => vscode.commands.executeCommand("cordova.simulate.android"))
-                .then(() => testUtils.isUrlReachable("http://localhost:8000/simulator/index.html"))
+                .then(() =>
+                    testUtils.isUrlReachableWithRetry(
+                        "http://localhost:8000/simulator/index.html",
+                        120000,
+                        1500,
+                    ),
+                )
                 .then((simHostStarted: boolean) =>
                     assert(simHostStarted, "The simulation host is running."),
                 )
-                .then(() => testUtils.isUrlReachable("http://localhost:8000/index.html"))
+                .then(() =>
+                    testUtils.isUrlReachableWithRetry(
+                        "http://localhost:8000/index.html",
+                        120000,
+                        1500,
+                    ),
+                )
                 .then((appHostStarted: boolean) =>
                     assert(appHostStarted, "The application host is running."),
                 )
