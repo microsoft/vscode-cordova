@@ -800,6 +800,7 @@
 		},
 		"cordova-simulate": {
 			"elliptic": "^6.6.1"
-		}
+		},
+		"serialize-javascript": "7.0.3"
 	}
 }
