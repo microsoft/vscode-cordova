@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 
+const { webcrypto } = require("crypto");
+globalThis.crypto = webcrypto;
 const path = require("path");
 const ts = require("gulp-typescript");
 const GulpExtras = require("./tools/gulp-extras");
