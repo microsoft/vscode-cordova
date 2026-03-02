@@ -21,7 +21,7 @@ async function runWebpack({
     devtool = false,
     compileInPlace = false,
     mode = process.argv.includes("watch") ? "development" : "production",
-} = options) {
+} = {}) {
     let configs = [];
     for (const { entry, library, filename } of packages) {
         const config = {
@@ -84,7 +84,9 @@ async function runWebpack({
             },
             externals: {
                 vscode: "commonjs vscode",
+                crypto: "commonjs crypto",
             },
+            plugins: []
         };
 
         if (library) {
@@ -92,12 +94,12 @@ async function runWebpack({
         }
 
         if (process.argv.includes("--analyze-size")) {
-            config.plugins = [
+            config.plugins.push(
                 new (require("webpack-bundle-analyzer").BundleAnalyzerPlugin)({
                     analyzerMode: "static",
                     reportFilename: path.resolve(distSrcDir, path.basename(entry) + ".html"),
-                }),
-            ];
+                })
+            );
         }
 
         configs.push(config);
