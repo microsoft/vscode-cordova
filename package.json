@@ -791,15 +791,22 @@
 		"ms-vscode.js-debug"
 	],
 	"overrides": {
+		"socket.io-client": {
+			"debug": "^4.3.1"
+		},
+		"cordova-simulate": {
+			"debug": "^4.3.1",
+			"elliptic": "^6.6.1"
+		},
+		"engine.io": {
+			"debug": "^4.3.1"
+		},
 		"glob": ">=10.5.0",
 		"glob-stream": {
 			"glob": "^7.2.0"
 		},
 		"vinyl-fs": {
 			"glob": "^7.2.0"
-		},
-		"cordova-simulate": {
-			"elliptic": "^6.6.1"
 		},
 		"serialize-javascript": "^7.0.3"
 	}
