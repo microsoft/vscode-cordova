@@ -808,6 +808,6 @@
 		"vinyl-fs": {
 			"glob": "^7.2.0"
 		},
-		"serialize-javascript": "^6.0.2"
+		"serialize-javascript": ">=7.0.5"
 	}
 }
