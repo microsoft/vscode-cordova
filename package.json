@@ -801,6 +801,16 @@
 		"cordova-simulate": {
 			"elliptic": "^6.6.1"
 		},
-		"serialize-javascript": "^7.0.3"
+		"serialize-javascript": "^7.0.3",
+		"brace-expansion": "^5.0.5",
+		"picomatch": "^2.3.2",
+		"flatted": "^3.4.2",
+		"socket.io-parser": "^3.4.4",
+		"minimatch": "^5.1.8",
+		"bn.js": "^5.2.3",
+		"ajv": "^8.18.0",
+		"qs": "^6.14.2",
+		"@isaacs/brace-expansion": "^5.0.1",
+		"diff": "^5.2.2"
 	}
 }
