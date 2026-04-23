@@ -728,7 +728,7 @@
 		"plist": "^3.0.5",
 		"semver": "^6.3.1",
 		"socket.io-client": "2.4.0",
-		"uuid": "^9.0.0",
+		"uuid": "^14.0.0",
 		"vscode-cdp-proxy": "^0.2.0",
 		"vscode-extension-telemetry": "0.4.5",
 		"vscode-nls": "^4.1.2",
@@ -744,7 +744,7 @@
 		"@types/semver": "^5.5.0",
 		"@types/sinon": "^10.0.12",
 		"@types/socket.io-client": "^1.4.36",
-		"@types/uuid": "^9.0.0",
+		"@types/uuid": "^11.0.0",
 		"@types/vscode": "1.40.0",
 		"@typescript-eslint/eslint-plugin": "^6.15.0",
 		"@typescript-eslint/parser": "^6.15.0",
@@ -791,6 +791,7 @@
 		"ms-vscode.js-debug"
 	],
 	"overrides": {
+		"uuid": "^14.0.0",
 		"glob": ">=10.5.0",
 		"glob-stream": {
 			"glob": "^7.2.0"
