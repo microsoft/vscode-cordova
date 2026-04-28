@@ -801,6 +801,7 @@
 		"engine.io": {
 			"debug": "^4.3.1"
 		},
+		"uuid": "^14.0.0",
 		"glob": "^10.5.0",
 		"glob-stream": {
 			"glob": "^7.2.0"
