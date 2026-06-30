@@ -69,7 +69,9 @@ extends:
                     CHANGELOG.md
                     version.txt
                   TargetFolder: "$(Build.ArtifactStagingDirectory)"
+          # Temporarily disabled until an isolated macOS 1ES image/pool is available.
           - job: macOS
+            condition: false
             pool:
               name: Azure Pipelines
               image: macos-latest

@@ -3,8 +3,6 @@ steps:
     displayName: "Use Node 18.x"
     inputs:
       versionSpec: 18.x
-  - bash: npm install gulp cordova @vscode/vsce -g --force
-    displayName: "npm install gulp cordova @vscode/vsce -g"
   - bash: npm ci
     displayName: "npm ci"
   - bash: npm run build
@@ -42,7 +40,7 @@ steps:
       filename: prepareBuild.bat
       modifyEnvironment: true
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
-  - bash: gulp
+  - bash: npx gulp
     displayName: "Build and run hostless tests"
     env:
       DISPLAY: ":99.0"

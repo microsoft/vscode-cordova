@@ -5,30 +5,56 @@ pr:
 trigger:
   - none
 
-jobs:
-  - job: Linux
-    pool:
-      vmImage: ubuntu-latest
-    timeoutInMinutes: 20
-    steps:
-      - checkout: self
-        clean: true
-      - template: common-validation.yml
+resources:
+  repositories:
+    - repository: 1ESPipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/1ESPipelineTemplates
+      ref: refs/tags/release
 
-  - job: Windows
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
     pool:
-      vmImage: windows-latest
-    timeoutInMinutes: 20
-    steps:
-      - checkout: self
-        clean: true
-      - template: common-validation.yml
+      name: VSWebDiag1ESPipelinePool
+      image: VSWebDiag_1ESImage_Windows
+      os: windows
+    customBuildTags:
+      - ES365AIMigrationTooling
+    stages:
+      - stage: stage
+        jobs:
+          - job: Linux
+            pool:
+              name: VSWebDiag1ESPipelinePool
+              image: VSWebDiag_1ESImage_Ubuntu
+              os: linux
+            timeoutInMinutes: 20
+            steps:
+              - checkout: self
+                clean: true
+              - template: /.ci/common-validation.yml@self
 
-  - job: macOS
-    pool:
-      vmImage: macOS-latest
-    timeoutInMinutes: 20
-    steps:
-      - checkout: self
-        clean: true
-      - template: common-validation.yml
+          - job: Windows
+            pool:
+              name: VSWebDiag1ESPipelinePool
+              image: VSWebDiag_1ESImage_Windows
+              os: windows
+            timeoutInMinutes: 20
+            steps:
+              - checkout: self
+                clean: true
+              - template: /.ci/common-validation.yml@self
+
+          # Temporarily disabled until an isolated macOS 1ES image/pool is available.
+          - job: macOS
+            condition: false
+            pool:
+              name: Azure Pipelines
+              image: macos-latest
+              os: macOS
+            timeoutInMinutes: 20
+            steps:
+              - checkout: self
+                clean: true
+              - template: /.ci/common-validation.yml@self
