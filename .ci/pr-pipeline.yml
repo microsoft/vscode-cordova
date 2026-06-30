@@ -33,6 +33,7 @@ extends:
             steps:
               - checkout: self
                 clean: true
+                fetchDepth: 1
               - template: /.ci/common-validation.yml@self
 
           - job: Windows
@@ -44,6 +45,7 @@ extends:
             steps:
               - checkout: self
                 clean: true
+                fetchDepth: 1
               - template: /.ci/common-validation.yml@self
 
           # Temporarily disabled until an isolated macOS 1ES image/pool is available.
@@ -57,4 +59,5 @@ extends:
             steps:
               - checkout: self
                 clean: true
+                fetchDepth: 1
               - template: /.ci/common-validation.yml@self
