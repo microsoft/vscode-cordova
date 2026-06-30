@@ -5,59 +5,33 @@ pr:
 trigger:
   - none
 
-resources:
-  repositories:
-    - repository: 1ESPipelineTemplates
-      type: git
-      name: 1ESPipelineTemplates/1ESPipelineTemplates
-      ref: refs/tags/release
-
-extends:
-  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
-  parameters:
+jobs:
+  - job: Linux
     pool:
-      name: VSWebDiag1ESPipelinePool
-      image: VSWebDiag_1ESImage_Windows
-      os: windows
-    customBuildTags:
-      - ES365AIMigrationTooling
-    stages:
-      - stage: stage
-        jobs:
-          - job: Linux
-            pool:
-              name: VSWebDiag1ESPipelinePool
-              image: VSWebDiag_1ESImage_Ubuntu
-              os: linux
-            timeoutInMinutes: 20
-            steps:
-              - checkout: self
-                clean: true
-                fetchDepth: 1
-              - template: /.ci/common-validation.yml@self
+      vmImage: ubuntu-latest
+    timeoutInMinutes: 20
+    steps:
+      - checkout: self
+        clean: true
+        fetchDepth: 1
+      - template: common-validation.yml
 
-          - job: Windows
-            pool:
-              name: VSWebDiag1ESPipelinePool
-              image: VSWebDiag_1ESImage_Windows
-              os: windows
-            timeoutInMinutes: 20
-            steps:
-              - checkout: self
-                clean: true
-                fetchDepth: 1
-              - template: /.ci/common-validation.yml@self
+  - job: Windows
+    pool:
+      vmImage: windows-latest
+    timeoutInMinutes: 20
+    steps:
+      - checkout: self
+        clean: true
+        fetchDepth: 1
+      - template: common-validation.yml
 
-          # Temporarily disabled until an isolated macOS 1ES image/pool is available.
-          - job: macOS
-            condition: false
-            pool:
-              name: Azure Pipelines
-              image: macos-latest
-              os: macOS
-            timeoutInMinutes: 20
-            steps:
-              - checkout: self
-                clean: true
-                fetchDepth: 1
-              - template: /.ci/common-validation.yml@self
+  - job: macOS
+    pool:
+      vmImage: macOS-latest
+    timeoutInMinutes: 20
+    steps:
+      - checkout: self
+        clean: true
+        fetchDepth: 1
+      - template: common-validation.yml
