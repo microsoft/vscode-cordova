@@ -1,8 +1,8 @@
 steps:
   - task: NodeTool@0
-    displayName: "Use Node 18.x"
+    displayName: "Use Node 20.x"
     inputs:
-      versionSpec: 18.x
+      versionSpec: 20.x
   - task: Cache@2
     displayName: "Cache npm packages"
     inputs:
@@ -10,10 +10,13 @@ steps:
       restoreKeys: |
         npm | "$(Agent.OS)"
       path: "$(Pipeline.Workspace)/.npm"
-  - bash: npm ci --cache "$(Pipeline.Workspace)/.npm" --prefer-offline
+  - bash: npm ci --cache "$(Pipeline.Workspace)/.npm" --prefer-offline --registry "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/"
     displayName: "npm ci"
   - bash: npm run build
     displayName: "npm run build"
+    env:
+      npm_config_registry: "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/"
+      npm_config_userconfig: "$(Build.SourcesDirectory)/.npmrc"
   - bash: |
       /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
       echo ">>> Started xvfb"
@@ -23,10 +26,14 @@ steps:
     displayName: "Run host tests"
     env:
       DISPLAY: ":99.0"
+      npm_config_registry: "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/"
+      npm_config_userconfig: "$(Build.SourcesDirectory)/.npmrc"
   - bash: npm run test-localization --verbose
     displayName: "Run localization tests"
     env:
       DISPLAY: ":99.0"
+      npm_config_registry: "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/"
+      npm_config_userconfig: "$(Build.SourcesDirectory)/.npmrc"
     condition: and(succeeded(), or(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Agent.OS'], 'Linux')))
   - task: PublishTestResults@2
     displayName: "Publish Extension Test Results"
@@ -52,4 +59,6 @@ steps:
     displayName: "Build and run hostless tests"
     env:
       DISPLAY: ":99.0"
+      npm_config_registry: "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/"
+      npm_config_userconfig: "$(Build.SourcesDirectory)/.npmrc"
     condition: and(succeeded(), or(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Agent.OS'], 'Linux')))
