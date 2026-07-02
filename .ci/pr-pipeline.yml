@@ -13,6 +13,7 @@ jobs:
     steps:
       - checkout: self
         clean: true
+        fetchDepth: 1
       - template: common-validation.yml
 
   - job: Windows
@@ -22,6 +23,7 @@ jobs:
     steps:
       - checkout: self
         clean: true
+        fetchDepth: 1
       - template: common-validation.yml
 
   - job: macOS
@@ -31,4 +33,5 @@ jobs:
     steps:
       - checkout: self
         clean: true
+        fetchDepth: 1
       - template: common-validation.yml

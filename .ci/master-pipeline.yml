@@ -17,6 +17,8 @@ extends:
       name: VSWebDiag1ESPipelinePool
       image: VSWebDiag_1ESImage_Windows
       os: windows
+    settings:
+      networkIsolationPolicy: Permissive,CFSClean,CFSClean2
     customBuildTags:
       - ES365AIMigrationTooling
     stages:

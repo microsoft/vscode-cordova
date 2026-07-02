@@ -1,11 +1,16 @@
 steps:
   - task: NodeTool@0
-    displayName: "Use Node 18.x"
+    displayName: "Use Node 20.x"
     inputs:
-      versionSpec: 18.x
-  - bash: npm install gulp cordova @vscode/vsce -g --force
-    displayName: "npm install gulp cordova @vscode/vsce -g"
-  - bash: npm ci
+      versionSpec: 20.x
+  - task: Cache@2
+    displayName: "Cache npm packages"
+    inputs:
+      key: 'npm | "$(Agent.OS)" | package-lock.json'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+      path: "$(Pipeline.Workspace)/.npm"
+  - bash: npm ci --cache "$(Pipeline.Workspace)/.npm" --prefer-offline
     displayName: "npm ci"
   - bash: npm run build
     displayName: "npm run build"
@@ -22,6 +27,7 @@ steps:
     displayName: "Run localization tests"
     env:
       DISPLAY: ":99.0"
+    condition: and(succeeded(), or(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Agent.OS'], 'Linux')))
   - task: PublishTestResults@2
     displayName: "Publish Extension Test Results"
     inputs:
@@ -42,7 +48,8 @@ steps:
       filename: prepareBuild.bat
       modifyEnvironment: true
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
-  - bash: gulp
+  - bash: npx gulp
     displayName: "Build and run hostless tests"
     env:
       DISPLAY: ":99.0"
+    condition: and(succeeded(), or(ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Agent.OS'], 'Linux')))
