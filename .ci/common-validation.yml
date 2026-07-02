@@ -3,6 +3,14 @@ steps:
     displayName: "Use Node 20.x"
     inputs:
       versionSpec: 20.x
+  - bash: |
+      echo 'registry=https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/' >> "$(Build.SourcesDirectory)/.npmrc"
+      echo 'always-auth=true' >> "$(Build.SourcesDirectory)/.npmrc"
+    displayName: "Configure npm internal registry"
+  - task: NpmAuthenticate@0
+    displayName: "Authenticate npm with internal feed"
+    inputs:
+      workingFile: "$(Build.SourcesDirectory)/.npmrc"
   - task: Cache@2
     displayName: "Cache npm packages"
     inputs:
@@ -10,7 +18,7 @@ steps:
       restoreKeys: |
         npm | "$(Agent.OS)"
       path: "$(Pipeline.Workspace)/.npm"
-  - bash: npm ci --cache "$(Pipeline.Workspace)/.npm" --prefer-offline --registry "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/PipelineTools_PublicPackages/npm/registry/"
+  - bash: npm ci --cache "$(Pipeline.Workspace)/.npm" --prefer-offline --userconfig "$(Build.SourcesDirectory)/.npmrc"
     displayName: "npm ci"
   - bash: npm run build
     displayName: "npm run build"
