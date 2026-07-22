@@ -812,6 +812,7 @@
 		"@vscode/vsce": {
 			"brace-expansion": ">=5.0.7"
 		},
+		"js-yaml": ">=4.3.0",
 		"serialize-javascript": ">=7.0.5",
 		"mochawesome": {
 			"uuid": ">=11.1.1"
