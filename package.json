@@ -796,7 +796,8 @@
 		},
 		"cordova-simulate": {
 			"debug": "^4.3.1",
-			"elliptic": "^6.6.1"
+			"elliptic": "^6.6.1",
+			"uuid": ">=11.1.1"
 		},
 		"engine.io": {
 			"debug": "^4.3.1"
@@ -808,10 +809,10 @@
 		"vinyl-fs": {
 			"glob": "^7.2.0"
 		},
-		"serialize-javascript": ">=7.0.5",
-		"cordova-simulate": {
-			"uuid": ">=11.1.1"
+		"@vscode/vsce": {
+			"brace-expansion": ">=5.0.7"
 		},
+		"serialize-javascript": ">=7.0.5",
 		"mochawesome": {
 			"uuid": ">=11.1.1"
 		}
