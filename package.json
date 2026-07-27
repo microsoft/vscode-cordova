@@ -809,9 +809,12 @@
 		"vinyl-fs": {
 			"glob": "^7.2.0"
 		},
-		"brace-expansion": "2.1.2",
+		"minimatch": {
+			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.8"
+		},
+		"brace-expansion": "github:juliangruber/brace-expansion#v5.0.8",
 		"@vscode/vsce": {
-			"brace-expansion": ">=5.0.7"
+			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.8"
 		},
 		"js-yaml": ">=4.3.0",
 		"serialize-javascript": ">=7.0.5",
