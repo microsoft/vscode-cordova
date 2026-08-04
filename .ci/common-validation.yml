@@ -1,8 +1,8 @@
 steps:
   - task: NodeTool@0
-    displayName: "Use Node 20.x"
+    displayName: "Use Node 22.x"
     inputs:
-      versionSpec: 20.x
+      versionSpec: 22.x
   - task: Cache@2
     displayName: "Cache npm packages"
     inputs:
