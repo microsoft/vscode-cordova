@@ -792,6 +792,7 @@
 		"ms-vscode.js-debug"
 	],
 	"overrides": {
+		"debug": "^4.3.1",
 		"socket.io-client": {
 			"debug": "^4.3.1"
 		},
@@ -801,6 +802,9 @@
 			"uuid": ">=11.1.1"
 		},
 		"engine.io": {
+			"debug": "^4.3.1"
+		},
+		"socket.io-parser": {
 			"debug": "^4.3.1"
 		},
 		"glob": "^10.5.0",
