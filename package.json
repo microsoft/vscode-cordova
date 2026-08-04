@@ -728,6 +728,7 @@
 		"plist": "^3.0.5",
 		"semver": "^6.3.1",
 		"socket.io-client": "2.4.0",
+		"socket.io-parser": "3.4.5",
 		"uuid": "^14.0.0",
 		"vscode-cdp-proxy": "^0.2.0",
 		"vscode-extension-telemetry": "0.4.5",
