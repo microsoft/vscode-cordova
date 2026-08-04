@@ -811,11 +811,11 @@
 			"glob": "^7.2.0"
 		},
 		"minimatch": {
-			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.8"
+			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.9"
 		},
-		"brace-expansion": "github:juliangruber/brace-expansion#v5.0.8",
+		"brace-expansion": "github:juliangruber/brace-expansion#v5.0.9",
 		"@vscode/vsce": {
-			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.8"
+			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.9"
 		},
 		"js-yaml": "github:nodeca/js-yaml#5.2.2",
 		"serialize-javascript": ">=7.0.5",
