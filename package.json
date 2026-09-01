@@ -821,6 +821,7 @@
 		"@vscode/vsce": {
 			"brace-expansion": "github:juliangruber/brace-expansion#v5.0.9"
 		},
+		"decode-uri-component": ">=0.5.0",
 		"js-yaml": "github:nodeca/js-yaml#5.2.2",
 		"serialize-javascript": ">=7.0.5",
 		"mochawesome": {
