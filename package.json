@@ -693,6 +693,8 @@
 	},
 	"scripts": {
 		"build": "gulp build",
+		"lint": "gulp lint",
+		"format": "gulp format",
 		"test": "node ./test/runTest.js",
 		"test-localization": "node ./test/localization/runTest.js",
 		"vscode:prepublish": "gulp",
