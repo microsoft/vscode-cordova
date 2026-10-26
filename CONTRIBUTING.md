@@ -15,6 +15,8 @@ To avoid conflicts with your existing installation, it is recommended to delete 
 - Run `gulp`
 - After completing above steps, run `gulp release` to package extension `.vsix` file. A VSIX package can help you install the latest extension maunally in VS Code extension tab.
 
+The packaging tool `@vscode/vsce` uses `@azure/identity`, whose `@azure/msal-node` dependency is overridden to `^7.1.0` for a security fix. Reassess this override when the upstream dependency chain supports the patched version.
+
 ## Debugging
 
 To debug the extension process itself and the debug adapter it provides, in VS Code run the `Launch Extension` debug target which will spawn a new instance of VS Code with the extension installed. You can set breakpoints in the Typescript and debug things such as extension activation and the command palette.

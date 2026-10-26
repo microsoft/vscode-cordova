@@ -821,6 +821,9 @@
 		"@vscode/vsce": {
 			"brace-expansion": ">=5.0.12"
 		},
+		"@azure/identity": {
+			"@azure/msal-node": "^7.1.0"
+		},
 		"decode-uri-component": ">=0.5.0",
 		"js-yaml": ">=5.4.1",
 		"serialize-javascript": ">=7.1.4",
