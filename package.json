@@ -823,7 +823,7 @@
 		},
 		"decode-uri-component": ">=0.5.0",
 		"js-yaml": ">=5.4.1",
-		"serialize-javascript": ">=7.0.5",
+		"serialize-javascript": ">=7.1.4",
 		"mochawesome": {
 			"uuid": ">=11.1.1"
 		}
